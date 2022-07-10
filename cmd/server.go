@@ -1,18 +1,30 @@
 package main
 
 import (
-	"github.com/gofiber/fiber/v2"
+	"bitrix-statistic/internal/server"
 	"log"
 )
 
 func main() {
-	app := fiber.New()
-
-	app.Get("/", func(c *fiber.Ctx) error {
-		return c.SendString("Hello, World 👋!")
-	})
-	err := app.Listen(":3000")
+	serverStatistic := server.NewServer()
+	err := serverStatistic.Start(3000)
 	if err != nil {
 		log.Fatalln(err)
 	}
+
+	defer func(serverStatistic *server.Server) {
+		err := serverStatistic.Stop()
+		if err != nil {
+			log.Fatalln(err)
+		}
+	}(serverStatistic)
+
+	//app := fiber.New()
+	//app.Get("/", func(c *fiber.Ctx) error {
+	//	return c.SendString("Hello, World 👋!")
+	//})
+	//err = app.Listen(":3000")
+	//if err != nil {
+	//	log.Fatalln(err)
+	//}
 }
