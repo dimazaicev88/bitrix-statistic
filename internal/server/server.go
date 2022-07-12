@@ -2,24 +2,28 @@ package server
 
 import (
 	"bitrix-statistic/internal/api"
+	"bitrix-statistic/internal/models"
+	"bitrix-statistic/internal/storage"
 	"github.com/gofiber/fiber/v2"
-	"github.com/jmoiron/sqlx"
 	"strconv"
 )
 
 type Server struct {
 	app     *fiber.App
-	storage *sqlx.DB
+	storage *storage.MysqlStorage
 }
 
-func NewServer() *Server {
-	return &Server{}
+func NewServer(storage *storage.MysqlStorage) *Server {
+	return &Server{
+		storage: storage,
+	}
 }
 
 func (a *Server) Start(port int) error {
 	a.app = fiber.New()
 
-	api.NewHitHandlers(a.app).AddHandlers()
+	api.NewHitHandlers(a.app, models.NewHitModel(a.storage)).
+		AddHandlers()
 
 	err := a.app.Listen(":" + strconv.Itoa(port))
 	if err != nil {
