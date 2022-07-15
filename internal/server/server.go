@@ -25,6 +25,8 @@ func (a *Server) Start(port int) error {
 	api.NewHitHandlers(a.app, models.NewHitModel(a.storage)).
 		AddHandlers()
 
+	api.NewCityHandlers(a.app, models.NewCityModel(a.storage))
+
 	err := a.app.Listen(":" + strconv.Itoa(port))
 	if err != nil {
 		return err

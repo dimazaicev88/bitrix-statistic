@@ -7,24 +7,24 @@ import (
 	jsoniter "github.com/json-iterator/go"
 )
 
-type HitHandlers struct {
-	app      *fiber.App
-	hitModel models.HitModel
+type CityHandlers struct {
+	app       *fiber.App
+	cityModel models.CityModel
 }
 
-func NewHitHandlers(app *fiber.App, hitModel models.HitModel) HitHandlers {
-	return HitHandlers{
-		app:      app,
-		hitModel: hitModel,
+func NewCityHandlers(app *fiber.App, cityModel models.CityModel) CityHandlers {
+	return CityHandlers{
+		app:       app,
+		cityModel: cityModel,
 	}
 }
 
-func (hh HitHandlers) AddHandlers() {
-	hh.app.Post("/hit/filter", hh.Filter)
-	hh.app.Delete("/hit/delete/:id/", hh.DeleteById)
+func (ch CityHandlers) AddHandlers() {
+	ch.app.Post("/city/filter", ch.Filter)
+	ch.app.Delete("/city/delete/:id/", ch.DeleteById)
 }
 
-func (hh HitHandlers) Filter(ctx *fiber.Ctx) error {
+func (ch CityHandlers) Filter(ctx *fiber.Ctx) error {
 	var filter filters.Filter
 	body := ctx.Body()
 	err := jsoniter.Unmarshal(body, &filter)
@@ -32,7 +32,7 @@ func (hh HitHandlers) Filter(ctx *fiber.Ctx) error {
 		ctx.Status(502)
 		return err
 	}
-	err, result := hh.hitModel.Find(filter)
+	err, result := ch.cityModel.Find(filter)
 	if err != nil {
 		ctx.Status(502)
 		return err
@@ -46,7 +46,7 @@ func (hh HitHandlers) Filter(ctx *fiber.Ctx) error {
 	return ctx.SendString(json)
 }
 
-func (hh HitHandlers) DeleteById(ctx *fiber.Ctx) error {
+func (ch CityHandlers) DeleteById(ctx *fiber.Ctx) error {
 
 	return nil
 }
