@@ -1,12 +1,22 @@
 package models
 
 import (
-	"bitrix-statistic/internal/filters"
+	"bitrix-statistic/internal/entity"
+	"bitrix-statistic/internal/storage"
 )
 
 type OptionModel struct {
+	storage *storage.MysqlStorage
 }
 
-func (o OptionModel) Add(filter filters.Filter) (interface{}, interface{}) {
-	return nil, nil
+func NewOptionModel(storage *storage.MysqlStorage) OptionModel {
+	return OptionModel{storage: storage}
+}
+
+func (o OptionModel) Add(options []entity.Option) error {
+	return nil
+}
+
+func (o OptionModel) GetOption(s string) string {
+	return ""
 }
