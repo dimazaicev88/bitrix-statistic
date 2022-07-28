@@ -6,10 +6,10 @@ import (
 )
 
 type OptionModel struct {
-	storage *storage.MysqlStorage
+	storage storage.Storage
 }
 
-func NewOptionModel(storage *storage.MysqlStorage) OptionModel {
+func NewOptionModel(storage storage.Storage) OptionModel {
 	return OptionModel{storage: storage}
 }
 

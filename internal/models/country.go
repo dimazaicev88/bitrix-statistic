@@ -7,7 +7,7 @@ import (
 )
 
 type CountryModel struct {
-	storage storage.MysqlStorage
+	storage storage.Storage
 }
 
 func (cm CountryModel) Find(filter filters.Filter) (error, []map[string]interface{}) {

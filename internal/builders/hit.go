@@ -2,6 +2,7 @@ package builders
 
 import (
 	"bitrix-statistic/internal/filters"
+	"errors"
 	"regexp"
 	"strings"
 	"unicode/utf8"
@@ -38,7 +39,7 @@ var hitFields = map[string]string{
 	"SITE_ID":            " t1.SITE_ID ",
 }
 
-func (hs HitSqlBuilder) buildSelectAndJoin() HitSqlBuilder {
+func (hs HitSqlBuilder) buildSelectAndJoin() (HitSqlBuilder, error) {
 	var selectFields []string
 	hs.selectBuilder.WriteString("SELECT ")
 	if len(hs.filter.Select) == 0 {
@@ -47,6 +48,8 @@ func (hs HitSqlBuilder) buildSelectAndJoin() HitSqlBuilder {
 		for _, selectField := range hs.filter.Select {
 			if value, ok := hitFields[selectField]; ok {
 				selectFields = append(selectFields, value)
+			} else {
+				return HitSqlBuilder{}, errors.New("unknown field " + selectField)
 			}
 			if selectField == "USER" {
 				hs.selectBuilder.WriteString("")
@@ -60,7 +63,7 @@ func (hs HitSqlBuilder) buildSelectAndJoin() HitSqlBuilder {
 	hs.selectBuilder.WriteString(strings.Join(selectFields, ","))
 	hs.selectBuilder.WriteString(" FROM b_stat_hit t1 ")
 	hs.selectBuilder.WriteString(hs.joinBuilder.String())
-	return hs
+	return hs, nil
 }
 
 func (hs HitSqlBuilder) orderByBuild() HitSqlBuilder {
@@ -87,7 +90,6 @@ func (hs HitSqlBuilder) whereBuild() HitSqlBuilder {
 		where = strings.ReplaceAll(where, key, " ? ")
 		*hs.params = append(*hs.params, value)
 	}
-
 	for key, value := range hitFields {
 		var re = regexp.MustCompile(`\b` + key + `\b`)
 		where = re.ReplaceAllString(where, value)
@@ -97,10 +99,13 @@ func (hs HitSqlBuilder) whereBuild() HitSqlBuilder {
 	return hs
 }
 
-func (hs HitSqlBuilder) BuildSQL() SQL {
+func (hs HitSqlBuilder) BuildSQL() (SQL, error) {
 	var resultSQL strings.Builder
-	hs.buildSelectAndJoin().
-		whereBuild().
+	sqlBuilder, err := hs.buildSelectAndJoin()
+	if err != nil {
+		return SQL{}, err
+	}
+	sqlBuilder.whereBuild().
 		orderByBuild()
 	resultSQL.WriteString(hs.selectBuilder.String())
 	resultSQL.WriteString(hs.whereBuilder.String())
@@ -108,5 +113,5 @@ func (hs HitSqlBuilder) BuildSQL() SQL {
 	return SQL{
 		SQL:    resultSQL.String(),
 		Params: *hs.params,
-	}
+	}, nil
 }

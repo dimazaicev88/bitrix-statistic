@@ -19,6 +19,8 @@ type SQLBuilder struct {
 	orderByBuilder *strings.Builder
 	filter         filters.Filter
 	params         *[]interface{}
+	limit          *strings.Builder
+	offset         *strings.Builder
 }
 
 func NewSQLBuilder(filter filters.Filter) SQLBuilder {
@@ -27,6 +29,8 @@ func NewSQLBuilder(filter filters.Filter) SQLBuilder {
 		joinBuilder:    &strings.Builder{},
 		whereBuilder:   &strings.Builder{},
 		orderByBuilder: &strings.Builder{},
+		limit:          &strings.Builder{},
+		offset:         &strings.Builder{},
 		filter:         filter,
 		params:         &[]interface{}{},
 	}

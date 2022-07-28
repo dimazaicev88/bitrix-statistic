@@ -7,6 +7,9 @@ import (
 	"log"
 )
 
+//TODO 1. Добавить лимит на возврат записей
+//TODO 2. Добавить поле CNT_ROWS  в котором будет указано кол-во записей
+
 func main() {
 	mysqlStorage := storage.NewMysqlStorage("bitrix", "123", "localhost", "bitrix", 3306)
 	serverStatistic := server.NewServer(mysqlStorage)
@@ -21,13 +24,4 @@ func main() {
 			log.Fatalln(err)
 		}
 	}(serverStatistic)
-
-	//app := fiber.New()
-	//app.Get("/", func(c *fiber.Ctx) error {
-	//	return c.SendString("Hello, World 👋!")
-	//})
-	//err = app.Listen(":3000")
-	//if err != nil {
-	//	log.Fatalln(err)
-	//}
 }

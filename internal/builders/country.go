@@ -54,7 +54,7 @@ func (cb CountrySQLBuilder) orderByBuild() CountrySQLBuilder {
 	cb.orderByBuilder.WriteString(" ORDER BY ")
 	var orderByFields []string
 	for _, by := range cb.filter.OrderBy {
-		orderByFields = append(orderByFields, hitFields[by])
+		orderByFields = append(orderByFields, cityFields[by])
 	}
 	cb.orderByBuilder.WriteString(strings.Join(orderByFields, ","))
 	cb.orderByBuilder.WriteString(" ")
@@ -62,6 +62,7 @@ func (cb CountrySQLBuilder) orderByBuild() CountrySQLBuilder {
 	return cb
 }
 
+//TODO добавить проверку на наличие неизвестных полей.
 func (cb CountrySQLBuilder) whereBuild() CountrySQLBuilder {
 	where := cb.filter.Where
 	if utf8.RuneCountInString(where) == 0 {
@@ -71,8 +72,7 @@ func (cb CountrySQLBuilder) whereBuild() CountrySQLBuilder {
 		where = strings.ReplaceAll(where, key, " ? ")
 		*cb.params = append(*cb.params, value)
 	}
-
-	for key, value := range hitFields {
+	for key, value := range cityFields {
 		var re = regexp.MustCompile(`\b` + key + `\b`)
 		where = re.ReplaceAllString(where, value)
 	}

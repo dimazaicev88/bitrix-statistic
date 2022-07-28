@@ -6,11 +6,11 @@ import (
 )
 
 type CityModel struct {
-	storage *storage.MysqlStorage
+	storage storage.Storage
 }
 
-func NewCityModel(mysqlStorage *storage.MysqlStorage) CityModel {
-	return CityModel{storage: mysqlStorage}
+func NewCityModel(storageImpl storage.Storage) CityModel {
+	return CityModel{storage: storageImpl}
 }
 
 func (m CityModel) Find(filter filters.Filter) (error, []map[string]interface{}) {

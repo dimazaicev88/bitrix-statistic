@@ -7,7 +7,9 @@ require (
 	github.com/gofiber/fiber/v2 v2.34.1
 	github.com/jmoiron/sqlx v1.3.5
 	github.com/json-iterator/go v1.1.12
+	github.com/mitchellh/mapstructure v1.5.0
 	github.com/stretchr/testify v1.7.0
+	golang.org/x/exp v0.0.0-20220713135740-79cabaa25d75
 )
 
 require (

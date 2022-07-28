@@ -10,10 +10,10 @@ import (
 
 type Server struct {
 	app     *fiber.App
-	storage *storage.MysqlStorage
+	storage storage.Storage
 }
 
-func NewServer(storage *storage.MysqlStorage) *Server {
+func NewServer(storage storage.Storage) *Server {
 	return &Server{
 		storage: storage,
 	}

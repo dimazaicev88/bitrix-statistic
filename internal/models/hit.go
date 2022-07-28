@@ -2,21 +2,25 @@ package models
 
 import (
 	"bitrix-statistic/internal/builders"
+	"bitrix-statistic/internal/entity"
 	"bitrix-statistic/internal/filters"
 	"bitrix-statistic/internal/storage"
 )
 
 type HitModel struct {
-	storage *storage.MysqlStorage
+	storage storage.Storage
 }
 
-func NewHitModel(storage *storage.MysqlStorage) HitModel {
-	return HitModel{storage: storage}
+func NewHitModel(storageImpl storage.Storage) HitModel {
+	return HitModel{storage: storageImpl}
 }
 
 func (hm HitModel) Find(filter filters.Filter) (error, []map[string]interface{}) {
 	var hits []map[string]interface{}
-	sql := builders.NewHitSQLBuilder(filter).BuildSQL()
+	sql, err := builders.NewHitSQLBuilder(filter).BuildSQL()
+	if err != nil {
+		return err, nil
+	}
 	rows, err := hm.storage.DB().Queryx(sql.SQL, sql.Params...)
 	for rows.Next() {
 		results := make(map[string]interface{})
@@ -30,4 +34,14 @@ func (hm HitModel) Find(filter filters.Filter) (error, []map[string]interface{})
 		return err, nil
 	}
 	return nil, hits
+}
+
+func (hm HitModel) AddHit(hit entity.Hit) error {
+	_, err := hm.storage.DB().MustExec("INSERT INTO b_stat_hit(`SESSION_ID`, `DATE_HIT`, `GUEST_ID`, `NEW_GUEST`, `USER_ID`, `USER_AUTH`, `URL`, `URL_404`, `URL_FROM`, `IP`, `METHOD`, `COOKIES`, `USER_AGENT`, `STOP_LIST_ID`, `COUNTRY_ID`, `CITY_ID`, `SITE_ID`)"+
+		"VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?,?)",
+		hit.SessionId, hit.DateHit, hit.GuestId, hit.NewGuest, hit.UserId, hit.UserAuth, hit.Url, hit.Url404, hit.UrlFrom, hit.Method, hit.Cookies, hit.UserAgent, hit.StopListId, hit.CountryId, hit.CityId, hit.SiteId).LastInsertId()
+	if err != nil {
+		return err
+	}
+	return nil
 }

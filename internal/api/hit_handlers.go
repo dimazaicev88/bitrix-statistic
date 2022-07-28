@@ -1,6 +1,7 @@
 package api
 
 import (
+	"bitrix-statistic/internal/entity"
 	"bitrix-statistic/internal/filters"
 	"bitrix-statistic/internal/models"
 	"github.com/gofiber/fiber/v2"
@@ -20,11 +21,12 @@ func NewHitHandlers(app *fiber.App, hitModel models.HitModel) HitHandlers {
 }
 
 func (hh HitHandlers) AddHandlers() {
-	hh.app.Post("/hit/filter", hh.Filter)
+	hh.app.Post("/hit/filter", hh.filter)
+	hh.app.Post("/hit/filter", hh.add)
 	hh.app.Delete("/hit/delete/:id/", hh.DeleteById)
 }
 
-func (hh HitHandlers) Filter(ctx *fiber.Ctx) error {
+func (hh HitHandlers) filter(ctx *fiber.Ctx) error {
 	var filter filters.Filter
 	body := ctx.Body()
 	err := jsoniter.Unmarshal(body, &filter)
@@ -48,5 +50,21 @@ func (hh HitHandlers) Filter(ctx *fiber.Ctx) error {
 
 func (hh HitHandlers) DeleteById(ctx *fiber.Ctx) error {
 
+	return nil
+}
+
+func (hh HitHandlers) add(ctx *fiber.Ctx) error {
+	var hit entity.Hit
+	body := ctx.Body()
+	err := jsoniter.Unmarshal(body, &hit)
+	if err != nil {
+		ctx.Status(502)
+		return err
+	}
+	err = hh.hitModel.AddHit(hit)
+	if err != nil {
+		ctx.Status(502)
+		return err
+	}
 	return nil
 }

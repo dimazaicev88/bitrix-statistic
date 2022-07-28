@@ -3,10 +3,10 @@ package models
 import "bitrix-statistic/internal/storage"
 
 type StatisticModel struct {
-	storage *storage.MysqlStorage
+	storage storage.Storage
 }
 
-func NewStatisticModel(storage *storage.MysqlStorage) StatisticModel {
+func NewStatisticModel(storage storage.Storage) StatisticModel {
 	return StatisticModel{
 		storage: storage,
 	}
