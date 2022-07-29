@@ -20,9 +20,9 @@ func NewSessionHandlers(app *fiber.App, sessionModel models.SessionModel) Sessio
 }
 
 func (ch SessionHandlers) AddHandlers() {
-	ch.app.Post("/city/sessions", ch.Filter)
-	ch.app.Post("/city/add", ch.Filter)
-	ch.app.Delete("/city/delete/:id/", ch.DeleteById)
+	ch.app.Post("/session/filter", ch.Filter)
+	ch.app.Post("/session/add", ch.add)
+	ch.app.Delete("/session/delete/:id/", ch.DeleteById)
 }
 
 func (ch SessionHandlers) Filter(ctx *fiber.Ctx) error {
@@ -48,6 +48,11 @@ func (ch SessionHandlers) Filter(ctx *fiber.Ctx) error {
 }
 
 func (ch SessionHandlers) DeleteById(ctx *fiber.Ctx) error {
+
+	return nil
+}
+
+func (ch SessionHandlers) add(ctx *fiber.Ctx) error {
 
 	return nil
 }
