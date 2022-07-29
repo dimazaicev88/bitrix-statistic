@@ -1,6 +1,7 @@
 package storage
 
 import (
+	"bitrix-statistic/internal/config"
 	"fmt"
 	"github.com/jmoiron/sqlx"
 	"log"
@@ -10,8 +11,8 @@ type MysqlStorage struct {
 	db *sqlx.DB
 }
 
-func NewMysqlStorage(login, password, host, dbname string, port int) *MysqlStorage {
-	dataSource := fmt.Sprintf("%s:%s@tcp(%s:%v)/%s", login, password, host, port, dbname)
+func NewMysqlStorage(cfg config.ServerEnvConfig) *MysqlStorage {
+	dataSource := fmt.Sprintf("%s:%s@tcp(%s:%v)/%s", cfg.StorageUser(), cfg.StoragePassword(), cfg.StorageHost(), cfg.StoragePort(), cfg.StorageDbName())
 	log.Println("Mysql connections string: " + dataSource)
 	dbConn, err := sqlx.Connect("mysql", dataSource)
 	if err != nil {
