@@ -1,4 +1,4 @@
-package api
+package routes
 
 import (
 	"bitrix-statistic/internal/models"
@@ -18,7 +18,7 @@ func NewStatisticHandlers(app *fiber.App, optionModel models.OptionModel) Option
 }
 
 func (sh StatisticHandlers) AddHandlers() {
-	sh.app.Post("/statistic/add", sh.Add)
+	sh.app.Post("/statistic/AddSession", sh.Add)
 }
 
 func (sh StatisticHandlers) Add(ctx *fiber.Ctx) error {

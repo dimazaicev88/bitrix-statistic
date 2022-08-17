@@ -5,7 +5,7 @@ import (
 )
 
 type CitySQLBuilder struct {
-	SQLBuilder
+	SQLDataForBuild
 }
 
 func NewCityBuilder(filter filters.Filter) CitySQLBuilder {

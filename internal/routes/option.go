@@ -1,4 +1,4 @@
-package api
+package routes
 
 import (
 	"bitrix-statistic/internal/models"
@@ -18,7 +18,7 @@ func NewOptionHandlers(app *fiber.App, optionModel models.OptionModel) OptionHan
 }
 
 func (hh OptionHandlers) AddHandlers() {
-	hh.app.Post("/option/add", hh.Add)
+	hh.app.Post("/option/AddSession", hh.Add)
 	hh.app.Post("/option/list", hh.List)
 	hh.app.Delete("/option/delete/:id/", hh.DeleteById)
 }

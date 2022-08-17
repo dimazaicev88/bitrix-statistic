@@ -27,3 +27,7 @@ func (cm CountryModel) Find(filter filters.Filter) (error, []map[string]interfac
 	}
 	return nil, hits
 }
+
+func (cm CountryModel) DeleteById(id int) {
+	cm.storage.DB().MustExec("DELETE FROM b_stat_country WHERE ID=?", id)
+}

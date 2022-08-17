@@ -16,7 +16,7 @@ func main() {
 	serverConfig.ValidateStorageParams()
 	mysqlStorage := storage.NewMysqlStorage(serverConfig)
 	serverStatistic := server.NewServer(mysqlStorage)
-	err := serverStatistic.Start(3000)
+	err := serverStatistic.Start(125)
 	if err != nil {
 		log.Fatalln(err)
 	}

@@ -9,7 +9,7 @@ import (
 func main() {
 	client := http.Client{}
 	start := time.Now()
-	client.Get("http://127.0.0.1:3000/")
+	client.Get("http://127.0.0.1:125/")
 	stop := time.Now().Sub(start)
 	fmt.Println(stop)
 	//response, err := client.Get("http://127.0.0.1:3000/")

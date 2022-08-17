@@ -1,10 +1,11 @@
 package server
 
 import (
-	"bitrix-statistic/internal/api"
 	"bitrix-statistic/internal/models"
+	"bitrix-statistic/internal/routes"
 	"bitrix-statistic/internal/storage"
 	"github.com/gofiber/fiber/v2"
+	"github.com/gofiber/template/html"
 	"strconv"
 )
 
@@ -20,12 +21,14 @@ func NewServer(storage storage.Storage) *Server {
 }
 
 func (a *Server) Start(port int) error {
-	a.app = fiber.New()
-
-	api.NewHitHandlers(a.app, models.NewHitModel(a.storage)).
-		AddHandlers()
-
-	api.NewCityHandlers(a.app, models.NewCityModel(a.storage))
+	a.app = fiber.New(fiber.Config{
+		Views: html.New("./web/html", ".html"),
+	})
+	a.app.Static("/assets", "./web/assets")
+	routes.NewMainPageHandlers(a.app).AddHandler()
+	routes.NewHitHandlers(a.app, models.NewHitModel(a.storage)).AddHandlers()
+	routes.NewCityHandlers(a.app, models.NewCityModel(a.storage)).AddHandlers()
+	routes.NewSessionHandlers(a.app, models.NewSessionModel(a.storage)).AddHandlers()
 
 	err := a.app.Listen(":" + strconv.Itoa(port))
 	if err != nil {

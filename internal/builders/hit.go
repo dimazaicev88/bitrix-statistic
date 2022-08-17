@@ -2,14 +2,14 @@ package builders
 
 import (
 	"bitrix-statistic/internal/filters"
+	"bitrix-statistic/utils"
 	"errors"
-	"regexp"
+	"golang.org/x/exp/slices"
 	"strings"
-	"unicode/utf8"
 )
 
 type HitSqlBuilder struct {
-	SQLBuilder
+	sqlData SQLDataForBuild
 }
 
 func NewHitSQLBuilder(filter filters.Filter) HitSqlBuilder {
@@ -39,79 +39,47 @@ var hitFields = map[string]string{
 	"SITE_ID":            " t1.SITE_ID ",
 }
 
-func (hs HitSqlBuilder) buildSelectAndJoin() (HitSqlBuilder, error) {
-	var selectFields []string
-	hs.selectBuilder.WriteString("SELECT ")
-	if len(hs.filter.Select) == 0 {
-		hs.selectBuilder.WriteString("* ")
-	} else {
-		for _, selectField := range hs.filter.Select {
-			if value, ok := hitFields[selectField]; ok {
-				selectFields = append(selectFields, value)
-			} else {
-				return HitSqlBuilder{}, errors.New("unknown field " + selectField)
-			}
-			if selectField == "USER" {
-				hs.selectBuilder.WriteString("")
-				hs.joinBuilder.WriteString(" LEFT JOIN b_user t2 ON (t2.ID = t1.USER_ID)")
-			}
-			if selectField == "COUNTRY" {
-				hs.joinBuilder.WriteString(" INNER JOIN b_stat_country t3 ON (t3.ID = t1.COUNTRY_ID)")
+func (hs HitSqlBuilder) buildSelect() (WhereBuilder, error) {
+	return NewSelectBuild(hs.sqlData).Build(func(sqlData SQLDataForBuild) (WhereBuilder, error) {
+		var selectFields []string
+		sqlData.selectBuilder.WriteString("SELECT ")
+		if len(sqlData.filter.Select) == 0 {
+			sqlData.selectBuilder.WriteString("* ")
+		} else {
+			set := utils.NewSet[string]()
+			slices.Sort(set.SliceAsSet(sqlData.filter.Select).Items())
+			sqlData.filter.Select = set.SliceAsSet(sqlData.filter.Select).Items()
+			slices.Sort(sqlData.filter.Select)
+			for _, selectField := range sqlData.filter.Select {
+				if value, ok := hitFields[selectField]; ok {
+					selectFields = append(selectFields, value)
+				} else {
+					return WhereBuilder{}, errors.New("unknown field " + selectField)
+				}
+				if selectField == "USER" {
+					sqlData.selectBuilder.WriteString("")
+					sqlData.joinBuilder.WriteString(" LEFT JOIN b_user t2 ON (t2.ID = t1.USER_ID)")
+				}
+				if selectField == "COUNTRY_ID" {
+					sqlData.joinBuilder.WriteString(" INNER JOIN b_stat_country t3 ON (t3.ID = t1.COUNTRY_ID)")
+				}
 			}
 		}
-	}
-	hs.selectBuilder.WriteString(strings.Join(selectFields, ","))
-	hs.selectBuilder.WriteString(" FROM b_stat_hit t1 ")
-	hs.selectBuilder.WriteString(hs.joinBuilder.String())
-	return hs, nil
+		sqlData.selectBuilder.WriteString(strings.Join(selectFields, ","))
+		sqlData.selectBuilder.WriteString(" FROM b_stat_hit t1 ")
+		sqlData.selectBuilder.WriteString(sqlData.joinBuilder.String())
+		return NewWhereBuilder(sqlData), nil
+	})
 }
 
-func (hs HitSqlBuilder) orderByBuild() HitSqlBuilder {
-	if len(hs.filter.OrderBy) == 0 {
-		return hs
-	}
-	hs.orderByBuilder.WriteString(" ORDER BY ")
-	var orderByFields []string
-	for _, by := range hs.filter.OrderBy {
-		orderByFields = append(orderByFields, hitFields[by])
-	}
-	hs.orderByBuilder.WriteString(strings.Join(orderByFields, ","))
-	hs.orderByBuilder.WriteString(" ")
-	hs.orderByBuilder.WriteString(hs.filter.TypeSort)
-	return hs
+func (hs HitSqlBuilder) orderByBuild() SQLBuild {
+	return NewOrderByBuilder(hs.sqlData).BuildDefault()
 }
 
-func (hs HitSqlBuilder) whereBuild() HitSqlBuilder {
-	where := hs.filter.Where
-	if utf8.RuneCountInString(where) == 0 {
-		return hs
-	}
-	for key, value := range hs.filter.Params {
-		where = strings.ReplaceAll(where, key, " ? ")
-		*hs.params = append(*hs.params, value)
-	}
-	for key, value := range hitFields {
-		var re = regexp.MustCompile(`\b` + key + `\b`)
-		where = re.ReplaceAllString(where, value)
-	}
-	hs.whereBuilder.WriteString(" WHERE ")
-	hs.whereBuilder.WriteString(where)
-	return hs
+func (hs HitSqlBuilder) whereBuild() OrderByBuilder {
+	return NewWhereBuilder(hs.sqlData).BuildDefault()
 }
 
 func (hs HitSqlBuilder) BuildSQL() (SQL, error) {
-	var resultSQL strings.Builder
-	sqlBuilder, err := hs.buildSelectAndJoin()
-	if err != nil {
-		return SQL{}, err
-	}
-	sqlBuilder.whereBuild().
-		orderByBuild()
-	resultSQL.WriteString(hs.selectBuilder.String())
-	resultSQL.WriteString(hs.whereBuilder.String())
-	resultSQL.WriteString(hs.orderByBuilder.String())
-	return SQL{
-		SQL:    resultSQL.String(),
-		Params: *hs.params,
-	}, nil
+	return NewSQLBuild(hs.sqlData).DefaultBuild(hs.buildSelect)
 }

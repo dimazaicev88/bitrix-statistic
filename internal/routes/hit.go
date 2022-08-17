@@ -1,4 +1,4 @@
-package api
+package routes
 
 import (
 	"bitrix-statistic/internal/entity"
@@ -22,7 +22,7 @@ func NewHitHandlers(app *fiber.App, hitModel models.HitModel) HitHandlers {
 
 func (hh HitHandlers) AddHandlers() {
 	hh.app.Post("/hit/filter", hh.filter)
-	hh.app.Post("/hit/add", hh.add)
+	hh.app.Post("/hit/AddSession", hh.add)
 	hh.app.Delete("/hit/delete/:id/", hh.DeleteById)
 }
 

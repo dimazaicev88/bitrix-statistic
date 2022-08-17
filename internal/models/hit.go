@@ -36,6 +36,10 @@ func (hm HitModel) Find(filter filters.Filter) (error, []map[string]interface{})
 	return nil, hits
 }
 
+func (hm HitModel) DeleteById(id int) {
+	hm.storage.DB().MustExec("DELETE FROM b_stat_hit WHERE ID=?", id)
+}
+
 func (hm HitModel) AddHit(hit entity.Hit) error {
 	_, err := hm.storage.DB().MustExec("INSERT INTO b_stat_hit(`SESSION_ID`, `DATE_HIT`, `GUEST_ID`, `NEW_GUEST`, `USER_ID`, `USER_AUTH`, `URL`, `URL_404`, `URL_FROM`, `IP`, `METHOD`, `COOKIES`, `USER_AGENT`, `STOP_LIST_ID`, `COUNTRY_ID`, `CITY_ID`, `SITE_ID`)"+
 		"VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?,?)",

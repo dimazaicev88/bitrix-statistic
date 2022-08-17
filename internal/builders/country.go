@@ -3,9 +3,7 @@ package builders
 import (
 	"bitrix-statistic/internal/filters"
 	"errors"
-	"regexp"
 	"strings"
-	"unicode/utf8"
 )
 
 var cityFields = map[string]string{
@@ -19,81 +17,45 @@ var cityFields = map[string]string{
 }
 
 type CountrySQLBuilder struct {
-	SQLBuilder
+	sqlData SQLDataForBuild
 }
 
 func NewCountrySQLBuilder(filter filters.Filter) CountrySQLBuilder {
 	return CountrySQLBuilder{NewSQLBuilder(filter)}
 }
 
-func (cb CountrySQLBuilder) buildSelect() error {
-	var selectFields []string
-	cb.selectBuilder.WriteString("SELECT ")
-	if len(cb.filter.Select) == 0 {
-		cb.selectBuilder.WriteString("* ")
-	} else {
-		for _, selectField := range cb.filter.Select {
-			if value, ok := cityFields[selectField]; ok {
-				selectFields = append(selectFields, value)
+func (cb CountrySQLBuilder) buildSelect() (WhereBuilder, error) {
+	return NewSelectBuild(cb.sqlData).Build(func(sqlData SQLDataForBuild) (WhereBuilder, error) {
+		var selectFields []string
+		cb.sqlData.selectBuilder.WriteString("SELECT ")
+		if len(cb.sqlData.filter.Select) == 0 {
+			cb.sqlData.selectBuilder.WriteString("* ")
+		} else {
+			for _, selectField := range cb.sqlData.filter.Select {
+				if value, ok := cityFields[selectField]; ok {
+					selectFields = append(selectFields, value)
+				}
 			}
 		}
-	}
-	if len(selectFields) == 0 {
-		return errors.New("unknown fields is select")
-	}
-	cb.selectBuilder.WriteString(strings.Join(selectFields, ","))
-	cb.selectBuilder.WriteString(" FROM b_stat_country t1 ")
-	cb.selectBuilder.WriteString(cb.joinBuilder.String())
-	return nil
+		if len(selectFields) == 0 {
+			return WhereBuilder{}, errors.New("unknown fields is select")
+		}
+		cb.sqlData.selectBuilder.WriteString(strings.Join(selectFields, ","))
+		cb.sqlData.selectBuilder.WriteString(" FROM b_stat_country t1 ")
+		cb.sqlData.selectBuilder.WriteString(cb.sqlData.joinBuilder.String())
+		return NewWhereBuilder(sqlData), nil
+	})
 }
 
-func (cb CountrySQLBuilder) orderByBuild() CountrySQLBuilder {
-	if len(cb.filter.OrderBy) == 0 {
-		return cb
-	}
-	cb.orderByBuilder.WriteString(" ORDER BY ")
-	var orderByFields []string
-	for _, by := range cb.filter.OrderBy {
-		orderByFields = append(orderByFields, cityFields[by])
-	}
-	cb.orderByBuilder.WriteString(strings.Join(orderByFields, ","))
-	cb.orderByBuilder.WriteString(" ")
-	cb.orderByBuilder.WriteString(cb.filter.TypeSort)
-	return cb
+func (cb CountrySQLBuilder) orderByBuild() SQLBuild {
+	return NewOrderByBuilder(cb.sqlData).BuildDefault()
 }
 
-//TODO добавить проверку на наличие неизвестных полей.
-func (cb CountrySQLBuilder) whereBuild() CountrySQLBuilder {
-	where := cb.filter.Where
-	if utf8.RuneCountInString(where) == 0 {
-		return cb
-	}
-	for key, value := range cb.filter.Params {
-		where = strings.ReplaceAll(where, key, " ? ")
-		*cb.params = append(*cb.params, value)
-	}
-	for key, value := range cityFields {
-		var re = regexp.MustCompile(`\b` + key + `\b`)
-		where = re.ReplaceAllString(where, value)
-	}
-	cb.whereBuilder.WriteString(" WHERE ")
-	cb.whereBuilder.WriteString(where)
-	return cb
+// TODO добавить проверку на наличие неизвестных полей.
+func (cb CountrySQLBuilder) whereBuild() OrderByBuilder {
+	return NewWhereBuilder(cb.sqlData).BuildDefault()
 }
 
-func (cb CountrySQLBuilder) BuildSQL() (error, SQL) {
-	var resultSQL strings.Builder
-	err := cb.buildSelect()
-	if err != nil {
-		return err, SQL{}
-	}
-	cb.whereBuild()
-	cb.orderByBuild()
-	resultSQL.WriteString(cb.selectBuilder.String())
-	resultSQL.WriteString(cb.whereBuilder.String())
-	resultSQL.WriteString(cb.orderByBuilder.String())
-	return nil, SQL{
-		SQL:    resultSQL.String(),
-		Params: *cb.params,
-	}
+func (cb CountrySQLBuilder) BuildSQL() (SQL, error) {
+	return NewSQLBuild(cb.sqlData).DefaultBuild(cb.buildSelect)
 }

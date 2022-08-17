@@ -10,10 +10,13 @@ import (
 
 func TestHitCase1(t *testing.T) {
 	var filter filters.Filter
-	jsonStr := `{"SELECT":["COUNTRY_ID","USER","COUNTRY"],"WHERE":"COUNTRY_ID>:countryId and SESSION_ID>:sessionId","PARAMS":{":countryId":1,":sessionId":12},"ORDER_BY":["COUNTRY_ID","ID"],"TYPE_SORT":"ASC"}`
+	jsonStr := `{"SELECT":["USER","COUNTRY_ID","COUNTRY_ID"],"WHERE":"COUNTRY_ID>:countryId and SESSION_ID>:sessionId","PARAMS":{":countryId":1,":sessionId":12},"ORDER_BY":["COUNTRY_ID","ID"],"TYPE_SORT":"ASC"}`
 	jsoniter.Unmarshal([]byte(jsonStr), &filter)
-	_, sql := NewHitSQLBuilder(filter).BuildSQL()
-	assert.Equal(t, "SELECT  t1.COUNTRY_ID , t2.LOGIN, t2.NAME  FROM b_stat_hit t1  LEFT JOIN b_user t2 ON (t2.ID = t1.USER_ID) INNER JOIN b_stat_country t3 ON (t3.ID = t1.COUNTRY_ID) WHERE  t1.COUNTRY_ID > ?  and  t1.SESSION_ID > ?  ORDER BY  t1.COUNTRY_ID , t1.ID ASC", sql.SQL)
+	sql, err := NewHitSQLBuilder(filter).BuildSQL()
+	if err != nil {
+		assert.Error(t, err)
+	}
+	assert.Equal(t, "SELECT  t1.COUNTRY_ID , t2.LOGIN, t2.NAME  FROM b_stat_hit t1  INNER JOIN b_stat_country t3 ON (t3.ID = t1.COUNTRY_ID) LEFT JOIN b_user t2 ON (t2.ID = t1.USER_ID) WHERE  t1.COUNTRY_ID > ?  and  t1.SESSION_ID > ?  ORDER BY  t1.COUNTRY_ID , t1.ID ASC", sql.SQL)
 	expectedSlice := []interface{}{1, 12}
 	if len(sql.Params) != len(expectedSlice) {
 		assert.Error(t, errors.New("slice not equal by size"))
@@ -33,8 +36,8 @@ func TestHitCase2(t *testing.T) {
   ]
 }`
 	jsoniter.Unmarshal([]byte(jsonStr), &filter)
-	_, sql := NewHitSQLBuilder(filter).BuildSQL()
-	assert.Equal(t, "SELECT  t1.COUNTRY_ID  FROM b_stat_hit t1 ", sql.SQL)
+	sql, _ := NewHitSQLBuilder(filter).BuildSQL()
+	assert.Equal(t, "SELECT  t1.COUNTRY_ID  FROM b_stat_hit t1  INNER JOIN b_stat_country t3 ON (t3.ID = t1.COUNTRY_ID)", sql.SQL)
 	var expectedSlice []interface{}
 	if len(sql.Params) != len(expectedSlice) {
 		assert.Error(t, errors.New("slice not equal by size"))
@@ -47,7 +50,7 @@ func TestHitCase3(t *testing.T) {
     "SELECT": []
 }`
 	jsoniter.Unmarshal([]byte(jsonStr), &filter)
-	_, sql := NewHitSQLBuilder(filter).BuildSQL()
+	sql, _ := NewHitSQLBuilder(filter).BuildSQL()
 	assert.Equal(t, "SELECT *  FROM b_stat_hit t1 ", sql.SQL)
 	var expectedSlice []interface{}
 	if len(sql.Params) != len(expectedSlice) {
@@ -59,7 +62,7 @@ func TestHitCase4(t *testing.T) {
 	var filter filters.Filter
 	jsonStr := `{}`
 	jsoniter.Unmarshal([]byte(jsonStr), &filter)
-	_, sql := NewHitSQLBuilder(filter).BuildSQL()
+	sql, _ := NewHitSQLBuilder(filter).BuildSQL()
 	assert.Equal(t, "SELECT *  FROM b_stat_hit t1 ", sql.SQL)
 	var expectedSlice []interface{}
 	if len(sql.Params) != len(expectedSlice) {

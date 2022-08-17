@@ -13,6 +13,10 @@ func NewCityModel(storageImpl storage.Storage) CityModel {
 	return CityModel{storage: storageImpl}
 }
 
-func (m CityModel) Find(filter filters.Filter) (error, []map[string]interface{}) {
+func (cm CityModel) Find(filter filters.Filter) (error, []map[string]interface{}) {
 	return nil, nil
+}
+
+func (cm CityModel) DeleteById(id int) {
+	cm.storage.DB().MustExec("DELETE FROM b_stat_city WHERE ID=?", id)
 }

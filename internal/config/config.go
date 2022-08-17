@@ -46,8 +46,8 @@ func (s ServerEnvConfig) ValidateStorageParams() {
 	case len(s.StorageUser()) == 0:
 		panic(StorageUser + " is not set")
 
-	case len(s.StoragePassword()) == 0:
-		panic(StoragePassword + " is not set")
+	//case len(s.StoragePassword()) == 0:
+	//	panic(StoragePassword + " is not set")
 
 	case len(s.StorageDbName()) == 0:
 		panic(StorageDbName + " is not set")
