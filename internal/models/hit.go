@@ -36,12 +36,18 @@ func (hm HitModel) Find(filter filters.Filter) (error, []map[string]interface{})
 	return nil, hits
 }
 
+func (hm HitModel) Find2(filter filters.BitrixHitFilter) (error, []map[string]interface{}) {
+	var hits []map[string]interface{}
+
+	return nil, hits
+}
+
 func (hm HitModel) DeleteById(id int) {
 	hm.storage.DB().MustExec("DELETE FROM b_stat_hit WHERE ID=?", id)
 }
 
 func (hm HitModel) AddHit(hit entity.Hit) error {
-	_, err := hm.storage.DB().MustExec("INSERT INTO b_stat_hit(`SESSION_ID`, `DATE_HIT`, `GUEST_ID`, `NEW_GUEST`, `USER_ID`, `USER_AUTH`, `URL`, `URL_404`, `URL_FROM`, `IP`, `METHOD`, `COOKIES`, `USER_AGENT`, `STOP_LIST_ID`, `COUNTRY_ID`, `CITY_ID`, `SITE_ID`)"+
+	_, err := hm.storage.DB().MustExec("INSERT INTO b_stat_hit(`SessionId`, `DATE_HIT`, `GuestId`, `NewGuest`, `USER_ID`, `USER_AUTH`, `Url`, `Url404`, `URL_FROM`, `Ip`, `METHOD`, `COOKIES`, `UserAgent`, `StopListId`, `CountryId`, `CityId`, `SiteId`)"+
 		"VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?,?)",
 		hit.SessionId, hit.DateHit, hit.GuestId, hit.NewGuest, hit.UserId, hit.UserAuth, hit.Url, hit.Url404, hit.UrlFrom, hit.Method, hit.Cookies, hit.UserAgent, hit.StopListId, hit.CountryId, hit.CityId, hit.SiteId).LastInsertId()
 	if err != nil {

@@ -1,55 +1,22 @@
 package config
 
 import (
-	"os"
-	"unicode/utf8"
+	"github.com/caarlos0/env/v6"
+	"log"
 )
 
-const (
-	StorageHost     = "STORAGE_HOST"
-	StorageUser     = "STORAGE_USER"
-	StoragePassword = "STORAGE_PASSWORD"
-	StorageDbName   = "STORAGE_DB_NAME"
-	StoragePort     = "STORAGE_PORT"
-)
-
-type ServerEnvConfig struct{}
-
-func (s ServerEnvConfig) StorageHost() string {
-	return os.Getenv(StorageHost)
+type ServerEnvConfig struct {
+	StorageHost     string `env:"STORAGE_HOST,notEmpty"`
+	StorageUser     string `env:"STORAGE_USER,notEmpty"`
+	StoragePassword string `env:"STORAGE_PASSWORD,notEmpty"`
+	StorageDbName   string `env:"STORAGE_DB_NAME,notEmpty"`
+	StoragePort     string `env:"STORAGE_PORT,notEmpty"`
 }
 
-func (s ServerEnvConfig) StorageUser() string {
-	return os.Getenv(StorageUser)
-}
-
-func (s ServerEnvConfig) StoragePassword() string {
-	return os.Getenv(StoragePassword)
-}
-
-func (s ServerEnvConfig) StorageDbName() string {
-	return os.Getenv(StorageDbName)
-}
-
-func (s ServerEnvConfig) StoragePort() string {
-	if utf8.RuneCountInString(os.Getenv(StoragePort)) == 0 {
-		return "3306"
+func ParseServerConfig() ServerEnvConfig {
+	config := ServerEnvConfig{}
+	if err := env.Parse(&config); err != nil {
+		log.Fatal(err)
 	}
-	return os.Getenv(StoragePort)
-}
-
-func (s ServerEnvConfig) ValidateStorageParams() {
-	switch {
-	case len(s.StorageHost()) == 0:
-		panic(StorageHost + " is not set")
-
-	case len(s.StorageUser()) == 0:
-		panic(StorageUser + " is not set")
-
-	//case len(s.StoragePassword()) == 0:
-	//	panic(StoragePassword + " is not set")
-
-	case len(s.StorageDbName()) == 0:
-		panic(StorageDbName + " is not set")
-	}
+	return config
 }

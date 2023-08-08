@@ -12,7 +12,7 @@ type MysqlStorage struct {
 }
 
 func NewMysqlStorage(cfg config.ServerEnvConfig) *MysqlStorage {
-	dataSource := fmt.Sprintf("%s:%s@tcp(%s:%v)/%s", cfg.StorageUser(), cfg.StoragePassword(), cfg.StorageHost(), cfg.StoragePort(), cfg.StorageDbName())
+	dataSource := fmt.Sprintf("%s:%s@tcp(%s:%v)/%s", cfg.StorageUser, cfg.StoragePassword, cfg.StorageHost, cfg.StoragePort, cfg.StorageDbName)
 	log.Println("Mysql connections string: " + dataSource)
 	dbConn, err := sqlx.Connect("mysql", dataSource)
 	if err != nil {

@@ -21,9 +21,10 @@ func NewHitHandlers(app *fiber.App, hitModel models.HitModel) HitHandlers {
 }
 
 func (hh HitHandlers) AddHandlers() {
-	hh.app.Post("/hit/filter", hh.filter)
-	hh.app.Post("/hit/AddSession", hh.add)
-	hh.app.Delete("/hit/delete/:id/", hh.DeleteById)
+	hh.app.Post("/v1/hit/filter", hh.filter)
+	hh.app.Post("/v1/hit/filter/bitrix", hh.filterBitrix)
+	hh.app.Post("/v1/hit/add/session", hh.add)
+	hh.app.Delete("/v1/hit/delete/:id/", hh.DeleteById)
 }
 
 func (hh HitHandlers) filter(ctx *fiber.Ctx) error {
@@ -35,6 +36,28 @@ func (hh HitHandlers) filter(ctx *fiber.Ctx) error {
 		return err
 	}
 	err, result := hh.hitModel.Find(filter)
+	if err != nil {
+		ctx.Status(502)
+		return err
+	}
+
+	json, err := jsoniter.MarshalToString(result)
+	if err != nil {
+		ctx.Status(502)
+		return err
+	}
+	return ctx.SendString(json)
+}
+
+func (hh HitHandlers) filterBitrix(ctx *fiber.Ctx) error {
+	var filter filters.BitrixHitFilter
+	body := ctx.Body()
+	err := jsoniter.Unmarshal(body, &filter)
+	if err != nil {
+		ctx.Status(502)
+		return err
+	}
+	err, result := hh.hitModel.Find2(filter)
 	if err != nil {
 		ctx.Status(502)
 		return err

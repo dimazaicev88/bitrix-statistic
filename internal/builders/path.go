@@ -27,8 +27,8 @@ var pathFields = map[string]string{
 	//P - только по прямым заходам по рекламной кампании
 	//B - только по возвратам по рекламной кампании
 	//S - сумма по прямым заходам и возвратам.
-	"STEPS1": " t1.COUNTRY_ID ", //начальное значение интервала для поля "количество страниц в пути"
-	"STEPS2": " t1.CITY_ID ",    //конечное значение интервала для поля "количество страниц в пути".
+	"STEPS1": " t1.CountryId ", //начальное значение интервала для поля "количество страниц в пути"
+	"STEPS2": " t1.CityId ",    //конечное значение интервала для поля "количество страниц в пути".
 }
 
 func (hs PathSqlBuilder) buildSelectAndJoin() (WhereBuilder, error) {
@@ -48,8 +48,8 @@ func (hs PathSqlBuilder) buildSelectAndJoin() (WhereBuilder, error) {
 					sqlData.selectBuilder.WriteString("")
 					sqlData.joinBuilder.WriteString(" LEFT JOIN b_user t2 ON (t2.ID = t1.USER_ID)")
 				}
-				if selectField == "COUNTRY" {
-					sqlData.joinBuilder.WriteString(" INNER JOIN b_stat_country t3 ON (t3.ID = t1.COUNTRY_ID)")
+				if selectField == "Country" {
+					sqlData.joinBuilder.WriteString(" INNER JOIN b_stat_country t3 ON (t3.ID = t1.CountryId)")
 				}
 			}
 		}

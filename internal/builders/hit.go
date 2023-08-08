@@ -18,25 +18,25 @@ func NewHitSQLBuilder(filter filters.Filter) HitSqlBuilder {
 
 var hitFields = map[string]string{
 	"ID":                 " t1.ID",
-	"SESSION_ID":         " t1.SESSION_ID ",
-	"GUEST_ID":           " t1.GUEST_ID ",
-	"NEW_GUEST":          " t1.NEW_GUEST ",
+	"SessionId":          " t1.SessionId ",
+	"GuestId":            " t1.GuestId ",
+	"NewGuest":           " t1.NewGuest ",
 	"USER_ID":            " t1.USER_ID ",
 	"USER_AUTH":          " t1.USER_AUTH ",
-	"URL":                " t1.URL ",
-	"URL_404":            " t1.URL_404 ",
+	"Url":                " t1.Url ",
+	"Url404":             " t1.Url404 ",
 	"URL_FROM":           " t1.URL_FROM ",
-	"IP":                 " t1.IP ",
+	"Ip":                 " t1.Ip ",
 	"METHOD":             " t1.METHOD ",
 	"COOKIES":            " t1.COOKIES ",
-	"USER_AGENT":         " t1.USER_AGENT ",
-	"STOP_LIST_ID":       " t1.STOP_LIST_ID ",
-	"COUNTRY_ID":         " t1.COUNTRY_ID ",
-	"CITY_ID":            " t1.CITY_ID ",
-	"REGION REGION_NAME": " t3.REGION ",
+	"UserAgent":          " t1.UserAgent ",
+	"StopListId":         " t1.StopListId ",
+	"CountryId":          " t1.CountryId ",
+	"CityId":             " t1.CityId ",
+	"Region REGION_NAME": " t3.Region ",
 	"USER":               " t2.LOGIN, t2.NAME ",
 	"NAME CITY_NAME":     " t3.CITY_NAME ",
-	"SITE_ID":            " t1.SITE_ID ",
+	"SiteId":             " t1.SiteId ",
 }
 
 func (hs HitSqlBuilder) buildSelect() (WhereBuilder, error) {
@@ -60,8 +60,8 @@ func (hs HitSqlBuilder) buildSelect() (WhereBuilder, error) {
 					sqlData.selectBuilder.WriteString("")
 					sqlData.joinBuilder.WriteString(" LEFT JOIN b_user t2 ON (t2.ID = t1.USER_ID)")
 				}
-				if selectField == "COUNTRY_ID" {
-					sqlData.joinBuilder.WriteString(" INNER JOIN b_stat_country t3 ON (t3.ID = t1.COUNTRY_ID)")
+				if selectField == "CountryId" {
+					sqlData.joinBuilder.WriteString(" INNER JOIN b_stat_country t3 ON (t3.ID = t1.CountryId)")
 				}
 			}
 		}
@@ -82,4 +82,23 @@ func (hs HitSqlBuilder) whereBuild() OrderByBuilder {
 
 func (hs HitSqlBuilder) BuildSQL() (SQL, error) {
 	return NewSQLBuild(hs.sqlData).DefaultBuild(hs.buildSelect)
+}
+
+func (hs HitSqlBuilder) template() string {
+
+	sql := "	SELECT H.ID,  H.SESSION_ID, H.GUEST_ID, H.NEW_GUEST, H.USER_ID, H.USER_AUTH," +
+		"	H.URL,		H.URL_404,		H.URL_FROM,		H.IP,		H.METHOD,		H.COOKIES,		H.USER_AGENT," +
+		"	H.STOP_LIST_ID,		H.COUNTRY_ID,		H.CITY_ID,		CITY.REGION REGION_NAME,		CITY.NAME CITY_NAME," +
+		"H.SITE_ID,		DATE_FORMAT(H.DATE_HIT, '%d.%m.%Y %H:%i:%s') as  DATE_HIT" +
+		" . $select . " +
+		"FROM" +
+		"b_stat_hit H" +
+		"LEFT JOIN b_stat_city CITY ON (CITY.ID = H.CITY_ID)" +
+		" . $from1 . " +
+		" . $from2 . " +
+		"	WHERE" +
+		" . $strSqlSearch . " +
+		" . $strSqlOrder . "
+
+	return sql
 }
