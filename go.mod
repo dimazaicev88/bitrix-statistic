@@ -4,6 +4,7 @@ go 1.18
 
 require (
 	github.com/caarlos0/env/v6 v6.10.1
+	github.com/codingsince1985/checksum v1.3.0
 	github.com/go-sql-driver/mysql v1.6.0
 	github.com/gofiber/fiber/v2 v2.36.0
 	github.com/gofiber/template v1.6.30
@@ -28,6 +29,7 @@ require (
 	github.com/valyala/bytebufferpool v1.0.0 // indirect
 	github.com/valyala/fasthttp v1.38.0 // indirect
 	github.com/valyala/tcplisten v1.0.0 // indirect
-	golang.org/x/sys v0.0.0-20220227234510-4e6760a101f9 // indirect
+	golang.org/x/crypto v0.6.0 // indirect
+	golang.org/x/sys v0.5.0 // indirect
 	gopkg.in/yaml.v3 v3.0.0-20210107192922-496545a6307b // indirect
 )

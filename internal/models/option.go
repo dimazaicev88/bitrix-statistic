@@ -17,6 +17,6 @@ func (o OptionModel) Add(options []entity.Option) error {
 	return nil
 }
 
-func (o OptionModel) GetOption(s string) string {
+func (o OptionModel) Get(name string) string {
 	return ""
 }
