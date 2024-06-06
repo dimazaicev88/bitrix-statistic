@@ -9,6 +9,12 @@ type Searcher struct {
 	storage storage.Storage
 }
 
+func NewSearcherModel(storage storage.Storage) *Searcher {
+	return &Searcher{
+		storage: storage,
+	}
+}
+
 func (s Searcher) ExistById(id int) bool {
 	row := s.storage.DB().QueryRow("SELECT id FROM  searcher WHERE id =?", id)
 	var value int
@@ -27,9 +33,9 @@ func (s Searcher) ExistById(id int) bool {
 func (s Searcher) FindByUserAgent(httpUserAgent string) ([]entity.Searcher, error) {
 	var rows []entity.Searcher
 	sql := `SELECT
-	ID, NAME, SAVE_STATISTIC, HIT_KEEP_DAYS, CHECK_ACTIVITY
+	id, name,  SAVE_STATISTIC, HIT_KEEP_DAYS, CHECK_ACTIVITY
 	FROM
-	b_stat_searcher
+	searcher
 	WHERE
 	ACTIVE = 'Y'
 	and LENGTH(USER_AGENT)>0
@@ -44,8 +50,13 @@ func (s Searcher) FindByUserAgent(httpUserAgent string) ([]entity.Searcher, erro
 	return rows, nil
 }
 
-func NewSearcherModel(storage storage.Storage) *Searcher {
-	return &Searcher{
-		storage: storage,
+func (s Searcher) ExistByIdAndCurrentDate(id int) ([]entity.Searcher, error) {
+	var rows []entity.Searcher
+	sql := `SELECT ID FROM b_stat_searcher_day WHERE SEARCHER_ID='?' and DATE_STAT=CURRENT_DATE ORDER BY ID`
+	err := s.storage.DB().Select(&rows, sql, id)
+	if err != nil {
+		return nil, err
 	}
+
+	return rows, nil
 }

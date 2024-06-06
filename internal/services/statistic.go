@@ -192,11 +192,11 @@ func (s Statistic) Add(
 		************************************************/
 
 		// searcher detected
-		if intval($_SESSION["SESS_SEARCHER_ID"])>0)
-		{
-		$_SESSION["SESS_SEARCHER_ID"] = intval($_SESSION["SESS_SEARCHER_ID"]);
-
-		// let's update day counter
+		if phpSession.GetAsInt("SESS_SEARCHER_ID")>0		{
+			searchers, err := s.searcherModel.ExistByIdAndCurrentDate(phpSession.GetAsInt("SESS_SEARCHER_ID"))
+			if err != nil {
+				return
+			}
 		$arFields = Array(
 		"DATE_LAST" = > $DB_now,
 		"TOTAL_HITS" = > "TOTAL_HITS + 1"
