@@ -19,6 +19,7 @@ type Statistic struct {
 	optionModel      models.OptionModel
 	searcherModel    *models.SearcherModel
 	searcherDayModel *models.SearcherDayModel
+	searcherHitModel *models.SearcherHitModel
 }
 
 func NewStatistic(storage *storage.MysqlStorage) Statistic {
@@ -87,10 +88,11 @@ func (s Statistic) Add(
 	isUserAuthorized,
 	stopSaveStatistic,
 	stop,
-	error404 bool,
+	error404 string,
 	phpSession *session.Session, stopListId int,
 	sessionGcMaxLifeTime string,
-	userAgent string,
+	userAgent, fullRequestUri, ip, siteId string,
+
 ) {
 	advNa := s.optionModel.Get("ADV_NA")
 	__SetReferer("referer1", "REFERER1_SYN")
@@ -205,24 +207,12 @@ func (s Statistic) Add(
 			}
 
 			// save indexed page if neccessary
-			if ($_SESSION["SESS_SEARCHER_SAVE_STATISTIC"] == "Y")
-			{
-			$sql_HIT_KEEP_DAYS = ($_SESSION["SESS_SEARCHER_HIT_KEEP_DAYS"] <> '') ? intval($_SESSION["SESS_SEARCHER_HIT_KEEP_DAYS"]): "null";
-			$arFields = Array(
-			"DATE_HIT" = > $DB_now,
-			"SEARCHER_ID" = > intval($_SESSION["SESS_SEARCHER_ID"]),
-			"URL" => "'".$DB->ForSql(__GetFullRequestUri(), 2000)."'",
-			"URL_404" => "'".$ERROR_404."'",
-			"IP" => "'".$DB->ForSql($_SERVER["REMOTE_ADDR"], 15)."'",
-			"USER_AGENT" = > "'".$DB->ForSql($_SERVER["HTTP_USER_AGENT"], 500)."'",
-			"HIT_KEEP_DAYS" = > $sql_HIT_KEEP_DAYS,
-			"SITE_ID" => $sql_site
-			);
-			$id = $DB->Insert("b_stat_searcher_hit", $arFields, "File: ".__FILE__."<br>Line: ".__LINE__);
-			if ($ERROR_404=="N")
-			{
-			CStatistics::Set404("b_stat_searcher_hit", "ID = ".intval($id), array("URL_404" = > "Y"));
-			}
+			if phpSession.Get("SESS_SEARCHER_SAVE_STATISTIC") == "Y" {
+				s.searcherHitModel.Add(phpSession.GetAsInt("SESS_SEARCHER_ID"), fullRequestUri, error404, ip, userAgent, phpSession.Get("SESS_SEARCHER_HIT_KEEP_DAYS"), siteId)
+				//TODO ?
+				//if error404 == "N" {
+				//CStatistics::Set404("b_stat_searcher_hit", "ID = ".intval($id), array("URL_404" = > "Y"))
+				//}
 			}
 		} else // it is not searcher
 		{

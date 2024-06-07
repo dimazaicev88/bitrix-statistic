@@ -98,3 +98,39 @@ create table if not exists searcher_hit
 );
 CREATE INDEX IX_SEARCHER_HIT_1 ON searcher_hit (`searcher_id`, `date_hit`);
 CREATE INDEX IX_SEARCHER_HIT_2 ON searcher_hit (`hit_keep_days`, `date_hit`);
+
+
+create table if not exists adv_day
+(
+    `id`              int(18) not null auto_increment,
+    `adv_id`          int(18) not null default '0',
+    `date_stat`       date,
+    `guests`          int(18) not null default '0',
+    `guests_day`      int(18) not null default '0',
+    `new_guests`      int(18) not null default '0',
+    `favorites`       int(18) not null default '0',
+    `c_hosts`         int(18) not null default '0',
+    `c_hosts_day`     int(18) not null default '0',
+    `sessions`        int(18) not null default '0',
+    `hits`            int(18) not null default '0',
+    `guests_back`     int(18) not null default '0',
+    `guests_day_back` int(18) not null default '0',
+    `favorites_back`  int(18) not null default '0',
+    `hosts_back`      int(18) not null default '0',
+    `hosts_day_back`  int(18) not null default '0',
+    `sessions_back`   int(18) not null default '0',
+    `hits_back`       int(18) not null default '0',
+    primary key (`id`),
+    index IX_ADV_ID_DATE_STAT (`adv_id`, `date_stat`),
+    index IX_DATE_STAT (`date_stat`)
+);
+
+create table if not exists adv_page
+(
+    `id`     int(18)      not null auto_increment,
+    `adv_id` int(18)      not null default '0',
+    `page`   varchar(255) not null,
+    `c_type` varchar(5)   not null default 'TO',
+    primary key (`id`),
+    index IX_ADV_ID_TYPE (`adv_id`, `c_type`)
+);
