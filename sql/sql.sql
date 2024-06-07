@@ -71,3 +71,30 @@ create table if not exists searcher
     primary key (`id`)
 );
 CREATE INDEX IX_SEARCHER_1 ON searcher (`hit_keep_days`);
+
+create table if not exists searcher_day
+(
+    `id`          int(18) not null auto_increment,
+    `date_stat`   date,
+    `date_last`   datetime,
+    `searcher_id` int(18) not null default '0',
+    `total_hits`  int(18) not null default '0',
+    primary key (`id`),
+    index IX_SEARCHER_ID_DATE_STAT (`searcher_id`, `date_stat`)
+);
+
+create table if not exists searcher_hit
+(
+    `id`            int(18) not null auto_increment,
+    `date_hit`      datetime,
+    `searcher_id`   int(18) not null default '0',
+    `url`           text    not null,
+    `url_404`       char(1) not null default 'N',
+    `ip`            varchar(15),
+    `user_agent`    text,
+    `hit_keep_days` int(18),
+    `site_id`       char(2),
+    primary key (`id`)
+);
+CREATE INDEX IX_SEARCHER_HIT_1 ON searcher_hit (`searcher_id`, `date_hit`);
+CREATE INDEX IX_SEARCHER_HIT_2 ON searcher_hit (`hit_keep_days`, `date_hit`);
