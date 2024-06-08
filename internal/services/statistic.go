@@ -14,20 +14,17 @@ import (
 )
 
 type Statistic struct {
-	statisticModel   models.StatisticModel
-	sessionDataModel *models.SessionDataModel
-	optionModel      models.OptionModel
-	searcherModel    *models.SearcherModel
-	searcherDayModel *models.SearcherDayModel
-	searcherHitModel *models.SearcherHitModel
+	statisticModel models.StatisticModel
+	optionModel    models.OptionModel
+	searcherModel  *models.SearcherModel
 }
 
 func NewStatistic(storage *storage.MysqlStorage) Statistic {
 	return Statistic{
-		statisticModel:   models.NewStatisticModel(storage),
-		optionModel:      models.NewOptionModel(storage),
-		sessionDataModel: models.NewSessionDataModel(storage),
-		searcherModel:    models.NewSearcherModel(storage),
+		statisticModel: models.NewStatisticModel(storage),
+		optionModel:    models.NewOptionModel(storage),
+		sessionModel:   models.NewSessionModel(storage),
+		searcherModel:  models.NewSearcherModel(storage),
 	}
 }
 
@@ -127,6 +124,7 @@ func (s Statistic) Add(
 		//
 		//$IsUserAuthorized = (isset($_SESSION["SESS_LAST_USER_ID"]) && intval($_SESSION["SESS_LAST_USER_ID"])>0 && is_object($USER) && $USER- > IsAuthorized()) ? "Y" : "N"
 
+		phpSession.Set("SESS_ADV_ID", "")
 		phpSession.Set("SESS_SEARCHER_ID", "")
 		phpSession.Set("SESS_SEARCHER_NAME", "")
 		phpSession.Set("SESS_SEARCHER_CHECK_ACTIVITY", "")
@@ -173,7 +171,7 @@ func (s Statistic) Add(
 
 			// We did not check for searcher
 			if !phpSession.KeyExists("SESS_SEARCHER_ID") || phpSession.Get("SESS_SEARCHER_ID") == "" {
-				searchers, err := s.searcherModel.FindByUserAgent(userAgent)
+				searchers, err := s.searcherModel.FindSearcherByUserAgent(userAgent)
 				if err != nil {
 					return
 				}
@@ -196,19 +194,19 @@ func (s Statistic) Add(
 
 		// searcher detected
 		if phpSession.GetAsInt("SESS_SEARCHER_ID") > 0 {
-			searchers, err := s.searcherDayModel.ExistByIdAndCurrentDate(phpSession.GetAsInt("SESS_SEARCHER_ID"))
+			searchers, err := s.searcherModel.ExistByIdAndCurrentDate(phpSession.GetAsInt("SESS_SEARCHER_ID"))
 			if err != nil {
 				return
 			}
 			if len(searchers) > 0 {
-				s.searcherDayModel.Update(phpSession.GetAsInt("SESS_SEARCHER_ID"))
+				s.searcherModel.UpdateSearcherDay(phpSession.GetAsInt("SESS_SEARCHER_ID"))
 			} else {
-				s.searcherDayModel.Add(phpSession.GetAsInt("SESS_SEARCHER_ID"))
+				s.searcherModel.AddSearcherDay(phpSession.GetAsInt("SESS_SEARCHER_ID"))
 			}
 
 			// save indexed page if neccessary
 			if phpSession.Get("SESS_SEARCHER_SAVE_STATISTIC") == "Y" {
-				s.searcherHitModel.Add(phpSession.GetAsInt("SESS_SEARCHER_ID"), fullRequestUri, error404, ip, userAgent, phpSession.Get("SESS_SEARCHER_HIT_KEEP_DAYS"), siteId)
+				s.searcherModel.AddSearcherHit(phpSession.GetAsInt("SESS_SEARCHER_ID"), fullRequestUri, error404, ip, userAgent, phpSession.Get("SESS_SEARCHER_HIT_KEEP_DAYS"), siteId)
 				//TODO ?
 				//if error404 == "N" {
 				//CStatistics::Set404("b_stat_searcher_hit", "ID = ".intval($id), array("URL_404" = > "Y"))

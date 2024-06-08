@@ -3,12 +3,18 @@ package models
 import (
 	"bitrix-statistic/internal/entity"
 	"bitrix-statistic/internal/filters"
+	"bitrix-statistic/internal/session"
 	"bitrix-statistic/internal/storage"
+	"encoding/json"
 	"time"
 )
 
 type SessionModel struct {
 	storage storage.Storage
+}
+
+func NewSessionModel(storageImpl storage.Storage) SessionModel {
+	return SessionModel{storage: storageImpl}
 }
 
 func (sm SessionModel) Find(filter filters.Filter) (error, []map[string]interface{}) {
@@ -34,6 +40,21 @@ func (sm SessionModel) DeleteById(id int) {
 	sm.storage.DB().MustExec("DELETE FROM b_stat_session WHERE ID=?", id)
 }
 
-func NewSessionModel(storageImpl storage.Storage) SessionModel {
-	return SessionModel{storage: storageImpl}
+func (sm SessionModel) FindSessionByGuestMd5(guestMd5 string, sessionGcMaxLifeTime string) (session.Session, error) {
+	row := sm.storage.DB().QueryRow(
+		`SELECT session_data FROM session_data
+                    WHERE guest_md5=? and date_last > DATE_ADD(now(), INTERVAL-? SECOND) 
+                    LIMIT 1`,
+		guestMd5, sessionGcMaxLifeTime,
+	)
+	var sessionDb string
+	var sessionData session.Session
+	err := row.Scan(&sessionData)
+	if err != nil {
+		return session.Session{}, err
+	}
+	if err := json.Unmarshal([]byte(sessionDb), &sessionData); err != nil {
+		return session.Session{}, err
+	}
+	return sessionData, nil
 }
