@@ -14,15 +14,16 @@ func (am AdvModel) SetAdv(fullRequestUri string, phpSession *session.Session, re
 	//$err_mess = "File: " . __FILE__ . "<br>Line: ";
 	//stat_session_register("SESS_ADV_ID") // ID рекламной кампании
 	//$DB = CDatabase::GetModuleConnection('statistic');
-
+	var listAdv []int // массив рекламных кампаний
+	var ref1, ref2 string
+	var err error
 	// если это начало сессии
 	if phpSession.KeyExists("SESS_SESSION_ID") == false || phpSession.GetAsInt("SESS_SESSION_ID") <= 0 &&
 		phpSession.KeyExists("SESS_ADV_ID") == false || phpSession.GetAsInt("SESS_ADV_ID") <= 0 {
-		var arrADV []string // массив рекламных кампаний
 
 		// проверяем страницу на которую пришел посетитель
 		//$page_to = __GetFullRequestUri()
-		listAdv, ref1, ref2, err := am.FindByByPage(fullRequestUri, "TO")
+		listAdv, ref1, ref2, err = am.FindByByPage(fullRequestUri, "TO")
 		if err != nil {
 			return err
 		}
@@ -31,18 +32,20 @@ func (am AdvModel) SetAdv(fullRequestUri string, phpSession *session.Session, re
 		if len(referringSite) > 0 {
 			urpParse, _ := url.Parse(referringSite)
 
-			arAdv, s, s2, err := am.FindByByDomainSearcher(urpParse.Host)
+			listAdv, ref1, ref2, err = am.FindByByDomainSearcher(urpParse.Host)
 			if err != nil {
 				return err
 			}
-			// проверяем ссылающиеся страницы
-			$site_name = $PROT.$SN. $PAGE_FROM
-		CAdv::SetByPage($site_name, $arrADV, $ref1, $ref2, "FROM")
+
+			listAdv, ref1, ref2, err = am.FindByByPage(referringSite, "FROM")
+			if err != nil {
+				return err
+			}
 		}
 
 		// если гость пришел с referer1, либо referer2 то
-		if ($_SESSION["referer1"] < > '' || $_SESSION["referer2"] < > '') {
-		CAdv::SetByReferer(trim($_SESSION["referer1"]), trim($_SESSION["referer2"]), $arrADV, $ref1, $ref2)
+		if phpSession.Get("referer1") != "" || phpSession.Get("referer2") != "" {
+			listAdv, ref1, ref2, err = am.FindByReferer(phpSession.Get("referer1"), phpSession.Get("referer2"))
 		}
 		//Handle Openstat if enabled
 		if COption::GetOptionString("statistic", "OPENSTAT_ACTIVE") == = "Y" && $_REQUEST["_openstat"] < > '') {
@@ -149,4 +152,60 @@ func (am AdvModel) FindByByDomainSearcher(host string) ([]int, string, string, e
 		return nil, "", "", err
 	}
 	return listIdAdv, referer1, referer2, nil
+}
+
+func (am AdvModel) FindByReferer(referer1, referer2 string) ([]int, string, string, error) {
+
+   // lookup campaign with referer1 and referer2
+	$referer1 = trim($referer1);
+	$referer1_sql = $referer1 <> '' ? "REFERER1='" . $DB->ForSql($referer1, 255) . "'" : "(REFERER1 is null or " . $DB->Length("REFERER1") . "=0)";
+	$referer2 = trim($referer2);
+	$referer2_sql = $referer2 <> '' ? "REFERER2='" . $DB->ForSql($referer2, 255) . "'" : "(REFERER2 is null or " . $DB->Length("REFERER2") . "=0)";
+
+	sql := `
+	SELECT 	ID, REFERER1, REFERER2
+	FROM adv
+	WHERE  REFERER1=? and REFERER2=?`
+
+	$found = false;
+	while ($wr = $w->Fetch()) {
+		$found = true;
+		// return with parameters
+		$arrADV[] = intval($wr["ID"]);
+		$ref1 = $wr["REFERER1"];
+		$ref2 = $wr["REFERER2"];
+	}
+
+	if (!$found) {
+		$NA = "";
+		if (COption::GetOptionString("statistic", "ADV_NA") == "Y") {
+			$NA_1 = COption::GetOptionString("statistic", "AVD_NA_REFERER1");
+			$NA_2 = COption::GetOptionString("statistic", "AVD_NA_REFERER2");
+			if (($NA_1 <> '' || $NA_2 <> '') && $referer1 == $NA_1 && $referer2 == $NA_2)
+			$NA = "Y";
+		}
+
+		if ((COption::GetOptionString("statistic", "ADV_AUTO_CREATE") == "Y") || ($NA == "Y")) {
+	if (COption::GetOptionString("statistic", "REFERER_CHECK") == "Y") {
+	$bGoodR = preg_match("/^([0-9A-Za-z_:;.,-])*$/", $referer1);
+	if ($bGoodR)
+	$bGoodR = preg_match("/^([0-9A-Za-z_:;.,-])*$/", $referer2);
+	} else {
+	$bGoodR = true;
+	}
+
+	if ($bGoodR) {
+	// add new advertising campaign
+	$arFields = array(
+	"REFERER1" => $referer1 <> '' ? "'" . $DB->ForSql($referer1, 255) . "'" : "null",
+	"REFERER2" => $referer2 <> '' ? "'" . $DB->ForSql($referer2, 255) . "'" : "null",
+	"DATE_FIRST" => $DB->GetNowFunction(),
+	"DATE_LAST" => $DB->GetNowFunction(),
+	);
+	$arrADV[] = $DB->Insert("b_stat_adv", $arFields, $err_mess . __LINE__);
+	$ref1 = $referer1;
+	$ref2 = $referer2;
+	}
+	}
+}
 }
