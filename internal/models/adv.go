@@ -3,13 +3,14 @@ package models
 import (
 	"bitrix-statistic/internal/session"
 	"bitrix-statistic/internal/storage"
+	"net/url"
 )
 
 type AdvModel struct {
 	storage storage.Storage
 }
 
-func (am AdvModel) SetAdv(fullRequestUri string, phpSession *session.Session) {
+func (am AdvModel) SetAdv(fullRequestUri string, phpSession *session.Session, referringSite string) error {
 	//$err_mess = "File: " . __FILE__ . "<br>Line: ";
 	//stat_session_register("SESS_ADV_ID") // ID рекламной кампании
 	//$DB = CDatabase::GetModuleConnection('statistic');
@@ -21,40 +22,22 @@ func (am AdvModel) SetAdv(fullRequestUri string, phpSession *session.Session) {
 
 		// проверяем страницу на которую пришел посетитель
 		//$page_to = __GetFullRequestUri()
-		page, ref1, ref2, err := am.FindByByPage(fullRequestUri, "TO")
+		listAdv, ref1, ref2, err := am.FindByByPage(fullRequestUri, "TO")
 		if err != nil {
-			return
+			return err
 		}
 
 		// если посетитель пришел с ссылающегося сайта то
-		if __GetReferringSite($PROT, $SN, $SN_WithoutPort, $PAGE_FROM)) {
-		$site_name = $PROT.$SN;
-		// проверяем поисковики
-		$strSql = "
-		SELECT
-		A.REFERER1,
-		A.REFERER2,
-		S.ADV_ID
-		FROM
-		b_stat_adv A,
-		b_stat_adv_searcher S,
-		b_stat_searcher_params P
-		WHERE
-		S.ADV_ID = A.ID
-		and P.SEARCHER_ID = S.SEARCHER_ID
-		and upper('" . $DB->ForSql(trim($site_name), 2000) . "')
-		like " . $DB->Concat("'%'", "upper(P.DOMAIN)", "'%'") . "
-		";
-		$w = $DB->Query($strSql, false, $err_mess.__LINE__);
-		while ($wr = $w->Fetch()) {
-		$ref1 = $wr["REFERER1"];
-		$ref2 = $wr["REFERER2"];
-		$arrADV[] = intval($wr["ADV_ID"]);
-		}
+		if len(referringSite) > 0 {
+			urpParse, _ := url.Parse(referringSite)
 
-		// проверяем ссылающиеся страницы
-		$site_name = $PROT.$SN. $PAGE_FROM;
-		CAdv::SetByPage($site_name, $arrADV, $ref1, $ref2, "FROM");
+			arAdv, s, s2, err := am.FindByByDomainSearcher(urpParse.Host)
+			if err != nil {
+				return err
+			}
+			// проверяем ссылающиеся страницы
+			$site_name = $PROT.$SN. $PAGE_FROM
+		CAdv::SetByPage($site_name, $arrADV, $ref1, $ref2, "FROM")
 		}
 
 		// если гость пришел с referer1, либо referer2 то
@@ -102,6 +85,7 @@ func (am AdvModel) SetAdv(fullRequestUri string, phpSession *session.Session) {
 	}
 	if intval($_SESSION["SESS_ADV_ID"]) > 0) $_SESSION["SESS_LAST_ADV_ID"] = $_SESSION["SESS_ADV_ID"]
 	$_SESSION["SESS_LAST_ADV_ID"] = intval($_SESSION["SESS_LAST_ADV_ID"] ?? 0)
+	return nil
 }
 
 func (am AdvModel) FindByByPage(page, cType string) ([]int, string, string, error) {
@@ -116,21 +100,53 @@ func (am AdvModel) FindByByPage(page, cType string) ([]int, string, string, erro
 		return nil, "", "", err
 	}
 
-	var arrIdAdv []int
+	var listIdAdv []int
+	var referer1 string
+	var referer2 string
 	for rows.Next() {
 		var id int
-		var referer1 string
-		var referer2 string
 		err = rows.Scan(&id, &referer1, &referer2)
 		if err != nil {
 			return nil, "", "", err
 		}
-		arrIdAdv = append(arrIdAdv, id)
+		listIdAdv = append(listIdAdv, id)
 	}
 	err = rows.Err()
 	if err != nil {
 		return nil, "", "", err
 	}
 
-	return arrIdAdv, page, cType, nil
+	return listIdAdv, referer1, referer2, nil
+}
+
+func (am AdvModel) FindByByDomainSearcher(host string) ([]int, string, string, error) {
+	// проверяем поисковики
+	sql := ` SELECT A.referer1, A.referer2, S.ADV_ID
+			         FROM 	adv A,
+				            adv_searcher S,
+				            searcher_params P
+			         WHERE
+			                S.ADV_ID = A.ID and P.SEARCHER_ID = S.SEARCHER_ID and upper(?) like concat("'%'",upper(P.DOMAIN),"'%'")`
+
+	rows, err := am.storage.DB().Query(sql, host)
+	if err != nil {
+		return nil, "", "", err
+	}
+
+	var listIdAdv []int
+	var referer1 string
+	var referer2 string
+	for rows.Next() {
+		var id int
+		err = rows.Scan(&id, &referer1, &referer2)
+		if err != nil {
+			return nil, "", "", err
+		}
+		listIdAdv = append(listIdAdv, id)
+	}
+	err = rows.Err()
+	if err != nil {
+		return nil, "", "", err
+	}
+	return listIdAdv, referer1, referer2, nil
 }
