@@ -3,9 +3,9 @@ package models
 import (
 	"bitrix-statistic/internal/session"
 	"bitrix-statistic/internal/storage"
-	"encoding/base64"
 	"net/url"
-	"strings"
+	"regexp"
+	"strconv"
 )
 
 type AdvModel struct {
@@ -83,23 +83,37 @@ func (am AdvModel) SetAdv(phpSession *session.Session, fullRequestUri, openstat,
 
 		// если было выявлено более одной рекламной кампании подходящей под условия то
 		if len(listAdv) > 1 {
-			// выберем рекламную кампанию по наивысшему приоритету (либо по наивысшему ID)
-			$str = implode(",", $arrADV)
-			$strSql = "SELECT ID, REFERER1, REFERER2 FROM b_stat_adv WHERE ID in ($str) ORDER BY PRIORITY desc, ID desc"
-			$z = $DB- > Query($strSql, false, $err_mess.__LINE__)
-			$zr = $z- > Fetch()
-			$_SESSION["SESS_ADV_ID"] = intval($zr["ID"])
-			$_SESSION["referer1"] = $zr["REFERER1"]
-			$_SESSION["referer2"] = $zr["REFERER2"]
+			strSql := `SELECT id, referer1, referer2 FROM adv WHERE id in (?) ORDER BY priority desc, id desc`
+			rows, err := am.storage.DB().Query(strSql, listAdv)
+			if err != nil {
+				return nil
+			}
+			var referer1 string
+			var referer2 string
+			for rows.Next() {
+				var id int
+				err = rows.Scan(&id, &referer1, &referer2)
+				if err != nil {
+					return nil
+				}
+				phpSession.Set("SESS_ADV_ID", strconv.Itoa(id))
+				phpSession.Set("referer1", referer1)
+				phpSession.Set("referer2", referer2)
+			}
+			err = rows.Err()
+			if err != nil {
+				return nil
+			}
 		} else {
-			$value = reset($arrADV)
-			$_SESSION["SESS_ADV_ID"] = intval($value)
-			$_SESSION["referer1"] = $ref1
-			$_SESSION["referer2"] = $ref2
+			phpSession.Set("SESS_ADV_ID", "")
+			phpSession.Set("referer1", ref1)
+			phpSession.Set("referer2", ref2)
 		}
 	}
-	if intval($_SESSION["SESS_ADV_ID"]) > 0) $_SESSION["SESS_LAST_ADV_ID"] = $_SESSION["SESS_ADV_ID"]
-	$_SESSION["SESS_LAST_ADV_ID"] = intval($_SESSION["SESS_LAST_ADV_ID"] ?? 0)
+	if phpSession.GetAsInt("SESS_ADV_ID") > 0 {
+		phpSession.Set("SESS_LAST_ADV_ID", phpSession.Get("SESS_ADV_ID"))
+		phpSession.Set("SESS_LAST_ADV_ID", strconv.Itoa(phpSession.GetAsInt("SESS_LAST_ADV_ID")))
+	}
 	return nil
 }
 
@@ -109,7 +123,7 @@ func (am AdvModel) FindByByPage(page, cType string) ([]int, string, string, erro
 		FROM adv A
 		INNER JOIN adv_page AP ON (AP.adv_id = A.id and AP.c_type='?')
 		WHERE length(AP.page) > 0
-		and ? like concat("'%'", AP.page, "'%'")`
+		and ? like concat('%', AP.page, '%')`
 	rows, err := am.storage.DB().Query(strSql, page, cType)
 	if err != nil {
 		return nil, "", "", err
@@ -167,59 +181,75 @@ func (am AdvModel) FindByByDomainSearcher(host string) ([]int, string, string, e
 }
 
 func (am AdvModel) FindByReferer(referer1, referer2 string) ([]int, string, string, error) {
-
-	// lookup campaign with referer1 and referer2
-	$referer1 = trim($referer1)
-	$referer1_sql = $referer1 < > '' ? "REFERER1='". $DB- > ForSql($referer1, 255)."'" : "(REFERER1 is null or ". $DB- > Length("REFERER1").
-	"=0)"
-	$referer2 = trim($referer2)
-	$referer2_sql = $referer2 < > '' ? "REFERER2='". $DB- > ForSql($referer2, 255)."'" : "(REFERER2 is null or ". $DB- > Length("REFERER2").
-	"=0)"
-
 	sql := `
 	SELECT 	ID, REFERER1, REFERER2
 	FROM adv
 	WHERE  REFERER1=? and REFERER2=?`
 
-	$found = false
-	while($wr = $w- > Fetch()) {
-		$found = true
-		// return with parameters
-		$arrADV[] = intval($wr["ID"])
-		$ref1 = $wr["REFERER1"]
-		$ref2 = $wr["REFERER2"]
+	found := false
+	rows, err := am.storage.DB().Query(sql, referer1, referer2)
+	if err != nil {
+		return nil, "", "", err
 	}
 
-	if !$found) {
-		$NA = ""
-		if COption::GetOptionString("statistic", "ADV_NA") == "Y") {
-			$NA_1 = COption::GetOptionString("statistic", "AVD_NA_REFERER1")
-			$NA_2 = COption::GetOptionString("statistic", "AVD_NA_REFERER2")
-			if ($NA_1 < > '' || $NA_2 < > '') && $referer1 == $NA_1 && $referer2 == $NA_2)
-			$NA = "Y"
+	var listIdAdv []int
+	for rows.Next() {
+		found = true
+		var id int
+		err = rows.Scan(&id, &referer1, &referer2)
+		if err != nil {
+			return nil, "", "", err
+		}
+		listIdAdv = append(listIdAdv, id)
+	}
+	err = rows.Err()
+	if err != nil {
+		return nil, "", "", err
+	}
+	na := ""
+	if !found {
+		if am.optionModel.Get("ADV_NA") == "Y" {
+			Na1 := am.optionModel.Get("AVD_NA_REFERER1")
+			Na2 := am.optionModel.Get("AVD_NA_REFERER2")
+			if (Na1 != "" || Na2 != "") && referer1 == Na1 && referer2 == Na2 {
+				na = "Y"
+			}
+
 		}
 
-		if COption::GetOptionString("statistic", "ADV_AUTO_CREATE") == "Y") || ($NA == "Y")) {
-if (COption::GetOptionString("statistic", "REFERER_CHECK") == "Y") {
-$bGoodR = preg_match("/^([0-9A-Za-z_:;.,-])*$/", $referer1);
-if ($bGoodR)
-$bGoodR = preg_match("/^([0-9A-Za-z_:;.,-])*$/", $referer2);
-} else {
-$bGoodR = true;
+		if am.optionModel.Get("ADV_AUTO_CREATE") == "Y" || (na == "Y") {
+			var bGoodR bool
+			if am.optionModel.Get("REFERER_CHECK") == "Y" {
+				bGoodR, err = regexp.MatchString("/^([0-9A-Za-z_:;.,-])*$/", referer1)
+				if err != nil {
+					return nil, "", "", err
+				}
+				if bGoodR {
+					bGoodR, err = regexp.MatchString("/^([0-9A-Za-z_:;.,-])*$/", referer2)
+				}
+				if err != nil {
+					return nil, "", "", err
+				}
+			} else {
+				bGoodR = true
+			}
+
+			if bGoodR {
+				err := am.AddAdv(referer1, referer2)
+				if err != nil {
+					return nil, "", "", err
+				}
+			}
+		}
+	}
+	return listIdAdv, referer1, referer2, nil
 }
 
-if ($bGoodR) {
-// add new advertising campaign
-$arFields = array(
-"REFERER1" = > $referer1 <> '' ? "'".$DB->ForSql($referer1, 255)."'": "null",
-"REFERER2" = > $referer2 <> '' ? "'".$DB->ForSql($referer2, 255)."'": "null",
-"DATE_FIRST" = > $DB->GetNowFunction(),
-"DATE_LAST" = > $DB->GetNowFunction(),
-);
-$arrADV[] = $DB->Insert("b_stat_adv", $arFields, $err_mess.__LINE__);
-$ref1 = $referer1;
-$ref2 = $referer2;
-}
-}
-}
+func (am AdvModel) AddAdv(referer1 string, referer2 string) error {
+	_, err := am.storage.DB().MustExec(`INSERT INTO adv(referer1, referer2, date_first, date_last)
+		VALUES (?, ?, now(), now())`, referer1, referer2).LastInsertId()
+	if err != nil {
+		return err
+	}
+	return nil
 }

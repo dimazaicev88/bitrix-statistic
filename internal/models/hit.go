@@ -47,7 +47,7 @@ func (hm HitModel) DeleteById(id int) {
 }
 
 func (hm HitModel) AddHit(hit entity.Hit) error {
-	_, err := hm.storage.DB().MustExec("INSERT INTO b_stat_hit(`SessionId`, `DATE_HIT`, `GuestId`, `NewGuest`, `USER_ID`, `USER_AUTH`, `Url`, `Url404`, `URL_FROM`, `Ip`, `METHOD`, `COOKIES`, `UserAgent`, `StopListId`, `CountryId`, `CityId`, `SiteId`)"+
+	_, err := hm.storage.DB().MustExec("INSERT INTO hit(`SessionId`, `DATE_HIT`, `GuestId`, `NewGuest`, `USER_ID`, `USER_AUTH`, `Url`, `Url404`, `URL_FROM`, `Ip`, `METHOD`, `COOKIES`, `UserAgent`, `StopListId`, `CountryId`, `CityId`, `SiteId`)"+
 		"VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?,?)",
 		hit.SessionId, hit.DateHit, hit.GuestId, hit.NewGuest, hit.UserId, hit.UserAuth, hit.Url, hit.Url404, hit.UrlFrom, hit.Method, hit.Cookies, hit.UserAgent, hit.StopListId, hit.CountryId, hit.CityId, hit.SiteId).LastInsertId()
 	if err != nil {

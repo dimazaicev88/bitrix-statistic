@@ -18,5 +18,15 @@ func (cm CityModel) Find(filter filters.Filter) (error, []map[string]interface{}
 }
 
 func (cm CityModel) DeleteById(id int) {
-	cm.storage.DB().MustExec("DELETE FROM b_stat_city WHERE ID=?", id)
+	cm.storage.DB().MustExec("DELETE FROM city WHERE id=?", id)
+}
+
+func (cm CityModel) GetCountryCode() string {
+	//TODO implement
+	return ""
+}
+
+func (cm CityModel) GetCityID() string {
+	//TODO implement
+	return ""
 }
