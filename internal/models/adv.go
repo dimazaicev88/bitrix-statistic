@@ -1,6 +1,7 @@
 package models
 
 import (
+	"bitrix-statistic/internal/entity"
 	"bitrix-statistic/internal/session"
 	"bitrix-statistic/internal/storage"
 	"net/url"
@@ -122,8 +123,7 @@ func (am AdvModel) FindByByPage(page, cType string) ([]int, string, string, erro
 		SELECT A.id, A.referer1, A.referer2
 		FROM adv A
 		INNER JOIN adv_page AP ON (AP.adv_id = A.id and AP.c_type='?')
-		WHERE length(AP.page) > 0
-		and ? like concat('%', AP.page, '%')`
+		WHERE length(AP.page) > 0 and ? like concat('%', AP.page, '%')`
 	rows, err := am.storage.DB().Query(strSql, page, cType)
 	if err != nil {
 		return nil, "", "", err
@@ -151,11 +151,10 @@ func (am AdvModel) FindByByPage(page, cType string) ([]int, string, string, erro
 func (am AdvModel) FindByByDomainSearcher(host string) ([]int, string, string, error) {
 	// проверяем поисковики
 	sql := ` SELECT A.referer1, A.referer2, S.ADV_ID
-			         FROM 	adv A,
-				            adv_searcher S,
-				            searcher_params P
-			         WHERE
-			                S.ADV_ID = A.ID and P.SEARCHER_ID = S.SEARCHER_ID and upper(?) like concat("'%'",upper(P.DOMAIN),"'%'")`
+			 FROM 	adv A,
+			        adv_searcher S,
+			        searcher_params P
+			 WHERE  S.ADV_ID = A.ID and P.SEARCHER_ID = S.SEARCHER_ID and upper(?) like concat("'%'",upper(P.DOMAIN),"'%'")`
 
 	rows, err := am.storage.DB().Query(sql, host)
 	if err != nil {
@@ -181,10 +180,9 @@ func (am AdvModel) FindByByDomainSearcher(host string) ([]int, string, string, e
 }
 
 func (am AdvModel) FindByReferer(referer1, referer2 string) ([]int, string, string, error) {
-	sql := `
-	SELECT 	ID, REFERER1, REFERER2
-	FROM adv
-	WHERE  REFERER1=? and REFERER2=?`
+	sql := `SELECT 	ID, REFERER1, REFERER2
+			FROM adv
+			WHERE  REFERER1=? and REFERER2=?`
 
 	found := false
 	rows, err := am.storage.DB().Query(sql, referer1, referer2)
@@ -252,4 +250,14 @@ func (am AdvModel) AddAdv(referer1 string, referer2 string) error {
 		return err
 	}
 	return nil
+}
+
+func (am AdvModel) FindById(id int) (entity.Adv, error) {
+	var adv entity.Adv
+	sql := `SELECT 	* FROM adv WHERE  id=?`
+	err := am.storage.DB().Get(&adv, sql, id)
+	if err != nil {
+		return entity.Adv{}, err
+	}
+	return adv, nil
 }

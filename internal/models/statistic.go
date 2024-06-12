@@ -1,6 +1,7 @@
 package models
 
 import (
+	"bitrix-statistic/internal/entity"
 	"bitrix-statistic/internal/session"
 	"bitrix-statistic/internal/storage"
 	"strconv"
@@ -10,6 +11,7 @@ type StatisticModel struct {
 	storage     storage.Storage
 	guestModel  *GuestModel
 	optionModel *OptionModel
+	advModel    *AdvModel
 }
 
 func NewStatisticModel(storage storage.Storage) StatisticModel {
@@ -17,10 +19,11 @@ func NewStatisticModel(storage storage.Storage) StatisticModel {
 		storage:     storage,
 		guestModel:  NewGuestModel(storage),
 		optionModel: NewOptionModel(storage),
+		advModel:    NewAdvModel(storage, NewOptionModel(storage)),
 	}
 }
 
-func (stm StatisticModel) SetGuest(phpSession *session.Session, siteId string, error404 bool, cookieGuestId int, cookieLastVisit, cookieAdv int) (string, string, error) {
+func (stm StatisticModel) SetGuest(phpSession *session.Session, siteId string, error404 bool, cookieGuestId int, cookieLastVisit, cookieAdvId int) (string, string, error) {
 	phpSession.Set("SESS_GUEST_ID", "")        // ID гостя
 	phpSession.Set("SESS_GUEST_NEW", "")       // флаг "новый гость"
 	phpSession.Set("SESS_LAST_USER_ID", "")    // под кем гость был авторизован в последний раз
@@ -59,7 +62,7 @@ func (stm StatisticModel) SetGuest(phpSession *session.Session, siteId string, e
 				phpSession.Set("SESS_GUEST_NEW", "N")
 				// получаем дату последнего посещения сайта данным гостем
 				// если формат корректный то
-				if len(cookieLastVisit) > 0 {
+				if cookieLastVisit > 0 {
 					// получаем дату последней инсталляции таблиц модуля
 					dateInstall := stm.optionModel.GetWithDefault("INSTALL_STATISTIC_TABLES", "NOT_FOUND")
 					if dateInstall == "NOT_FOUND" {
@@ -115,8 +118,9 @@ func (stm StatisticModel) SetGuest(phpSession *session.Session, siteId string, e
 	}
 	// если есть необходимость то
 	if phpSession.GetAsInt("SESS_GUEST_ID") <= 0 {
+		stm.guestModel.Add()
 		// вставляем гостя в базу
-			"FIRST_DATE" = > $DB- > GetNowFunction(),
+		"FIRST_DATE" = > $DB- > GetNowFunction(),
 			"FIRST_URL_FROM" = > "'".$DB- > ForSql($_SERVER["HTTP_REFERER"] ?? '', 2000)."'",
 			"FIRST_URL_TO" = > "'".$DB- > ForSql(__GetFullRequestUri(), 2000).
 		"'",
@@ -129,29 +133,30 @@ func (stm StatisticModel) SetGuest(phpSession *session.Session, siteId string, e
 		// если мы восстанавливаем гостя по данным записанным в его cookie то
 		if repairCookieGuest == "Y" {
 			// если гость не считается новым то добавим ему одну сессию
-			if phpSession.Get("SESS_GUEST_NEW") == "N"{
+			if phpSession.Get("SESS_GUEST_NEW") == "N" {
 				$arFields["SESSIONS"] = 1
 			}
-			if cookieAdv > 0 {
-				// проверяем есть ли такая кампания в базе
-				sql := "SELECT REFERER1, REFERER2 FROM b_stat_adv WHERE ID='".$CookieAdv.
-				"'"
-				$w = $DB- > Query($strSql, false, $err_mess.__LINE__)
+			if cookieAdvId > 0 {
+				adv, err := stm.advModel.FindById(cookieAdvId)
+				if err != nil {
+					return "", "", err
+				}
 				// если в базе есть такая рекламная кампания то
-				if ($wr = $w- > Fetch()) {
+				if (adv != entity.Adv{}) {
 					// считаем что гость вернулся по данной рекламной кампании
-					$_SESSION["SESS_LAST_ADV_ID"] = $CookieAdv
+					phpSession.Set("SESS_LAST_ADV_ID", strconv.Itoa(cookieAdvId))
+
 					// если последний вход записанный в cookie
 					// не был прямым входом по рекламной кампании то
-					$arFields["FIRST_ADV_ID"] = $CookieAdv
-					$arFields["FIRST_REFERER1"] = "'".$DB- > ForSql($wr["REFERER1"], 255)."'"
-					$arFields["FIRST_REFERER2"] = "'".$DB- > ForSql($wr["REFERER2"], 255)."'"
-					$arFields["LAST_ADV_ID"] = $CookieAdv
-					$arFields["LAST_ADV_BACK"] = "'Y'"
-					$arFields["LAST_REFERER1"] = "'".$DB- > ForSql($wr["REFERER1"], 255)."'"
-					$arFields["LAST_REFERER2"] = "'".$DB- > ForSql($wr["REFERER2"], 255)."'"
-					$lastReferer1 = $wr["REFERER1"]
-					$lastReferer2 = $wr["REFERER2"]
+					phpSession.Set("FIRST_ADV_ID", strconv.Itoa(cookieAdvId))
+					phpSession.Set("FIRST_REFERER1", adv.Referer1)
+					phpSession.Set("FIRST_REFERER2", adv.Referer2)
+					phpSession.Set("LAST_ADV_ID", strconv.Itoa(cookieAdvId))
+					phpSession.Set("LAST_ADV_BACK", "Y")
+					phpSession.Set("LAST_REFERER1", adv.Referer1)
+					phpSession.Set("LAST_REFERER2", adv.Referer2)
+					lastReferer1 = adv.Referer1
+					lastReferer2 = adv.Referer2
 				}
 			}
 		}
@@ -161,21 +166,22 @@ func (stm StatisticModel) SetGuest(phpSession *session.Session, siteId string, e
 		}
 	}
 
-	// если гость авторизовался то
-	if is_object($USER) && intval($USER- > GetID()) > 0) {
-		// запоминаем кто он
-		$_SESSION["SESS_LAST_USER_ID"] = intval($USER- > GetID())
-	}
-	if intval($_SESSION["SESS_LAST_USER_ID"] ?? 0) <= 0) {
-		$_SESSION["SESS_LAST_USER_ID"] = ""
-	}
-
-	if ($_SESSION["SESS_GUEST_ID"] > 0) {
-		// сохраним ID посетителя в куках
-		$GLOBALS["APPLICATION"]- > set_cookie("GUEST_ID", $_SESSION["SESS_GUEST_ID"])
-	}
-	// сохраним в cookie дату последнего посещения данным гостем сайта
-	$GLOBALS["APPLICATION"]- > set_cookie("LAST_VISIT", date("d.m.Y H:i:s", time()))
+	//TODO вынести в phpCookie
+	//// если гость авторизовался то
+	//if is_object($USER) && intval($USER- > GetID()) > 0) {
+	//	// запоминаем кто он
+	//	$_SESSION["SESS_LAST_USER_ID"] = intval($USER- > GetID())
+	//}
+	//if intval($_SESSION["SESS_LAST_USER_ID"] ?? 0) <= 0) {
+	//	$_SESSION["SESS_LAST_USER_ID"] = ""
+	//}
+	//
+	//if ($_SESSION["SESS_GUEST_ID"] > 0) {
+	//	// сохраним ID посетителя в куках
+	//	$GLOBALS["APPLICATION"]- > set_cookie("GUEST_ID", $_SESSION["SESS_GUEST_ID"])
+	//}
+	//// сохраним в cookie дату последнего посещения данным гостем сайта
+	//$GLOBALS["APPLICATION"]- > set_cookie("LAST_VISIT", date("d.m.Y H:i:s", time()))
 
 	return lastReferer1, lastReferer2, nil
 }
