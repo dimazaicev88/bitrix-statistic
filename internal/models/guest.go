@@ -50,7 +50,6 @@ func (gm GuestModel) Add(guest entity.Guest) {
 func (gm GuestModel) AddGuest(statData entity.StatData) {
 
 	// если сессия только открылась
-
 	if len(statData.Token) == 0 {
 
 	}
