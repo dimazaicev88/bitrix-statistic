@@ -23,7 +23,7 @@ func NewStatisticModel(storage storage.Storage) StatisticModel {
 	}
 }
 
-func (stm StatisticModel) SetGuest(phpSession *session.Session, siteId, referrer, fullRequestUrl string, error404 string, cookieGuestId int, cookieLastVisit, cookieAdvId int) (string, string, error) {
+func (stm StatisticModel) SetGuest(phpSession *session.Session, siteId, referrer, fullRequestUrl, error404 string, cookieGuestId, cookieLastVisit, cookieAdvId int) (string, string, error) {
 	phpSession.Set("SESS_GUEST_ID", "")        // ID гостя
 	phpSession.Set("SESS_GUEST_NEW", "")       // флаг "новый гость"
 	phpSession.Set("SESS_LAST_USER_ID", "")    // под кем гость был авторизован в последний раз
@@ -130,7 +130,7 @@ func (stm StatisticModel) SetGuest(phpSession *session.Session, siteId, referrer
 		}
 		// если мы восстанавливаем гостя по данным записанным в его cookie то
 		if repairCookieGuest == "Y" {
-			// если гость не считается новым то добавим ему одну сессию
+			// если гость не считается новым, то добавим ему одну сессию
 			if phpSession.Get("SESS_GUEST_NEW") == "N" {
 				guestData.Sessions = 1
 			}
@@ -183,4 +183,8 @@ func (stm StatisticModel) SetGuest(phpSession *session.Session, siteId, referrer
 	//$GLOBALS["APPLICATION"]- > set_cookie("LAST_VISIT", date("d.m.Y H:i:s", time()))
 
 	return lastReferer1, lastReferer2, nil
+}
+
+func (stm StatisticModel) SetNewDay() {
+
 }

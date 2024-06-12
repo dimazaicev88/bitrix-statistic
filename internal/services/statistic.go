@@ -8,6 +8,7 @@ import (
 	"bitrix-statistic/utils"
 	"github.com/codingsince1985/checksum"
 	"golang.org/x/exp/slices"
+	"net/netip"
 	"regexp"
 	"strconv"
 	"strings"
@@ -94,6 +95,8 @@ func (s Statistic) Add(
 	phpSession *session.Session, stopListId int,
 	sessionGcMaxLifeTime string,
 	userAgent, fullRequestUri, ip, siteId, openstat, referringSite string,
+	cookieLastVisit, cookieAdvId int,
+	sessionId string, //\Bitrix\Main\Application::getInstance()->getKernelSession()->getId()
 
 ) {
 	advNa := s.optionModel.Get("ADV_NA")
@@ -265,8 +268,11 @@ func (s Statistic) Add(
 			/************************************************
 					Guest ID detection
 			************************************************/
-
-			$arGuest = CStatistics::Set_Guest()
+			var ref1, ref2 string
+			ref1, ref2, err = s.statisticModel.SetGuest(phpSession, siteId, referringSite, fullRequestUri, error404, cookieGuestId, cookieLastVisit, cookieAdvId)
+			if err != nil {
+				return
+			}
 
 			// Setup default advertising campaign
 			if advNa == "Y" && phpSession.GetAsInt("SESS_ADV_ID") <= 0 && phpSession.GetAsInt("SESS_LAST_ADV_ID") <= 0 {
@@ -276,384 +282,397 @@ func (s Statistic) Add(
 				if err != nil {
 					return
 				}
-				$arGuest = CStatistics::Set_Guest()
+				ref1, ref2, err = s.statisticModel.SetGuest(phpSession, siteId, referringSite, fullRequestUri, error404, cookieGuestId, cookieLastVisit, cookieAdvId)
+				if err != nil {
+					return
+				}
 			}
 
 			/************************************************
 					Session section
 			************************************************/
 
-			$_SESSION["SESS_SESSION_ID"] = intval($_SESSION["SESS_SESSION_ID"] ?? 0)
+			//$_SESSION["SESS_SESSION_ID"] = intval($_SESSION["SESS_SESSION_ID"] ?? 0)
 
 			//phpSession already exists
-			if ($_SESSION["SESS_SESSION_ID"] > 0)
-			{
-			$SESSION_NEW = "N";
-			// update
-			$arFields = Array(
-			"USER_ID" = > intval($_SESSION["SESS_LAST_USER_ID"]),
-			"USER_AUTH" = > "'".$IS_USER_AUTHORIZED."'",
-			"USER_AGENT" = > "'".$DB->ForSql($_SERVER["HTTP_USER_AGENT"], 500)."'",
-			"DATE_LAST" = > $DB_now,
-			"IP_LAST" = > "'".$DB->ForSql($_SERVER["REMOTE_ADDR"], 15)."'",
-			"IP_LAST_NUMBER" = > $REMOTE_ADDR_NUMBER,
-			"HITS" => "HITS + 1",
-			);
-			$rows = $DB->Update("b_stat_session", $arFields, "WHERE ID='".$_SESSION["SESS_SESSION_ID"]."'", "File: ".__FILE__."<br>Line: ".__LINE__);
-			// was cleaned up
-			if (intval($rows)<=0)
-			{
-			// store as new
-			$_SESSION["SESS_SESSION_ID"] = 0;
-			if ($ADV_NA=="Y" && intval($_SESSION["SESS_ADV_ID"])<=0 && intval($_SESSION["SESS_LAST_ADV_ID"])<=0)
-			{
-			$_SESSION["referer1"] = COption::GetOptionString("statistic", "AVD_NA_REFERER1");
-			$_SESSION["referer2"] = COption::GetOptionString("statistic", "AVD_NA_REFERER2");
-			}
-			CStatistics::Set_Adv();
-			$arGuest = CStatistics::Set_Guest();
-			}
+			if phpSession.GetAsInt("SESS_SESSION_ID") > 0 {
+				SESSION_NEW := "N"
+				// update
+				$arFields = Array(
+					"USER_ID" = > intval($_SESSION["SESS_LAST_USER_ID"]),
+				"USER_AUTH" = > "'".$IS_USER_AUTHORIZED.
+				"'",
+					"USER_AGENT" = > "'".$DB- > ForSql($_SERVER["HTTP_USER_AGENT"], 500)."'",
+					"DATE_LAST" = > $DB_now,
+					"IP_LAST" = > "'".$DB- > ForSql($_SERVER["REMOTE_ADDR"], 15)."'",
+					"IP_LAST_NUMBER" = > $REMOTE_ADDR_NUMBER,
+					"HITS" => "HITS + 1",
+			)
+
+				s.sessionModel.UpdateHits(phpSession.Get("SESS_LAST_USER_ID"), isUserAuthorized, userAgent, ip)
+
+				$rows = $DB- > Update("b_stat_session", $arFields, "WHERE ID='".$_SESSION["SESS_SESSION_ID"].
+				"'", "File: ".__FILE__.
+				"<br>Line: ".__LINE__)
+				// was cleaned up
+				if intval($rows)<=0)
+				{
+				// store as new
+				phpSession.Set("SESS_SESSION_ID", "0")
+				if (ADV_NA=="Y" && intval($_SESSION["SESS_ADV_ID"])<=0 && intval($_SESSION["SESS_LAST_ADV_ID"])<=0)
+				{
+				$_SESSION["referer1"] = COption::GetOptionString("statistic", "AVD_NA_REFERER1");
+				$_SESSION["referer2"] = COption::GetOptionString("statistic", "AVD_NA_REFERER2");
+				}
+				CStatistics::Set_Adv();
+				$arGuest = CStatistics::Set_Guest();
+				}
 			}
 
 			// it is new phpSession
-			if ($_SESSION["SESS_SESSION_ID"] <= 0)
-			{
-			$SESSION_NEW = "Y";
-			$sessionId = \Bitrix\Main\Application::getInstance()->getKernelSession()->getId();
-			// save phpSession data
-			$arFields = Array(
-			"GUEST_ID" = > intval($_SESSION["SESS_GUEST_ID"]),
-			"NEW_GUEST" = > "'".$DB->ForSql($_SESSION["SESS_GUEST_NEW"])."'",
-			"USER_ID" = > intval($_SESSION["SESS_LAST_USER_ID"]),
-			"USER_AUTH"        = > "'".$DB->ForSql($IS_USER_AUTHORIZED)."'",
-			"URL_FROM" = > "'".$DB->ForSql($_SERVER["HTTP_REFERER"], 2000)."'",
-			"URL_TO" => "'".$DB->ForSql($CURRENT_URI, 2000)."'",
-			"URL_TO_404" = > "'".$DB->ForSql($ERROR_404)."'",
-			"URL_LAST" = > "'".$DB->ForSql($CURRENT_URI, 2000)."'",
-			"URL_LAST_404" = > "'".$DB->ForSql($ERROR_404)."'",
-			"USER_AGENT" = > "'".$DB->ForSql($_SERVER["HTTP_USER_AGENT"], 500)."'",
-			"DATE_STAT" = > $DB_now_date,
-			"DATE_FIRST" => $DB_now,
-			"DATE_LAST" = > $DB_now,
-			"IP_FIRST" = > "'".$DB->ForSql($_SERVER["REMOTE_ADDR"], 15)."'",
-			"IP_FIRST_NUMBER" = > "'".$DB->ForSql($REMOTE_ADDR_NUMBER)."'",
-			"IP_LAST"        = > "'".$DB->ForSql($_SERVER["REMOTE_ADDR"], 15)."'",
-			"IP_LAST_NUMBER" = > "'".$DB->ForSql($REMOTE_ADDR_NUMBER)."'",
-			"PHPSESSID" => "'".$DB->ForSql($sessionId, 255)."'",
-			"STOP_LIST_ID" = > "'".$DB->ForSql($STOP_LIST_ID)."'",
-			"COUNTRY_ID" = > "'".$DB->ForSql($_SESSION["SESS_COUNTRY_ID"], 2)."'",
-			"CITY_ID" = > $_SESSION["SESS_CITY_ID"] > 0? intval($_SESSION["SESS_CITY_ID"]): "null",
-			"ADV_BACK" => "null",
-			"FIRST_SITE_ID" = > $sql_site,
-			"LAST_SITE_ID"        = > $sql_site,
-			"HITS" = > 1,
-			);
+			if phpSession.GetAsInt("SESS_SESSION_ID") <= 0 {
+				SESSION_NEW := "Y"
 
-			// campaign?
-			if (intval($_SESSION["SESS_ADV_ID"])>0)
-			{
-			$arFields["ADV_ID"] = intval($_SESSION["SESS_ADV_ID"]);
-			$arFields["ADV_BACK"] = "'N'";
-			$arFields["REFERER1"] = "'".$DB->ForSql($_SESSION["referer1"], 255)."'";
-			$arFields["REFERER2"] = "'".$DB->ForSql($_SESSION["referer2"], 255)."'";
-			$arFields["REFERER3"] = "'".$DB->ForSql($_SESSION["referer3"], 255)."'";
-			}
-			elseif (intval($_SESSION["SESS_LAST_ADV_ID"])>0) // comeback?
-			{
-			$arFields["ADV_ID"] = intval($_SESSION["SESS_LAST_ADV_ID"]);
-			$arFields["ADV_BACK"] = "'Y'";
-			$arFields["REFERER1"] = "'".$DB->ForSql($arGuest["last_referer1"], 255)."'";
-			$arFields["REFERER2"] = "'".$DB->ForSql($arGuest["last_referer2"], 255)."'";
-			}
-
-			// look for the same IP?
-			$day_host_counter = 1;
-			$day_host_counter_site = $SITE_ID <> ''? 1: 0;
-			$strSql = "
-			SELECT S.FIRST_SITE_ID
-			FROM b_stat_session S
-			WHERE S.IP_FIRST_NUMBER = ".$REMOTE_ADDR_NUMBER."
-			AND S.DATE_STAT = ".$DB_now_date."
-			";
-			$e = $DB->Query($strSql, false, "File: ".__FILE__."<br>Line: ".__LINE__);
-			while($er = $e->Fetch())
-			{
-			$day_host_counter = 0;
-			if ($SITE_ID==$er["FIRST_SITE_ID"])
-			{
-			$day_host_counter_site = 0;
-			break;
-			}
-			}
-
-			$_SESSION["SESS_SESSION_ID"] = intval($DB->Insert("b_stat_session", $arFields, "File: ".__FILE__."<br>Line: ".__LINE__));
-
-			if ($ERROR_404=="N")
-			{
-			CStatistics::Set404("b_stat_session", "ID = ".$_SESSION["SESS_SESSION_ID"], array("URL_TO_404" = > "Y", "URL_LAST_404" = > "Y"));
-			}
-
-			$day_guest_counter = 0;
-			$new_guest_counter = 0;
-			// new guest
-			if ($_SESSION["SESS_GUEST_NEW"]=="Y")
-			{
-			// update day statistic
-			$day_guest_counter = 1;
-			$new_guest_counter = 1;
-			}
-			else // guest was here
-			{
-			// first hit for today
-			if ($_SESSION["SESS_LAST"]!="Y")
-			{
-			// update day statistic
-			$day_guest_counter = 1;
-			$_SESSION["SESS_LAST"] = "Y";
-			}
-			}
-
-			// update day counter
-			$arFields = Array(
-			"SESSIONS" = > 1,
-			"C_HOSTS" = > intval($day_host_counter),
-			"GUESTS" = > intval($day_guest_counter),
-			"NEW_GUESTS"    = > intval($new_guest_counter),
-			"SESSION" => 1,
-			"HOST" = > intval($day_host_counter),
-			"GUEST" = > intval($day_guest_counter),
-			"NEW_GUEST" = > intval($new_guest_counter),
-			);
-			// when current day is already exists
-			// we have to update it
-			$rows = CTraffic::IncParam($arFields);
-			if ($rows!= =false && $rows<=0)
-			// otherwise
-			{
-			// add new one
-			CStatistics::SetNewDay(
-			1, // HOSTS
-			0, // TOTAL_HOSTS (now ignored)
-			1,                          // SESSIONS
-			0,                          // HITS
-			intval($new_guest_counter), // NEW_GUESTS
-			1                // GUESTS
-			);
-
-			// and update it
-			CTraffic::IncParam(
-			array(
-			"SESSION" = > 1,
-			"HOST" = > 1,
-			"GUEST" = > 1,
-			"NEW_GUEST" = > intval($new_guest_counter),
+				// save phpSession data
+				$arFields = Array(
+					"GUEST_ID" = > intval($_SESSION["SESS_GUEST_ID"]),
+				"NEW_GUEST" = > "'".$DB- > ForSql($_SESSION["SESS_GUEST_NEW"])."'",
+					"USER_ID" = > intval($_SESSION["SESS_LAST_USER_ID"]),
+				"USER_AUTH" = > "'".$DB- > ForSql($IS_USER_AUTHORIZED)."'",
+					"URL_FROM" = > "'".$DB- > ForSql($_SERVER["HTTP_REFERER"], 2000)."'",
+					"URL_TO" => "'".$DB- > ForSql($CURRENT_URI, 2000)."'",
+					"URL_TO_404" = > "'".$DB- > ForSql($ERROR_404)."'",
+					"URL_LAST" = > "'".$DB- > ForSql($CURRENT_URI, 2000)."'",
+					"URL_LAST_404" = > "'".$DB- > ForSql($ERROR_404)."'",
+					"USER_AGENT" = > "'".$DB- > ForSql($_SERVER["HTTP_USER_AGENT"], 500)."'",
+					"DATE_STAT" = > $DB_now_date,
+					"DATE_FIRST" => $DB_now,
+					"DATE_LAST" = > $DB_now,
+					"IP_FIRST" = > "'".$DB- > ForSql($_SERVER["REMOTE_ADDR"], 15)."'",
+					"IP_FIRST_NUMBER" = > "'".$DB- > ForSql($REMOTE_ADDR_NUMBER)."'",
+					"IP_LAST" = > "'".$DB- > ForSql($_SERVER["REMOTE_ADDR"], 15)."'",
+					"IP_LAST_NUMBER" = > "'".$DB- > ForSql($REMOTE_ADDR_NUMBER)."'",
+					"PHPSESSID" => "'".$DB- > ForSql($sessionId, 255)."'",
+					"STOP_LIST_ID" = > "'".$DB- > ForSql($STOP_LIST_ID)."'",
+					"COUNTRY_ID" = > "'".$DB- > ForSql($_SESSION["SESS_COUNTRY_ID"], 2)."'",
+					"CITY_ID" = > $_SESSION["SESS_CITY_ID"] > 0? intval($_SESSION["SESS_CITY_ID"]): "null",
+					"ADV_BACK" => "null",
+					"FIRST_SITE_ID" = > $sql_site,
+					"LAST_SITE_ID" = > $sql_site,
+					"HITS" = > 1,
 			)
-			);
-			}
 
-			// site is not defined
-			if ($SITE_ID <> '')
-			{
-			// ��������� ������� "�� ����" ��� �������� �����
-			$arFields = Array(
-			"SESSIONS" = > 1,
-			"C_HOSTS" = > intval($day_host_counter_site),
-			"SESSION"    = > 1,
-			"HOST" = > intval($day_host_counter_site),
-			);
-			// ������� �������� �������� ��� �������� ���
-			$rows = CTraffic::IncParam(array(), $arFields, $SITE_ID);
-			// ���� �������� ��� ��� ����� � ���� ��� ��� ��
-			if ($rows!= =false && intval($rows)<=0)
-			{
-			// ��������� ���
-			CStatistics::SetNewDayForSite(
-			$SITE_ID,
-			1,    // HOSTS
-			0,    // TOTAL_HOSTS  (now ignored)
-			1     // SESSIONS
-			);
+				// campaign?
+				if phpSession.GetAsInt("SESS_ADV_ID") > 0 {
+					$arFields["ADV_ID"] = intval($_SESSION["SESS_ADV_ID"])
+					$arFields["ADV_BACK"] = "'N'"
+					$arFields["REFERER1"] = "'".$DB- > ForSql($_SESSION["referer1"], 255)."'"
+					$arFields["REFERER2"] = "'".$DB- > ForSql($_SESSION["referer2"], 255)."'"
+					$arFields["REFERER3"] = "'".$DB- > ForSql($_SESSION["referer3"], 255)."'"
+				} else if phpSession.GetAsInt("SESS_LAST_ADV_ID") > 0 { // comeback?
 
-			// ������� �������� �������� ��� �������� ���
-			CTraffic::IncParam(
-			array(),
-			array(
-			"SESSION" = > 1,
-			"HOST" = > 1,
-			),
-			$SITE_ID
-			);
-			}
-			}
+					$arFields["ADV_ID"] = intval($_SESSION["SESS_LAST_ADV_ID"])
+					$arFields["ADV_BACK"] = "'Y'"
+					$arFields["REFERER1"] = "'".$DB- > ForSql($arGuest["last_referer1"], 255)."'"
+					$arFields["REFERER2"] = "'".$DB- > ForSql($arGuest["last_referer2"], 255)."'"
+				}
 
-			// ���� ������ ���������� ��
-			if ($_SESSION["SESS_COUNTRY_ID"] <> '')
-			{
-			$arFields = Array(
-			"SESSIONS" = > 1,
-			"NEW_GUESTS" = > $new_guest_counter,
-			);
-			CStatistics::UpdateCountry($_SESSION["SESS_COUNTRY_ID"], $arFields);
-			}
+				// look for the same IP?
+				day_host_counter := 1
+				day_host_counter_site := $SITE_ID < > ''? 1: 0
+				strSql := `
+				SELECT
+				S.FIRST_SITE_ID
+				FROM
+				b_stat_session
+				S
+				WHERE
+				S.IP_FIRST_NUMBER = ".$REMOTE_ADDR_NUMBER."
+				AND
+				S.DATE_STAT = ".$DB_now_date."
+				`
+				$e = $DB- > Query($strSql, false, "File: ".__FILE__.
+				"<br>Line: ".__LINE__)
+				while($er = $e- > Fetch())
+				{
+				$day_host_counter = 0;
+				if ($SITE_ID==$er["FIRST_SITE_ID"])
+				{
+				$day_host_counter_site = 0;
+				break;
+				}
+				}
 
-			if ($_SESSION["SESS_CITY_ID"] > 0)
-			{
-			$arFields = Array(
-			"SESSIONS" = > 1,
-			"NEW_GUESTS" = > $new_guest_counter,
-			);
-			CStatistics::UpdateCity($_SESSION["SESS_CITY_ID"], $arFields);
-			}
+				$_SESSION["SESS_SESSION_ID"] = intval($DB- > Insert("b_stat_session", $arFields, "File: ".__FILE__.
+				"<br>Line: ".__LINE__))
 
-			// ��������� �����
-			$arFields = Array(
-			"SESSIONS" = > "SESSIONS + 1",
-			"LAST_SESSION_ID" = > $_SESSION["SESS_SESSION_ID"],
-			"LAST_USER_AGENT" = > "'".$DB->ForSql($_SERVER["HTTP_USER_AGENT"], 500)."'",
-			"LAST_COUNTRY_ID" = > "'".$DB->ForSql($_SESSION["SESS_COUNTRY_ID"], 2)."'",
-			"LAST_CITY_ID" = > $_SESSION["SESS_CITY_ID"] > 0? intval($_SESSION["SESS_CITY_ID"]): "null",
-			);
-			//
-			if ($obCity)
-			{
-			$arFields["LAST_CITY_INFO"] = "'".$obCity->ForSQL()."'";
-			}
-			// ���� ��� ������ ����� �� ��������� �������� ��
-			if (intval($_SESSION["SESS_ADV_ID"])>0)
-			{
-			// ��������� ��������� �������� ���������� ������ �����
-			$arFields["LAST_ADV_ID"] = intval($_SESSION["SESS_ADV_ID"]);
-			$arFields["LAST_ADV_BACK"] = "'N'";
-			$arFields["LAST_REFERER1"] = "'".$DB->ForSql($_SESSION["referer1"], 255)."'";
-			$arFields["LAST_REFERER2"] = "'".$DB->ForSql($_SESSION["referer2"], 255)."'";
-			$arFields["LAST_REFERER3"] = "'".$DB->ForSql($_SESSION["referer3"], 255)."'";
-			}
-			elseif (intval($_SESSION["SESS_LAST_ADV_ID"])>0) // ����� ���� ��� ������� ��
-			{
-			// ������� ���� �������� �� ��������� ������ �����
-			$arFields["LAST_ADV_BACK"] = "'Y'";
-			$arFields["LAST_REFERER1"] = "'".$DB->ForSql($arGuest["last_referer1"], 255)."'";
-			$arFields["LAST_REFERER2"] = "'".$DB->ForSql($arGuest["last_referer2"], 255)."'";
-			}
+				if ($ERROR_404 == "N")
+				{
+				CStatistics::Set404("b_stat_session", "ID = ".$_SESSION["SESS_SESSION_ID"], array("URL_TO_404" = > "Y", "URL_LAST_404" = > "Y"));
+				}
 
-			if ($_SESSION["SESS_GUEST_NEW"]=="Y")
-			$arFields["FIRST_SESSION_ID"] = $_SESSION["SESS_SESSION_ID"];
-			$rows = $DB->Update("b_stat_guest", $arFields, "WHERE ID=".intval($_SESSION["SESS_GUEST_ID"]), "File: ".__FILE__."<br>Line: ".__LINE__, false, false, false);
+				$day_guest_counter = 0
+				$new_guest_counter = 0
+				// new guest
+				if ($_SESSION["SESS_GUEST_NEW"] == "Y")
+				{
+				// update day statistic
+				$day_guest_counter = 1;
+				$new_guest_counter = 1;
+				}
+				else // guest was here
+				{
+				// first hit for today
+				if ($_SESSION["SESS_LAST"]!="Y")
+				{
+				// update day statistic
+				$day_guest_counter = 1;
+				$_SESSION["SESS_LAST"] = "Y";
+				}
+				}
 
-			// ��������� ��������� ��������
-			if (intval($_SESSION["SESS_ADV_ID"])>0 || intval($_SESSION["SESS_LAST_ADV_ID"])>0)
-			{
-			CStatistics::Update_Adv();
-			}
-
-			/************************************************
-					Referring sites
-			************************************************/
-			if (
-			$SAVE_REFERERS != "N"
-			&& __GetReferringSite($PROT, $SN, $SN_WithoutPort, $PAGE_FROM)
-			&& $SN <> ''
-			&& $SN != $_SERVER["HTTP_HOST"]
+				// update day counter
+				$arFields = Array(
+					"SESSIONS" = > 1,
+					"C_HOSTS" = > intval($day_host_counter),
+				"GUESTS" = > intval($day_guest_counter),
+				"NEW_GUESTS" = > intval($new_guest_counter),
+				"SESSION" => 1,
+					"HOST" = > intval($day_host_counter),
+				"GUEST" = > intval($day_guest_counter),
+				"NEW_GUEST" = > intval($new_guest_counter),
 			)
-			{
-			$REFERER_LIST_ID = CStatistics::GetRefererListID($PROT, $SN, $PAGE_FROM, $CURRENT_URI, $ERROR_404, $sql_site);
+				// when current day is already exists
+				// we have to update it
+				$rows = CTraffic::IncParam($arFields)
+				if ($rows != = false && $rows <= 0)
+				// otherwise
+				{
+				// add new one
+				CStatistics::SetNewDay(
+				1, // HOSTS
+				0, // TOTAL_HOSTS (now ignored)
+				1,                          // SESSIONS
+				0,                          // HITS
+				intval($new_guest_counter), // NEW_GUESTS
+				1                // GUESTS
+				);
 
-			/************************************************
-					Search phrases
-			************************************************/
+				// and update it
+				CTraffic::IncParam(
+				array(
+				"SESSION" = > 1,
+				"HOST" = > 1,
+				"GUEST" = > 1,
+				"NEW_GUEST" = > intval($new_guest_counter),
+				)
+				);
+				}
 
-			if (mb_substr($SN, 0, 4) == "www.")
-			$sql = "('".$DB->ForSql(mb_substr($SN, 4), 255)."' like P.DOMAIN or '".$DB->ForSql($SN, 255)."' like P.DOMAIN)";
-			else
-			$sql = "'".$DB->ForSql($SN, 255)."' like P.DOMAIN";
-			$strSql = "
-			SELECT
-			S.ID,
-			S.NAME,
-			P.DOMAIN,
-			P.VARIABLE,
-			P.CHAR_SET
-			FROM
-			b_stat_searcher S,
-			b_stat_searcher_params P
-			WHERE
-			S.ACTIVE= 'Y'
-			and    P.SEARCHER_ID = S.ID
-			and    ".$sql."
-			";
-			$q = $DB->Query($strSql, false, "File: ".__FILE__."<br>Line: ".__LINE__);
-			if ($qr = $q->Fetch())
-			{
-			$_SESSION["FROM_SEARCHER_ID"] = $qr["ID"];
-			$FROM_SEARCHER_NAME = $qr["NAME"];
-			$FROM_SEARCHER_PHRASE = "";
-			if ($qr["VARIABLE"] <> '')
-			{
-			$page = mb_substr($PAGE_FROM, mb_strpos($PAGE_FROM, "?") + 1);
-			$bIsUTF8 = is_utf8_url($page);
-			parse_str($page, $arr);
-			$arrVar = explode(",", $qr["VARIABLE"]);
-			foreach ($arrVar as $var )
-			{
-			$var = trim($var );
-			$phrase = $arr[$var ];
+				// site is not defined
+				if ($SITE_ID < > '')
+				{
+				// ��������� ������� "�� ����" ��� �������� �����
+				$arFields = Array(
+				"SESSIONS" = > 1,
+				"C_HOSTS" = > intval($day_host_counter_site),
+				"SESSION"    = > 1,
+				"HOST" = > intval($day_host_counter_site),
+				);
+				// ������� �������� �������� ��� �������� ���
+				$rows = CTraffic::IncParam(array(), $arFields, $SITE_ID);
+				// ���� �������� ��� ��� ����� � ���� ��� ��� ��
+				if ($rows!= =false && intval($rows)<=0)
+				{
+				// ��������� ���
+				CStatistics::SetNewDayForSite(
+				$SITE_ID,
+				1,    // HOSTS
+				0,    // TOTAL_HOSTS  (now ignored)
+				1     // SESSIONS
+				);
 
-			if($bIsUTF8)
-			{
-			$phrase_temp = trim($APPLICATION->ConvertCharset($phrase, "utf-8", LANG_CHARSET));
-			if ($phrase_temp <> '')
-			{
-			$phrase = $phrase_temp;
-			}
-			}
-			elseif($qr["CHAR_SET"] <> '')
-			{
-			$phrase_temp = trim($APPLICATION->ConvertCharset($phrase, $qr["CHAR_SET"], LANG_CHARSET));
-			if ($phrase_temp <> '')
-			{
-			$phrase = $phrase_temp;
-			}
-			}
+				// ������� �������� �������� ��� �������� ���
+				CTraffic::IncParam(
+				array(),
+				array(
+				"SESSION" = > 1,
+				"HOST" = > 1,
+				),
+				$SITE_ID
+				);
+				}
+				}
 
-			$phrase = trim($phrase);
-			if ($phrase <> '')
-			{
-			$FROM_SEARCHER_PHRASE.= ($FROM_SEARCHER_PHRASE <> '')? " / ".$phrase: $phrase;
-			}
-			}
-			}
-			//echo "FROM_SEARCHER_PHRASE = ".$FROM_SEARCHER_PHRASE."<br>\n";
-			// ���� �������� ��������� �����, �� ������� �� � ����
-			if ($FROM_SEARCHER_PHRASE <> '')
-			{
-			$arFields = Array(
-			"DATE_HIT" = > $DB_now,
-			"SEARCHER_ID" = > intval($_SESSION["FROM_SEARCHER_ID"]),
-			"REFERER_ID" = > $REFERER_LIST_ID,
-			"PHRASE" = > "'".$DB->ForSql($FROM_SEARCHER_PHRASE, 255)."'",
-			"URL_FROM" => "'".$DB->ForSql($PROT.$SN.$PAGE_FROM, 2000)."'",
-			"URL_TO" = > "'".$DB->ForSql($CURRENT_URI, 2000)."'",
-			"URL_TO_404" = > "'".$ERROR_404."'",
-			"SESSION_ID" = > $_SESSION["SESS_SESSION_ID"],
-			"SITE_ID" = > $sql_site,
-			);
-			$id = $DB->Insert("b_stat_phrase_list", $arFields, "File: ".__FILE__."<br>Line: ".__LINE__);
-			if ($ERROR_404=="N")
-			{
-			CStatistics::Set404("b_stat_phrase_list", "ID = ".intval($id), array("URL_TO_404" = > "Y"));
-			}
+				// ���� ������ ���������� ��
+				if ($_SESSION["SESS_COUNTRY_ID"] < > '')
+				{
+				$arFields = Array(
+				"SESSIONS" = > 1,
+				"NEW_GUESTS" = > $new_guest_counter,
+				);
+				CStatistics::UpdateCountry($_SESSION["SESS_COUNTRY_ID"], $arFields);
+				}
 
-			// �������� ��������� ����� � ������
-			$_SESSION["SESS_SEARCH_PHRASE"] = $FROM_SEARCHER_PHRASE;
+				if ($_SESSION["SESS_CITY_ID"] > 0)
+				{
+				$arFields = Array(
+				"SESSIONS" = > 1,
+				"NEW_GUESTS" = > $new_guest_counter,
+				);
+				CStatistics::UpdateCity($_SESSION["SESS_CITY_ID"], $arFields);
+				}
 
-			// �������� ������� ���� � ��������� �������
-			$_SESSION["SESS_FROM_SEARCHERS"][] = $_SESSION["FROM_SEARCHER_ID"];
-			$arFields = Array("PHRASES" = > "PHRASES + 1");
-			$rows = $DB->Update("b_stat_searcher", $arFields, "WHERE ID=".intval($_SESSION["FROM_SEARCHER_ID"]), "File: ".__FILE__."<br>Line: ".__LINE__, false,false, false);
+				// ��������� �����
+				$arFields = Array(
+					"SESSIONS" = > "SESSIONS + 1",
+					"LAST_SESSION_ID" = > $_SESSION["SESS_SESSION_ID"],
+					"LAST_USER_AGENT" = > "'".$DB- > ForSql($_SERVER["HTTP_USER_AGENT"], 500)."'",
+					"LAST_COUNTRY_ID" = > "'".$DB- > ForSql($_SESSION["SESS_COUNTRY_ID"], 2)."'",
+					"LAST_CITY_ID" = > $_SESSION["SESS_CITY_ID"] > 0? intval($_SESSION["SESS_CITY_ID"]): "null",
+			)
+				//
+				if ($obCity)
+				{
+				$arFields["LAST_CITY_INFO"] = "'".$obCity->ForSQL()."'";
+				}
+				// ���� ��� ������ ����� �� ��������� �������� ��
+				if intval($_SESSION["SESS_ADV_ID"])>0)
+				{
+				// ��������� ��������� �������� ���������� ������ �����
+				$arFields["LAST_ADV_ID"] = intval($_SESSION["SESS_ADV_ID"]);
+				$arFields["LAST_ADV_BACK"] = "'N'";
+				$arFields["LAST_REFERER1"] = "'".$DB->ForSql($_SESSION["referer1"], 255)."'";
+				$arFields["LAST_REFERER2"] = "'".$DB->ForSql($_SESSION["referer2"], 255)."'";
+				$arFields["LAST_REFERER3"] = "'".$DB->ForSql($_SESSION["referer3"], 255)."'";
+				}
+				elseif(intval($_SESSION["SESS_LAST_ADV_ID"])>0) // ����� ���� ��� ������� ��
+				{
+				// ������� ���� �������� �� ��������� ������ �����
+				$arFields["LAST_ADV_BACK"] = "'Y'";
+				$arFields["LAST_REFERER1"] = "'".$DB->ForSql($arGuest["last_referer1"], 255)."'";
+				$arFields["LAST_REFERER2"] = "'".$DB->ForSql($arGuest["last_referer2"], 255)."'";
+				}
 
-			}
-			}
-			}
+				if ($_SESSION["SESS_GUEST_NEW"] == "Y")
+				$arFields["FIRST_SESSION_ID"] = $_SESSION["SESS_SESSION_ID"]
+				$rows = $DB- > Update("b_stat_guest", $arFields, "WHERE ID=".intval($_SESSION["SESS_GUEST_ID"]), "File: ".__FILE__.
+				"<br>Line: ".__LINE__, false, false, false)
+
+				// ��������� ��������� ��������
+				if intval($_SESSION["SESS_ADV_ID"])>0 || intval($_SESSION["SESS_LAST_ADV_ID"])>0)
+				{
+				CStatistics::Update_Adv();
+				}
+
+				/************************************************
+						Referring sites
+				************************************************/
+				if (
+				$SAVE_REFERERS != "N"
+				&& __GetReferringSite($PROT, $SN, $SN_WithoutPort, $PAGE_FROM)
+				&& $SN < > ''
+				&& $SN != $_SERVER["HTTP_HOST"]
+				)
+				{
+				$REFERER_LIST_ID = CStatistics::GetRefererListID($PROT, $SN, $PAGE_FROM, $CURRENT_URI, $ERROR_404, $sql_site);
+
+				/************************************************
+						Search phrases
+				************************************************/
+
+				if (mb_substr($SN, 0, 4) == "www.")
+				$sql = "('".$DB->ForSql(mb_substr($SN, 4), 255)."' like P.DOMAIN or '".$DB->ForSql($SN, 255)."' like P.DOMAIN)";
+				else
+				$sql = "'".$DB->ForSql($SN, 255)."' like P.DOMAIN";
+				$strSql = "
+				SELECT
+				S.ID,
+				S.NAME,
+				P.DOMAIN,
+				P.VARIABLE,
+				P.CHAR_SET
+				FROM
+				b_stat_searcher S,
+				b_stat_searcher_params P
+				WHERE
+				S.ACTIVE= 'Y'
+				and    P.SEARCHER_ID = S.ID
+				and    ".$sql."
+				";
+				$q = $DB->Query($strSql, false, "File: ".__FILE__."<br>Line: ".__LINE__);
+				if ($qr = $q->Fetch())
+				{
+				$_SESSION["FROM_SEARCHER_ID"] = $qr["ID"];
+				$FROM_SEARCHER_NAME = $qr["NAME"];
+				$FROM_SEARCHER_PHRASE = "";
+				if ($qr["VARIABLE"] <> '')
+				{
+				$page = mb_substr($PAGE_FROM, mb_strpos($PAGE_FROM, "?") + 1);
+				$bIsUTF8 = is_utf8_url($page);
+				parse_str($page, $arr);
+				$arrVar = explode(",", $qr["VARIABLE"]);
+				foreach ($arrVar as $var )
+				{
+				$var = trim($var );
+				$phrase = $arr[$var ];
+
+				if($bIsUTF8)
+				{
+				$phrase_temp = trim($APPLICATION->ConvertCharset($phrase, "utf-8", LANG_CHARSET));
+				if ($phrase_temp <> '')
+				{
+				$phrase = $phrase_temp;
+				}
+				}
+				elseif($qr["CHAR_SET"] <> '')
+				{
+				$phrase_temp = trim($APPLICATION->ConvertCharset($phrase, $qr["CHAR_SET"], LANG_CHARSET));
+				if ($phrase_temp <> '')
+				{
+				$phrase = $phrase_temp;
+				}
+				}
+
+				$phrase = trim($phrase);
+				if ($phrase <> '')
+				{
+				$FROM_SEARCHER_PHRASE.= ($FROM_SEARCHER_PHRASE <> '')? " / ".$phrase: $phrase;
+				}
+				}
+				}
+				//echo "FROM_SEARCHER_PHRASE = ".$FROM_SEARCHER_PHRASE."<br>\n";
+				// ���� �������� ��������� �����, �� ������� �� � ����
+				if ($FROM_SEARCHER_PHRASE <> '')
+				{
+				$arFields = Array(
+				"DATE_HIT" = > $DB_now,
+				"SEARCHER_ID" = > intval($_SESSION["FROM_SEARCHER_ID"]),
+				"REFERER_ID" = > $REFERER_LIST_ID,
+				"PHRASE" = > "'".$DB->ForSql($FROM_SEARCHER_PHRASE, 255)."'",
+				"URL_FROM" => "'".$DB->ForSql($PROT.$SN.$PAGE_FROM, 2000)."'",
+				"URL_TO" = > "'".$DB->ForSql($CURRENT_URI, 2000)."'",
+				"URL_TO_404" = > "'".$ERROR_404."'",
+				"SESSION_ID" = > $_SESSION["SESS_SESSION_ID"],
+				"SITE_ID" = > $sql_site,
+				);
+				$id = $DB->Insert("b_stat_phrase_list", $arFields, "File: ".__FILE__."<br>Line: ".__LINE__);
+				if ($ERROR_404=="N")
+				{
+				CStatistics::Set404("b_stat_phrase_list", "ID = ".intval($id), array("URL_TO_404" = > "Y"));
+				}
+
+				// �������� ��������� ����� � ������
+				$_SESSION["SESS_SEARCH_PHRASE"] = $FROM_SEARCHER_PHRASE;
+
+				// �������� ������� ���� � ��������� �������
+				$_SESSION["SESS_FROM_SEARCHERS"][] = $_SESSION["FROM_SEARCHER_ID"];
+				$arFields = Array("PHRASES" = > "PHRASES + 1");
+				$rows = $DB->Update("b_stat_searcher", $arFields, "WHERE ID=".intval($_SESSION["FROM_SEARCHER_ID"]), "File: ".__FILE__."<br>Line: ".__LINE__, false,false, false);
+
+				}
+				}
+				}
 			}
 
 			/************************************************
