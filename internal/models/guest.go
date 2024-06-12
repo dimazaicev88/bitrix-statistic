@@ -3,14 +3,20 @@ package models
 import (
 	"bitrix-statistic/internal/entity"
 	"bitrix-statistic/internal/storage"
+	"github.com/codingsince1985/checksum"
+	"strings"
 )
 
 type GuestModel struct {
-	storage storage.Storage
+	storage      storage.Storage
+	sessionModel SessionModel
 }
 
 func NewGuestModel(storage storage.Storage) *GuestModel {
-	return &GuestModel{storage: storage}
+	return &GuestModel{
+		storage:      storage,
+		sessionModel: NewSessionModel(storage),
+	}
 }
 
 func (gm GuestModel) FindLastById(id int) (int, string, int, int, string, error) {
@@ -47,11 +53,33 @@ func (gm GuestModel) Add(guest entity.Guest) {
 		guest.FirstAdvId, guest.FirstReferer1, guest.FirstReferer2)
 }
 
-func (gm GuestModel) AddGuest(statData entity.StatData) {
-
+func (gm GuestModel) AddGuest(statData entity.StatData) error {
 	// если сессия только открылась
 	if len(statData.Token) == 0 {
+		md5, err := gm.GetGuestMd5(statData)
+		if err != nil {
+			return err
+		}
+		guestMd5, err := gm.sessionModel.FindSessionByGuestMd5(md5)
+		if err != nil {
+			return err
+		}
+
+		//Guest не найден
+		if len(guestMd5.Token) == 0 {
+
+		}
 
 	}
 
+	return nil
+}
+
+func (gm GuestModel) GetGuestMd5(statData entity.StatData) (string, error) {
+	var strBuilder strings.Builder
+	strBuilder.WriteString(statData.UserAgent)
+	strBuilder.WriteString(statData.Ip)
+	strBuilder.WriteString(statData.HttpXForwardedFor)
+	sum, err := checksum.MD5sum(strBuilder.String())
+	return sum, err
 }
