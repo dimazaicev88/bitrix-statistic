@@ -3,7 +3,7 @@ package entity
 import "database/sql"
 
 type Hit struct {
-	Id         int            `json:"ID,omitempty" db:"ID"`
+	Id         int            `json:"ID,omitempty" db:"id"`
 	SessionId  int            `json:"SessionId,omitempty"`
 	GuestId    sql.NullInt32  `json:"GuestId,omitempty"`
 	NewGuest   string         `json:"NewGuest,omitempty"`

@@ -23,7 +23,7 @@ func NewStatisticModel(storage storage.Storage) StatisticModel {
 	}
 }
 
-func (stm StatisticModel) SetGuest(phpSession *session.Session, siteId string, error404 bool, cookieGuestId int, cookieLastVisit, cookieAdvId int) (string, string, error) {
+func (stm StatisticModel) SetGuest(phpSession *session.Session, siteId, referrer, fullRequestUrl string, error404 string, cookieGuestId int, cookieLastVisit, cookieAdvId int) (string, string, error) {
 	phpSession.Set("SESS_GUEST_ID", "")        // ID гостя
 	phpSession.Set("SESS_GUEST_NEW", "")       // флаг "новый гость"
 	phpSession.Set("SESS_LAST_USER_ID", "")    // под кем гость был авторизован в последний раз
@@ -80,7 +80,7 @@ func (stm StatisticModel) SetGuest(phpSession *session.Session, siteId string, e
 					//}
 				}
 				// устанавливаем флаг того что мы восстанавливаем гостя
-				repairCookieGuest := "Y"
+				//repairCookieGuest := "Y"
 				//получаем идентификатор его последней рекламной кампании
 				//$CookieAdv = $GLOBALS["APPLICATION"]- > get_cookie("LAST_ADV")
 			}
@@ -118,23 +118,21 @@ func (stm StatisticModel) SetGuest(phpSession *session.Session, siteId string, e
 	}
 	// если есть необходимость то
 	if phpSession.GetAsInt("SESS_GUEST_ID") <= 0 {
-		stm.guestModel.Add()
-		// вставляем гостя в базу
-		"FIRST_DATE" = > $DB- > GetNowFunction(),
-			"FIRST_URL_FROM" = > "'".$DB- > ForSql($_SERVER["HTTP_REFERER"] ?? '', 2000)."'",
-			"FIRST_URL_TO" = > "'".$DB- > ForSql(__GetFullRequestUri(), 2000).
-		"'",
-			"FIRST_URL_TO_404" = > "'".$DB- > ForSql($ERROR_404)."'",
-			"FIRST_SITE_ID" => $sql_site,
-			"FIRST_ADV_ID" = > intval($_SESSION["SESS_ADV_ID"]),
-		"FIRST_REFERER1" = > "'".$DB- > ForSql($_SESSION["referer1"], 255)."'",
-			"FIRST_REFERER2" => "'".$DB- > ForSql($_SESSION["referer2"], 255)."'",
-			"FIRST_REFERER3" = > "'".$DB- > ForSql($_SESSION["referer3"], 255)."'"
+		guestData := entity.Guest{
+			FirstUrlFrom:  referrer,
+			FirstUrlTo:    fullRequestUrl,
+			FirstUrlTo404: error404,
+			FirstSiteId:   siteId,
+			FirstAdvId:    phpSession.GetAsInt("SESS_ADV_ID"),
+			FirstReferer1: phpSession.Get("referer1"),
+			FirstReferer2: phpSession.Get("referer2"),
+			FirstReferer3: phpSession.Get("referer3"),
+		}
 		// если мы восстанавливаем гостя по данным записанным в его cookie то
 		if repairCookieGuest == "Y" {
 			// если гость не считается новым то добавим ему одну сессию
 			if phpSession.Get("SESS_GUEST_NEW") == "N" {
-				$arFields["SESSIONS"] = 1
+				guestData.Sessions = 1
 			}
 			if cookieAdvId > 0 {
 				adv, err := stm.advModel.FindById(cookieAdvId)
@@ -148,22 +146,23 @@ func (stm StatisticModel) SetGuest(phpSession *session.Session, siteId string, e
 
 					// если последний вход записанный в cookie
 					// не был прямым входом по рекламной кампании то
-					phpSession.Set("FIRST_ADV_ID", strconv.Itoa(cookieAdvId))
-					phpSession.Set("FIRST_REFERER1", adv.Referer1)
-					phpSession.Set("FIRST_REFERER2", adv.Referer2)
-					phpSession.Set("LAST_ADV_ID", strconv.Itoa(cookieAdvId))
-					phpSession.Set("LAST_ADV_BACK", "Y")
-					phpSession.Set("LAST_REFERER1", adv.Referer1)
-					phpSession.Set("LAST_REFERER2", adv.Referer2)
+					guestData.FirstAdvId = cookieAdvId
+					guestData.FirstReferer1 = adv.Referer1
+					guestData.FirstReferer2 = adv.Referer2
+					guestData.LastAdvId = cookieAdvId
+					guestData.LastAdvBack = "Y"
+					guestData.LastReferer1 = adv.Referer1
+					guestData.LastReferer2 = adv.Referer2
 					lastReferer1 = adv.Referer1
 					lastReferer2 = adv.Referer2
 				}
 			}
 		}
-		$_SESSION["SESS_GUEST_ID"] = $DB- > Insert("b_stat_guest", $arFields, $err_mess.__LINE__)
-		if ($ERROR_404 == "N") {
-		CStatistics::Set404("b_stat_guest", "ID = ".intval($_SESSION["SESS_GUEST_ID"]), array("FIRST_URL_TO_404" = > "Y"))
-		}
+		stm.guestModel.Add(guestData)
+		//$_SESSION["SESS_GUEST_ID"] = $DB- > Insert("b_stat_guest", $arFields, $err_mess.__LINE__)
+		//if ($ERROR_404 == "N") {
+		//CStatistics::Set404("b_stat_guest", "ID = ".intval($_SESSION["SESS_GUEST_ID"]), array("FIRST_URL_TO_404" = > "Y"))
+		//}
 	}
 
 	//TODO вынести в phpCookie
