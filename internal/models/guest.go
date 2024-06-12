@@ -9,6 +9,10 @@ type GuestModel struct {
 	storage storage.Storage
 }
 
+func NewGuestModel(storage storage.Storage) *GuestModel {
+	return &GuestModel{storage: storage}
+}
+
 func (gm GuestModel) FindLastById(id int) (int, string, int, int, string, error) {
 	row := gm.storage.DB().QueryRow(`
 				SELECT
@@ -43,6 +47,12 @@ func (gm GuestModel) Add(guest entity.Guest) {
 		guest.FirstAdvId, guest.FirstReferer1, guest.FirstReferer2)
 }
 
-func NewGuestModel(storage storage.Storage) *GuestModel {
-	return &GuestModel{storage: storage}
+func (gm GuestModel) AddGuest(statData entity.StatData) {
+
+	// если сессия только открылась
+
+	if len(statData.Token) == 0 {
+
+	}
+
 }
