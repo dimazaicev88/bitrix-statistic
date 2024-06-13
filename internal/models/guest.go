@@ -3,8 +3,6 @@ package models
 import (
 	"bitrix-statistic/internal/entity"
 	"bitrix-statistic/internal/storage"
-	"github.com/codingsince1985/checksum"
-	"strings"
 )
 
 type GuestModel struct {
@@ -54,32 +52,28 @@ func (gm GuestModel) Add(guest entity.Guest) {
 }
 
 func (gm GuestModel) AddGuest(statData entity.StatData) error {
-	// если сессия только открылась
-	if len(statData.Token) == 0 {
-		md5, err := gm.GetGuestMd5(statData)
-		if err != nil {
-			return err
-		}
-		guestMd5, err := gm.sessionModel.FindSessionByGuestMd5(md5)
-		if err != nil {
-			return err
-		}
-
-		//Guest не найден
-		if len(guestMd5.Token) == 0 {
-
-		}
-
-	}
-
+	gm.Add(entity.Guest{
+		FirstUrlFrom:  statData.Referer,
+		FirstUrlTo:    statData.Url,
+		FirstUrlTo404: statData.Error404,
+		FirstSiteId:   statData.SiteId,
+		FirstAdvId:    0,  //TODO добавить реальные значения
+		FirstReferer1: "", //TODO добавить реальные значения
+		FirstReferer2: "", //TODO добавить реальные значения
+		FirstReferer3: "", //TODO добавить реальные значения
+	})
 	return nil
 }
 
-func (gm GuestModel) GetGuestMd5(statData entity.StatData) (string, error) {
-	var strBuilder strings.Builder
-	strBuilder.WriteString(statData.UserAgent)
-	strBuilder.WriteString(statData.Ip)
-	strBuilder.WriteString(statData.HttpXForwardedFor)
-	sum, err := checksum.MD5sum(strBuilder.String())
-	return sum, err
+func (gm GuestModel) ExistsGuestByToken(token string) (bool, error) {
+	row := gm.storage.DB().QueryRow(`
+				SELECT cookie_token 
+				FROM guest 				
+				WHERE cookie_token=?`, token)
+	var cookieToken string
+	err := row.Scan(&cookieToken)
+	if err != nil {
+		return false, err
+	}
+	return len(cookieToken) > 0, nil
 }

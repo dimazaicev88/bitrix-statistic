@@ -8,20 +8,20 @@ import (
 )
 
 type CountryHandlers struct {
-	app          *fiber.App
+	fbApp        *fiber.App
 	countryModel models.CountryModel
 }
 
-func NewCountryHandlers(app *fiber.App, countryModel models.CountryModel) CountryHandlers {
+func NewCountryHandlers(fbApp *fiber.App, countryModel models.CountryModel) CountryHandlers {
 	return CountryHandlers{
-		app:          app,
+		fbApp:        fbApp,
 		countryModel: countryModel,
 	}
 }
 
 func (ch CountryHandlers) AddHandlers() {
-	ch.app.Post("/country/filter", ch.Filter)
-	ch.app.Delete("/country/delete/:id/", ch.DeleteById)
+	ch.fbApp.Post("/country/filter", ch.Filter)
+	ch.fbApp.Delete("/country/delete/:id/", ch.DeleteById)
 }
 
 func (ch CountryHandlers) Filter(ctx *fiber.Ctx) error {

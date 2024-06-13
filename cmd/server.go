@@ -5,6 +5,10 @@ import (
 )
 
 func main() {
+
+	//ctx, stop := signal.NotifyContext(context.Background(), os.Interrupt, syscall.SIGTERM)
+	//defer stop()
+
 	//dataSource := fmt.Sprintf("%s:%s@tcp(%s:%d)/%s", "root", "24zda#1312", "localhost", 3306, "test")
 	//db, err := sqlx.Connect("mysql", dataSource)
 	//if err != nil {

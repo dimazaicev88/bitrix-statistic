@@ -5,12 +5,12 @@ import (
 )
 
 type MainPageHandler struct {
-	app *fiber.App
+	fbApp *fiber.App
 }
 
-func NewMainPageHandlers(app *fiber.App) MainPageHandler {
+func NewMainPageHandlers(fbApp *fiber.App) MainPageHandler {
 	return MainPageHandler{
-		app: app,
+		fbApp: fbApp,
 	}
 }
 
@@ -19,5 +19,5 @@ func (mph MainPageHandler) index(c *fiber.Ctx) error {
 }
 
 func (mph MainPageHandler) AddHandler() {
-	mph.app.Get("/", mph.index)
+	mph.fbApp.Get("/", mph.index)
 }

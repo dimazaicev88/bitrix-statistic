@@ -8,20 +8,20 @@ import (
 )
 
 type CityHandlers struct {
-	app       *fiber.App
+	fbApp     *fiber.App
 	cityModel models.CityModel
 }
 
-func NewCityHandlers(app *fiber.App, cityModel models.CityModel) CityHandlers {
+func NewCityHandlers(fbApp *fiber.App, cityModel models.CityModel) CityHandlers {
 	return CityHandlers{
-		app:       app,
+		fbApp:     fbApp,
 		cityModel: cityModel,
 	}
 }
 
 func (ch CityHandlers) AddHandlers() {
-	ch.app.Post("/city/filter", ch.Filter)
-	ch.app.Delete("/city/delete/:id/", ch.DeleteById)
+	ch.fbApp.Post("/city/filter", ch.Filter)
+	ch.fbApp.Delete("/city/delete/:id/", ch.DeleteById)
 }
 
 func (ch CityHandlers) Filter(ctx *fiber.Ctx) error {

@@ -3,10 +3,8 @@ package services
 import (
 	"bitrix-statistic/internal/entity"
 	"bitrix-statistic/internal/models"
-	"bitrix-statistic/internal/session"
 	"bitrix-statistic/internal/storage"
 	"bitrix-statistic/utils"
-	"github.com/codingsince1985/checksum"
 	"golang.org/x/exp/slices"
 	_ "net/netip"
 	"regexp"
@@ -21,6 +19,7 @@ type Statistic struct {
 	sessionModel   models.SessionModel
 	cityModel      models.CityModel
 	advModel       *models.AdvModel
+	guestModel     *models.GuestModel
 }
 
 func NewStatistic(storage *storage.MysqlStorage) Statistic {
@@ -31,6 +30,7 @@ func NewStatistic(storage *storage.MysqlStorage) Statistic {
 		searcherModel:  models.NewSearcherModel(storage),
 		cityModel:      models.NewCityModel(storage),
 		advModel:       models.NewAdvModel(storage, models.NewOptionModel(storage)),
+		guestModel:     models.NewGuestModel(storage),
 	}
 }
 
@@ -85,20 +85,19 @@ func (s Statistic) checkSkip(userGroups []int, remoteAddr string) (error, bool) 
 	return nil, isSkip
 }
 
-func (s Statistic) Add(
-	phpServer entity.PhpServer,
-	cookieGuestId int,
-	isUserAuthorized,
-	stopSaveStatistic,
-	stop,
-	error404 string,
-	phpSession *session.Session, stopListId int,
-	sessionGcMaxLifeTime string,
-	userAgent, fullRequestUri, ip, siteId, openstat, referringSite string,
-	cookieLastVisit, cookieAdvId int,
-	sessionId string, //\Bitrix\Main\Application::getInstance()->getKernelSession()->getId()
+func (s Statistic) Add(statData entity.StatData) error {
+	existsGuest, err := s.guestModel.ExistsGuestByToken(statData.CookieToken)
+	if err != nil {
+		return err
+	}
 
-) {
+	//Guest не найден
+	if existsGuest == false {
+		err := s.guestModel.AddGuest(statData)
+		if err != nil {
+			return err
+		}
+	}
 	//	advNa := s.optionModel.Get("ADV_NA")
 	//	__SetReferer("referer1", "REFERER1_SYN")
 	//	__SetReferer("referer2", "REFERER2_SYN")
@@ -1023,31 +1022,32 @@ func (s Statistic) Add(
 	//	}
 	//	}
 	//}
+	return nil
 }
 
-func (s Statistic) RestoreSession(phpServer entity.PhpServer, cookieGuestId int, session *session.Session, sessionGcMaxLifeTime string) {
-	// if there is no session ID
-	if session.KeyExists("SESS_SESSION_ID") == false || session.GetAsInt("SESS_SESSION_ID") <= 0 {
-		if session.Get("SAVE_SESSION_DATA") == "Y" {
-			// try to use cookie
-			if cookieGuestId <= 0 {
-				// restore session data from table session_data
-				md5, err := s.GetGuestMd5(phpServer)
-				if err != nil {
-					return
-				}
-				sess, err := s.sessionModel.FindSessionByGuestMd5(md5, sessionGcMaxLifeTime)
-				session.SetAll(&sess)
-			}
-		}
-	}
-}
+//func (s Statistic) RestoreSession(phpServer entity.PhpServer, cookieGuestId int, session *session.Session, sessionGcMaxLifeTime string) {
+//	// if there is no session ID
+//	if session.KeyExists("SESS_SESSION_ID") == false || session.GetAsInt("SESS_SESSION_ID") <= 0 {
+//		if session.Get("SAVE_SESSION_DATA") == "Y" {
+//			// try to use cookie
+//			if cookieGuestId <= 0 {
+//				// restore session data from table session_data
+//				md5, err := s.GetGuestMd5(phpServer)
+//				if err != nil {
+//					return
+//				}
+//				sess, err := s.sessionModel.FindSessionByGuestMd5(md5, sessionGcMaxLifeTime)
+//				session.SetAll(&sess)
+//			}
+//		}
+//	}
+//}
 
-func (s Statistic) GetGuestMd5(phpServer entity.PhpServer) (string, error) {
-	var strBuilder strings.Builder
-	strBuilder.WriteString(phpServer.HttpUserAgent)
-	strBuilder.WriteString(phpServer.RemoteAddr)
-	strBuilder.WriteString(phpServer.HttpXForwardedFor)
-	sum, err := checksum.MD5sum(strBuilder.String())
-	return sum, err
-}
+//func (s Statistic) GetGuestMd5(phpServer entity.PhpServer) (string, error) {
+//	var strBuilder strings.Builder
+//	strBuilder.WriteString(phpServer.HttpUserAgent)
+//	strBuilder.WriteString(phpServer.RemoteAddr)
+//	strBuilder.WriteString(phpServer.HttpXForwardedFor)
+//	sum, err := checksum.MD5sum(strBuilder.String())
+//	return sum, err
+//}

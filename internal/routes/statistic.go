@@ -10,17 +10,23 @@ type StatisticHandlers struct {
 	optionModel models.StatisticModel
 }
 
-func NewStatisticHandlers(app *fiber.App, optionModel models.OptionModel) OptionHandlers {
+func NewStatisticRoutes(app *fiber.App, optionModel models.OptionModel) OptionHandlers {
 	return OptionHandlers{
 		app:         app,
 		optionModel: optionModel,
 	}
 }
 
-func (sh StatisticHandlers) AddHandlers() {
-	sh.app.Post("/statistic/AddSession", sh.Add)
+func (sh StatisticHandlers) RegRoutes() {
+	sh.app.Post("/statistic/add", sh.Add)
 }
 
 func (sh StatisticHandlers) Add(ctx *fiber.Ctx) error {
+	//var runImport entity.StatData
+	//if err := ctx.BodyParser(&runImport); err != nil {
+	//	return c.JSON(entity.AnswerResult{
+	//		Err: err.Error(),
+	//	})
+	//}
 	return nil
 }

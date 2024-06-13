@@ -9,22 +9,22 @@ import (
 )
 
 type HitHandlers struct {
-	app      *fiber.App
+	fbApp    *fiber.App
 	hitModel models.HitModel
 }
 
-func NewHitHandlers(app *fiber.App, hitModel models.HitModel) HitHandlers {
+func NewHitHandlers(fbApp *fiber.App, hitModel models.HitModel) HitHandlers {
 	return HitHandlers{
-		app:      app,
+		fbApp:    fbApp,
 		hitModel: hitModel,
 	}
 }
 
 func (hh HitHandlers) AddHandlers() {
-	hh.app.Post("/v1/hit/filter", hh.filter)
-	hh.app.Post("/v1/hit/filter/bitrix", hh.filterBitrix)
-	hh.app.Post("/v1/hit/add/session", hh.add)
-	hh.app.Delete("/v1/hit/delete/:id/", hh.DeleteById)
+	hh.fbApp.Post("/v1/hit/filter", hh.filter)
+	hh.fbApp.Post("/v1/hit/filter/bitrix", hh.filterBitrix)
+	hh.fbApp.Post("/v1/hit/add/session", hh.add)
+	hh.fbApp.Delete("/v1/hit/delete/:id/", hh.DeleteById)
 }
 
 func (hh HitHandlers) filter(ctx *fiber.Ctx) error {
