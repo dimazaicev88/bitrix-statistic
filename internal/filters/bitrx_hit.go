@@ -48,3 +48,9 @@ type BitrixHitFilter struct {
 	Order       string `json:"order"`
 	FilterLogic string `json:"LOGIC"`
 }
+
+type FilterOperator struct {
+	Operator string `json:"operator"`
+	Value    string `json:"value"`
+	Field    string `json:"field"`
+}

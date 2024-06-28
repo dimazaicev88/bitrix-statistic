@@ -61,7 +61,7 @@ func (sh SessionHandlers) DeleteById(ctx *fiber.Ctx) error {
 
 func (sh SessionHandlers) AddSession(ctx *fiber.Ctx) error {
 	start := time.Now()
-	var session entity.Session
+	var session entity.SessionJson
 	body := ctx.Body()
 	err := jsoniter.Unmarshal(body, &session)
 	if err != nil {

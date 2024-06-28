@@ -91,7 +91,7 @@ func (s Statistic) Add(statData entity.StatData) error {
 		return err
 	}
 
-	//Guest не найден
+	//GuestDb не найден
 	if existsGuest == false {
 		err := s.guestModel.AddGuest(statData)
 		if err != nil {
@@ -265,7 +265,7 @@ func (s Statistic) Add(statData entity.StatData) error {
 	//			//CStatistics::Set_Adv()
 	//
 	//			/************************************************
-	//					Guest ID detection
+	//					GuestDb ID detection
 	//			************************************************/
 	//			var ref1, ref2 string
 	//			ref1, ref2, err = s.statisticModel.SetGuest(phpSession, siteId, referringSite, fullRequestUri, error404, cookieGuestId, cookieLastVisit, cookieAdvId)
@@ -288,7 +288,7 @@ func (s Statistic) Add(statData entity.StatData) error {
 	//			}
 	//
 	//			/************************************************
-	//					Session section
+	//					SessionJson section
 	//			************************************************/
 	//
 	//			//$_SESSION["SESS_SESSION_ID"] = intval($_SESSION["SESS_SESSION_ID"] ?? 0)
@@ -1025,7 +1025,7 @@ func (s Statistic) Add(statData entity.StatData) error {
 	return nil
 }
 
-//func (s Statistic) RestoreSession(phpServer entity.PhpServer, cookieGuestId int, session *session.Session, sessionGcMaxLifeTime string) {
+//func (s Statistic) RestoreSession(phpServer entity.PhpServer, cookieGuestId int, session *session.SessionJson, sessionGcMaxLifeTime string) {
 //	// if there is no session ID
 //	if session.KeyExists("SESS_SESSION_ID") == false || session.GetAsInt("SESS_SESSION_ID") <= 0 {
 //		if session.Get("SAVE_SESSION_DATA") == "Y" {

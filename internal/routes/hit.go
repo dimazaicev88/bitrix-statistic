@@ -77,7 +77,7 @@ func (hh HitHandlers) DeleteById(ctx *fiber.Ctx) error {
 }
 
 func (hh HitHandlers) add(ctx *fiber.Ctx) error {
-	var hit entity.Hit
+	var hit entity.HitJson
 	body := ctx.Body()
 	err := jsoniter.Unmarshal(body, &hit)
 	if err != nil {

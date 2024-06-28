@@ -3,6 +3,7 @@ package storage
 import (
 	"bitrix-statistic/internal/config"
 	"fmt"
+	_ "github.com/go-sql-driver/mysql"
 	"github.com/jmoiron/sqlx"
 	"log"
 )

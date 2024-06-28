@@ -20,7 +20,7 @@ func (sm SessionModel) Find(filter filters.Filter) (error, []map[string]interfac
 	return nil, nil
 }
 
-func (sm SessionModel) AddSession(session entity.Session) error {
+func (sm SessionModel) AddSession(session entity.SessionJson) error {
 	_, err := sm.storage.DB().MustExec(`INSERT INTO session (GuestId, NewGuest, USER_ID, USER_AUTH, C_EVENTS, HITS, FAVORITES, URL_FROM, URL_TO, URL_TO_404, URL_LAST,
 		URL_LAST_404, UserAgent, DATE_STAT, DATE_FIRST, DATE_LAST, IP_FIRST, IP_FIRST_NUMBER, IP_LAST, IP_LAST_NUMBER, FIRST_HIT_ID, LAST_HIT_ID, PHPSESSID,
         ADV_ID, ADV_BACK, REFERER1, REFERER2, REFERER3, StopListId, CountryId, CityId, FIRST_SITE_ID, LAST_SITE_ID) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 

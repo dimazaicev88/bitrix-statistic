@@ -118,7 +118,7 @@ func (stm StatisticModel) SetGuest(phpSession *session.Session, siteId, referrer
 	}
 	// если есть необходимость то
 	if phpSession.GetAsInt("SESS_GUEST_ID") <= 0 {
-		guestData := entity.Guest{
+		guestData := entity.GuestDb{
 			FirstUrlFrom:  referrer,
 			FirstUrlTo:    fullRequestUrl,
 			FirstUrlTo404: error404,
