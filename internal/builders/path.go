@@ -1,10 +1,5 @@
 package builders
 
-import (
-	"errors"
-	"strings"
-)
-
 type PathSqlBuilder struct {
 	sqlData SQLDataForBuild
 }
@@ -31,31 +26,31 @@ var pathFields = map[string]string{
 	"STEPS2": " t1.CityId ",    //конечное значение интервала для поля "количество страниц в пути".
 }
 
-func (hs PathSqlBuilder) buildSelectAndJoin() (WhereBuilder, error) {
-	return NewSelectBuild(hs.sqlData).Build(func(sqlData SQLDataForBuild) (WhereBuilder, error) {
-		var selectFields []string
-		sqlData.selectBuilder.WriteString("SELECT ")
-		if len(sqlData.filter.Select) == 0 {
-			sqlData.selectBuilder.WriteString(" * ")
-		} else {
-			for _, selectField := range sqlData.filter.Select {
-				if value, ok := hitFields[selectField]; ok {
-					selectFields = append(selectFields, value)
-				} else {
-					return WhereBuilder{}, errors.New("unknown field " + selectField)
-				}
-				if selectField == "USER" {
-					sqlData.selectBuilder.WriteString("")
-					sqlData.joinBuilder.WriteString(" LEFT JOIN b_user t2 ON (t2.ID = t1.USER_ID)")
-				}
-				if selectField == "Country" {
-					sqlData.joinBuilder.WriteString(" INNER JOIN b_stat_country t3 ON (t3.ID = t1.CountryId)")
-				}
-			}
-		}
-		hs.sqlData.selectBuilder.WriteString(strings.Join(selectFields, ","))
-		hs.sqlData.selectBuilder.WriteString(" FROM b_stat_hit t1 ")
-		hs.sqlData.selectBuilder.WriteString(sqlData.joinBuilder.String())
-		return NewWhereBuilder(sqlData), nil
-	})
-}
+//func (hs PathSqlBuilder) buildSelectAndJoin() (WhereBuilder, error) {
+//	return NewSelectBuild(hs.sqlData).Build(func(sqlData SQLDataForBuild) (WhereBuilder, error) {
+//		var selectFields []string
+//		sqlData.selectBuilder.WriteString("SELECT ")
+//		if len(sqlData.filter.Select) == 0 {
+//			sqlData.selectBuilder.WriteString(" * ")
+//		} else {
+//			for _, selectField := range sqlData.filter.Select {
+//				if value, ok := hitFields[selectField]; ok {
+//					selectFields = append(selectFields, value)
+//				} else {
+//					return WhereBuilder{}, errors.New("unknown field " + selectField)
+//				}
+//				if selectField == "USER" {
+//					sqlData.selectBuilder.WriteString("")
+//					sqlData.joinBuilder.WriteString(" LEFT JOIN b_user t2 ON (t2.ID = t1.USER_ID)")
+//				}
+//				if selectField == "Country" {
+//					sqlData.joinBuilder.WriteString(" INNER JOIN b_stat_country t3 ON (t3.ID = t1.CountryId)")
+//				}
+//			}
+//		}
+//		hs.sqlData.selectBuilder.WriteString(strings.Join(selectFields, ","))
+//		hs.sqlData.selectBuilder.WriteString(" FROM b_stat_hit t1 ")
+//		hs.sqlData.selectBuilder.WriteString(sqlData.joinBuilder.String())
+//		return NewWhereBuilder(sqlData), nil
+//	})
+//}

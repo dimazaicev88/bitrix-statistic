@@ -163,7 +163,7 @@ create table if not exists adv
     index IX_REFERER1 (`referer1`)
 );
 
-create table if not exists b_stat_session
+create table if not exists session
 (
     `id`              int(18) not null auto_increment,
     `guest_id`        int(18),

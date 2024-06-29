@@ -6,19 +6,11 @@ import (
 	"strings"
 )
 
-func StringConcat(values ...string) string {
-	var builder strings.Builder
-	for _, item := range values {
-		builder.WriteString(item)
-	}
-	return builder.String()
-}
-
 type HitBitrixSqlBuilder struct {
-	filter filters.BitrixFilter
+	filter filters.Filter
 }
 
-func NewHitBitrixSQLBuilder(filter filters.BitrixFilter) HitBitrixSqlBuilder {
+func NewHitBitrixSQLBuilder(filter filters.Filter) HitBitrixSqlBuilder {
 	return HitBitrixSqlBuilder{
 		filter: filter,
 	}
@@ -106,35 +98,35 @@ func (hs HitBitrixSqlBuilder) buildSQL() {
 func (hs HitBitrixSqlBuilder) BuildSQL() (string, error) {
 	var result strings.Builder
 
-	hs.selectFields.WriteString("SELECT" +
-		" t_hit.ID," +
-		"t_hit.SESSION_ID," +
-		"t_hit.GUEST_ID," +
-		"t_hit.NEW_GUEST," +
-		"t_hit.USER_ID," +
-		"t_hit.USER_AUTH," +
-		"t_hit.URL," +
-		"t_hit.URL_404," +
-		"t_hit.URL_FROM," +
-		"t_hit.IP," +
-		"t_hit.METHOD," +
-		"t_hit.COOKIES," +
-		" t_hit.USER_AGENT," +
-		"t_hit.STOP_LIST_ID," +
-		"t_hit.COUNTRY_ID," +
-		"t_hit.CITY_ID," +
-		" t_city.REGION REGION_NAME," +
-		" t_city.NAME CITY_NAME," +
-		" t_hit.SITE_ID," +
-		"DATE_FORMAT(t_hit.DATE_HIT, '%d.%m.%Y %H:%i:%s') as  DATE_HIT" +
-		" from b_stat_hit t_hit")
-	hs.join.WriteString(" LEFT JOIN b_stat_city t_city ON (t_city.ID = t_hit.CITY_ID)")
-
-	hs.buildSQL()
-	result.WriteString(hs.selectFields.String())
-	result.WriteString(hs.join.String())
-	result.WriteString(" where ")
-	result.WriteString(hs.where.String())
-	result.WriteString(hs.order.String())
+	//hs.selectFields.WriteString("SELECT" +
+	//	" t_hit.ID," +
+	//	"t_hit.SESSION_ID," +
+	//	"t_hit.GUEST_ID," +
+	//	"t_hit.NEW_GUEST," +
+	//	"t_hit.USER_ID," +
+	//	"t_hit.USER_AUTH," +
+	//	"t_hit.URL," +
+	//	"t_hit.URL_404," +
+	//	"t_hit.URL_FROM," +
+	//	"t_hit.IP," +
+	//	"t_hit.METHOD," +
+	//	"t_hit.COOKIES," +
+	//	" t_hit.USER_AGENT," +
+	//	"t_hit.STOP_LIST_ID," +
+	//	"t_hit.COUNTRY_ID," +
+	//	"t_hit.CITY_ID," +
+	//	" t_city.REGION REGION_NAME," +
+	//	" t_city.NAME CITY_NAME," +
+	//	" t_hit.SITE_ID," +
+	//	"DATE_FORMAT(t_hit.DATE_HIT, '%d.%m.%Y %H:%i:%s') as  DATE_HIT" +
+	//	" from b_stat_hit t_hit")
+	//hs.join.WriteString(" LEFT JOIN b_stat_city t_city ON (t_city.ID = t_hit.CITY_ID)")
+	//
+	//hs.buildSQL()
+	//result.WriteString(hs.selectFields.String())
+	//result.WriteString(hs.join.String())
+	//result.WriteString(" where ")
+	//result.WriteString(hs.where.String())
+	//result.WriteString(hs.order.String())
 	return result.String(), nil
 }

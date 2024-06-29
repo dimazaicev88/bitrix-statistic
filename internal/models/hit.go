@@ -1,7 +1,6 @@
 package models
 
 import (
-	"bitrix-statistic/internal/builders"
 	"bitrix-statistic/internal/entity"
 	"bitrix-statistic/internal/filters"
 	"bitrix-statistic/internal/storage"
@@ -17,26 +16,26 @@ func NewHitModel(storageImpl storage.Storage) HitModel {
 
 func (hm HitModel) Find(filter filters.Filter) (error, []map[string]interface{}) {
 	var hits []map[string]interface{}
-	sql, err := builders.NewHitSQLBuilder(filter).BuildSQL()
-	if err != nil {
-		return err, nil
-	}
-	rows, err := hm.storage.DB().Queryx(sql.SQL, sql.Params...)
-	for rows.Next() {
-		results := make(map[string]interface{})
-		err = rows.MapScan(results)
-		hits = append(hits, results)
-		if err != nil {
-			return err, nil
-		}
-	}
-	if err != nil {
-		return err, nil
-	}
+	//sql, err := builders.NewHitSQLBuilder(filter).BuildSQL()
+	//if err != nil {
+	//	return err, nil
+	//}
+	//rows, err := hm.storage.DB().Queryx(sql.SQL, sql.Params...)
+	//for rows.Next() {
+	//	results := make(map[string]interface{})
+	//	err = rows.MapScan(results)
+	//	hits = append(hits, results)
+	//	if err != nil {
+	//		return err, nil
+	//	}
+	//}
+	//if err != nil {
+	//	return err, nil
+	//}
 	return nil, hits
 }
 
-func (hm HitModel) Find2(filter filters.BitrixFilter) (error, []map[string]interface{}) {
+func (hm HitModel) Find2(filter filters.Filter) (error, []map[string]interface{}) {
 	var hits []map[string]interface{}
 
 	return nil, hits

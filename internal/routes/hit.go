@@ -50,7 +50,7 @@ func (hh HitHandlers) filter(ctx *fiber.Ctx) error {
 }
 
 func (hh HitHandlers) filterBitrix(ctx *fiber.Ctx) error {
-	var filter filters.BitrixFilter
+	var filter filters.Filter
 	body := ctx.Body()
 	err := jsoniter.Unmarshal(body, &filter)
 	if err != nil {
