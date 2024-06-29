@@ -36,7 +36,7 @@ func (hm HitModel) Find(filter filters.Filter) (error, []map[string]interface{})
 	return nil, hits
 }
 
-func (hm HitModel) Find2(filter filters.BitrixHitFilter) (error, []map[string]interface{}) {
+func (hm HitModel) Find2(filter filters.BitrixFilter) (error, []map[string]interface{}) {
 	var hits []map[string]interface{}
 
 	return nil, hits

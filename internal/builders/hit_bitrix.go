@@ -3,9 +3,7 @@ package builders
 import (
 	"bitrix-statistic/internal/filters"
 	"github.com/volatiletech/null/v9"
-	"strconv"
 	"strings"
-	"unicode/utf8"
 )
 
 func StringConcat(values ...string) string {
@@ -17,136 +15,92 @@ func StringConcat(values ...string) string {
 }
 
 type HitBitrixSqlBuilder struct {
-	selectFields *strings.Builder
-	filter       filters.BitrixHitFilter
-	where        *strings.Builder
-	join         *strings.Builder
-	order        *strings.Builder
-	whereLogic   string
+	filter filters.BitrixFilter
 }
 
-func NewHitBitrixSQLBuilder(filter filters.BitrixHitFilter) HitBitrixSqlBuilder {
-	whereLogic := "and"
-	if filter.FilterLogic != "" && (filter.FilterLogic == "and" || filter.FilterLogic == "or") {
-		whereLogic = filter.FilterLogic
-	}
+func NewHitBitrixSQLBuilder(filter filters.BitrixFilter) HitBitrixSqlBuilder {
 	return HitBitrixSqlBuilder{
-		selectFields: &strings.Builder{},
-		filter:       filter,
-		where:        &strings.Builder{},
-		join:         &strings.Builder{},
-		order:        &strings.Builder{},
-		whereLogic:   whereLogic,
+		filter: filter,
 	}
 }
 
 func (hs HitBitrixSqlBuilder) buildIntField(fieldName, execMath string, value null.Int) {
-	if value.IsSet() {
-		if utf8.RuneCountInString(hs.where.String()) > 0 {
-			hs.where.WriteString(
-				StringConcat(" ", hs.whereLogic, " "),
-			)
-		}
-		if execMath != "N" {
-			hs.where.WriteString(
-				StringConcat(" t_hit.", fieldName, "=", strconv.Itoa(value.Int)),
-			)
-		} else {
-			hs.where.WriteString(
-				StringConcat(" t_hit.", fieldName, " like", "\"%", strconv.Itoa(value.Int), "%\""),
-			)
-		}
-	}
+
 }
 
 func (hs HitBitrixSqlBuilder) buildStringField(fieldName, execMath, value string) {
-	if utf8.RuneCountInString(value) > 0 {
-		if utf8.RuneCountInString(hs.where.String()) > 0 {
-			hs.where.WriteString(
-				StringConcat(" ", hs.whereLogic, " "),
-			)
-		}
-		if execMath != "N" {
-			hs.where.WriteString(
-				StringConcat(" t_hit.", fieldName, "=", "\"", value, "\""),
-			)
-		} else {
-			hs.where.WriteString(
-				StringConcat(" t_hit.", fieldName, " like", "\"", "%", value, "%", "\""),
-			)
-		}
-	}
+
 }
 
 func (hs HitBitrixSqlBuilder) buildSQL() {
-	hs.buildIntField("ID", hs.filter.Filter.IdExactMatch, hs.filter.Filter.ID)
-	hs.buildIntField("SESSION_ID", hs.filter.Filter.SessionIdExactMatch, hs.filter.Filter.SessionId)
-	hs.buildIntField("STOP_LIST_ID", hs.filter.Filter.StopListIdExactMatch, hs.filter.Filter.StopListId)
-	hs.buildIntField("COUNTRY_ID", hs.filter.Filter.CountryIdExactMatch, hs.filter.Filter.CountryId)
-	hs.buildIntField("CITY_ID", hs.filter.Filter.CityExactMatch, hs.filter.Filter.CityId)
-
-	hs.buildStringField("URL", hs.filter.Filter.UrlExactMatch, hs.filter.Filter.Url)
-	hs.buildStringField("URL_404", hs.filter.Filter.Url404ExactMatch, hs.filter.Filter.Url404)
-	hs.buildStringField("NEW_GUEST", hs.filter.Filter.NewGuestExactMatch, hs.filter.Filter.NewGuest)
-	hs.buildStringField("IP", hs.filter.Filter.IpExactMatch, hs.filter.Filter.Ip)
-	hs.buildStringField("USER_AGENT", hs.filter.Filter.UserAgentExactMatch, hs.filter.Filter.UserAgent)
-	hs.buildStringField("COOKIE", hs.filter.Filter.CookieExactMatch, hs.filter.Filter.Cookie)
-
-	if hs.filter.Filter.Registered == "Y" {
-		hs.where.WriteString(" t_hit.USER_ID>0 ")
-	} else if hs.filter.Filter.Registered == "N" {
-		hs.where.WriteString(" t_hit.USER_ID<=0 or t_hit.USER_ID is null ")
-	}
-
-	if strings.Trim(hs.filter.Filter.User, " ") != "" {
-		hs.join.WriteString(" LEFT JOIN b_user t_user ON (t_user.ID = t_hit.USER_ID) ")
-		if hs.filter.Filter.UserExactMatch == "N" {
-			hs.where.WriteString(
-				StringConcat(
-					" t_hit.USER_ID like '%",
-					hs.filter.Filter.User,
-					"%' ",
-					hs.whereLogic,
-					" t_user.LOGIN like '%",
-					hs.filter.Filter.User,
-					"%' ",
-					hs.whereLogic,
-					" t_user.LAST_NAME like '%",
-					hs.filter.Filter.User,
-					"%' ",
-					hs.whereLogic,
-					" t_user.NAME like '%",
-					hs.filter.Filter.User,
-					"%",
-					"' ",
-				),
-			)
-		} else {
-			hs.where.WriteString(
-				StringConcat(
-					" t_hit.USER_ID=",
-					hs.filter.Filter.User,
-					" ",
-					hs.whereLogic,
-					" ",
-					" t_user.LOGIN=",
-					"'",
-					hs.filter.Filter.User,
-					"' ",
-					hs.whereLogic,
-					" t_user.LAST_NAME=",
-					"'",
-					hs.filter.Filter.User,
-					"' ",
-					hs.whereLogic,
-					" t_user.NAME=",
-					"'",
-					hs.filter.Filter.User,
-					"' ",
-				),
-			)
-		}
-	}
+	//hs.buildIntField("ID", hs.filter.Filter.IdExactMatch, hs.filter.Filter.ID)
+	//hs.buildIntField("SESSION_ID", hs.filter.Filter.SessionIdExactMatch, hs.filter.Filter.SessionId)
+	//hs.buildIntField("STOP_LIST_ID", hs.filter.Filter.StopListIdExactMatch, hs.filter.Filter.StopListId)
+	//hs.buildIntField("COUNTRY_ID", hs.filter.Filter.CountryIdExactMatch, hs.filter.Filter.CountryId)
+	//hs.buildIntField("CITY_ID", hs.filter.Filter.CityExactMatch, hs.filter.Filter.CityId)
+	//
+	//hs.buildStringField("URL", hs.filter.Filter.UrlExactMatch, hs.filter.Filter.Url)
+	//hs.buildStringField("URL_404", hs.filter.Filter.Url404ExactMatch, hs.filter.Filter.Url404)
+	//hs.buildStringField("NEW_GUEST", hs.filter.Filter.NewGuestExactMatch, hs.filter.Filter.NewGuest)
+	//hs.buildStringField("IP", hs.filter.Filter.IpExactMatch, hs.filter.Filter.Ip)
+	//hs.buildStringField("USER_AGENT", hs.filter.Filter.UserAgentExactMatch, hs.filter.Filter.UserAgent)
+	//hs.buildStringField("COOKIE", hs.filter.Filter.CookieExactMatch, hs.filter.Filter.Cookie)
+	//
+	//if hs.filter.Filter.Registered == "Y" {
+	//	hs.where.WriteString(" t_hit.USER_ID>0 ")
+	//} else if hs.filter.Filter.Registered == "N" {
+	//	hs.where.WriteString(" t_hit.USER_ID<=0 or t_hit.USER_ID is null ")
+	//}
+	//
+	//if strings.Trim(hs.filter.Filter.User, " ") != "" {
+	//	hs.join.WriteString(" LEFT JOIN b_user t_user ON (t_user.ID = t_hit.USER_ID) ")
+	//	if hs.filter.Filter.UserExactMatch == "N" {
+	//		hs.where.WriteString(
+	//			StringConcat(
+	//				" t_hit.USER_ID like '%",
+	//				hs.filter.Filter.User,
+	//				"%' ",
+	//				hs.whereLogic,
+	//				" t_user.LOGIN like '%",
+	//				hs.filter.Filter.User,
+	//				"%' ",
+	//				hs.whereLogic,
+	//				" t_user.LAST_NAME like '%",
+	//				hs.filter.Filter.User,
+	//				"%' ",
+	//				hs.whereLogic,
+	//				" t_user.NAME like '%",
+	//				hs.filter.Filter.User,
+	//				"%",
+	//				"' ",
+	//			),
+	//		)
+	//	} else {
+	//		hs.where.WriteString(
+	//			StringConcat(
+	//				" t_hit.USER_ID=",
+	//				hs.filter.Filter.User,
+	//				" ",
+	//				hs.whereLogic,
+	//				" ",
+	//				" t_user.LOGIN=",
+	//				"'",
+	//				hs.filter.Filter.User,
+	//				"' ",
+	//				hs.whereLogic,
+	//				" t_user.LAST_NAME=",
+	//				"'",
+	//				hs.filter.Filter.User,
+	//				"' ",
+	//				hs.whereLogic,
+	//				" t_user.NAME=",
+	//				"'",
+	//				hs.filter.Filter.User,
+	//				"' ",
+	//			),
+	//		)
+	//	}
+	//}
 }
 
 func (hs HitBitrixSqlBuilder) BuildSQL() (string, error) {
