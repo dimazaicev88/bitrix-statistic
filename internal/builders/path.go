@@ -1,8 +1,8 @@
 package builders
 
-type PathSqlBuilder struct {
-	sqlData SQLDataForBuild
-}
+//type PathSqlBuilder struct {
+//	sqlData SQLDataForBuild
+//}
 
 var pathFields = map[string]string{
 	"PATH_ID":            " t1.PATH_ID",             // ID отрезка пути

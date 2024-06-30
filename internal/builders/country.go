@@ -10,9 +10,9 @@ var cityFields = map[string]string{
 	"C_EVENTS":   "t1.C_EVENTS",
 }
 
-type CountrySQLBuilder struct {
-	sqlData SQLDataForBuild
-}
+//type CountrySQLBuilder struct {
+//	sqlData SQLDataForBuild
+//}
 
 //func NewCountrySQLBuilder(filter filters.Filter) CountrySQLBuilder {
 //	return CountrySQLBuilder{NewSQLBuilder(filter)}

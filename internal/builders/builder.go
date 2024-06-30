@@ -1,60 +1,81 @@
 package builders
 
 import (
+	"bitrix-statistic/internal/filters"
+	"errors"
+	"slices"
 	"strings"
 )
 
-// TODO добавить проверку что параметры указаны правильно в where, order by, select,params.
-type (
-	SelectBuild struct {
-		sqlData SQLDataForBuild
-	}
-
-	WhereBuilder struct {
-		sqlData SQLDataForBuild
-	}
-
-	OrderByBuilder struct {
-		sqlData SQLDataForBuild
-	}
-
-	SQLBuild struct {
-		sqlData SQLDataForBuild
-	}
-
-	DefaultSQLBuild interface {
-		SQLDataForBuild
-	}
-
-	SQL struct {
-		SQL    string
-		Params []interface{}
-	}
-
-	SQLDataForBuild struct {
-		selectBuilder  *strings.Builder
-		joinBuilder    *strings.Builder
-		whereBuilder   *strings.Builder
-		orderByBuilder *strings.Builder
-		//filter         filters.Filter
-		params *[]interface{}
-		limit  *strings.Builder
-		offset *strings.Builder
-	}
-)
-
-//func NewSQLBuilder(filter filters.Filter) SQLDataForBuild {
-//	return SQLDataForBuild{
-//		selectBuilder:  &strings.Builder{},
-//		joinBuilder:    &strings.Builder{},
-//		whereBuilder:   &strings.Builder{},
-//		orderByBuilder: &strings.Builder{},
-//		limit:          &strings.Builder{},
-//		offset:         &strings.Builder{},
-//		filter:         filter,
-//		params:         &[]interface{}{},
+//// TODO добавить проверку что параметры указаны правильно в where, order by, select,params.
+//type (
+//	SelectBuild struct {
+//		sqlData SQLDataForBuild
 //	}
-//}
+//
+//	WhereBuilder struct {
+//		sqlData SQLDataForBuild
+//	}
+//
+//	OrderByBuilder struct {
+//		sqlData SQLDataForBuild
+//	}
+//
+//	SQLBuild struct {
+//		sqlData SQLDataForBuild
+//	}
+//
+//	DefaultSQLBuild interface {
+//		SQLDataForBuild
+//	}
+//
+//	SQL struct {
+//		SQL    string
+//		Params []interface{}
+//	}
+//
+//	SQLDataForBuild struct {
+//		selectBuilder  *strings.Builder
+//		joinBuilder    *strings.Builder
+//		whereBuilder   *strings.Builder
+//		orderByBuilder *strings.Builder
+//		//filter         filters.Filter
+//		params *[]interface{}
+//		limit  *strings.Builder
+//		offset *strings.Builder
+//	}
+//)
+
+var allOperator = []string{"=", ">=", "=<", ">", "<", "!=", "<>", "like", "not like", "and", "or"}
+
+func BuildWhereSQL(filter filters.Filter, validWhereField func(field string) bool) (string, []interface{}, error) {
+	var strBuilder strings.Builder
+	var args []interface{}
+	strBuilder.WriteString("where ")
+	for _, value := range filter.FilterOperator {
+		if slices.Contains(allOperator, value.Operator) == false {
+			return "", nil, errors.New("unknown operator: " + value.Operator)
+		}
+
+		if !validWhereField(value.Field) {
+			return "", nil, errors.New("unknown field: " + value.Field)
+		}
+
+		if len(strBuilder.String()) == 0 && (value.Operator == "and" || value.Operator == "or" || value.Operator == "like" || value.Operator == "not like") {
+			return "", nil, errors.New("invalid position operator. where " + value.Operator)
+		}
+		strBuilder.WriteString(value.Field)
+		strBuilder.WriteString(" ")
+		strBuilder.WriteString(value.Operator)
+		strBuilder.WriteString(" ")
+		if value.Operator != "and" && value.Operator != "or" && value.Operator != "like" && value.Operator != "not like" {
+			strBuilder.WriteString("?")
+			args = append(args, value.Value)
+		}
+	}
+
+	return strBuilder.String(), args, nil
+}
 
 //func NewSelectBuild(sqlData SQLDataForBuild) SelectBuild {
 //	return SelectBuild{sqlData: sqlData}

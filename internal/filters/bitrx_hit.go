@@ -10,9 +10,9 @@ type Filter struct {
 }
 
 type FilterOperator struct {
-	Operator string `json:"operator"`
-	Value    string `json:"value"`
-	Field    string `json:"field"`
+	Operator string      `json:"operator"`
+	Value    interface{} `json:"value"`
+	Field    string      `json:"field"`
 }
 
 //Filter struct {

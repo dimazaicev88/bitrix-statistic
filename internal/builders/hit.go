@@ -1,8 +1,8 @@
 package builders
 
-type HitSqlBuilder struct {
-	sqlData SQLDataForBuild
-}
+//type HitSqlBuilder struct {
+//	sqlData SQLDataForBuild
+//}
 
 //func NewHitSQLBuilder(filter filters.Filter) HitSqlBuilder {
 //	return HitSqlBuilder{NewSQLBuilder(filter)}
