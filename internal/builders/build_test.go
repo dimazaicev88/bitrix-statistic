@@ -127,3 +127,39 @@ func TestBuildWhereSQLCase4(t *testing.T) {
 	req.Equal(sql, "where id > ? and id < ? or id > ?")
 	req.Equal(args, []interface{}{1, 10, 100})
 }
+
+func TestBuildWhereSQLCase5(t *testing.T) {
+	req := require.New(t)
+	testFilter.FilterOperator = []filters.FilterOperator{
+		{
+			Operator: "like",
+			Value:    "ru",
+			Field:    "city",
+		},
+	}
+
+	sql, args, err := BuildWhereSQL(testFilter, func(field string) bool {
+		return true
+	})
+	req.NoError(err)
+	req.Equal(sql, "where city like ?")
+	req.Equal(args, []interface{}{"ru"})
+}
+
+func TestBuildWhereSQLCase6(t *testing.T) {
+	req := require.New(t)
+	testFilter.FilterOperator = []filters.FilterOperator{
+		{
+			Operator: "not like",
+			Value:    "ru",
+			Field:    "city",
+		},
+	}
+
+	sql, args, err := BuildWhereSQL(testFilter, func(field string) bool {
+		return true
+	})
+	req.NoError(err)
+	req.Equal(sql, "where city not like ?")
+	req.Equal(args, []interface{}{"ru"})
+}

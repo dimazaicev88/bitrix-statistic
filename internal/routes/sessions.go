@@ -1,13 +1,10 @@
 package routes
 
 import (
-	"bitrix-statistic/internal/entity"
 	"bitrix-statistic/internal/filters"
 	"bitrix-statistic/internal/models"
-	"fmt"
 	"github.com/gofiber/fiber/v2"
 	jsoniter "github.com/json-iterator/go"
-	"time"
 )
 
 type SessionHandlers struct {
@@ -24,12 +21,12 @@ func NewSessionHandlers(app *fiber.App, sessionModel models.SessionModel) Sessio
 
 func (sh SessionHandlers) AddHandlers() {
 	sh.app.Post("/session/filter", sh.Filter)
-	sh.app.Post("/session/add", sh.AddSession)
 	sh.app.Delete("/session/delete/:id/", sh.DeleteById)
+	sh.app.Delete("/session/delete/list/:list", sh.DeleteByList)
 }
 
 func (sh SessionHandlers) Filter(ctx *fiber.Ctx) error {
-	var filter filters.Filter
+	var filter filters.BitrixFilter
 	body := ctx.Body()
 	err := jsoniter.Unmarshal(body, &filter)
 	if err != nil {
@@ -59,42 +56,6 @@ func (sh SessionHandlers) DeleteById(ctx *fiber.Ctx) error {
 	return nil
 }
 
-func (sh SessionHandlers) AddSession(ctx *fiber.Ctx) error {
-	start := time.Now()
-	var session entity.SessionJson
-	body := ctx.Body()
-	err := jsoniter.Unmarshal(body, &session)
-	if err != nil {
-		ctx.Status(502)
-		return err
-	}
-	stop := time.Now().Sub(start)
-	fmt.Println(stop)
-	//err = sh.sessionModel.AddSession(session)
-	//if err != nil {
-	//	ctx.Status(502)
-	//	return err
-	//}
-
-	return nil
-}
-
-func (sh SessionHandlers) AddSessionData(ctx *fiber.Ctx) error {
-	start := time.Now()
-	var session entity.SessionData
-	body := ctx.Body()
-	err := jsoniter.Unmarshal(body, &session)
-	if err != nil {
-		ctx.Status(502)
-		return err
-	}
-	stop := time.Now().Sub(start)
-	fmt.Println(stop)
-	//err = sh.sessionModel.AddSession(session)
-	//if err != nil {
-	//	ctx.Status(502)
-	//	return err
-	//}
-
+func (sh SessionHandlers) DeleteByList(ctx *fiber.Ctx) error {
 	return nil
 }

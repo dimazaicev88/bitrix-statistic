@@ -15,7 +15,7 @@ func NewSessionModel(storageImpl storage.Storage) SessionModel {
 	return SessionModel{storage: storageImpl}
 }
 
-func (sm SessionModel) Find(filter filters.Filter) (error, []map[string]interface{}) {
+func (sm SessionModel) Find(filter filters.BitrixFilter) (error, []map[string]interface{}) {
 
 	return nil, nil
 }

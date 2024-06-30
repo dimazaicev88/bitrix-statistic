@@ -2,6 +2,7 @@ package models
 
 import (
 	"bitrix-statistic/internal/entity"
+	"bitrix-statistic/internal/filters"
 	"bitrix-statistic/internal/storage"
 	"database/sql"
 	"errors"
@@ -84,4 +85,8 @@ func (gm GuestModel) ExistsGuestByToken(token string) (bool, error) {
 		return false, err
 	}
 	return len(cookieToken) > 0, nil
+}
+
+func (gm GuestModel) Find(filter filters.Filter) (interface{}, interface{}) {
+
 }
