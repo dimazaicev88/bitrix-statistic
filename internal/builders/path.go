@@ -1,9 +1,5 @@
 package builders
 
-//type PathSqlBuilder struct {
-//	sqlData SQLDataForBuild
-//}
-
 var pathFields = map[string]string{
 	"PATH_ID":            " t1.PATH_ID",             // ID отрезка пути
 	"DATE1":              " t1.DATE1 ",              // начальное значение для интервала даты
