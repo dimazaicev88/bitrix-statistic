@@ -57,3 +57,7 @@ func BuildLimit(filter filters.Filter) (string, []int) {
 	}
 	return strBuilder.String(), args
 }
+
+func BuildOrderBy() {
+
+}
