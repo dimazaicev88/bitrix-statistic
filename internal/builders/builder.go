@@ -37,3 +37,23 @@ func BuildWhereSQL(filter filters.Filter, validWhereField func(field string) boo
 
 	return strBuilder.String(), args, nil
 }
+
+func BuildLimit(filter filters.Filter) (string, []int) {
+	var strBuilder strings.Builder
+	var args []int
+	strBuilder.WriteString("limit ")
+	if filter.Skip != 0 {
+		args = append(args, filter.Skip)
+		strBuilder.WriteString("?")
+		strBuilder.WriteString(", ")
+	}
+
+	if filter.Limit != 0 && filter.Limit < 1000 {
+		args = append(args, filter.Limit)
+		strBuilder.WriteString("?")
+	} else {
+		args = append(args, 1000)
+		strBuilder.WriteString("?")
+	}
+	return strBuilder.String(), args
+}

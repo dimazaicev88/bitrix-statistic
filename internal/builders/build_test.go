@@ -16,6 +16,8 @@ var testFilter = filters.Filter{
 	FilterOperator: nil,
 }
 
+//TODO добавить описание кейсов
+
 func TestBuildWhereSQLCase1(t *testing.T) {
 	req := require.New(t)
 	testFilter.FilterOperator = []filters.FilterOperator{
@@ -162,4 +164,68 @@ func TestBuildWhereSQLCase6(t *testing.T) {
 	req.NoError(err)
 	req.Equal(sql, "where city not like ?")
 	req.Equal(args, []interface{}{"ru"})
+}
+
+func TestBuildLimitSQLCase1(t *testing.T) {
+	req := require.New(t)
+	var testFilter = filters.Filter{
+		Fields:         nil,
+		Skip:           0,
+		Limit:          0,
+		OrderBy:        "",
+		Order:          "",
+		FilterOperator: nil,
+	}
+
+	sql, args := BuildLimit(testFilter)
+	req.Equal(sql, "limit ?")
+	req.Equal(args, []int{1000})
+}
+
+func TestBuildLimitSQLCase2(t *testing.T) {
+	req := require.New(t)
+	var testFilter = filters.Filter{
+		Fields:         nil,
+		Skip:           0,
+		Limit:          0,
+		OrderBy:        "",
+		Order:          "",
+		FilterOperator: nil,
+	}
+	testFilter.Skip = 10
+	sql, args := BuildLimit(testFilter)
+	req.Equal(sql, "limit ?, ?")
+	req.Equal(args, []int{10, 1000})
+}
+
+func TestBuildLimitSQLCase3(t *testing.T) {
+	req := require.New(t)
+	var testFilter = filters.Filter{
+		Fields:         nil,
+		Skip:           0,
+		Limit:          0,
+		OrderBy:        "",
+		Order:          "",
+		FilterOperator: nil,
+	}
+	testFilter.Limit = 10
+	sql, args := BuildLimit(testFilter)
+	req.Equal(sql, "limit ?")
+	req.Equal(args, []int{10})
+}
+
+func TestBuildLimitSQLCase4(t *testing.T) {
+	req := require.New(t)
+	var testFilter = filters.Filter{
+		Fields:         nil,
+		Skip:           0,
+		Limit:          0,
+		OrderBy:        "",
+		Order:          "",
+		FilterOperator: nil,
+	}
+	testFilter.Limit = 10000
+	sql, args := BuildLimit(testFilter)
+	req.Equal(sql, "limit ?")
+	req.Equal(args, []int{1000})
 }
