@@ -1,115 +1,110 @@
 package main
 
 import (
-	"errors"
-	"net/url"
-	"regexp"
-	"strings"
+	"context"
+	"github.com/centrifugal/gocent/v3"
 )
 
-type UrlToSql struct {
-	urlValues url.Values
+func main() {
+	c := gocent.New(gocent.Config{
+		Addr: "http://localhost:8000/api",
+		Key:  "",
+	})
+
+	ch := "portal"
+	ctx := context.Background()
+	//start := time.Now()
+	c.Publish(ctx, ch, []byte(`{"user": "zabbix","msg": "test message","chatId": "2002"}`))
+
+	//stop := time.Since(start)
+	//fmt.Println(stop)
+	//if err != nil {
+	//	log.Fatalf("Error calling publish: %v", err)
+	//}
+	//log.Printf("Publish into channel %s successful, stream position {offset: %d, epoch: %s}", ch, result.Offset, result.Epoch)
+	//
+	//// How to get presence.
+	//presenceResult, err := c.Presence(ctx, ch)
+	//if err != nil {
+	//	log.Fatalf("Error calling presence: %v", err)
+	//}
+	//log.Printf("Presense for channel %s: %d active subscribers", ch, len(presenceResult.Presence))
+	//
+	//// How to get presence stats.
+	//presenceStatsResult, err := c.PresenceStats(ctx, ch)
+	//if err != nil {
+	//	log.Fatalf("Error calling presence: %v", err)
+	//}
+	//log.Printf("Presense stats for channel %s: %d unique users, %d total subscribers", ch, presenceStatsResult.NumUsers, presenceStatsResult.NumClients)
+	//
+	//// How to get history.
+	//historyResult, err := c.History(ctx, ch)
+	//if err != nil {
+	//	log.Fatalf("Error calling history: %v", err)
+	//}
+	//log.Printf("History for channel %s, %d messages", ch, len(historyResult.Publications))
+	//
+	//// How to get channels.
+	//channelsResult, err := c.Channels(ctx)
+	//if err != nil {
+	//	log.Fatalf("Error calling channels: %v", err)
+	//}
+	//log.Printf("Channels: %#v", channelsResult.Channels)
+	//
+	//// Get info about nodes.
+	//info, err := c.Info(ctx)
+	//if err != nil {
+	//	log.Fatalf("Error calling info: %v", err)
+	//}
+	//log.Printf("Info: %d Centrifugo nodes running", len(info.Nodes))
+	//
+	//// How to broadcast the same data into 3 different channels in one request.
+	//chs := []string{"chat_1", "chat_2", "chat_3"}
+	//broadcastResult, err := c.Broadcast(ctx, chs, []byte(`{"input": "test"}`))
+	//if err != nil {
+	//	log.Fatalf("Error calling broadcast: %v", err)
+	//}
+	//var hasPublishError bool
+	//for i, resp := range broadcastResult.Responses {
+	//	if resp.Error != nil {
+	//		hasPublishError = true
+	//		log.Printf("error broadcasting to %s: %v", chs[i], resp.Error)
+	//	}
+	//}
+	//if !hasPublishError {
+	//	log.Printf("Broadcast to %d channels is successful", len(chs))
+	//}
+	//
+	//// How to remove history.
+	//err = c.HistoryRemove(ctx, ch)
+	//if err != nil {
+	//	log.Fatalf("Error calling history remove: %v", err)
+	//}
+	//log.Print("History for channel removed")
+	//
+	//// How to send 3 commands in one request.
+	//pipe := c.Pipe()
+	//_ = pipe.AddPublish(ch, []byte(`{"input": "test1"}`))
+	//_ = pipe.AddPublish(ch, []byte(`{"input": "test2"}`))
+	//_ = pipe.AddPublish(ch, []byte(`{"input": "test3"}`))
+	//replies, err := c.SendPipe(ctx, pipe)
+	//if err != nil {
+	//	log.Fatalf("Error sending pipe: %v", err)
+	//}
+	//for _, reply := range replies {
+	//	if reply.Error != nil {
+	//		log.Fatalf("Error in pipe reply: %v", err)
+	//	}
+	//}
+	//log.Printf("Sent %d publish commands in one HTTP request ", len(replies))
+	//client := resty.New().R().SetBody("{\"channel\": \"channel\", \"data\": {\"value\": 2}}")
+	//start := time.Now()
+	//for i := 0; i < 10000; i++ {
+	//	_, err := client.Post("http://localhost:8000/api/publish")
+	//	if err != nil {
+	//		log.Panic(err)
+	//	}
+	//}
+	//stop := time.Since(start)
+	//fmt.Println(stop)
 }
-
-/**
-api/v1/hit?id=20 +
-api/v1/hit?id=gt:20 //>20 +
-api/v1/hit?id=gte:20 //>=20+
-api/v1/hit?id=lt:20 //<20
-api/v1/hit?id=lte:20 //<=20
-api/v1/hit?id=[20]or[21]or[50] //20 or 21 or 50
-api/v1/hit?id=1..20_or_21_or_50 //(id>1 and id<20) or id>21 or 50<id
-api/v1/hit?id=20_and_21_and_50 //20 or 21 or 50
-api/v1/hit?id=lt:20&url=~samson%_or_~%guest% // like 'samson%'
-api/v1/hit?id=lt:20&url=~"samson%_"%_or_~"%guest%" // like 'samson%'
-*/
-
-func NewUrlToSql(strUrl string) (UrlToSql, error) {
-	parse, err := url.Parse(strUrl)
-	if err != nil {
-		return UrlToSql{}, err
-	}
-	return UrlToSql{urlValues: parse.Query()}, nil
-}
-
-func (p UrlToSql) ToSqlIntField(fieldName string) (string, error) {
-	var sql strings.Builder
-
-	if !p.urlValues.Has(fieldName) {
-		return "", errors.New("field: " + fieldName + " not found")
-	}
-	rgOnlyNum, _ := regexp.Compile(`^\d+$`)
-	rgGt, _ := regexp.Compile(`^gt:\d+$`)
-	rgGte, _ := regexp.Compile(`^gte:\d+$`)
-	rgLt, _ := regexp.Compile(`^lt:\d+$`)
-	rgLte, _ := regexp.Compile(`^lte:\d+$`)
-	if rgOnlyNum.MatchString(p.urlValues.Get(fieldName)) {
-		sql.WriteString(fieldName)
-		sql.WriteString("=")
-		sql.WriteString(p.urlValues.Get(fieldName))
-	}
-
-	if rgGt.MatchString(p.urlValues.Get(fieldName)) {
-		sql.WriteString(fieldName)
-		sql.WriteString(">")
-		sql.WriteString(strings.Split(p.urlValues.Get(fieldName), ":")[1])
-	}
-
-	if rgGte.MatchString(p.urlValues.Get(fieldName)) {
-		sql.WriteString(fieldName)
-		sql.WriteString(">=")
-		sql.WriteString(strings.Split(p.urlValues.Get(fieldName), ":")[1])
-	}
-
-	if rgLt.MatchString(p.urlValues.Get(fieldName)) {
-		sql.WriteString(fieldName)
-		sql.WriteString("<")
-		sql.WriteString(strings.Split(p.urlValues.Get(fieldName), ":")[1])
-	}
-
-	if rgLte.MatchString(p.urlValues.Get(fieldName)) {
-		sql.WriteString(fieldName)
-		sql.WriteString("<=")
-		sql.WriteString(strings.Split(p.urlValues.Get(fieldName), ":")[1])
-	}
-
-	return sql.String(), nil
-}
-
-//func main() {
-//	//urlToSQl, _ := NewUrlToSql("https://korautotest1.officemag.ru/api/v1/hit?id=gte:20")
-//	//value, err := urlToSQl.ToSqlIntField("id")
-//	//if err != nil {
-//	//	panic(err)
-//	//}
-//	//
-//	//println(value)
-//
-//	rg, _ := regexp.Compile(`^[gt|le:\[\d+\](or|and)(\[\d+\])]+?$`)
-//	rs := rg.MatchString("[lt:10]or[gt:20]or[40]and[50]or[60]or[70]or[80]")
-//	fmt.Println(rs)
-//
-//	//start := time.Now()
-//	//rx, _ := regexp.Compile(`id=eq:\d+`)
-//	//rx.MatchString("id=eq:200&limit=10&order=asc")
-//	////println(b)
-//	//elapsed := time.Since(start)
-//	//log.Println("time: ", elapsed.Nanoseconds())
-//
-//	//client := http.Client{}
-//	//start := time.Now()
-//	//regexp.MatchString(`^id=eq\:\d+$`, "id=eq:200&limit=10&order=asc")
-//	//
-//	////client.Get("http://127.0.0.1:125/")
-//	//stop := time.Since(start)
-//	//fmt.Println(stop)
-//	//response, err := client.Get("http://127.0.0.1:3000/")
-//	//if err != nil {
-//	//	log.Fatalln(err)
-//	//}
-//	//all, err := ioutil.ReadAll(response.Body)
-//	//if err != nil {
-//	//	log.Fatalln(err)
-//	//}
-//	//fmt.Println(string(all))
-//}

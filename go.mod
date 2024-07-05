@@ -5,7 +5,9 @@ go 1.22
 require (
 	github.com/RichardKnop/machinery v1.10.8
 	github.com/caarlos0/env/v6 v6.10.1
+	github.com/centrifugal/gocent/v3 v3.2.0
 	github.com/codingsince1985/checksum v1.3.0
+	github.com/go-resty/resty/v2 v2.13.1
 	github.com/go-sql-driver/mysql v1.6.0
 	github.com/gofiber/fiber/v2 v2.52.4
 	github.com/gofiber/template v1.6.30

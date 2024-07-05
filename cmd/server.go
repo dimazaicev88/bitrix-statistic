@@ -1,7 +1,10 @@
 package main
 
 import (
+	"fmt"
 	_ "github.com/go-sql-driver/mysql"
+	"github.com/gofiber/fiber/v2"
+	"log"
 )
 
 func main() {
@@ -15,14 +18,17 @@ func main() {
 	//	log.Panic(err)
 	//}
 	//
-	//app := fiber.New()
-	//app.Get("/", func(c *fiber.Ctx) error {
-	//	row := db.QueryRow("select id from speed")
-	//	var id int
-	//	err = row.Scan(&id)
-	//	return c.SendString("Hello, World 👋!")
-	//})
-	//log.Fatal(app.Listen(":3000"))
+	app := fiber.New()
+	app.Post("/", func(c *fiber.Ctx) error {
+
+		fmt.Println(string(c.Body()))
+
+		//row := db.QueryRow("select id from speed")
+		//var id int
+		//err = row.Scan(&id)
+		return c.SendString("Hello, World 👋!")
+	})
+	log.Fatal(app.Listen(":3000"))
 
 	//sb := sqlbuilder.Select("id", "name").From("demo.user")
 	//sb.Where("a=12").Where("b=12")
