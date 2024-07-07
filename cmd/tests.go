@@ -12,6 +12,6 @@ func main() {
 	//	Where("status = 1").Where("id=2`").
 	//	String()
 
-	fmt.Println(sqlbuilder.Select("g.id").From("guest g"))
+	fmt.Println(sqlbuilder.Select("g.id").From("guest g").Join("LEFT JOIN b_stat_country c ON (c.ID = g.LAST_COUNTRY_ID)"))
 
 }

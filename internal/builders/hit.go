@@ -33,7 +33,7 @@ var hitFields = map[string]string{
 
 //func (hs HitSqlBuilder) buildSelect() (WhereBuilder, error) {
 //	return NewSelectBuild(hs.sqlData).Build(func(sqlData SQLDataForBuild) (WhereBuilder, error) {
-//		var selectFields []string
+//		var selectBuffer []string
 //		sqlData.selectBuilder.WriteString("SELECT ")
 //		if len(sqlData.filter.Select) == 0 {
 //			sqlData.selectBuilder.WriteString("* ")
@@ -44,7 +44,7 @@ var hitFields = map[string]string{
 //			slices.Sort(sqlData.filter.Select)
 //			for _, selectField := range sqlData.filter.Select {
 //				if value, ok := hitFields[selectField]; ok {
-//					selectFields = append(selectFields, value)
+//					selectBuffer = append(selectBuffer, value)
 //				} else {
 //					return WhereBuilder{}, errors.New("unknown field " + selectField)
 //				}
@@ -57,7 +57,7 @@ var hitFields = map[string]string{
 //				}
 //			}
 //		}
-//		sqlData.selectBuilder.WriteString(strings.Join(selectFields, ","))
+//		sqlData.selectBuilder.WriteString(strings.Join(selectBuffer, ","))
 //		sqlData.selectBuilder.WriteString(" FROM b_stat_hit t1 ")
 //		sqlData.selectBuilder.WriteString(sqlData.joinBuilder.String())
 //		return NewWhereBuilder(sqlData), nil

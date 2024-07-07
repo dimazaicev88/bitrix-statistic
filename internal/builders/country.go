@@ -20,21 +20,21 @@ var cityFields = map[string]string{
 
 //func (cb CountrySQLBuilder) buildSelect() (WhereBuilder, error) {
 //return NewSelectBuild(cb.sqlData).Build(func(sqlData SQLDataForBuild) (WhereBuilder, error) {
-//	var selectFields []string
+//	var selectBuffer []string
 //	cb.sqlData.selectBuilder.WriteString("SELECT ")
 //	if len(cb.sqlData.filter.Select) == 0 {
 //		cb.sqlData.selectBuilder.WriteString("* ")
 //	} else {
 //		for _, selectField := range cb.sqlData.filter.Select {
 //			if value, ok := cityFields[selectField]; ok {
-//				selectFields = append(selectFields, value)
+//				selectBuffer = append(selectBuffer, value)
 //			}
 //		}
 //	}
-//	if len(selectFields) == 0 {
+//	if len(selectBuffer) == 0 {
 //		return WhereBuilder{}, errors.New("unknown fields is select")
 //	}
-//	cb.sqlData.selectBuilder.WriteString(strings.Join(selectFields, ","))
+//	cb.sqlData.selectBuilder.WriteString(strings.Join(selectBuffer, ","))
 //	cb.sqlData.selectBuilder.WriteString(" FROM b_stat_country t1 ")
 //	cb.sqlData.selectBuilder.WriteString(cb.sqlData.joinBuilder.String())
 //	return NewWhereBuilder(sqlData), nil

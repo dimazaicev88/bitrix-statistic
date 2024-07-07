@@ -98,7 +98,7 @@ func (hs HitBitrixSqlBuilder) buildSQL() {
 func (hs HitBitrixSqlBuilder) BuildSQL() (string, error) {
 	var result strings.Builder
 
-	//hs.selectFields.WriteString("SELECT" +
+	//hs.selectBuffer.WriteString("SELECT" +
 	//	" t_hit.ID," +
 	//	"t_hit.SESSION_ID," +
 	//	"t_hit.GUEST_ID," +
@@ -123,7 +123,7 @@ func (hs HitBitrixSqlBuilder) BuildSQL() (string, error) {
 	//hs.join.WriteString(" LEFT JOIN b_stat_city t_city ON (t_city.ID = t_hit.CITY_ID)")
 	//
 	//hs.buildSQL()
-	//result.WriteString(hs.selectFields.String())
+	//result.WriteString(hs.selectBuffer.String())
 	//result.WriteString(hs.join.String())
 	//result.WriteString(" where ")
 	//result.WriteString(hs.where.String())

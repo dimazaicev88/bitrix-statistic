@@ -83,34 +83,39 @@ type GuestSQLBuilder struct {
 	filter        filters.Filter
 	selectBuilder *sqlbuilder.SelectBuilder
 	argsSql       []interface{}
+	selectBuffer  []string
+	joinBuffer    []string
 }
 
 func NewGuestBuilder(filter filters.Filter) GuestSQLBuilder {
 	return GuestSQLBuilder{
 		filter:        filter,
 		selectBuilder: sqlbuilder.NewSelectBuilder(),
+		selectBuffer:  []string{},
 	}
 }
 
 func (g *GuestSQLBuilder) Select() error {
-	arrFields := make([]string, 0, len(g.filter.Fields))
+	//arrFields := make([]string, 0, len(g.filter.Fields))
 	for _, field := range g.filter.Fields {
 		if _, ok := selectFields[field]; !ok {
 			return errors.New("unknown field: " + field)
 		}
-		arrFields = append(arrFields, fmt.Sprintf("%s as %s", selectFields[field], field))
+		g.selectBuffer = append(g.selectBuffer, fmt.Sprintf("%s as %s", selectFields[field], field))
 	}
-	if len(arrFields) == 0 {
-		arrFields = append(arrFields, "id as g.id")
+	if len(g.selectBuffer) == 0 {
+		g.selectBuffer = append(g.selectBuffer, "id as g.id")
 	}
-	g.selectBuilder.Select(arrFields...).From("guest g")
+	//g.selectBuilder.Select(arrFields...).From("guest g")
 	return nil
 }
 
 func (g *GuestSQLBuilder) Where() (string, error) {
 	var values []interface{}
 	var whereCondition []string
-	sessionJoined := false
+	needJoinSession := false
+	needJoinCity := false
+	needJoinCountry := false
 	for _, value := range g.filter.Operators {
 		switch value.Field {
 
@@ -133,17 +138,10 @@ func (g *GuestSQLBuilder) Where() (string, error) {
 			whereCondition = append(whereCondition, fmt.Sprintf("g.last_date %s ?", value.Operator))
 			values = append(values, value.Value)
 
-		//case "last_date2":
-		//	whereCondition = append(whereCondition, "g.last_date < ?")
-		//	values = append(values, value.Value)
-
 		case "period_date1":
 			whereCondition = append(whereCondition, fmt.Sprintf("g.date_first %s ?", value.Operator))
 			values = append(values, value.Value)
-			if sessionJoined == false {
-				g.selectBuilder.Join("sessions s", "s.guest_id = g.id")
-			}
-			sessionJoined = true
+			needJoinSession = true
 			//"count(S.ID) as SESS,";  TODO зачем ???
 
 		case "site_id":
@@ -185,7 +183,7 @@ func (g *GuestSQLBuilder) Where() (string, error) {
 			if value.Value.(int) == 1 {
 				whereCondition = append(whereCondition, `g.first_adv_id >0 and g.first_referer1<>'NA' and g.first_referer2<>'NA' 
                               or G.last_adv_id > 0 and G.last_adv_id is not null and G.last_referer1 <> 'NA' and G.last_referer2 <> 'NA'`)
-			}else {
+			} else {
 				whereCondition = append(whereCondition, `G.FIRST_ADV_ID<=0 or
 				G.FIRST_ADV_ID is null or
 				(G.FIRST_REFERER1='NA' and G.FIRST_REFERER2='NA')
@@ -197,7 +195,7 @@ func (g *GuestSQLBuilder) Where() (string, error) {
 
 			}
 			values = append(values, value.Value)
-		case "ADV_ID":
+		case "adv_id":
 			whereCondition = append(whereCondition, fmt.Sprintf("g.first_adv_id %s ? or g.last_adv_id %s ?", value.Operator, value.Operator))
 			values = append(values, value.Value)
 
@@ -211,84 +209,66 @@ func (g *GuestSQLBuilder) Where() (string, error) {
 			whereCondition = append(whereCondition, fmt.Sprintf("g.FIRST_REFERER3 %s ? or g.LAST_REFERER3 %s ?", value.Operator, value.Operator))
 			values = append(values, value.Value)
 		case "EVENTS":
-			$arSqlSearch[] = "G.C_EVENTS>='".intval($val)."'"
-			break
+			whereCondition = append(whereCondition, fmt.Sprintf("g.c_events %s ? ", value.Operator))
+			values = append(values, value.Value)
 		case "SESS":
-			$arSqlSearch[] = "G.SESSIONS>='".intval($val)."'"
-			break
-		case "HITS1":
-			$arSqlSearch[] = "G.HITS>='".intval($val)."'"
-			break
-		case "FAVORITES":
-			if ($val == "Y")
-			$arSqlSearch[] = "G.FAVORITES='Y'"
-			elseif($val == "N")
-			$arSqlSearch[] = "G.FAVORITES<>'Y'"
-			break
-		case "IP":
-			$match = ($arFilter[$key.
-			"_EXACT_MATCH"]=="Y" && $match_value_set) ? "N": "Y";
-		$arSqlSearch[] = GetFilterQuery("G.LAST_IP",$val, $match, array("."))
-			break
-		case "LANG":
-			$match = ($arFilter[$key.
-			"_EXACT_MATCH"]=="Y" && $match_value_set) ? "N": "Y";
-		$arSqlSearch[] = GetFilterQuery("G.LAST_LANGUAGE", $val, $match)
-			break
-		case "COUNTRY_ID":
-			$match = ($arFilter[$key.
-			"_EXACT_MATCH"]=="Y" && $match_value_set) ? "N": "Y";
-		$arSqlSearch[] = GetFilterQuery("G.LAST_COUNTRY_ID", $val, $match)
-			break
-		case "COUNTRY":
-			$match = ($arFilter[$key.
-			"_EXACT_MATCH"]=="Y" && $match_value_set) ? "N": "Y";
-		$arSqlSearch[] = GetFilterQuery("C.NAME", $val, $match);
-		$select1.= " , C.NAME LAST_COUNTRY_NAME ";
-		$from2 = " LEFT JOIN b_stat_country C ON (C.ID = G.LAST_COUNTRY_ID) ";
-		$arrGroup["C.NAME"] = true;
-		$bGroup = true
-			break
-		case "REGION":
-			$match = ($arFilter[$key.
-			"_EXACT_MATCH"]=="Y" && $match_value_set) ? "N": "Y";
-		$arSqlSearch[] = GetFilterQuery("CITY.REGION", $val, $match)
-			break
-		case "CITY_ID":
-			$match = ($arFilter[$key.
-			"_EXACT_MATCH"]=="Y" && $match_value_set) ? "N": "Y";
-		$arSqlSearch[] = GetFilterQuery("G.LAST_CITY_ID", $val, $match)
-			break
-		case "CITY":
-			$match = ($arFilter[$key.
-			"_EXACT_MATCH"]=="Y" && $match_value_set) ? "N": "Y";
-		$arSqlSearch[] = GetFilterQuery("CITY.NAME", $val, $match)
-			break
-		case "USER":
+			whereCondition = append(whereCondition, fmt.Sprintf("g.sessions %s ? ", value.Operator))
+			values = append(values, value.Value)
+		case "HITS":
+			whereCondition = append(whereCondition, fmt.Sprintf("g.hits %s ? ", value.Operator))
+			values = append(values, value.Value)
+		case "favorites":
+			if utils.IsInt(value.Value) == false {
+				return "", errors.New("invalid value type: " + value.Field)
+			}
+			whereCondition = append(whereCondition, fmt.Sprintf("g.favorites %s ? ", value.Operator))
+			values = append(values, value.Value)
+		case "ip":
+			whereCondition = append(whereCondition, fmt.Sprintf("g.last_ip %s ? ", value.Operator))
+			values = append(values, value.Value)
+		case "lang":
+			whereCondition = append(whereCondition, fmt.Sprintf("g.last_language %s ? ", value.Operator))
+			values = append(values, value.Value)
+		case "country_id":
+
+			//, C.NAME LAST_COUNTRY_NAME
+			whereCondition = append(whereCondition, fmt.Sprintf("g.last_language %s ? ", value.Operator))
+			values = append(values, value.Value)
+
+		case "country":
+			g.selectBuffer = append(g.selectBuffer, "c.name as last_country_name")
+			needJoinCountry = true
+			whereCondition = append(whereCondition, fmt.Sprintf("c.name %s ? ", value.Operator))
+			values = append(values, value.Value)
+
+		case "region":
+			needJoinCity = true
+			whereCondition = append(whereCondition, fmt.Sprintf("city.region %s ? ", value.Operator))
+			values = append(values, value.Value)
+		case "city_id":
+			whereCondition = append(whereCondition, fmt.Sprintf("g.last_city_id %s ? ", value.Operator))
+			values = append(values, value.Value)
+		case "city":
+			whereCondition = append(whereCondition, fmt.Sprintf("city.name %s ? ", value.Operator))
+			values = append(values, value.Value)
+		case "USER": //TODO добавить фильтрацию по логину
 		case "USER_ID":
-			if intval($val) > 0) {
-			$arSqlSearch[] = "G.LAST_USER_ID=".intval($val)
-		} else {
-			$arSqlSearch[] = $DB- > IsNull("G.LAST_USER_ID", "0").
-			">0"
+			whereCondition = append(whereCondition, fmt.Sprintf("g.last_user_id %s ? ", value.Operator))
+			values = append(values, value.Value)
 		}
-			$arrGroup["G.LAST_USER_ID"] = true
-			$bGroup = true
-			break
+
+		if needJoinSession == false {
+			g.selectBuilder.Join("sessions s", "s.guest_id = g.id")
 		}
+
+		if needJoinCountry == false {
+			g.selectBuilder.Join("country c", "c.id = g.last_country_id")
+		}
+
 	}
-}
+	g.selectBuilder.Where(whereCondition...)
 
-//sql, args, err := BuildWhereSQL(g.filter, func(field string) bool {
-//	return slices.Contains(whereFields, field)
-//})
-//if err != nil {
-//	return "", err
-//}
-//g.argsSql = args
-g.selectBuilder.Where(whereCondition...)
-
-return "", nil
+	return "", nil
 }
 
 func (g *GuestSQLBuilder) ToString() (string, error) {
@@ -297,14 +277,4 @@ func (g *GuestSQLBuilder) ToString() (string, error) {
 	}
 
 	return g.selectBuilder.String(), nil
-	//err := g.Select()
-	//if err != nil {
-	//	return "", err
-	//}
-	//
-	//where, err := g.Where()
-	//if err != nil {
-	//	return "", err
-	//}
-	//return utils.StringConcat(selectFields, where), nil
 }

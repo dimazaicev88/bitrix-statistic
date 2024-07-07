@@ -1,6 +1,6 @@
 package builders
 
-//var selectFields = map[string]string{
+//var selectBuffer = map[string]string{
 //	"ID":                           "", //- ID РК;
 //	"PRIORITY":                     "", // - приоритет;
 //	"REFERER1":                     "", // - идентификатор referer1 РК;
