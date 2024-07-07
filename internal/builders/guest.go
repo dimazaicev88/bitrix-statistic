@@ -9,14 +9,14 @@ import (
 )
 
 var whereFields = []string{
-	"id",            // - ID посетителя;
-	"registered",    // - был ли посетитель когда-либо авторизован на сайте, возможные значения: 1 - был; 0 - не был.
-	"first_date1",   //- начальное значение интервала для поля "дата первого захода на сайт";
-	"first_date2",   // конечное значение интервала для поля "дата первого захода на сайт";
-	"last_date1",    //начальное значение интервала для поля "дата последнего захода на сайт";
-	"last_date2",    //конечное значение интервала для поля "дата первого захода на сайт";
-	"period_date1",  //начальное значение интервала для даты посещения посетителем сайта;
-	"period_date2",  //конечно значение интервала для даты посещения посетителем сайта;
+	"id",          // - ID посетителя;
+	"registered",  // - был ли посетитель когда-либо авторизован на сайте, возможные значения: 1 - был; 0 - не был.
+	"first_date1", //- начальное значение интервала для поля "дата первого захода на сайт";
+	//"first_date2", // конечное значение интервала для поля "дата первого захода на сайт";
+	"last_date", //начальное значение интервала для поля "дата последнего захода на сайт";
+	//"last_date2", //конечное значение интервала для поля "дата первого захода на сайт";
+	"period_date1", //начальное значение интервала для даты посещения посетителем сайта;
+	//"period_date2", //конечно значение интервала для даты посещения посетителем сайта;
 	"site_id",       //ID сайта первого либо последнего захода;
 	"first_site_id", // ID сайта первого захода;
 	"last_site_id",  // ID сайта последнего захода;
@@ -30,12 +30,9 @@ var whereFields = []string{
 	"referer1",   // идентификатор referer1 рекламной кампании первого либо последнего захода посетителя;
 	"referer2",   // идентификатор referer2 рекламной кампании первого либо последнего захода посетителя;
 	"referer3",   // дополнительный параметр referer3 рекламной кампании первого либо последнего захода посетителя;
-	"events1",    // начальное значение для интервала кол-ва событий сгенерированных посетителем;
-	"events2",    // конечное значение для интервала кол-ва событий сгенерированных посетителем;
-	"sess1",      // начальное значение для интервала кол-ва сессий сгенерированных посетителем;
-	"sess2",      // конечное значение для интервала кол-ва сессий сгенерированных посетителем;
-	"hits1",      // начальное значение для интервала кол-ва хитов сгенерированных посетителем;
-	"hits2",      // конечное значение для интервала кол-ва хитов сгенерированных посетителем;
+	"events",     // начальное значение для интервала кол-ва событий сгенерированных посетителем;
+	"sess",       // начальное значение для интервала кол-ва сессий сгенерированных посетителем;
+	"hits",       // начальное значение для интервала кол-ва хитов сгенерированных посетителем;
 	"favorites",  // флаг "добавлял ли посетитель сайт в "Избранное"", возможные значения: Y - добавлял; N - не добавлял.
 	"ip",         // IP адрес посетителя сайта в последнем заходе;
 	"lang",       // языки установленные в настройках браузера посетителя в последнем заходе;
@@ -118,7 +115,7 @@ func (g *GuestSQLBuilder) Where() (string, error) {
 		switch value.Field {
 
 		case "registered":
-			if utils.IsInt(value.Value) {
+			if utils.IsInt(value.Value) == false {
 				return "", errors.New("invalid value type: " + value.Field)
 			}
 			if value.Value.(int) > 0 {
@@ -128,40 +125,26 @@ func (g *GuestSQLBuilder) Where() (string, error) {
 			}
 			values = append(values, value.Value)
 
-		case "first_date1": //TODO передать на IN
-			whereCondition = append(whereCondition, "g.first_date >= ?")
+		case "first_date": //TODO передать на IN
+			whereCondition = append(whereCondition, fmt.Sprintf("g.first_date %s ?", value.Operator))
 			values = append(values, value.Value)
 
-		case "first_date2":
-			whereCondition = append(whereCondition, "g.first_date < ?")
+		case "last_date":
+			whereCondition = append(whereCondition, fmt.Sprintf("g.last_date %s ?", value.Operator))
 			values = append(values, value.Value)
 
-		case "last_date1":
-			whereCondition = append(whereCondition, "g.last_date >= ?")
-			values = append(values, value.Value)
-
-		case "last_date2":
-			whereCondition = append(whereCondition, "g.last_date < ?")
-			values = append(values, value.Value)
+		//case "last_date2":
+		//	whereCondition = append(whereCondition, "g.last_date < ?")
+		//	values = append(values, value.Value)
 
 		case "period_date1":
-
-			whereCondition = append(whereCondition, "s.date_first >= ?")
+			whereCondition = append(whereCondition, fmt.Sprintf("g.date_first %s ?", value.Operator))
 			values = append(values, value.Value)
 			if sessionJoined == false {
 				g.selectBuilder.Join("sessions s", "s.guest_id = g.id")
 			}
 			sessionJoined = true
-		//"count(S.ID) as SESS,";  TODO зачем ???
-
-		case "period_date2":
-			whereCondition = append(whereCondition, "s.date_first < ?")
-			values = append(values, value.Value)
-			if sessionJoined == false {
-				g.selectBuilder.Join("sessions s", "s.guest_id = g.id")
-				//"count(S.ID) as SESS,";  TODO зачем ???
-			}
-			sessionJoined = true
+			//"count(S.ID) as SESS,";  TODO зачем ???
 
 		case "site_id":
 			whereCondition = append(whereCondition, fmt.Sprintf("g.site_id %s ?", value.Operator))
@@ -194,19 +177,118 @@ func (g *GuestSQLBuilder) Where() (string, error) {
 		case "user_agent":
 			whereCondition = append(whereCondition, fmt.Sprintf("g.last_user_agent %s ?", value.Operator))
 			values = append(values, value.Value)
+
+		case "adv":
+			if utils.IsInt(value.Value) == false {
+				return "", errors.New("invalid value type: " + value.Field)
+			}
+			if value.Value.(int) == 1 {
+				whereCondition = append(whereCondition, `g.first_adv_id >0 and g.first_referer1<>'NA' and g.first_referer2<>'NA' 
+                              or G.last_adv_id > 0 and G.last_adv_id is not null and G.last_referer1 <> 'NA' and G.last_referer2 <> 'NA'`)
+			}else {
+				whereCondition = append(whereCondition, `G.FIRST_ADV_ID<=0 or
+				G.FIRST_ADV_ID is null or
+				(G.FIRST_REFERER1='NA' and G.FIRST_REFERER2='NA')
+			) and (
+					G.LAST_ADV_ID<=0 or
+				G.LAST_ADV_ID is null or
+				(G.LAST_REFERER1='NA' and G.LAST_REFERER2='NA')
+			))`)
+
+			}
+			values = append(values, value.Value)
+		case "ADV_ID":
+			whereCondition = append(whereCondition, fmt.Sprintf("g.first_adv_id %s ? or g.last_adv_id %s ?", value.Operator, value.Operator))
+			values = append(values, value.Value)
+
+		case "REFERER1":
+			whereCondition = append(whereCondition, fmt.Sprintf("g.FIRST_REFERER1 %s ? or g.LAST_REFERER1 %s ?", value.Operator, value.Operator))
+			values = append(values, value.Value)
+		case "REFERER2":
+			whereCondition = append(whereCondition, fmt.Sprintf("g.FIRST_REFERER2 %s ? or g.LAST_REFERER2 %s ?", value.Operator, value.Operator))
+			values = append(values, value.Value)
+		case "REFERER3":
+			whereCondition = append(whereCondition, fmt.Sprintf("g.FIRST_REFERER3 %s ? or g.LAST_REFERER3 %s ?", value.Operator, value.Operator))
+			values = append(values, value.Value)
+		case "EVENTS":
+			$arSqlSearch[] = "G.C_EVENTS>='".intval($val)."'"
+			break
+		case "SESS":
+			$arSqlSearch[] = "G.SESSIONS>='".intval($val)."'"
+			break
+		case "HITS1":
+			$arSqlSearch[] = "G.HITS>='".intval($val)."'"
+			break
+		case "FAVORITES":
+			if ($val == "Y")
+			$arSqlSearch[] = "G.FAVORITES='Y'"
+			elseif($val == "N")
+			$arSqlSearch[] = "G.FAVORITES<>'Y'"
+			break
+		case "IP":
+			$match = ($arFilter[$key.
+			"_EXACT_MATCH"]=="Y" && $match_value_set) ? "N": "Y";
+		$arSqlSearch[] = GetFilterQuery("G.LAST_IP",$val, $match, array("."))
+			break
+		case "LANG":
+			$match = ($arFilter[$key.
+			"_EXACT_MATCH"]=="Y" && $match_value_set) ? "N": "Y";
+		$arSqlSearch[] = GetFilterQuery("G.LAST_LANGUAGE", $val, $match)
+			break
+		case "COUNTRY_ID":
+			$match = ($arFilter[$key.
+			"_EXACT_MATCH"]=="Y" && $match_value_set) ? "N": "Y";
+		$arSqlSearch[] = GetFilterQuery("G.LAST_COUNTRY_ID", $val, $match)
+			break
+		case "COUNTRY":
+			$match = ($arFilter[$key.
+			"_EXACT_MATCH"]=="Y" && $match_value_set) ? "N": "Y";
+		$arSqlSearch[] = GetFilterQuery("C.NAME", $val, $match);
+		$select1.= " , C.NAME LAST_COUNTRY_NAME ";
+		$from2 = " LEFT JOIN b_stat_country C ON (C.ID = G.LAST_COUNTRY_ID) ";
+		$arrGroup["C.NAME"] = true;
+		$bGroup = true
+			break
+		case "REGION":
+			$match = ($arFilter[$key.
+			"_EXACT_MATCH"]=="Y" && $match_value_set) ? "N": "Y";
+		$arSqlSearch[] = GetFilterQuery("CITY.REGION", $val, $match)
+			break
+		case "CITY_ID":
+			$match = ($arFilter[$key.
+			"_EXACT_MATCH"]=="Y" && $match_value_set) ? "N": "Y";
+		$arSqlSearch[] = GetFilterQuery("G.LAST_CITY_ID", $val, $match)
+			break
+		case "CITY":
+			$match = ($arFilter[$key.
+			"_EXACT_MATCH"]=="Y" && $match_value_set) ? "N": "Y";
+		$arSqlSearch[] = GetFilterQuery("CITY.NAME", $val, $match)
+			break
+		case "USER":
+		case "USER_ID":
+			if intval($val) > 0) {
+			$arSqlSearch[] = "G.LAST_USER_ID=".intval($val)
+		} else {
+			$arSqlSearch[] = $DB- > IsNull("G.LAST_USER_ID", "0").
+			">0"
+		}
+			$arrGroup["G.LAST_USER_ID"] = true
+			$bGroup = true
+			break
 		}
 	}
+}
 
-	//sql, args, err := BuildWhereSQL(g.filter, func(field string) bool {
-	//	return slices.Contains(whereFields, field)
-	//})
-	//if err != nil {
-	//	return "", err
-	//}
-	//g.argsSql = args
-	g.selectBuilder.Where(whereCondition...)
+//sql, args, err := BuildWhereSQL(g.filter, func(field string) bool {
+//	return slices.Contains(whereFields, field)
+//})
+//if err != nil {
+//	return "", err
+//}
+//g.argsSql = args
+g.selectBuilder.Where(whereCondition...)
 
-	return "", nil
+return "", nil
 }
 
 func (g *GuestSQLBuilder) ToString() (string, error) {
