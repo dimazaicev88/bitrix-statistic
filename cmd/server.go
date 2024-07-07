@@ -31,7 +31,7 @@ func main() {
 	log.Fatal(app.Listen(":3000"))
 
 	//sb := sqlbuilder.Select("id", "name").From("demo.user")
-	//sb.Where("a=12").Where("b=12")
+	//sb.build("a=12").build("b=12")
 	//fmt.Println(sb.String())
 	//serverConfig := config.ParseServerConfig()
 	//mysqlStorage := storage.NewMysqlStorage(serverConfig)

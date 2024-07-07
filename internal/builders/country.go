@@ -19,7 +19,7 @@ var cityFields = map[string]string{
 //}
 
 //func (cb CountrySQLBuilder) buildSelect() (WhereBuilder, error) {
-//return NewSelectBuild(cb.sqlData).Build(func(sqlData SQLDataForBuild) (WhereBuilder, error) {
+//return NewSelectBuild(cb.sqlData).build(func(sqlData SQLDataForBuild) (WhereBuilder, error) {
 //	var selectBuffer []string
 //	cb.sqlData.selectBuilder.WriteString("SELECT ")
 //	if len(cb.sqlData.filter.Select) == 0 {

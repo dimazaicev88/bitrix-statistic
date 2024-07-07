@@ -23,7 +23,7 @@ var pathFields = map[string]string{
 }
 
 //func (hs PathSqlBuilder) buildSelectAndJoin() (WhereBuilder, error) {
-//	return NewSelectBuild(hs.sqlData).Build(func(sqlData SQLDataForBuild) (WhereBuilder, error) {
+//	return NewSelectBuild(hs.sqlData).build(func(sqlData SQLDataForBuild) (WhereBuilder, error) {
 //		var selectBuffer []string
 //		sqlData.selectBuilder.WriteString("SELECT ")
 //		if len(sqlData.filter.Select) == 0 {

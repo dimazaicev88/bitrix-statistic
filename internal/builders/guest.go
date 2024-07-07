@@ -95,27 +95,22 @@ func NewGuestBuilder(filter filters.Filter) GuestSQLBuilder {
 	}
 }
 
-func (g *GuestSQLBuilder) Select() error {
-	//arrFields := make([]string, 0, len(g.filter.Fields))
+func (g *GuestSQLBuilder) build() (string, error) {
+	var values []interface{}
+	var whereCondition []string
+	needJoinSession := false
+	needJoinCountry := false
+
 	for _, field := range g.filter.Fields {
 		if _, ok := selectFields[field]; !ok {
-			return errors.New("unknown field: " + field)
+			return "", errors.New("unknown field: " + field)
 		}
 		g.selectBuffer = append(g.selectBuffer, fmt.Sprintf("%s as %s", selectFields[field], field))
 	}
 	if len(g.selectBuffer) == 0 {
 		g.selectBuffer = append(g.selectBuffer, "id as g.id")
 	}
-	//g.selectBuilder.Select(arrFields...).From("guest g")
-	return nil
-}
 
-func (g *GuestSQLBuilder) Where() (string, error) {
-	var values []interface{}
-	var whereCondition []string
-	needJoinSession := false
-	needJoinCity := false
-	needJoinCountry := false
 	for _, value := range g.filter.Operators {
 		switch value.Field {
 
@@ -242,7 +237,6 @@ func (g *GuestSQLBuilder) Where() (string, error) {
 			values = append(values, value.Value)
 
 		case "region":
-			needJoinCity = true
 			whereCondition = append(whereCondition, fmt.Sprintf("city.region %s ? ", value.Operator))
 			values = append(values, value.Value)
 		case "city_id":
@@ -266,15 +260,11 @@ func (g *GuestSQLBuilder) Where() (string, error) {
 		}
 
 	}
-	g.selectBuilder.Where(whereCondition...)
 
+	g.selectBuilder.Where(whereCondition...)
 	return "", nil
 }
 
 func (g *GuestSQLBuilder) ToString() (string, error) {
-	if err := g.Select(); err != nil {
-		return "", err
-	}
-
 	return g.selectBuilder.String(), nil
 }
