@@ -6,11 +6,12 @@ import (
 )
 
 func main() {
-	sb := sqlbuilder.NewSelectBuilder()
-	sb.And()
-	sql := sqlbuilder.Select("id", "name").From("demo.user").
-		Where("status = 1").Where("id=2`").
-		String()
+	//sb := sqlbuilder.NewSelectBuilder()
+	//sb.And()
+	//sql := sqlbuilder.Select("id", "name").From("demo.user").
+	//	Where("status = 1").Where("id=2`").
+	//	String()
 
-	fmt.Println(sql)
+	fmt.Println(sqlbuilder.Select("g.id").From("guest g"))
+
 }

@@ -2,12 +2,15 @@ package builders
 
 import (
 	"bitrix-statistic/internal/filters"
-	"bitrix-statistic/internal/utils"
 	"errors"
+	"fmt"
+	"github.com/huandu/go-sqlbuilder"
 )
 
 type GuestSQLBuilder struct {
-	filter filters.Filter
+	filter        filters.Filter
+	selectBuilder *sqlbuilder.SelectBuilder
+	whereBuilder  *sqlbuilder.WhereClause
 }
 
 var selectFields = map[string]string{
@@ -40,37 +43,53 @@ var selectFields = map[string]string{
 	"last_language":     "g.last_language",     //языки установленные в настройках браузера посетителя в последнем заходе
 	"last_country_id":   "g.last_country_id",   //ID страны посетителя в последнем заходе
 	//"last_city_id":      "g.last_city_id",      //TODO ?????
-	"first_date":      "g.first_date",      //время первого захода на сайт
-	"last_date":       "g.last_date",       //время первого захода на сайт
-	"last_session_id": "g.last_session_id", //ID сессии последнего захода на сайт
+	"first_date":        "g.first_date",      //время первого захода на сайт
+	"last_date":         "g.last_date",       //время первого захода на сайт
+	"last_session_id":   "g.last_session_id", //ID сессии последнего захода на сайт
+	"last_country_name": "c.name",
+	"last_city_name":    "city.last_city_name",
 }
 
 func NewGuestBuilder(filter filters.Filter) GuestSQLBuilder {
-	return GuestSQLBuilder{filter: filter}
+	return GuestSQLBuilder{
+		filter:        filter,
+		selectBuilder: sqlbuilder.NewSelectBuilder(),
+		whereBuilder:  sqlbuilder.NewWhereClause(),
+	}
 }
 
-func (g GuestSQLBuilder) Select() (string, error) {
+func (g *GuestSQLBuilder) Select() error {
+	arrFields := make([]string, 0, len(g.filter.Fields))
 	for _, field := range g.filter.Fields {
 		if _, ok := selectFields[field]; !ok {
-			return "", errors.New("unknown field: " + field)
+			return errors.New("unknown field: " + field)
 		}
+		arrFields = append(arrFields, fmt.Sprintf("%s as %s", selectFields[field], field))
 	}
+	if len(arrFields) == 0 {
+		arrFields = append(arrFields, "id as g.id")
+	}
+	g.selectBuilder.Select(arrFields...).From("guest g")
+	return nil
+}
+
+func (g *GuestSQLBuilder) Where() (string, error) {
 	return "", nil
 }
 
-func (g GuestSQLBuilder) Where() (string, error) {
-	return "", nil
-}
-
-func (g GuestSQLBuilder) ToString() (string, error) {
-	selectFields, err := g.Select()
-	if err != nil {
+func (g *GuestSQLBuilder) ToString() (string, error) {
+	if err := g.Select(); err != nil {
 		return "", err
 	}
-
-	where, err := g.Where()
-	if err != nil {
-		return "", err
-	}
-	return utils.StringConcat(selectFields, where), nil
+	return g.selectBuilder.String(), nil
+	//err := g.Select()
+	//if err != nil {
+	//	return "", err
+	//}
+	//
+	//where, err := g.Where()
+	//if err != nil {
+	//	return "", err
+	//}
+	//return utils.StringConcat(selectFields, where), nil
 }

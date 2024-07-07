@@ -248,3 +248,19 @@ create table if not exists guest
     primary key (`id`),
     index IX_LAST_DATE (`last_date`)
 );
+
+create table if not exists city
+(
+    `id`         int(18) not null auto_increment,
+    `country_id` char(2) not null,
+    `region`     varchar(200),
+    `name`       varchar(255),
+    `xml_id`     varchar(255),
+    `sessions`   int(18) not null default '0',
+    `new_guests` int(18) not null default '0',
+    `hits`       int(18) not null default '0',
+    `c_events`   int(18) not null default '0',
+    primary key (`id`),
+    index UX_CITY (`country_id`, `region`(50), `name`(50)),
+    index IX_CITY_XML_ID (`xml_id`)
+);
