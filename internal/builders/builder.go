@@ -13,7 +13,7 @@ func BuildWhereSQL(filter filters.Filter, validWhereField func(field string) boo
 	var strBuilder strings.Builder
 	var args []interface{}
 	strBuilder.WriteString("where ")
-	for _, value := range filter.FilterOperator {
+	for _, value := range filter.Operators {
 		if slices.Contains(allOperator, value.Operator) == false {
 			return "", nil, errors.New("unknown operator: " + value.Operator)
 		}

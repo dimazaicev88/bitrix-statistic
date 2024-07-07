@@ -2,15 +2,47 @@ package builders
 
 import (
 	"bitrix-statistic/internal/filters"
+	"bitrix-statistic/internal/utils"
 	"errors"
 	"fmt"
 	"github.com/huandu/go-sqlbuilder"
 )
 
-type GuestSQLBuilder struct {
-	filter        filters.Filter
-	selectBuilder *sqlbuilder.SelectBuilder
-	whereBuilder  *sqlbuilder.WhereClause
+var whereFields = []string{
+	"id",            // - ID посетителя;
+	"registered",    // - был ли посетитель когда-либо авторизован на сайте, возможные значения: 1 - был; 0 - не был.
+	"first_date1",   //- начальное значение интервала для поля "дата первого захода на сайт";
+	"first_date2",   // конечное значение интервала для поля "дата первого захода на сайт";
+	"last_date1",    //начальное значение интервала для поля "дата последнего захода на сайт";
+	"last_date2",    //конечное значение интервала для поля "дата первого захода на сайт";
+	"period_date1",  //начальное значение интервала для даты посещения посетителем сайта;
+	"period_date2",  //конечно значение интервала для даты посещения посетителем сайта;
+	"site_id",       //ID сайта первого либо последнего захода;
+	"first_site_id", // ID сайта первого захода;
+	"last_site_id",  // ID сайта последнего захода;
+	"url",           // страница откуда впервые пришел посетитель, страница на которую впервые пришел посетитель и последняя страница просмотренная посетителем;
+	"url_404",       // была ли 404 ошибка на первой странице или на последней странице посещенной посетителем, возможные значения: Y - была; N - не было.
+	"user_agent",    // UserAgent посетителя на последнем заходе;
+	"adv",           // флаг "приходил ли посетитель когда-либо по рекламной кампании (не равной NA/NA)", возможные значения:
+	//1 - посетитель приходил по какой-либо рекламной кампании (не равной NA/NA);
+	//0 - не приходил никогда ни по одной рекламной кампании (не равной NA/NA).
+	"adv_id",     // ID рекламной кампании первого либо последнего захода посетителя (при этом это мог быть как прямой заход, так и возврат по рекламной кампании);
+	"referer1",   // идентификатор referer1 рекламной кампании первого либо последнего захода посетителя;
+	"referer2",   // идентификатор referer2 рекламной кампании первого либо последнего захода посетителя;
+	"referer3",   // дополнительный параметр referer3 рекламной кампании первого либо последнего захода посетителя;
+	"events1",    // начальное значение для интервала кол-ва событий сгенерированных посетителем;
+	"events2",    // конечное значение для интервала кол-ва событий сгенерированных посетителем;
+	"sess1",      // начальное значение для интервала кол-ва сессий сгенерированных посетителем;
+	"sess2",      // конечное значение для интервала кол-ва сессий сгенерированных посетителем;
+	"hits1",      // начальное значение для интервала кол-ва хитов сгенерированных посетителем;
+	"hits2",      // конечное значение для интервала кол-ва хитов сгенерированных посетителем;
+	"favorites",  // флаг "добавлял ли посетитель сайт в "Избранное"", возможные значения: Y - добавлял; N - не добавлял.
+	"ip",         // IP адрес посетителя сайта в последнем заходе;
+	"lang",       // языки установленные в настройках браузера посетителя в последнем заходе;
+	"country_id", // ID страны (двух символьный идентификатор) посетителя в последнем заходе;
+	"country",    // название страны;;
+	"user",       // ID, логин, имя, фамилия пользователя, под которыми посетитель последний раз был авторизован;
+	"user_id",    // ID пользователя, под которым посетитель последний раз был авторизован;
 }
 
 var selectFields = map[string]string{
@@ -50,11 +82,16 @@ var selectFields = map[string]string{
 	"last_city_name":    "city.last_city_name",
 }
 
+type GuestSQLBuilder struct {
+	filter        filters.Filter
+	selectBuilder *sqlbuilder.SelectBuilder
+	argsSql       []interface{}
+}
+
 func NewGuestBuilder(filter filters.Filter) GuestSQLBuilder {
 	return GuestSQLBuilder{
 		filter:        filter,
 		selectBuilder: sqlbuilder.NewSelectBuilder(),
-		whereBuilder:  sqlbuilder.NewWhereClause(),
 	}
 }
 
@@ -74,6 +111,101 @@ func (g *GuestSQLBuilder) Select() error {
 }
 
 func (g *GuestSQLBuilder) Where() (string, error) {
+	var values []interface{}
+	var whereCondition []string
+	sessionJoined := false
+	for _, value := range g.filter.Operators {
+		switch value.Field {
+
+		case "registered":
+			if utils.IsInt(value.Value) {
+				return "", errors.New("invalid value type: " + value.Field)
+			}
+			if value.Value.(int) > 0 {
+				whereCondition = append(whereCondition, fmt.Sprintf("g.last_user_id > 0"))
+			} else {
+				whereCondition = append(whereCondition, fmt.Sprintf("g.last_user_id <= 0 or g.last_user_id is null"))
+			}
+			values = append(values, value.Value)
+
+		case "first_date1": //TODO передать на IN
+			whereCondition = append(whereCondition, "g.first_date >= ?")
+			values = append(values, value.Value)
+
+		case "first_date2":
+			whereCondition = append(whereCondition, "g.first_date < ?")
+			values = append(values, value.Value)
+
+		case "last_date1":
+			whereCondition = append(whereCondition, "g.last_date >= ?")
+			values = append(values, value.Value)
+
+		case "last_date2":
+			whereCondition = append(whereCondition, "g.last_date < ?")
+			values = append(values, value.Value)
+
+		case "period_date1":
+
+			whereCondition = append(whereCondition, "s.date_first >= ?")
+			values = append(values, value.Value)
+			if sessionJoined == false {
+				g.selectBuilder.Join("sessions s", "s.guest_id = g.id")
+			}
+			sessionJoined = true
+		//"count(S.ID) as SESS,";  TODO зачем ???
+
+		case "period_date2":
+			whereCondition = append(whereCondition, "s.date_first < ?")
+			values = append(values, value.Value)
+			if sessionJoined == false {
+				g.selectBuilder.Join("sessions s", "s.guest_id = g.id")
+				//"count(S.ID) as SESS,";  TODO зачем ???
+			}
+			sessionJoined = true
+
+		case "site_id":
+			whereCondition = append(whereCondition, fmt.Sprintf("g.site_id %s ?", value.Operator))
+			values = append(values, value.Value)
+
+		case "last_site_id":
+			whereCondition = append(whereCondition, fmt.Sprintf("g.last_site_id %s ?", value.Operator))
+			values = append(values, value.Value)
+
+		case "first_site_id":
+			whereCondition = append(whereCondition, fmt.Sprintf("g.first_site_id %s ?", value.Operator))
+			values = append(values, value.Value)
+
+		case "url":
+			whereCondition = append(whereCondition, fmt.Sprintf("g.first_site_id %s ?", value.Operator))
+			values = append(values, value.Value)
+		//TODO ADD G.FIRST_URL_FROM,G.FIRST_URL_TO,G.LAST_URL_LAST
+
+		case "url_404":
+			if utils.IsInt(value.Value) == false {
+				return "", errors.New("invalid value type: " + value.Field)
+			}
+			whereCondition = append(whereCondition, "g.first_url_to_404=? or g.last_url_last_404=?")
+			if value.Value.(int) == 1 {
+				values = append(values, 1, 1)
+			} else {
+				values = append(values, 0, 0)
+			}
+
+		case "user_agent":
+			whereCondition = append(whereCondition, fmt.Sprintf("g.last_user_agent %s ?", value.Operator))
+			values = append(values, value.Value)
+		}
+	}
+
+	//sql, args, err := BuildWhereSQL(g.filter, func(field string) bool {
+	//	return slices.Contains(whereFields, field)
+	//})
+	//if err != nil {
+	//	return "", err
+	//}
+	//g.argsSql = args
+	g.selectBuilder.Where(whereCondition...)
+
 	return "", nil
 }
 
@@ -81,6 +213,7 @@ func (g *GuestSQLBuilder) ToString() (string, error) {
 	if err := g.Select(); err != nil {
 		return "", err
 	}
+
 	return g.selectBuilder.String(), nil
 	//err := g.Select()
 	//if err != nil {

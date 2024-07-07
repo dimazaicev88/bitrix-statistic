@@ -8,19 +8,19 @@ import (
 )
 
 var testFilter = filters.Filter{
-	Fields:         nil,
-	Skip:           0,
-	Limit:          0,
-	OrderBy:        "",
-	Order:          "",
-	FilterOperator: nil,
+	Fields:    nil,
+	Skip:      0,
+	Limit:     0,
+	OrderBy:   "",
+	Order:     "",
+	Operators: nil,
 }
 
 //TODO добавить описание кейсов
 
 func TestBuildWhereSQLCase1(t *testing.T) {
 	req := require.New(t)
-	testFilter.FilterOperator = []filters.FilterOperator{
+	testFilter.Operators = []filters.FilterOperator{
 		{
 			Operator: "=",
 			Value:    1,
@@ -38,7 +38,7 @@ func TestBuildWhereSQLCase1(t *testing.T) {
 
 func TestBuildWhereSQLCase2(t *testing.T) {
 	req := require.New(t)
-	testFilter.FilterOperator = []filters.FilterOperator{
+	testFilter.Operators = []filters.FilterOperator{
 		{
 			Operator: "=",
 			Value:    1,
@@ -66,7 +66,7 @@ func TestBuildWhereSQLCase2(t *testing.T) {
 
 func TestBuildWhereSQLCase3(t *testing.T) {
 	req := require.New(t)
-	testFilter.FilterOperator = []filters.FilterOperator{
+	testFilter.Operators = []filters.FilterOperator{
 		{
 			Operator: ">",
 			Value:    1,
@@ -94,7 +94,7 @@ func TestBuildWhereSQLCase3(t *testing.T) {
 
 func TestBuildWhereSQLCase4(t *testing.T) {
 	req := require.New(t)
-	testFilter.FilterOperator = []filters.FilterOperator{
+	testFilter.Operators = []filters.FilterOperator{
 		{
 			Operator: ">",
 			Value:    1,
@@ -132,7 +132,7 @@ func TestBuildWhereSQLCase4(t *testing.T) {
 
 func TestBuildWhereSQLCase5(t *testing.T) {
 	req := require.New(t)
-	testFilter.FilterOperator = []filters.FilterOperator{
+	testFilter.Operators = []filters.FilterOperator{
 		{
 			Operator: "like",
 			Value:    "ru",
@@ -150,7 +150,7 @@ func TestBuildWhereSQLCase5(t *testing.T) {
 
 func TestBuildWhereSQLCase6(t *testing.T) {
 	req := require.New(t)
-	testFilter.FilterOperator = []filters.FilterOperator{
+	testFilter.Operators = []filters.FilterOperator{
 		{
 			Operator: "not like",
 			Value:    "ru",
@@ -169,12 +169,12 @@ func TestBuildWhereSQLCase6(t *testing.T) {
 func TestBuildLimitSQLCase1(t *testing.T) {
 	req := require.New(t)
 	var testFilter = filters.Filter{
-		Fields:         nil,
-		Skip:           0,
-		Limit:          0,
-		OrderBy:        "",
-		Order:          "",
-		FilterOperator: nil,
+		Fields:    nil,
+		Skip:      0,
+		Limit:     0,
+		OrderBy:   "",
+		Order:     "",
+		Operators: nil,
 	}
 
 	sql, args := BuildLimit(testFilter)
@@ -185,12 +185,12 @@ func TestBuildLimitSQLCase1(t *testing.T) {
 func TestBuildLimitSQLCase2(t *testing.T) {
 	req := require.New(t)
 	var testFilter = filters.Filter{
-		Fields:         nil,
-		Skip:           0,
-		Limit:          0,
-		OrderBy:        "",
-		Order:          "",
-		FilterOperator: nil,
+		Fields:    nil,
+		Skip:      0,
+		Limit:     0,
+		OrderBy:   "",
+		Order:     "",
+		Operators: nil,
 	}
 	testFilter.Skip = 10
 	sql, args := BuildLimit(testFilter)
@@ -201,12 +201,12 @@ func TestBuildLimitSQLCase2(t *testing.T) {
 func TestBuildLimitSQLCase3(t *testing.T) {
 	req := require.New(t)
 	var testFilter = filters.Filter{
-		Fields:         nil,
-		Skip:           0,
-		Limit:          0,
-		OrderBy:        "",
-		Order:          "",
-		FilterOperator: nil,
+		Fields:    nil,
+		Skip:      0,
+		Limit:     0,
+		OrderBy:   "",
+		Order:     "",
+		Operators: nil,
 	}
 	testFilter.Limit = 10
 	sql, args := BuildLimit(testFilter)
@@ -217,12 +217,12 @@ func TestBuildLimitSQLCase3(t *testing.T) {
 func TestBuildLimitSQLCase4(t *testing.T) {
 	req := require.New(t)
 	var testFilter = filters.Filter{
-		Fields:         nil,
-		Skip:           0,
-		Limit:          0,
-		OrderBy:        "",
-		Order:          "",
-		FilterOperator: nil,
+		Fields:    nil,
+		Skip:      0,
+		Limit:     0,
+		OrderBy:   "",
+		Order:     "",
+		Operators: nil,
 	}
 	testFilter.Limit = 10000
 	sql, args := BuildLimit(testFilter)

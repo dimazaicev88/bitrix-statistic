@@ -9,3 +9,8 @@ func StringConcat(values ...string) string {
 	}
 	return builder.String()
 }
+
+func IsInt(value interface{}) bool {
+	_, ok := value.(int)
+	return ok
+}
