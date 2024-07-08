@@ -1,25 +1,29 @@
 package app
 
 import (
+	"bitrix-statistic/internal/routes"
 	"context"
+	"github.com/gofiber/fiber/v2"
 	"log"
+	"strconv"
 )
 
-type Application struct {
+type App struct {
 	ctx context.Context
 }
 
 func New() {
 	errStartServer := make(chan error)
 
-	//fb := fiber.New()
-	//routes.NewStatistic(fb, s.RedisAddress, inspector).RegRoutes()
+	fb := fiber.New()
+
+	routes.NewStatistic(fb).RegRoutes()
 
 	//start fiber
-	//go func() {
-	//	log.Println("starting fiber server on port:", s.serverPort)
-	//	errStartServer <- fb.Listen(":" + strconv.Itoa(s.serverPort))
-	//}()
+	go func() {
+		log.Println("starting fiber server on port:", 9007)
+		errStartServer <- fb.Listen(":" + strconv.Itoa(9007))
+	}()
 
 	select {
 	case err := <-errStartServer:

@@ -40,7 +40,7 @@ func (gm GuestModel) FindLastById(id int) (int, string, int, int, string, error)
 	return guestId, favorites, lastUserId, lastAdvId, last, nil
 }
 
-// Add TODO доделать
+// Add TODO удалить first, last префикс. Использовать оконные функции.
 func (gm GuestModel) Add(guest entity.GuestDb) {
 	gm.storage.DB().MustExec(`INSERT INTO guest (favorites,c_events,sessions,hits,repair,first_session_id,
                    	first_date,first_url_from,first_url_to,first_url_to_404,first_site_id,first_adv_id,
@@ -87,6 +87,6 @@ func (gm GuestModel) ExistsGuestByToken(token string) (bool, error) {
 	return len(cookieToken) > 0, nil
 }
 
-func (gm GuestModel) Find(filter filters.Filter) (interface{}, interface{}) {
-
+func (gm GuestModel) Find(filter filters.Filter) (entity.GuestDb, error) {
+	return entity.GuestDb{}, nil
 }
