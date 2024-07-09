@@ -26,7 +26,7 @@ func (sh SessionHandlers) AddHandlers() {
 }
 
 func (sh SessionHandlers) Filter(ctx *fiber.Ctx) error {
-	var filter filters.BitrixFilter
+	var filter filters.Filter
 	body := ctx.Body()
 	err := jsoniter.Unmarshal(body, &filter)
 	if err != nil {

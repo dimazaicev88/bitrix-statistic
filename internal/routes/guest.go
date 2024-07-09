@@ -32,7 +32,7 @@ func (hh GuestRoutes) filter(ctx *fiber.Ctx) error {
 		ctx.Status(502)
 		return err
 	}
-	err, result := hh.guestModel.Find(filter)
+	result, err := hh.guestModel.Find(filter)
 	if err != nil {
 		ctx.Status(502)
 		return err

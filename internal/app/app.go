@@ -12,14 +12,14 @@ import (
 
 type App struct {
 	ctx          context.Context
-	RedisAddress string
+	redisAddress string
 	serverPort   int
 }
 
 func New(redisAddress string, serverPort int) *App {
 	return &App{
 		ctx:          context.Background(),
-		RedisAddress: redisAddress,
+		redisAddress: redisAddress,
 		serverPort:   serverPort,
 	}
 }
@@ -38,7 +38,7 @@ func (app *App) Start() {
 	}()
 
 	serverQueue, serverMux := tasks.NewTaskServer(
-		app.RedisAddress,
+		app.redisAddress,
 		asynq.Config{
 			Concurrency: 1,
 		},

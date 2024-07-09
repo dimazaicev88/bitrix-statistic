@@ -119,14 +119,14 @@ func (stm StatisticModel) SetGuest(phpSession *session.Session, siteId, referrer
 	// если есть необходимость то
 	if phpSession.GetAsInt("SESS_GUEST_ID") <= 0 {
 		guestData := entity.GuestDb{
-			FirstUrlFrom:  referrer,
-			FirstUrlTo:    fullRequestUrl,
-			FirstUrlTo404: error404,
-			FirstSiteId:   siteId,
-			FirstAdvId:    phpSession.GetAsInt("SESS_ADV_ID"),
-			FirstReferer1: phpSession.Get("referer1"),
-			FirstReferer2: phpSession.Get("referer2"),
-			FirstReferer3: phpSession.Get("referer3"),
+			//UrlFrom:  referrer,
+			//UrlTo:    fullRequestUrl,
+			//UrlTo404: error404,
+			//SiteId:   siteId,
+			//AdvId:    phpSession.GetAsInt("SESS_ADV_ID"),
+			//Referer1: phpSession.Get("referer1"),
+			//Referer2: phpSession.Get("referer2"),
+			//Referer3: phpSession.Get("referer3"),
 		}
 		// если мы восстанавливаем гостя по данным записанным в его cookie то
 		if repairCookieGuest == "Y" {
@@ -146,13 +146,13 @@ func (stm StatisticModel) SetGuest(phpSession *session.Session, siteId, referrer
 
 					// если последний вход записанный в cookie
 					// не был прямым входом по рекламной кампании то
-					guestData.FirstAdvId = cookieAdvId
-					guestData.FirstReferer1 = adv.Referer1
-					guestData.FirstReferer2 = adv.Referer2
-					guestData.LastAdvId = cookieAdvId
-					guestData.LastAdvBack = "Y"
-					guestData.LastReferer1 = adv.Referer1
-					guestData.LastReferer2 = adv.Referer2
+					//guestData.FirstAdvId = cookieAdvId
+					//guestData.FirstReferer1 = adv.Referer1
+					//guestData.FirstReferer2 = adv.Referer2
+					//guestData.LastAdvId = cookieAdvId
+					//guestData.LastAdvBack = "Y"
+					//guestData.LastReferer1 = adv.Referer1
+					//guestData.LastReferer2 = adv.Referer2
 					lastReferer1 = adv.Referer1
 					lastReferer2 = adv.Referer2
 				}

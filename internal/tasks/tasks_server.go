@@ -1,7 +1,8 @@
 package tasks
 
 import (
-	"bitrix-statistic/internal/worker"
+	"context"
+	"fmt"
 	"github.com/hibiken/asynq"
 	"log"
 )
@@ -16,6 +17,12 @@ func NewTaskServer(redisAddr string, cfg asynq.Config) (*asynq.Server, *asynq.Se
 		cfg,
 	)
 	mux := asynq.NewServeMux()
-	mux.HandleFunc(TaskStatisticAdd, worker.HandleTask)
+	mux.HandleFunc(TaskStatisticAdd, HandleTask)
 	return srv, mux
+}
+
+func HandleTask(ctx context.Context, t *asynq.Task) error {
+	fmt.Println(string(t.Payload()))
+
+	return nil
 }

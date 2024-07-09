@@ -5,6 +5,7 @@ import (
 	"bitrix-statistic/internal/tasks"
 	"github.com/gofiber/fiber/v2"
 	"github.com/hibiken/asynq"
+	"log"
 	"time"
 )
 
@@ -24,6 +25,9 @@ func (sh *Statistic) RegRoutes() {
 }
 
 func (sh *Statistic) Add(ctx *fiber.Ctx) error {
-	asynq.NewTask(tasks.TaskStatisticAdd, ctx.Body(), asynq.MaxRetry(0), asynq.Timeout(time.Hour*8))
+	_, err := tasks.GetClient().EnqueueContext(c.Context(), asynq.NewTask(tasks.TaskStatisticAdd, ctx.Body(), asynq.MaxRetry(0), asynq.Timeout(time.Hour*8)))
+	if err != nil {
+		log.Panic(err)
+	}
 	return nil
 }
