@@ -2,7 +2,10 @@ package routes
 
 import (
 	"bitrix-statistic/internal/models"
+	"bitrix-statistic/internal/tasks"
 	"github.com/gofiber/fiber/v2"
+	"github.com/hibiken/asynq"
+	"time"
 )
 
 type Statistic struct {
@@ -21,11 +24,6 @@ func (sh *Statistic) RegRoutes() {
 }
 
 func (sh *Statistic) Add(ctx *fiber.Ctx) error {
-	//var runImport entity.StatData
-	//if err := ctx.BodyParser(&runImport); err != nil {
-	//	return c.JSON(entity.AnswerResult{
-	//		Err: err.Error(),
-	//	})
-	//}
+	asynq.NewTask(tasks.TaskStatisticAdd, ctx.Body(), asynq.MaxRetry(0), asynq.Timeout(time.Hour*8))
 	return nil
 }

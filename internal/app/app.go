@@ -2,8 +2,10 @@ package app
 
 import (
 	"bitrix-statistic/internal/routes"
+	"bitrix-statistic/internal/tasks"
 	"context"
 	"github.com/gofiber/fiber/v2"
+	"github.com/hibiken/asynq"
 	"log"
 	"strconv"
 )
@@ -35,7 +37,23 @@ func (app *App) Start() {
 		errStartServer <- fb.Listen(":" + strconv.Itoa(app.serverPort))
 	}()
 
+	serverQueue, serverMux := tasks.NewTaskServer(
+		app.RedisAddress,
+		asynq.Config{
+			Concurrency: 1,
+		},
+	)
+
+	//start server queue
+	go func() {
+		log.Println("starting task server")
+		errStartServer <- serverQueue.Run(serverMux)
+	}()
+
 	select {
+	case <-app.ctx.Done():
+		serverQueue.Shutdown()
+		return
 	case err := <-errStartServer:
 		log.Fatal(err)
 		return
