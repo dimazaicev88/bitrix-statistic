@@ -9,10 +9,20 @@ import (
 )
 
 type App struct {
-	ctx context.Context
+	ctx          context.Context
+	RedisAddress string
+	serverPort   int
 }
 
-func New() {
+func New(redisAddress string, serverPort int) *App {
+	return &App{
+		ctx:          context.Background(),
+		RedisAddress: redisAddress,
+		serverPort:   serverPort,
+	}
+}
+
+func (app *App) Start() {
 	errStartServer := make(chan error)
 
 	fb := fiber.New()
@@ -21,8 +31,8 @@ func New() {
 
 	//start fiber
 	go func() {
-		log.Println("starting fiber server on port:", 9007)
-		errStartServer <- fb.Listen(":" + strconv.Itoa(9007))
+		log.Println("starting fiber server on port:", app.serverPort)
+		errStartServer <- fb.Listen(":" + strconv.Itoa(app.serverPort))
 	}()
 
 	select {
