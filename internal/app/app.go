@@ -16,9 +16,9 @@ type App struct {
 	serverPort   int
 }
 
-func New(redisAddress string, serverPort int) *App {
+func New(ctx context.Context, redisAddress string, serverPort int) *App {
 	return &App{
-		ctx:          context.Background(),
+		ctx:          ctx,
 		redisAddress: redisAddress,
 		serverPort:   serverPort,
 	}
