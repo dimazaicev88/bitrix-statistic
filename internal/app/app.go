@@ -37,6 +37,7 @@ func (app *App) Start() {
 		errStartServer <- fb.Listen(":" + strconv.Itoa(app.serverPort))
 	}()
 
+	tasks.NewClient(app.redisAddress)
 	serverQueue, serverMux := tasks.NewTaskServer(
 		app.redisAddress,
 		asynq.Config{

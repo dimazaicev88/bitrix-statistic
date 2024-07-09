@@ -6,12 +6,15 @@ import (
 	"github.com/gofiber/fiber/v2"
 	"github.com/hibiken/asynq"
 	"log"
-	"time"
 )
 
 type Statistic struct {
 	fbApp          *fiber.App
 	statisticModel models.StatisticModel
+}
+
+type Answer struct {
+	Msg string `json:"msg"`
 }
 
 func NewStatistic(fbApp *fiber.App) *Statistic {
@@ -25,9 +28,11 @@ func (sh *Statistic) RegRoutes() {
 }
 
 func (sh *Statistic) Add(ctx *fiber.Ctx) error {
-	_, err := tasks.GetClient().EnqueueContext(c.Context(), asynq.NewTask(tasks.TaskStatisticAdd, ctx.Body(), asynq.MaxRetry(0), asynq.Timeout(time.Hour*8)))
+	//asynq.Timeout(time.Second*8)
+	task := asynq.NewTask(tasks.TaskStatisticAdd, ctx.Body(), asynq.MaxRetry(0))
+	_, err := tasks.GetClient().EnqueueContext(ctx.Context(), task)
 	if err != nil {
 		log.Panic(err)
 	}
-	return nil
+	return ctx.SendStatus(200)
 }
