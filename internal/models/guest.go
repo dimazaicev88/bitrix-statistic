@@ -40,34 +40,30 @@ func (gm GuestModel) FindLastById(id int) (int, string, int, int, string, error)
 	return guestId, favorites, lastUserId, lastAdvId, last, nil
 }
 
-// Add TODO доделать
 func (gm GuestModel) Add(guest entity.GuestDb) {
-	gm.storage.DB().MustExec(`INSERT INTO guest (favorites,c_events,sessions,hits,repair,first_session_id,
-                   	first_date,first_url_from,first_url_to,first_url_to_404,first_site_id,first_adv_id,
-					first_referer1,first_referer2,first_referer3,last_session_id,last_date,last_user_id,
-					last_user_auth,last_url_last,last_url_last_404,last_user_agent,last_ip,last_cookie,last_language,
-					last_adv_id,last_adv_back,last_referer1,last_referer2,last_referer3,last_site_id,
-					last_country_id,last_city_id,last_city_info,cookie_token) 
-		VALUES (?,?,?,?,?,?,now(),?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)`,
-		guest.Favorites, guest.CEvents, guest.Sessions, guest.Hits, guest.Repair, guest.FirstSessionId,
-		guest.FirstUrlFrom, guest.FirstUrlTo, guest.FirstUrlTo404, guest.FirstSiteId, guest.FirstAdvId,
-		guest.FirstReferer1, guest.FirstReferer2, guest.FirstReferer3, guest.LastSessionId, guest.LastDate, guest.LastUserId,
-		guest.LastUserAuth, guest.LastUrlLast, guest.LastUrlLast404, guest.LastUserAgent, guest.LastIp, guest.LastCookie, guest.LastLanguage,
-		guest.LastAdvId, guest.LastAdvBack, guest.LastReferer1, guest.LastReferer2, guest.LastReferer3, guest.LastSiteId,
-		guest.LastCountryId, guest.LastCityId, guest.LastCityInfo, guest.CookieToken)
+	gm.storage.DB().MustExec(`INSERT INTO guest (
+                   timestamp_x, favorites, events, sessions, hits, repair, session_id, date, url_from, url_to,
+                   url_to_404, site_id, adv_id, referer1, referer2, referer3, user_id, user_auth, url, url_404, user_agent, ip,
+                   cookie, language, adv_back, country_id, city_id, city_info, cookie_token) 
+		VALUES (?,?,?,?,?,?,now(),?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)`,
+		guest.Favorites, guest.Events, guest.Sessions, guest.Hits, guest.Repair, guest.SessionId, guest.Date,
+		guest.UrlFrom, guest.UrlTo, guest.UrlTo404, guest.SiteId, guest.AdvId, guest.Referer1, guest.Referer2,
+		guest.Referer3, guest.UserId, guest.UserAuth, guest.Url, guest.Url404, guest.UserAgent, guest.Ip,
+		guest.Cookie, guest.Language, guest.AdvBack, guest.CountryId, guest.CityId, guest.CityInfo, guest.CookieToken,
+	)
 }
 
 func (gm GuestModel) AddGuest(statData entity.StatData) error {
 	gm.Add(entity.GuestDb{
-		CookieToken:   statData.CookieToken,
-		FirstUrlFrom:  statData.Referer,
-		FirstUrlTo:    statData.Url,
-		FirstUrlTo404: statData.Error404,
-		FirstSiteId:   statData.SiteId,
-		FirstAdvId:    0,  //TODO добавить реальные значения
-		FirstReferer1: "", //TODO добавить реальные значения
-		FirstReferer2: "", //TODO добавить реальные значения
-		FirstReferer3: "", //TODO добавить реальные значения
+		//CookieToken: statData.CookieToken,
+		//UrlFrom:     statData.Url,
+		//UrlTo:       statData.Url,
+		//UrlTo404:    statData.Error404,
+		//SiteId:      statData.SiteId,
+		//AdvId:       0,  //TODO добавить реальные значения
+		//Referer1:    "", //TODO добавить реальные значения
+		//Referer2:    "", //TODO добавить реальные значения
+		//Referer3:    "", //TODO добавить реальные значения
 	})
 	return nil
 }
@@ -87,6 +83,6 @@ func (gm GuestModel) ExistsGuestByToken(token string) (bool, error) {
 	return len(cookieToken) > 0, nil
 }
 
-func (gm GuestModel) Find(filter filters.Filter) (interface{}, interface{}) {
-
+func (gm GuestModel) Find(filter filters.Filter) (entity.GuestDb, error) {
+	return entity.GuestDb{}, nil
 }
