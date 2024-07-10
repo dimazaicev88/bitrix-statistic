@@ -21,10 +21,8 @@ func (sm SessionModel) Find(filter filters.Filter) (error, []map[string]interfac
 }
 
 func (sm SessionModel) AddSession(session entity.SessionJson) error {
-	_, err := sm.storage.DB().MustExec(`INSERT INTO session (GuestId, NewGuest, USER_ID, USER_AUTH, C_EVENTS, HITS, FAVORITES, URL_FROM, URL_TO, URL_TO_404, URL_LAST,
-		URL_LAST_404, UserAgent, DATE_STAT, DATE_FIRST, DATE_LAST, IP_FIRST, IP_FIRST_NUMBER, IP_LAST, IP_LAST_NUMBER, FIRST_HIT_ID, LAST_HIT_ID, PHPSESSID,
-        ADV_ID, ADV_BACK, REFERER1, REFERER2, REFERER3, StopListId, CountryId, CityId, FIRST_SITE_ID, LAST_SITE_ID) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 
-                                                                                                                                ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?) `,
+	_, err := sm.storage.DB().MustExec(`INSERT INTO session (id, guest_id,events,hits, date, phpsessid,
+         stop_list_id) VALUES (?, ?, ?, ?, ?, ?, ?) `,
 		session.GuestId, session.NewGuest, session.UserId, session.UserAuth, session.CEvents, session.Hits, session.Favorites, session.UrlFrom, session.UrlTo, session.UrlTo404, session.UrlLast, session.UrlLast404, session.UserAgent, time.Unix(session.DateStat, 0).Add(time.Hour*3),
 		time.Unix(session.DateFirst, 0).Add(time.Hour*3), time.Unix(session.DateLast, 0).Add(time.Hour*3), session.IpLast, session.IpFirstNumber, session.IpLast, session.IpLastNumber, session.FirstHitId, session.LastHitId, session.PhpSessionId,
 		session.AdvId, session.AdvBack, session.Referer1, session.Referer2, session.Referer3, session.StopListId, session.CountryId, session.CityId, session.FirstSiteId, session.LastSiteId).LastInsertId()
