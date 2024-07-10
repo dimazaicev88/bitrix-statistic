@@ -3,6 +3,7 @@ module bitrix-statistic
 go 1.22
 
 require (
+	github.com/allegro/bigcache/v3 v3.1.0
 	github.com/caarlos0/env/v6 v6.10.1
 	github.com/codingsince1985/checksum v1.3.0
 	github.com/go-sql-driver/mysql v1.6.0
@@ -12,6 +13,7 @@ require (
 	github.com/huandu/go-sqlbuilder v1.27.3
 	github.com/jmoiron/sqlx v1.3.5
 	github.com/json-iterator/go v1.1.12
+	github.com/sirupsen/logrus v1.4.2
 	github.com/stretchr/testify v1.9.0
 	github.com/volatiletech/null/v9 v9.0.0
 	golang.org/x/exp v0.0.0-20220713135740-79cabaa25d75
@@ -26,6 +28,7 @@ require (
 	github.com/google/uuid v1.6.0 // indirect
 	github.com/huandu/xstrings v1.4.0 // indirect
 	github.com/klauspost/compress v1.17.8 // indirect
+	github.com/konsorten/go-windows-terminal-sequences v1.0.1 // indirect
 	github.com/kr/pretty v0.3.1 // indirect
 	github.com/lib/pq v1.10.1 // indirect
 	github.com/mattn/go-colorable v0.1.13 // indirect

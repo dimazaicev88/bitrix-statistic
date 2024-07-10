@@ -21,18 +21,16 @@ func TestGuestModel_Add(t *testing.T) {
 	defer mysqlStorage.Close()
 	req := require.New(t)
 	err := NewStatistic(mysqlStorage).Add(entity.StatData{
-		PhpSessionId:      "",
-		CookieToken:       "44c2870053b0a6378f5db40c96406f00",
-		SessionToken:      "55c2870053b0a6378f5db40c96406f00",
+		PHPSessionId:      "",
+		Token:             "44c2870053b0a6378f5db40c96406f00",
 		Url:               "http://localhost/catalog/dresses/dress-fashionista-on-a-walk/",
 		Referer:           "",
 		Ip:                "127.0.0.1",
 		UserAgent:         "Mozila",
 		UserId:            0,
 		HttpXForwardedFor: "",
-		Error404:          "N",
+		Error404:          0,
 		SiteId:            "s1",
 	})
 	req.NoError(err)
-
 }

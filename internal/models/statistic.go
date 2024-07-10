@@ -4,6 +4,7 @@ import (
 	"bitrix-statistic/internal/entity"
 	"bitrix-statistic/internal/session"
 	"bitrix-statistic/internal/storage"
+	"github.com/sirupsen/logrus"
 	"strconv"
 )
 
@@ -12,6 +13,7 @@ type StatisticModel struct {
 	guestModel  *GuestModel
 	optionModel *OptionModel
 	advModel    *AdvModel
+	logger      logrus.Logger
 }
 
 func NewStatisticModel(storage storage.Storage) StatisticModel {
@@ -23,7 +25,25 @@ func NewStatisticModel(storage storage.Storage) StatisticModel {
 	}
 }
 
-func (stm StatisticModel) SetGuest(phpSession *session.Session, siteId, referrer, fullRequestUrl, error404 string, cookieGuestId, cookieLastVisit, cookieAdvId int) (string, string, error) {
+func (stm *StatisticModel) Add(data entity.StatData) error {
+	guestDb, err := stm.guestModel.FindByToken(data.Token)
+	if err != nil {
+		stm.logger.Error(err)
+		return err
+	}
+
+	if len(guestDb) == 0 { //Если пользователь не найден, считаем его новым
+		err := stm.guestModel.AddGuest(data)
+		if err != nil {
+			stm.logger.Error(err)
+			return err
+		}
+	}
+
+	return nil
+}
+
+func (stm *StatisticModel) SetGuest(phpSession *session.Session, siteId, referrer, fullRequestUrl, error404 string, cookieGuestId, cookieLastVisit, cookieAdvId int) (string, string, error) {
 	phpSession.Set("SESS_GUEST_ID", "")        // ID гостя
 	phpSession.Set("SESS_GUEST_NEW", "")       // флаг "новый гость"
 	phpSession.Set("SESS_LAST_USER_ID", "")    // под кем гость был авторизован в последний раз
@@ -185,6 +205,6 @@ func (stm StatisticModel) SetGuest(phpSession *session.Session, siteId, referrer
 	return lastReferer1, lastReferer2, nil
 }
 
-func (stm StatisticModel) SetNewDay() {
+func (stm *StatisticModel) SetNewDay() {
 
 }

@@ -6,6 +6,7 @@ import (
 	"bitrix-statistic/internal/storage"
 	"database/sql"
 	"errors"
+	"time"
 )
 
 type GuestModel struct {
@@ -49,22 +50,24 @@ func (gm GuestModel) Add(guest entity.GuestDb) {
 		guest.Favorites, guest.Events, guest.Sessions, guest.Hits, guest.Repair, guest.SessionId, guest.Date,
 		guest.UrlFrom, guest.UrlTo, guest.UrlTo404, guest.SiteId, guest.AdvId, guest.Referer1, guest.Referer2,
 		guest.Referer3, guest.UserId, guest.UserAuth, guest.Url, guest.Url404, guest.UserAgent, guest.Ip,
-		guest.Cookie, guest.Language, guest.AdvBack, guest.CountryId, guest.CityId, guest.CityInfo, guest.CookieToken,
+		guest.Cookie, guest.Language, guest.AdvBack, guest.CountryId, guest.CityId, guest.CityInfo, guest.Token,
 	)
 }
 
 func (gm GuestModel) AddGuest(statData entity.StatData) error {
 	gm.Add(entity.GuestDb{
-		//CookieToken: statData.CookieToken,
-		//UrlFrom:     statData.Url,
-		//UrlTo:       statData.Url,
-		//UrlTo404:    statData.Error404,
-		//SiteId:      statData.SiteId,
-		//AdvId:       0,  //TODO добавить реальные значения
-		//Referer1:    "", //TODO добавить реальные значения
-		//Referer2:    "", //TODO добавить реальные значения
-		//Referer3:    "", //TODO добавить реальные значения
+		Date:     time.Now(),
+		UrlFrom:  sql.NullString{String: statData.Referer, Valid: true},
+		UrlTo:    sql.NullString{String: statData.Url, Valid: true},
+		UrlTo404: statData.Error404,
+		SiteId:   sql.NullString{String: statData.SiteId, Valid: true},
+		AdvId:    0,                                       //TODO добавить реальные значения
+		Referer1: sql.NullString{String: "", Valid: true}, //TODO добавить реальные значения
+		Referer2: sql.NullString{String: "", Valid: true}, //TODO добавить реальные значения
+		Referer3: sql.NullString{String: "", Valid: true}, //TODO добавить реальные значения
+		Token:    statData.Token,
 	})
+
 	return nil
 }
 
@@ -85,4 +88,18 @@ func (gm GuestModel) ExistsGuestByToken(token string) (bool, error) {
 
 func (gm GuestModel) Find(filter filters.Filter) (entity.GuestDb, error) {
 	return entity.GuestDb{}, nil
+}
+
+func (gm GuestModel) FindByToken(token string) ([]entity.GuestDb, error) {
+	row := gm.storage.DB().QueryRow(`
+				SELECT * 
+				FROM guest 				
+				WHERE token=?`, token)
+	var guestDb []entity.GuestDb
+	err := row.Scan(&guestDb)
+	if err != nil {
+		return []entity.GuestDb{}, nil
+	}
+
+	return guestDb, nil
 }

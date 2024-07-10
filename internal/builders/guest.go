@@ -45,10 +45,10 @@ var whereFields = []string{
 var selectFields = map[string]string{
 	"id":                "g.id",
 	"favorites":         "g.favorites",         //[0|1] флаг добавления сайта в "Избранное"
-	"c_events":          "g.c_events",          //количество событий сгенерированных данным посетителей
+	"events":            "g.events",            //количество событий сгенерированных данным посетителей
 	"sessions":          "g.sessions",          //количество сессий данного посетителя
 	"hits":              "g.hits",              //количество хитов данного посетителя
-	"first_session_id":  "g.first_session_id",  //ID сессии первого захода на сайт
+	"session_id":        "g.session_id",        //ID сессии первого захода на сайт
 	"first_site_id":     "g.first_site_id",     //ID сайта на который посетитель впервые пришел
 	"last_site_id":      "g.last_site_id",      //ID сайта последнего захода
 	"first_url_from":    "g.first_url_from",    //адрес страницы с которой посетитель впервые пришел на сайт
@@ -224,8 +224,8 @@ func (g *GuestSQLBuilder) build() (string, error) {
 		case "lang":
 			whereCondition = append(whereCondition, fmt.Sprintf("g.last_language %s ? ", value.Operator))
 			values = append(values, value.Value)
-		case "country_id":
 
+		case "country_id":
 			//, C.NAME LAST_COUNTRY_NAME
 			whereCondition = append(whereCondition, fmt.Sprintf("g.last_language %s ? ", value.Operator))
 			values = append(values, value.Value)

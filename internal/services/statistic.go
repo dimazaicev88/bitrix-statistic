@@ -86,7 +86,7 @@ func (s Statistic) checkSkip(userGroups []int, remoteAddr string) (error, bool) 
 }
 
 func (s Statistic) Add(statData entity.StatData) error {
-	existsGuest, err := s.guestModel.ExistsGuestByToken(statData.CookieToken)
+	existsGuest, err := s.guestModel.ExistsGuestByToken(statData.Token)
 	if err != nil {
 		return err
 	}
