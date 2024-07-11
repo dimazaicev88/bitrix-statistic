@@ -1,39 +1,37 @@
 package entity
 
 import (
-	"database/sql"
 	"time"
 )
 
 type GuestDb struct {
-	Id         int            `db:"id"`
-	Token      string         `db:"token"`
-	TimestampX sql.NullTime   `db:"timestamp_x"`
-	Favorites  string         `db:"favorites"`
-	Events     int            `db:"events"`
-	Sessions   int            `db:"sessions"`
-	Hits       int            `db:"hits"`
-	Repair     string         `db:"repair"`
-	SessionId  int            `db:"session_id"`
-	Date       time.Time      `db:"date"`
-	UrlFrom    sql.NullString `db:"url_from"`
-	UrlTo      sql.NullString `db:"url_to"`
-	UrlTo404   int            `db:"url_to_404"`
-	SiteId     sql.NullString `db:"site_id"`
-	AdvId      int            `db:"adv_id"`
-	Referer1   sql.NullString `db:"referer_1"`
-	Referer2   sql.NullString `db:"referer_2"`
-	Referer3   sql.NullString `db:"referer_3"`
-	UserId     int            `db:"user_id"`
-	UserAuth   sql.NullString `db:"user_auth"`
-	Url        sql.NullString `db:"url"`
-	Url404     int            `db:"url_404"`
-	UserAgent  sql.NullString `db:"user_agent"`
-	Ip         sql.NullString `db:"ip"`
-	Cookie     sql.NullString `db:"cookie"`
-	Language   sql.NullString `db:"language"`
-	AdvBack    string         `db:"adv_back"`
-	CountryId  sql.NullString `db:"country_id"`
-	CityId     sql.NullInt32  `db:"city_id"`
-	CityInfo   sql.NullString `db:"city_info"`
+	Uuid      string    `ch:"uuid"`
+	Token     string    `ch:"token"`
+	Timestamp time.Time `ch:"timestamp"`
+	Favorites uint8     `ch:"favorites"`
+	Events    int32     `ch:"events"`
+	Sessions  int32     `ch:"sessions"`
+	Hits      int32     `ch:"hits"`
+	Repair    uint8     `ch:"repair"`
+	SessionId string    `ch:"session_id"`
+	UrlFrom   string    `ch:"url_from"`
+	UrlTo     string    `ch:"url_to"`
+	UrlTo404  uint8     `ch:"url_to_404"`
+	SiteId    string    `ch:"site_id"`
+	AdvId     string    `ch:"adv_id"`
+	Referer1  string    `ch:"referer1"`
+	Referer2  string    `ch:"referer2"`
+	Referer3  string    `ch:"referer3"`
+	UserId    int32     `ch:"user_id"`
+	UserAuth  uint8     `ch:"user_auth"`
+	Url       string    `ch:"url"`
+	Url404    uint8     `ch:"url_404"`
+	UserAgent string    `ch:"user_agent"`
+	Ip        string    `ch:"ip"`
+	Cookie    string    `ch:"cookie"`
+	Language  string    `ch:"language"`
+	AdvBack   uint8     `ch:"adv_back"`
+	//CountryId  sql.NullString `ch:"country_id"`
+	//CityId     sql.NullInt32  `ch:"city_id"`
+	//CityInfo   sql.NullString `ch:"city_info"`
 }
