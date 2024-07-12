@@ -8,19 +8,19 @@ create table if not exists adv
     `cost`           decimal(18, 4) default 0.0000,
     `revenue`        decimal(18, 4) default 0.0000,
     `events_view`    String,
-    `guests`         Int32          default 0,
-    `new_guests`     Int32          default 0,
-    `favorites`      Int32          default 0,
-    `hosts`          Int32          default 0,
-    `sessions`       Int32          default 0,
-    `hits`           Int32          default 0,
+    `guests`         UInt32         default 0,
+    `new_guests`     UInt32         default 0,
+    `favorites`      UInt32         default 0,
+    `hosts`          UInt32         default 0,
+    `sessions`       UInt32         default 0,
+    `hits`           UInt32         default 0,
     `date_first`     DateTime32('Europe/Moscow'),
     `date_last`      DateTime32('Europe/Moscow'),
-    `guests_back`    Int32          default 0,
-    `favorites_back` Int32          default 0,
-    `hosts_back`     Int32          default 0,
-    `sessions_back`  Int32          default 0,
-    `hits_back`      Int32          default 0,
+    `guests_back`    UInt32         default 0,
+    `favorites_back` UInt32         default 0,
+    `hosts_back`     UInt32         default 0,
+    `sessions_back`  UInt32         default 0,
+    `hits_back`      UInt32         default 0,
     `description`    String,
     `priority`       Int32          default 1
 ) ENGINE = MergeTree
@@ -33,78 +33,65 @@ create table if not exists adv_day
     `uuid`            UUID,
     `adv_uuid`        UUID,
     `date_stat`       DateTime32('Europe/Moscow'),
-    `guests`          Int32 default 0,
-    `guests_day`      Int32 default 0,
-    `new_guests`      Int32 default 0,
-    `favorites`       Int32 default 0,
-    `hosts`           Int32 default 0,
-    `hosts_day`       Int32 default 0,
-    `sessions`        Int32 default 0,
-    `hits`            Int32 default 0,
-    `guests_back`     Int32 default 0,
-    `guests_day_back` Int32 default 0,
-    `favorites_back`  Int32 default 0,
-    `hosts_back`      Int32 default 0,
-    `hosts_day_back`  Int32 default 0,
-    `sessions_back`   Int32 default 0,
-    `hits_back`       Int32 default 0
+    `guests`          UInt32 default 0,
+    `guests_day`      UInt32 default 0,
+    `new_guests`      UInt32 default 0,
+    `favorites`       UInt32 default 0,
+    `hosts`           UInt32 default 0,
+    `hosts_day`       UInt32 default 0,
+    `sessions`        UInt32 default 0,
+    `hits`            UInt32 default 0,
+    `guests_back`     UInt32 default 0,
+    `guests_day_back` UInt32 default 0,
+    `favorites_back`  UInt32 default 0,
+    `hosts_back`      UInt32 default 0,
+    `hosts_day_back`  UInt32 default 0,
+    `sessions_back`   UInt32 default 0,
+    `hits_back`       UInt32 default 0
 ) ENGINE = MergeTree
       PARTITION BY toYYYYMM(date_stat)
       ORDER BY (`adv_uuid`, `date_stat`);
 
-create table adv_event
+create table if not exists adv_event
 (
-    ID           int(18) auto_increment
-        primary key,
-    ADV_ID       int(18)        default 0      null,
-    EVENT_ID     int(18)        default 0      null,
-    COUNTER      int(18)        default 0      not null,
-    COUNTER_BACK int(18)        default 0      not null,
-    MONEY        decimal(18, 4) default 0.0000 not null,
-    MONEY_BACK   decimal(18, 4) default 0.0000 not null
-);
+    uuid         UUID,
+    adv_uuid     UUID,
+    event_uuid   UUID,
+    counter      UInt32         default 0,
+    counter_back UInt32         default 0,
+    money        decimal(18, 4) default 0.0000,
+    money_back   decimal(18, 4) default 0.0000
+) ENGINE = MergeTree
+      PARTITION BY toYYYYMM(date_stat)
+      ORDER BY (`adv_uuid`, `date_stat`);
 
-create table adv_event_day
+create table if not exists adv_event_day
 (
-    ID           int(18) auto_increment
-        primary key,
-    ADV_ID       int(18)        default 0      null,
-    EVENT_ID     int(18)        default 0      null,
-    DATE_STAT    date                          null,
-    COUNTER      int(18)        default 0      not null,
-    COUNTER_BACK int(18)        default 0      not null,
-    MONEY        decimal(18, 4) default 0.0000 not null,
-    MONEY_BACK   decimal(18, 4) default 0.0000 not null
-);
+    uuid         String,
+    adv_uuid     String,
+    event_uuid   String,
+    date_stat    DateTime32('Europe/Moscow'),
+    counter      UInt32,
+    counter_back UInt32,
+    money        decimal(18, 4) default 0.0000,
+    money_back   decimal(18, 4) default 0.0000
+) ENGINE = MergeTree
+      PARTITION BY toYYYYMM(date_stat)
+      ORDER BY (`adv_uuid`, `event_uuid`, `date_stat`);
 
-create index IX_ADV_ID_EVENT_ID_DATE_STAT
-    on b_stat_adv_event_day (ADV_ID, EVENT_ID, DATE_STAT);
-
-create index IX_DATE_STAT
-    on b_stat_adv_event_day (DATE_STAT);
-
-create index IX_ADV_EVENT_ID
-    on b_stat_adv_event (ADV_ID, EVENT_ID);
-
-create table adv_guest
+create table if not exists adv_guest
 (
-    ID             int auto_increment
-        primary key,
-    ADV_ID         int  default 0   not null,
-    BACK           char default 'N' not null,
-    GUEST_ID       int  default 0   not null,
-    DATE_GUEST_HIT datetime         null,
-    DATE_HOST_HIT  datetime         null,
-    SESSION_ID     int  default 0   not null,
-    IP             varchar(15)      null,
-    IP_NUMBER      bigint           null
-);
-
-create index IX_ADV_ID_GUEST
-    on b_stat_adv_guest (ADV_ID, GUEST_ID);
-
-create index IX_ADV_ID_IP_NUMBER
-    on b_stat_adv_guest (ADV_ID, IP_NUMBER);
+    uuid           UUID,
+    adv_uuid       UUID,
+    back           BOOLEAN default false,
+    guest_uuid     UUID,
+    date_guest_hit DateTime32('Europe/Moscow'),
+    date_host_hit  DateTime32('Europe/Moscow'),
+    session_uuid   UUID,
+    ip             IPv4
+) ENGINE = MergeTree
+--      PARTITION BY toYYYYMM(date_stat)
+      ORDER BY (`adv_uuid`, `guest_uuid`);
 
 
 create table if not exists adv_page
@@ -116,28 +103,21 @@ create table if not exists adv_page
 ) ENGINE = MergeTree
       ORDER BY (`adv_uuid`, `type`);
 
-create index IX_ADV_ID_TYPE
-    on b_stat_adv_page (ADV_ID, C_TYPE);
-
-
-create table adv_searcher
+create table if not exists adv_searcher
 (
-    ID          int(18) auto_increment
-        primary key,
-    ADV_ID      int(18) not null,
-    SEARCHER_ID int(18) not null
-);
-
-create index idx_search_adv
-    on b_stat_adv_searcher (SEARCHER_ID, ADV_ID);
+    uuid          UUID,
+    adv_uuid      UUID,
+    searcher_uuid UUID
+) ENGINE = MergeTree
+      ORDER BY (`adv_uuid`, `searcher_uuid`);
 
 ----------------------- Browser --------------------------
 create table browser
 (
-    ID         int(18) auto_increment
-        primary key,
-    USER_AGENT varchar(255) not null
-);
+    uuid       UUID,
+    user_agent String
+) ENGINE = MergeTree
+      ORDER BY (`user_agent`);
 
 ------------------------ City -----------------------------
 
@@ -148,93 +128,68 @@ create table if not exists city
     `region`     String,
     `name`       String,
     `xml_id`     String,
-    `sessions`   Int32 default 0,
-    `new_guests` Int32 default 0,
-    `hits`       Int32 default 0,
-    `events`     Int32 default 0
+    `sessions`   UInt32 default 0,
+    `new_guests` UInt32 default 0,
+    `hits`       UInt32 default 0,
+    `events`     UInt32 default 0
 ) engine = MergeTree
-      ORDER BY (country_id, region, name)
+      ORDER BY (country_id, region, name);
+
+create table if not exists city_day
+(
+    uuid       UUID,
+    city_uuid  UUID,
+    date_stat  DateTime32('Europe/Moscow'),
+    sessions   UInt32 default 0,
+    new_guests UInt32 default 0,
+    hits       UInt32 default 0,
+    events     UInt32 default 0
+) engine = MergeTree
+      ORDER BY (city_uuid, date_stat)
       SETTINGS index_granularity = 8192;
 
-create table b_stat_city_day
+create table city_ip
 (
-    ID         int(18) auto_increment
-        primary key,
-    CITY_ID    int(18)           not null,
-    DATE_STAT  date              not null,
-    SESSIONS   int(18) default 0 not null,
-    NEW_GUESTS int(18) default 0 not null,
-    HITS       int(18) default 0 not null,
-    C_EVENTS   int(18) default 0 not null
-);
-
-create index IX_B_STAT_CITY_DAY_1
-    on b_stat_city_day (CITY_ID, DATE_STAT);
-
-create index IX_B_STAT_CITY_DAY_2
-    on b_stat_city_day (DATE_STAT);
-
-
-create table b_stat_city_ip
-(
-    START_IP   bigint(18) not null
-        primary key,
-    END_IP     bigint(18) not null,
-    COUNTRY_ID char(2)    not null,
-    CITY_ID    int(18)    not null
-);
-
-create index IX_B_STAT_CITY_IP_END_IP
-    on b_stat_city_ip (END_IP);
-
-create table b_stat_city_ip
-(
-    START_IP   bigint(18) not null
-        primary key,
-    END_IP     bigint(18) not null,
-    COUNTRY_ID char(2)    not null,
-    CITY_ID    int(18)    not null
-);
-
-create index IX_B_STAT_CITY_IP_END_IP
-    on b_stat_city_ip (END_IP);
+    start_ip   UInt32,
+    end_ip     UInt32,
+    country_id String,
+    city_uuid  UUID
+) engine = MergeTree
+      ORDER BY (end_ip);
 
 ------------------ Country ---------------------
 
-create table b_stat_country
+create table country
 (
-    ID         char(2)           not null
-        primary key,
-    SHORT_NAME char(3)           null,
-    NAME       varchar(50)       null,
-    SESSIONS   int(18) default 0 not null,
-    NEW_GUESTS int(18) default 0 not null,
-    HITS       int(18) default 0 not null,
-    C_EVENTS   int(18) default 0 not null
-);
+    uuid       UUID,
+    short_name String,
+    name       String,
+    sessions   UInt32 default 0,
+    new_guests UInt32 default 0,
+    hits       UInt32 default 0,
+    events     UInt32 default 0
+) engine = MergeTree
+      ORDER BY (name);
 
-create table b_stat_country_day
+create table country_day
 (
-    ID         int(18) auto_increment
-        primary key,
-    COUNTRY_ID char(2)           not null,
-    DATE_STAT  date              null,
-    SESSIONS   int(18) default 0 not null,
-    NEW_GUESTS int(18) default 0 not null,
-    HITS       int(18) default 0 not null,
-    C_EVENTS   int(18) default 0 not null
-);
-
-create index IX_COUNTRY_ID_DATE_STAT
-    on b_stat_country_day (COUNTRY_ID, DATE_STAT);
+    Id         UUID,
+    country_id FixedString(2),
+    date_stat  DateTime32('Europe/Moscow'),
+    sessions   UInt32 default 0,
+    new_guests UInt32 default 0,
+    hits       UInt32 default 0,
+    events     UInt32 default 0
+) engine = MergeTree
+      ORDER BY (country_id, date_stat);
 
 ---------------------day---------------------
 
-create table b_stat_day
+create table day
 (
     ID                  int(18) auto_increment
         primary key,
-    DATE_STAT           date                        null,
+    DATE_STAT           date null,
     HITS                int(18)        default 0    not null,
     C_HOSTS             int(18)        default 0    not null,
     SESSIONS            int(18)        default 0    not null,
@@ -566,8 +521,7 @@ create table b_stat_day
     MONTH_FAVORITE_10   int(18)        default 0    not null,
     MONTH_FAVORITE_11   int(18)        default 0    not null,
     MONTH_FAVORITE_12   int(18)        default 0    not null,
-    constraint IX_DATE_STAT
-        unique (DATE_STAT)
+    constraint          IX_DATE_STAT unique (DATE_STAT)
 );
 
 
@@ -577,43 +531,332 @@ create table b_stat_event
 (
     ID                int(18) auto_increment
         primary key,
-    EVENT1            varchar(166)                  null,
-    EVENT2            varchar(166)                  null,
+    EVENT1            varchar(166) null,
+    EVENT2            varchar(166) null,
     MONEY             decimal(18, 4) default 0.0000 not null,
-    DATE_ENTER        datetime                      null,
-    DATE_CLEANUP      datetime                      null,
+    DATE_ENTER        datetime null,
+    DATE_CLEANUP      datetime null,
     C_SORT            int(18)        default 100    null,
     COUNTER           int(18)        default 0      not null,
-    ADV_VISIBLE       char           default 'Y'    not null,
-    NAME              varchar(50)                   null,
-    DESCRIPTION       text                          null,
+    ADV_VISIBLE       char           default 'Y' not null,
+    NAME              varchar(50) null,
+    DESCRIPTION       text null,
     KEEP_DAYS         int(18)                       null,
     DYNAMIC_KEEP_DAYS int(18)                       null,
-    DIAGRAM_DEFAULT   char           default 'Y'    not null
+    DIAGRAM_DEFAULT   char           default 'Y' not null
 );
 
-create index IX_B_STAT_EVENT_2
+create
+index IX_B_STAT_EVENT_2
     on b_stat_event (KEEP_DAYS);
 
-create index IX_EVENT1_EVENT2
+create
+index IX_EVENT1_EVENT2
     on b_stat_event (EVENT1, EVENT2);
 
 
-create table b_stat_event_day
+create table event_day
 (
     ID        int(18) auto_increment
         primary key,
-    DATE_STAT date                          null,
-    DATE_LAST datetime                      null,
+    DATE_STAT date null,
+    DATE_LAST datetime null,
     EVENT_ID  int(18)        default 0      not null,
     MONEY     decimal(18, 4) default 0.0000 not null,
     COUNTER   int(18)        default 0      not null
 );
 
-create index IX_EVENT_ID_DATE_STAT
+create
+index IX_EVENT_ID_DATE_STAT
     on b_stat_event_day (EVENT_ID, DATE_STAT);
 
+create table event_list
+(
+    ID              int auto_increment
+        primary key,
+    EVENT_ID        int            default 0 not null,
+    EVENT3          varchar(255) null,
+    MONEY           decimal(18, 4) default 0.0000 not null,
+    DATE_ENTER      datetime not null,
+    REFERER_URL     text null,
+    URL             text null,
+    REDIRECT_URL    text null,
+    SESSION_ID      int null,
+    GUEST_ID        int null,
+    ADV_ID          int null,
+    ADV_BACK        char           default 'N' not null,
+    HIT_ID          int null,
+    COUNTRY_ID      char(2) null,
+    KEEP_DAYS       int null,
+    CHARGEBACK      char           default 'N' not null,
+    SITE_ID         char(2) null,
+    REFERER_SITE_ID char(2) null
+);
 
+create
+index IX_B_STAT_EVENT_LIST_2
+    on b_stat_event_list (EVENT_ID, DATE_ENTER);
+
+create
+index IX_B_STAT_EVENT_LIST_3
+    on b_stat_event_list (KEEP_DAYS, DATE_ENTER);
+
+create
+index IX_GUEST_ID
+    on b_stat_event_list (GUEST_ID);
+
+----------------------- Guest ---------------------------
+
+create table guest
+(
+    uuid              UUID,
+    timestamp         DateTime32('Europe/Moscow'),
+    favorites         UInt8 default 0,
+    events            Int32 default 0,
+    sessions          Int32 default 0,
+    hits              Int32 default 0,
+    repair            UInt8 default 0,
+    first_session_id  UUID,
+    first_date        DateTime32('Europe/Moscow'),
+    first_url_from    String,
+    first_url_to      String,
+    first_url_to_404  UInt8 default 0,
+    first_site_id     String,
+    first_adv_id      UUID,
+    first_referer1    String,
+    first_referer2    String,
+    first_referer3    String,
+    last_session_id   UUID,
+    last_date         DateTime32('Europe/Moscow'),
+    last_user_id      Int32,
+    last_user_auth    UInt8,
+    last_url_last     String,
+    last_url_last_404 UInt8 default 0,
+    last_user_agent   String,
+    last_ip           IPv4,
+    last_cookie       String,
+    last_language     String,
+    last_adv_id       UUID,
+    last_adv_back     UInt8 default 0,
+    last_referer1     String,
+    last_referer2     String,
+    last_referer3     String,
+    last_city_id      UUID,
+    token             String
+)
+    engine = MergeTree PARTITION BY toYYYYMM(timestamp)
+        ORDER BY timestamp
+        SETTINGS index_granularity = 8192;
+
+
+----------------------- Hit ---------------------------
+create table hit
+(
+    ID           int auto_increment
+        primary key,
+    SESSION_ID   int  default 0 not null,
+    DATE_HIT     datetime null,
+    GUEST_ID     int null,
+    NEW_GUEST    char default 'N' not null,
+    USER_ID      int null,
+    USER_AUTH    char null,
+    URL          text null,
+    URL_404      char default 'N' not null,
+    URL_FROM     text null,
+    IP           varchar(15) null,
+    METHOD       varchar(10) null,
+    COOKIES      text null,
+    USER_AGENT   text null,
+    STOP_LIST_ID int null,
+    COUNTRY_ID   char(2) null,
+    CITY_ID      int null,
+    SITE_ID      char(2) null
+);
+
+create
+index IX_DATE_HIT
+    on b_stat_hit (DATE_HIT);
+
+------------------ Page ----------------------
+
+create table page
+(
+    ID            int auto_increment
+        primary key,
+    DATE_STAT     date not null,
+    DIR           char default 'N' not null,
+    URL           text not null,
+    URL_404       char default 'N' not null,
+    URL_HASH      int null,
+    SITE_ID       char(2) null,
+    COUNTER       int  default 0 not null,
+    ENTER_COUNTER int  default 0 not null,
+    EXIT_COUNTER  int  default 0 not null
+);
+
+create
+index IX_DATE_STAT
+    on b_stat_page (DATE_STAT);
+
+create
+index IX_URL_HASH
+    on b_stat_page (URL_HASH);
+
+
+---------------------- Path ------------------------
+
+create table path
+(
+    ID                 int auto_increment
+        primary key,
+    PATH_ID            int  default 0 not null,
+    PARENT_PATH_ID     int null,
+    DATE_STAT          date null,
+    COUNTER            int  default 0 not null,
+    COUNTER_ABNORMAL   int  default 0 not null,
+    COUNTER_FULL_PATH  int  default 0 not null,
+    PAGES              text null,
+    FIRST_PAGE         varchar(255) null,
+    FIRST_PAGE_404     char default 'N' not null,
+    FIRST_PAGE_SITE_ID char(2) null,
+    PREV_PAGE          varchar(255) null,
+    PREV_PAGE_HASH     int null,
+    LAST_PAGE          varchar(255) null,
+    LAST_PAGE_404      char default 'N' not null,
+    LAST_PAGE_SITE_ID  char(2) null,
+    LAST_PAGE_HASH     int null,
+    STEPS              int  default 1 not null
+);
+
+create
+index IX_DATE_STAT
+    on b_stat_path (DATE_STAT);
+
+create
+index IX_PATH_ID_DATE_STAT
+    on b_stat_path (PATH_ID, DATE_STAT);
+
+create
+index IX_PREV_PAGE_HASH_LAST_PAGE_HASH
+    on b_stat_path (PREV_PAGE_HASH, LAST_PAGE_HASH);
+
+create table path_adv
+(
+    ID                     int auto_increment
+        primary key,
+    ADV_ID                 int default 0 not null,
+    PATH_ID                int default 0 not null,
+    DATE_STAT              date null,
+    COUNTER                int default 0 not null,
+    COUNTER_BACK           int default 0 not null,
+    COUNTER_FULL_PATH      int default 0 not null,
+    COUNTER_FULL_PATH_BACK int default 0 not null,
+    STEPS                  int default 0 not null
+);
+
+create
+index IX_DATE_STAT
+    on b_stat_path_adv (DATE_STAT);
+
+create
+index IX_PATH_ID_ADV_ID_DATE_STAT
+    on b_stat_path_adv (PATH_ID, ADV_ID, DATE_STAT);
+
+
+create table path_cache
+(
+    ID                      int auto_increment
+        primary key,
+    SESSION_ID              int  default 0 not null,
+    DATE_HIT                datetime null,
+    PATH_ID                 int null,
+    PATH_PAGES              text null,
+    PATH_FIRST_PAGE         varchar(255) null,
+    PATH_FIRST_PAGE_404     char default 'N' not null,
+    PATH_FIRST_PAGE_SITE_ID char(2) null,
+    PATH_LAST_PAGE          varchar(255) null,
+    PATH_LAST_PAGE_404      char default 'N' not null,
+    PATH_LAST_PAGE_SITE_ID  char(2) null,
+    PATH_STEPS              int  default 1 not null,
+    IS_LAST_PAGE            char default 'Y' not null
+);
+
+create
+index IX_SESSION_ID
+    on b_stat_path_cache (SESSION_ID);
+
+----------------------- Phrase ----------------------------
+
+create table phrase_list
+(
+    ID          int auto_increment
+        primary key,
+    DATE_HIT    datetime null,
+    SEARCHER_ID int null,
+    REFERER_ID  int null,
+    PHRASE      varchar(255) not null,
+    URL_FROM    text null,
+    URL_TO      text null,
+    URL_TO_404  char default 'N' not null,
+    SESSION_ID  int null,
+    SITE_ID     char(2) null
+);
+
+create
+index IX_DATE_HIT
+    on b_stat_phrase_list (DATE_HIT);
+
+create
+index IX_URL_TO_SEARCHER_ID
+    on b_stat_phrase_list (URL_TO(100), SEARCHER_ID);
+
+
+--------------------- Referer -----------------------------
+
+create table referer
+(
+    ID         int auto_increment
+        primary key,
+    DATE_FIRST datetime null,
+    DATE_LAST  datetime not null,
+    SITE_NAME  varchar(255) not null,
+    SESSIONS   int default 0 not null,
+    HITS       int default 0 not null
+);
+
+create
+index IX_B_STAT_REFERER_2
+    on b_stat_referer (DATE_LAST, ID);
+
+create
+index IX_SITE_NAME
+    on b_stat_referer (SITE_NAME);
+
+create table referer_list
+(
+    ID         int auto_increment
+        primary key,
+    REFERER_ID int null,
+    DATE_HIT   datetime null,
+    PROTOCOL   varchar(10) not null,
+    SITE_NAME  varchar(255) not null,
+    URL_FROM   text not null,
+    URL_TO     text null,
+    URL_TO_404 char default 'N' not null,
+    SESSION_ID int null,
+    ADV_ID     int null,
+    SITE_ID    char(2) null
+);
+
+create
+index IX_DATE_HIT
+    on b_stat_referer_list (DATE_HIT);
+
+create
+index IX_SITE_NAME
+    on b_stat_referer_list (SITE_NAME(100), URL_TO(100));
+
+--------------------- Searcher -------------------------
 create table if not exists searcher
 (
     `id`                int(18)      not null auto_increment,
@@ -647,7 +890,7 @@ create table if not exists searcher_day
 
 create table if not exists searcher_hit
 (
-    `uuid`            int(18) not null auto_increment,
+    `uuid`          int(18) not null auto_increment,
     `date_hit`      datetime,
     `searcher_id`   int(18) not null default '0',
     `url`           text not null,
@@ -663,14 +906,22 @@ INDEX IX_SEARCHER_HIT_1 ON searcher_hit (`searcher_id`, `date_hit`);
 CREATE
 INDEX IX_SEARCHER_HIT_2 ON searcher_hit (`hit_keep_days`, `date_hit`);
 
+create table searcher_params
+(
+    ID          int auto_increment
+        primary key,
+    SEARCHER_ID int default 0 not null,
+    DOMAIN      varchar(255) null,
+    VARIABLE    varchar(255) null,
+    CHAR_SET    varchar(255) null
+);
+
+create
+index IX_SEARCHER_DOMAIN
+    on b_stat_searcher_params (SEARCHER_ID, DOMAIN);
 
 
-
-
-
-
-
-
+--------------------- session ---------------------------
 
 create table if not exists session
 (
@@ -711,36 +962,5 @@ create table if not exists session
       ORDER BY (uuid, date_stat)
       PRIMARY KEY (uuid, date_stat);
 
-create table guest
-(
-    uuid       UUID,
-    timestamp  DateTime('Europe/Moscow'),
-    favorites  UInt8 default 0,
-    events     Int32 default 0,
-    sessions   Int32 default 0,
-    hits       Int32 default 0,
-    repair     UInt8 default 0,
-    session_id UUID,
-    url_from   String,
-    url_to     String,
-    url_to_404 UInt8 default 0,
-    site_id    String,
-    adv_id     UUID,
-    referer1   String,
-    referer2   String,
-    referer3   String,
-    user_id    Int32,
-    user_auth  UInt8,
-    url        String,
-    url_404    UInt8 default 0,
-    user_agent String,
-    ip         IPv4,
-    cookie     String,
-    language   String,
-    adv_back   UInt8 default 0,
-    token      String
-)
-    engine = MergeTree PARTITION BY toYYYYMM(timestamp)
-        ORDER BY timestamp
-        SETTINGS index_granularity = 8192;
+
 
