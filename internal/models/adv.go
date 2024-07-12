@@ -252,12 +252,12 @@ func (am AdvModel) AddAdv(referer1 string, referer2 string) error {
 	return nil
 }
 
-func (am AdvModel) FindById(id int) (entity.Adv, error) {
-	var adv entity.Adv
+func (am AdvModel) FindById(id int) (entity.AdvDb, error) {
+	var adv entity.AdvDb
 	sql := `SELECT 	* FROM adv WHERE  id=?`
 	err := am.storage.DB().Get(&adv, sql, id)
 	if err != nil {
-		return entity.Adv{}, err
+		return entity.AdvDb{}, err
 	}
 	return adv, nil
 }

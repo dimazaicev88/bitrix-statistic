@@ -160,7 +160,7 @@ func (stm *StatisticModel) SetGuest(phpSession *session.Session, siteId, referre
 					return "", "", err
 				}
 				// если в базе есть такая рекламная кампания то
-				if (adv != entity.Adv{}) {
+				if (adv != entity.AdvDb{}) {
 					// считаем что гость вернулся по данной рекламной кампании
 					phpSession.Set("SESS_LAST_ADV_ID", strconv.Itoa(cookieAdvId))
 
