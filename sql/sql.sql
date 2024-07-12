@@ -61,9 +61,9 @@ create table if not exists adv_event
     counter_back UInt32         default 0,
     money        decimal(18, 4) default 0.0000,
     money_back   decimal(18, 4) default 0.0000
-) ENGINE = MergeTree
-      PARTITION BY toYYYYMM(date_stat)
-      ORDER BY (`adv_uuid`, `date_stat`);
+) ENGINE = MergeTree;
+--       PARTITION BY toYYYYMM(date_stat)
+--       ORDER BY (`adv_uuid`, `date_stat`);
 
 create table if not exists adv_event_day
 (
@@ -187,423 +187,398 @@ create table country_day
 
 create table day
 (
-    ID                  int(18) auto_increment
-        primary key,
-    DATE_STAT           date null,
-    HITS                int(18)        default 0    not null,
-    C_HOSTS             int(18)        default 0    not null,
-    SESSIONS            int(18)        default 0    not null,
-    C_EVENTS            int(18)        default 0    not null,
-    GUESTS              int(18)        default 0    not null,
-    NEW_GUESTS          int(18)        default 0    not null,
-    FAVORITES           int(18)        default 0    not null,
-    TOTAL_HOSTS         int(18)        default 0    not null,
-    AM_AVERAGE_TIME     decimal(18, 2) default 0.00 not null,
-    AM_1                int(18)        default 0    not null,
-    AM_1_3              int(18)        default 0    not null,
-    AM_3_6              int(18)        default 0    not null,
-    AM_6_9              int(18)        default 0    not null,
-    AM_9_12             int(18)        default 0    not null,
-    AM_12_15            int(18)        default 0    not null,
-    AM_15_18            int(18)        default 0    not null,
-    AM_18_21            int(18)        default 0    not null,
-    AM_21_24            int(18)        default 0    not null,
-    AM_24               int(18)        default 0    not null,
-    AH_AVERAGE_HITS     decimal(18, 2) default 0.00 not null,
-    AH_1                int(18)        default 0    not null,
-    AH_2_5              int(18)        default 0    not null,
-    AH_6_9              int(18)        default 0    not null,
-    AH_10_13            int(18)        default 0    not null,
-    AH_14_17            int(18)        default 0    not null,
-    AH_18_21            int(18)        default 0    not null,
-    AH_22_25            int(18)        default 0    not null,
-    AH_26_29            int(18)        default 0    not null,
-    AH_30_33            int(18)        default 0    not null,
-    AH_34               int(18)        default 0    not null,
-    HOUR_HOST_0         int(18)        default 0    not null,
-    HOUR_HOST_1         int(18)        default 0    not null,
-    HOUR_HOST_2         int(18)        default 0    not null,
-    HOUR_HOST_3         int(18)        default 0    not null,
-    HOUR_HOST_4         int(18)        default 0    not null,
-    HOUR_HOST_5         int(18)        default 0    not null,
-    HOUR_HOST_6         int(18)        default 0    not null,
-    HOUR_HOST_7         int(18)        default 0    not null,
-    HOUR_HOST_8         int(18)        default 0    not null,
-    HOUR_HOST_9         int(18)        default 0    not null,
-    HOUR_HOST_10        int(18)        default 0    not null,
-    HOUR_HOST_11        int(18)        default 0    not null,
-    HOUR_HOST_12        int(18)        default 0    not null,
-    HOUR_HOST_13        int(18)        default 0    not null,
-    HOUR_HOST_14        int(18)        default 0    not null,
-    HOUR_HOST_15        int(18)        default 0    not null,
-    HOUR_HOST_16        int(18)        default 0    not null,
-    HOUR_HOST_17        int(18)        default 0    not null,
-    HOUR_HOST_18        int(18)        default 0    not null,
-    HOUR_HOST_19        int(18)        default 0    not null,
-    HOUR_HOST_20        int(18)        default 0    not null,
-    HOUR_HOST_21        int(18)        default 0    not null,
-    HOUR_HOST_22        int(18)        default 0    not null,
-    HOUR_HOST_23        int(18)        default 0    not null,
-    HOUR_GUEST_0        int(18)        default 0    not null,
-    HOUR_GUEST_1        int(18)        default 0    not null,
-    HOUR_GUEST_2        int(18)        default 0    not null,
-    HOUR_GUEST_3        int(18)        default 0    not null,
-    HOUR_GUEST_4        int(18)        default 0    not null,
-    HOUR_GUEST_5        int(18)        default 0    not null,
-    HOUR_GUEST_6        int(18)        default 0    not null,
-    HOUR_GUEST_7        int(18)        default 0    not null,
-    HOUR_GUEST_8        int(18)        default 0    not null,
-    HOUR_GUEST_9        int(18)        default 0    not null,
-    HOUR_GUEST_10       int(18)        default 0    not null,
-    HOUR_GUEST_11       int(18)        default 0    not null,
-    HOUR_GUEST_12       int(18)        default 0    not null,
-    HOUR_GUEST_13       int(18)        default 0    not null,
-    HOUR_GUEST_14       int(18)        default 0    not null,
-    HOUR_GUEST_15       int(18)        default 0    not null,
-    HOUR_GUEST_16       int(18)        default 0    not null,
-    HOUR_GUEST_17       int(18)        default 0    not null,
-    HOUR_GUEST_18       int(18)        default 0    not null,
-    HOUR_GUEST_19       int(18)        default 0    not null,
-    HOUR_GUEST_20       int(18)        default 0    not null,
-    HOUR_GUEST_21       int(18)        default 0    not null,
-    HOUR_GUEST_22       int(18)        default 0    not null,
-    HOUR_GUEST_23       int(18)        default 0    not null,
-    HOUR_NEW_GUEST_0    int(18)        default 0    not null,
-    HOUR_NEW_GUEST_1    int(18)        default 0    not null,
-    HOUR_NEW_GUEST_2    int(18)        default 0    not null,
-    HOUR_NEW_GUEST_3    int(18)        default 0    not null,
-    HOUR_NEW_GUEST_4    int(18)        default 0    not null,
-    HOUR_NEW_GUEST_5    int(18)        default 0    not null,
-    HOUR_NEW_GUEST_6    int(18)        default 0    not null,
-    HOUR_NEW_GUEST_7    int(18)        default 0    not null,
-    HOUR_NEW_GUEST_8    int(18)        default 0    not null,
-    HOUR_NEW_GUEST_9    int(18)        default 0    not null,
-    HOUR_NEW_GUEST_10   int(18)        default 0    not null,
-    HOUR_NEW_GUEST_11   int(18)        default 0    not null,
-    HOUR_NEW_GUEST_12   int(18)        default 0    not null,
-    HOUR_NEW_GUEST_13   int(18)        default 0    not null,
-    HOUR_NEW_GUEST_14   int(18)        default 0    not null,
-    HOUR_NEW_GUEST_15   int(18)        default 0    not null,
-    HOUR_NEW_GUEST_16   int(18)        default 0    not null,
-    HOUR_NEW_GUEST_17   int(18)        default 0    not null,
-    HOUR_NEW_GUEST_18   int(18)        default 0    not null,
-    HOUR_NEW_GUEST_19   int(18)        default 0    not null,
-    HOUR_NEW_GUEST_20   int(18)        default 0    not null,
-    HOUR_NEW_GUEST_21   int(18)        default 0    not null,
-    HOUR_NEW_GUEST_22   int(18)        default 0    not null,
-    HOUR_NEW_GUEST_23   int(18)        default 0    not null,
-    HOUR_SESSION_0      int(18)        default 0    not null,
-    HOUR_SESSION_1      int(18)        default 0    not null,
-    HOUR_SESSION_2      int(18)        default 0    not null,
-    HOUR_SESSION_3      int(18)        default 0    not null,
-    HOUR_SESSION_4      int(18)        default 0    not null,
-    HOUR_SESSION_5      int(18)        default 0    not null,
-    HOUR_SESSION_6      int(18)        default 0    not null,
-    HOUR_SESSION_7      int(18)        default 0    not null,
-    HOUR_SESSION_8      int(18)        default 0    not null,
-    HOUR_SESSION_9      int(18)        default 0    not null,
-    HOUR_SESSION_10     int(18)        default 0    not null,
-    HOUR_SESSION_11     int(18)        default 0    not null,
-    HOUR_SESSION_12     int(18)        default 0    not null,
-    HOUR_SESSION_13     int(18)        default 0    not null,
-    HOUR_SESSION_14     int(18)        default 0    not null,
-    HOUR_SESSION_15     int(18)        default 0    not null,
-    HOUR_SESSION_16     int(18)        default 0    not null,
-    HOUR_SESSION_17     int(18)        default 0    not null,
-    HOUR_SESSION_18     int(18)        default 0    not null,
-    HOUR_SESSION_19     int(18)        default 0    not null,
-    HOUR_SESSION_20     int(18)        default 0    not null,
-    HOUR_SESSION_21     int(18)        default 0    not null,
-    HOUR_SESSION_22     int(18)        default 0    not null,
-    HOUR_SESSION_23     int(18)        default 0    not null,
-    HOUR_HIT_0          int(18)        default 0    not null,
-    HOUR_HIT_1          int(18)        default 0    not null,
-    HOUR_HIT_2          int(18)        default 0    not null,
-    HOUR_HIT_3          int(18)        default 0    not null,
-    HOUR_HIT_4          int(18)        default 0    not null,
-    HOUR_HIT_5          int(18)        default 0    not null,
-    HOUR_HIT_6          int(18)        default 0    not null,
-    HOUR_HIT_7          int(18)        default 0    not null,
-    HOUR_HIT_8          int(18)        default 0    not null,
-    HOUR_HIT_9          int(18)        default 0    not null,
-    HOUR_HIT_10         int(18)        default 0    not null,
-    HOUR_HIT_11         int(18)        default 0    not null,
-    HOUR_HIT_12         int(18)        default 0    not null,
-    HOUR_HIT_13         int(18)        default 0    not null,
-    HOUR_HIT_14         int(18)        default 0    not null,
-    HOUR_HIT_15         int(18)        default 0    not null,
-    HOUR_HIT_16         int(18)        default 0    not null,
-    HOUR_HIT_17         int(18)        default 0    not null,
-    HOUR_HIT_18         int(18)        default 0    not null,
-    HOUR_HIT_19         int(18)        default 0    not null,
-    HOUR_HIT_20         int(18)        default 0    not null,
-    HOUR_HIT_21         int(18)        default 0    not null,
-    HOUR_HIT_22         int(18)        default 0    not null,
-    HOUR_HIT_23         int(18)        default 0    not null,
-    HOUR_EVENT_0        int(18)        default 0    not null,
-    HOUR_EVENT_1        int(18)        default 0    not null,
-    HOUR_EVENT_2        int(18)        default 0    not null,
-    HOUR_EVENT_3        int(18)        default 0    not null,
-    HOUR_EVENT_4        int(18)        default 0    not null,
-    HOUR_EVENT_5        int(18)        default 0    not null,
-    HOUR_EVENT_6        int(18)        default 0    not null,
-    HOUR_EVENT_7        int(18)        default 0    not null,
-    HOUR_EVENT_8        int(18)        default 0    not null,
-    HOUR_EVENT_9        int(18)        default 0    not null,
-    HOUR_EVENT_10       int(18)        default 0    not null,
-    HOUR_EVENT_11       int(18)        default 0    not null,
-    HOUR_EVENT_12       int(18)        default 0    not null,
-    HOUR_EVENT_13       int(18)        default 0    not null,
-    HOUR_EVENT_14       int(18)        default 0    not null,
-    HOUR_EVENT_15       int(18)        default 0    not null,
-    HOUR_EVENT_16       int(18)        default 0    not null,
-    HOUR_EVENT_17       int(18)        default 0    not null,
-    HOUR_EVENT_18       int(18)        default 0    not null,
-    HOUR_EVENT_19       int(18)        default 0    not null,
-    HOUR_EVENT_20       int(18)        default 0    not null,
-    HOUR_EVENT_21       int(18)        default 0    not null,
-    HOUR_EVENT_22       int(18)        default 0    not null,
-    HOUR_EVENT_23       int(18)        default 0    not null,
-    HOUR_FAVORITE_0     int(18)        default 0    not null,
-    HOUR_FAVORITE_1     int(18)        default 0    not null,
-    HOUR_FAVORITE_2     int(18)        default 0    not null,
-    HOUR_FAVORITE_3     int(18)        default 0    not null,
-    HOUR_FAVORITE_4     int(18)        default 0    not null,
-    HOUR_FAVORITE_5     int(18)        default 0    not null,
-    HOUR_FAVORITE_6     int(18)        default 0    not null,
-    HOUR_FAVORITE_7     int(18)        default 0    not null,
-    HOUR_FAVORITE_8     int(18)        default 0    not null,
-    HOUR_FAVORITE_9     int(18)        default 0    not null,
-    HOUR_FAVORITE_10    int(18)        default 0    not null,
-    HOUR_FAVORITE_11    int(18)        default 0    not null,
-    HOUR_FAVORITE_12    int(18)        default 0    not null,
-    HOUR_FAVORITE_13    int(18)        default 0    not null,
-    HOUR_FAVORITE_14    int(18)        default 0    not null,
-    HOUR_FAVORITE_15    int(18)        default 0    not null,
-    HOUR_FAVORITE_16    int(18)        default 0    not null,
-    HOUR_FAVORITE_17    int(18)        default 0    not null,
-    HOUR_FAVORITE_18    int(18)        default 0    not null,
-    HOUR_FAVORITE_19    int(18)        default 0    not null,
-    HOUR_FAVORITE_20    int(18)        default 0    not null,
-    HOUR_FAVORITE_21    int(18)        default 0    not null,
-    HOUR_FAVORITE_22    int(18)        default 0    not null,
-    HOUR_FAVORITE_23    int(18)        default 0    not null,
-    WEEKDAY_HOST_0      int(18)        default 0    not null,
-    WEEKDAY_HOST_1      int(18)        default 0    not null,
-    WEEKDAY_HOST_2      int(18)        default 0    not null,
-    WEEKDAY_HOST_3      int(18)        default 0    not null,
-    WEEKDAY_HOST_4      int(18)        default 0    not null,
-    WEEKDAY_HOST_5      int(18)        default 0    not null,
-    WEEKDAY_HOST_6      int(18)        default 0    not null,
-    WEEKDAY_GUEST_0     int(18)        default 0    not null,
-    WEEKDAY_GUEST_1     int(18)        default 0    not null,
-    WEEKDAY_GUEST_2     int(18)        default 0    not null,
-    WEEKDAY_GUEST_3     int(18)        default 0    not null,
-    WEEKDAY_GUEST_4     int(18)        default 0    not null,
-    WEEKDAY_GUEST_5     int(18)        default 0    not null,
-    WEEKDAY_GUEST_6     int(18)        default 0    not null,
-    WEEKDAY_NEW_GUEST_0 int(18)        default 0    not null,
-    WEEKDAY_NEW_GUEST_1 int(18)        default 0    not null,
-    WEEKDAY_NEW_GUEST_2 int(18)        default 0    not null,
-    WEEKDAY_NEW_GUEST_3 int(18)        default 0    not null,
-    WEEKDAY_NEW_GUEST_4 int(18)        default 0    not null,
-    WEEKDAY_NEW_GUEST_5 int(18)        default 0    not null,
-    WEEKDAY_NEW_GUEST_6 int(18)        default 0    not null,
-    WEEKDAY_SESSION_0   int(18)        default 0    not null,
-    WEEKDAY_SESSION_1   int(18)        default 0    not null,
-    WEEKDAY_SESSION_2   int(18)        default 0    not null,
-    WEEKDAY_SESSION_3   int(18)        default 0    not null,
-    WEEKDAY_SESSION_4   int(18)        default 0    not null,
-    WEEKDAY_SESSION_5   int(18)        default 0    not null,
-    WEEKDAY_SESSION_6   int(18)        default 0    not null,
-    WEEKDAY_HIT_0       int(18)        default 0    not null,
-    WEEKDAY_HIT_1       int(18)        default 0    not null,
-    WEEKDAY_HIT_2       int(18)        default 0    not null,
-    WEEKDAY_HIT_3       int(18)        default 0    not null,
-    WEEKDAY_HIT_4       int(18)        default 0    not null,
-    WEEKDAY_HIT_5       int(18)        default 0    not null,
-    WEEKDAY_HIT_6       int(18)        default 0    not null,
-    WEEKDAY_EVENT_0     int(18)        default 0    not null,
-    WEEKDAY_EVENT_1     int(18)        default 0    not null,
-    WEEKDAY_EVENT_2     int(18)        default 0    not null,
-    WEEKDAY_EVENT_3     int(18)        default 0    not null,
-    WEEKDAY_EVENT_4     int(18)        default 0    not null,
-    WEEKDAY_EVENT_5     int(18)        default 0    not null,
-    WEEKDAY_EVENT_6     int(18)        default 0    not null,
-    WEEKDAY_FAVORITE_0  int(18)        default 0    not null,
-    WEEKDAY_FAVORITE_1  int(18)        default 0    not null,
-    WEEKDAY_FAVORITE_2  int(18)        default 0    not null,
-    WEEKDAY_FAVORITE_3  int(18)        default 0    not null,
-    WEEKDAY_FAVORITE_4  int(18)        default 0    not null,
-    WEEKDAY_FAVORITE_5  int(18)        default 0    not null,
-    WEEKDAY_FAVORITE_6  int(18)        default 0    not null,
-    MONTH_HOST_1        int(18)        default 0    not null,
-    MONTH_HOST_2        int(18)        default 0    not null,
-    MONTH_HOST_3        int(18)        default 0    not null,
-    MONTH_HOST_4        int(18)        default 0    not null,
-    MONTH_HOST_5        int(18)        default 0    not null,
-    MONTH_HOST_6        int(18)        default 0    not null,
-    MONTH_HOST_7        int(18)        default 0    not null,
-    MONTH_HOST_8        int(18)        default 0    not null,
-    MONTH_HOST_9        int(18)        default 0    not null,
-    MONTH_HOST_10       int(18)        default 0    not null,
-    MONTH_HOST_11       int(18)        default 0    not null,
-    MONTH_HOST_12       int(18)        default 0    not null,
-    MONTH_GUEST_1       int(18)        default 0    not null,
-    MONTH_GUEST_2       int(18)        default 0    not null,
-    MONTH_GUEST_3       int(18)        default 0    not null,
-    MONTH_GUEST_4       int(18)        default 0    not null,
-    MONTH_GUEST_5       int(18)        default 0    not null,
-    MONTH_GUEST_6       int(18)        default 0    not null,
-    MONTH_GUEST_7       int(18)        default 0    not null,
-    MONTH_GUEST_8       int(18)        default 0    not null,
-    MONTH_GUEST_9       int(18)        default 0    not null,
-    MONTH_GUEST_10      int(18)        default 0    not null,
-    MONTH_GUEST_11      int(18)        default 0    not null,
-    MONTH_GUEST_12      int(18)        default 0    not null,
-    MONTH_NEW_GUEST_1   int(18)        default 0    not null,
-    MONTH_NEW_GUEST_2   int(18)        default 0    not null,
-    MONTH_NEW_GUEST_3   int(18)        default 0    not null,
-    MONTH_NEW_GUEST_4   int(18)        default 0    not null,
-    MONTH_NEW_GUEST_5   int(18)        default 0    not null,
-    MONTH_NEW_GUEST_6   int(18)        default 0    not null,
-    MONTH_NEW_GUEST_7   int(18)        default 0    not null,
-    MONTH_NEW_GUEST_8   int(18)        default 0    not null,
-    MONTH_NEW_GUEST_9   int(18)        default 0    not null,
-    MONTH_NEW_GUEST_10  int(18)        default 0    not null,
-    MONTH_NEW_GUEST_11  int(18)        default 0    not null,
-    MONTH_NEW_GUEST_12  int(18)        default 0    not null,
-    MONTH_SESSION_1     int(18)        default 0    not null,
-    MONTH_SESSION_2     int(18)        default 0    not null,
-    MONTH_SESSION_3     int(18)        default 0    not null,
-    MONTH_SESSION_4     int(18)        default 0    not null,
-    MONTH_SESSION_5     int(18)        default 0    not null,
-    MONTH_SESSION_6     int(18)        default 0    not null,
-    MONTH_SESSION_7     int(18)        default 0    not null,
-    MONTH_SESSION_8     int(18)        default 0    not null,
-    MONTH_SESSION_9     int(18)        default 0    not null,
-    MONTH_SESSION_10    int(18)        default 0    not null,
-    MONTH_SESSION_11    int(18)        default 0    not null,
-    MONTH_SESSION_12    int(18)        default 0    not null,
-    MONTH_HIT_1         int(18)        default 0    not null,
-    MONTH_HIT_2         int(18)        default 0    not null,
-    MONTH_HIT_3         int(18)        default 0    not null,
-    MONTH_HIT_4         int(18)        default 0    not null,
-    MONTH_HIT_5         int(18)        default 0    not null,
-    MONTH_HIT_6         int(18)        default 0    not null,
-    MONTH_HIT_7         int(18)        default 0    not null,
-    MONTH_HIT_8         int(18)        default 0    not null,
-    MONTH_HIT_9         int(18)        default 0    not null,
-    MONTH_HIT_10        int(18)        default 0    not null,
-    MONTH_HIT_11        int(18)        default 0    not null,
-    MONTH_HIT_12        int(18)        default 0    not null,
-    MONTH_EVENT_1       int(18)        default 0    not null,
-    MONTH_EVENT_2       int(18)        default 0    not null,
-    MONTH_EVENT_3       int(18)        default 0    not null,
-    MONTH_EVENT_4       int(18)        default 0    not null,
-    MONTH_EVENT_5       int(18)        default 0    not null,
-    MONTH_EVENT_6       int(18)        default 0    not null,
-    MONTH_EVENT_7       int(18)        default 0    not null,
-    MONTH_EVENT_8       int(18)        default 0    not null,
-    MONTH_EVENT_9       int(18)        default 0    not null,
-    MONTH_EVENT_10      int(18)        default 0    not null,
-    MONTH_EVENT_11      int(18)        default 0    not null,
-    MONTH_EVENT_12      int(18)        default 0    not null,
-    MONTH_FAVORITE_1    int(18)        default 0    not null,
-    MONTH_FAVORITE_2    int(18)        default 0    not null,
-    MONTH_FAVORITE_3    int(18)        default 0    not null,
-    MONTH_FAVORITE_4    int(18)        default 0    not null,
-    MONTH_FAVORITE_5    int(18)        default 0    not null,
-    MONTH_FAVORITE_6    int(18)        default 0    not null,
-    MONTH_FAVORITE_7    int(18)        default 0    not null,
-    MONTH_FAVORITE_8    int(18)        default 0    not null,
-    MONTH_FAVORITE_9    int(18)        default 0    not null,
-    MONTH_FAVORITE_10   int(18)        default 0    not null,
-    MONTH_FAVORITE_11   int(18)        default 0    not null,
-    MONTH_FAVORITE_12   int(18)        default 0    not null,
-    constraint          IX_DATE_STAT unique (DATE_STAT)
+    uuid                UUID,
+    date_stat           DateTime32('Europe/Moscow'),
+    hits                UInt32         default 0,
+    hosts               UInt32         default 0,
+    sessions            UInt32         default 0,
+    events              UInt32         default 0,
+    guests              UInt32         default 0,
+    new_guests          UInt32         default 0,
+    favorites           UInt32         default 0,
+    total_hosts         UInt32         default 0,
+    am_average_time     decimal(18, 2) default 0.00,
+    am_1                UInt32         default 0,
+    am_1_3              UInt32         default 0,
+    am_3_6              UInt32         default 0,
+    am_6_9              UInt32         default 0,
+    am_9_12             UInt32         default 0,
+    am_12_15            UInt32         default 0,
+    am_15_18            UInt32         default 0,
+    am_18_21            UInt32         default 0,
+    am_21_24            UInt32         default 0,
+    am_24               UInt32         default 0,
+    ah_average_hits     decimal(18, 2) default 0.00,
+    ah_1                UInt32         default 0,
+    ah_2_5              UInt32         default 0,
+    ah_6_9              UInt32         default 0,
+    ah_10_13            UInt32         default 0,
+    ah_14_17            UInt32         default 0,
+    ah_18_21            UInt32         default 0,
+    ah_22_25            UInt32         default 0,
+    ah_26_29            UInt32         default 0,
+    ah_30_33            UInt32         default 0,
+    ah_34               UInt32         default 0,
+    hour_host_0         UInt32         default 0,
+    hour_host_1         UInt32         default 0,
+    hour_host_2         UInt32         default 0,
+    hour_host_3         UInt32         default 0,
+    hour_host_4         UInt32         default 0,
+    hour_host_5         UInt32         default 0,
+    hour_host_6         UInt32         default 0,
+    hour_host_7         UInt32         default 0,
+    hour_host_8         UInt32         default 0,
+    hour_host_9         UInt32         default 0,
+    hour_host_10        UInt32         default 0,
+    hour_host_11        UInt32         default 0,
+    hour_host_12        UInt32         default 0,
+    hour_host_13        UInt32         default 0,
+    hour_host_14        UInt32         default 0,
+    hour_host_15        UInt32         default 0,
+    hour_host_16        UInt32         default 0,
+    hour_host_17        UInt32         default 0,
+    hour_host_18        UInt32         default 0,
+    hour_host_19        UInt32         default 0,
+    hour_host_20        UInt32         default 0,
+    hour_host_21        UInt32         default 0,
+    hour_host_22        UInt32         default 0,
+    hour_host_23        UInt32         default 0,
+    hour_guest_0        UInt32         default 0,
+    hour_guest_1        UInt32         default 0,
+    hour_guest_2        UInt32         default 0,
+    hour_guest_3        UInt32         default 0,
+    hour_guest_4        UInt32         default 0,
+    hour_guest_5        UInt32         default 0,
+    hour_guest_6        UInt32         default 0,
+    hour_guest_7        UInt32         default 0,
+    hour_guest_8        UInt32         default 0,
+    hour_guest_9        UInt32         default 0,
+    hour_guest_10       UInt32         default 0,
+    hour_guest_11       UInt32         default 0,
+    hour_guest_12       UInt32         default 0,
+    hour_guest_13       UInt32         default 0,
+    hour_guest_14       UInt32         default 0,
+    hour_guest_15       UInt32         default 0,
+    hour_guest_16       UInt32         default 0,
+    hour_guest_17       UInt32         default 0,
+    hour_guest_18       UInt32         default 0,
+    hour_guest_19       UInt32         default 0,
+    hour_guest_20       UInt32         default 0,
+    hour_guest_21       UInt32         default 0,
+    hour_guest_22       UInt32         default 0,
+    hour_guest_23       UInt32         default 0,
+    hour_new_guest_0    UInt32         default 0,
+    hour_new_guest_1    UInt32         default 0,
+    hour_new_guest_2    UInt32         default 0,
+    hour_new_guest_3    UInt32         default 0,
+    hour_new_guest_4    UInt32         default 0,
+    hour_new_guest_5    UInt32         default 0,
+    hour_new_guest_6    UInt32         default 0,
+    hour_new_guest_7    UInt32         default 0,
+    hour_new_guest_8    UInt32         default 0,
+    hour_new_guest_9    UInt32         default 0,
+    hour_new_guest_10   UInt32         default 0,
+    hour_new_guest_11   UInt32         default 0,
+    hour_new_guest_12   UInt32         default 0,
+    hour_new_guest_13   UInt32         default 0,
+    hour_new_guest_14   UInt32         default 0,
+    hour_new_guest_15   UInt32         default 0,
+    hour_new_guest_16   UInt32         default 0,
+    hour_new_guest_17   UInt32         default 0,
+    hour_new_guest_18   UInt32         default 0,
+    hour_new_guest_19   UInt32         default 0,
+    hour_new_guest_20   UInt32         default 0,
+    hour_new_guest_21   UInt32         default 0,
+    hour_new_guest_22   UInt32         default 0,
+    hour_new_guest_23   UInt32         default 0,
+    hour_session_0      UInt32         default 0,
+    hour_session_1      UInt32         default 0,
+    hour_session_2      UInt32         default 0,
+    hour_session_3      UInt32         default 0,
+    hour_session_4      UInt32         default 0,
+    hour_session_5      UInt32         default 0,
+    hour_session_6      UInt32         default 0,
+    hour_session_7      UInt32         default 0,
+    hour_session_8      UInt32         default 0,
+    hour_session_9      UInt32         default 0,
+    hour_session_10     UInt32         default 0,
+    hour_session_11     UInt32         default 0,
+    hour_session_12     UInt32         default 0,
+    hour_session_13     UInt32         default 0,
+    hour_session_14     UInt32         default 0,
+    hour_session_15     UInt32         default 0,
+    hour_session_16     UInt32         default 0,
+    hour_session_17     UInt32         default 0,
+    hour_session_18     UInt32         default 0,
+    hour_session_19     UInt32         default 0,
+    hour_session_20     UInt32         default 0,
+    hour_session_21     UInt32         default 0,
+    hour_session_22     UInt32         default 0,
+    hour_session_23     UInt32         default 0,
+    hour_hit_0          UInt32         default 0,
+    hour_hit_1          UInt32         default 0,
+    hour_hit_2          UInt32         default 0,
+    hour_hit_3          UInt32         default 0,
+    hour_hit_4          UInt32         default 0,
+    hour_hit_5          UInt32         default 0,
+    hour_hit_6          UInt32         default 0,
+    hour_hit_7          UInt32         default 0,
+    hour_hit_8          UInt32         default 0,
+    hour_hit_9          UInt32         default 0,
+    hour_hit_10         UInt32         default 0,
+    hour_hit_11         UInt32         default 0,
+    hour_hit_12         UInt32         default 0,
+    hour_hit_13         UInt32         default 0,
+    hour_hit_14         UInt32         default 0,
+    hour_hit_15         UInt32         default 0,
+    hour_hit_16         UInt32         default 0,
+    hour_hit_17         UInt32         default 0,
+    hour_hit_18         UInt32         default 0,
+    hour_hit_19         UInt32         default 0,
+    hour_hit_20         UInt32         default 0,
+    hour_hit_21         UInt32         default 0,
+    hour_hit_22         UInt32         default 0,
+    hour_hit_23         UInt32         default 0,
+    hour_event_0        UInt32         default 0,
+    hour_event_1        UInt32         default 0,
+    hour_event_2        UInt32         default 0,
+    hour_event_3        UInt32         default 0,
+    hour_event_4        UInt32         default 0,
+    hour_event_5        UInt32         default 0,
+    hour_event_6        UInt32         default 0,
+    hour_event_7        UInt32         default 0,
+    hour_event_8        UInt32         default 0,
+    hour_event_9        UInt32         default 0,
+    hour_event_10       UInt32         default 0,
+    hour_event_11       UInt32         default 0,
+    hour_event_12       UInt32         default 0,
+    hour_event_13       UInt32         default 0,
+    hour_event_14       UInt32         default 0,
+    hour_event_15       UInt32         default 0,
+    hour_event_16       UInt32         default 0,
+    hour_event_17       UInt32         default 0,
+    hour_event_18       UInt32         default 0,
+    hour_event_19       UInt32         default 0,
+    hour_event_20       UInt32         default 0,
+    hour_event_21       UInt32         default 0,
+    hour_event_22       UInt32         default 0,
+    hour_event_23       UInt32         default 0,
+    hour_favorite_0     UInt32         default 0,
+    hour_favorite_1     UInt32         default 0,
+    hour_favorite_2     UInt32         default 0,
+    hour_favorite_3     UInt32         default 0,
+    hour_favorite_4     UInt32         default 0,
+    hour_favorite_5     UInt32         default 0,
+    hour_favorite_6     UInt32         default 0,
+    hour_favorite_7     UInt32         default 0,
+    hour_favorite_8     UInt32         default 0,
+    hour_favorite_9     UInt32         default 0,
+    hour_favorite_10    UInt32         default 0,
+    hour_favorite_11    UInt32         default 0,
+    hour_favorite_12    UInt32         default 0,
+    hour_favorite_13    UInt32         default 0,
+    hour_favorite_14    UInt32         default 0,
+    hour_favorite_15    UInt32         default 0,
+    hour_favorite_16    UInt32         default 0,
+    hour_favorite_17    UInt32         default 0,
+    hour_favorite_18    UInt32         default 0,
+    hour_favorite_19    UInt32         default 0,
+    hour_favorite_20    UInt32         default 0,
+    hour_favorite_21    UInt32         default 0,
+    hour_favorite_22    UInt32         default 0,
+    hour_favorite_23    UInt32         default 0,
+    weekday_host_0      UInt32         default 0,
+    weekday_host_1      UInt32         default 0,
+    weekday_host_2      UInt32         default 0,
+    weekday_host_3      UInt32         default 0,
+    weekday_host_4      UInt32         default 0,
+    weekday_host_5      UInt32         default 0,
+    weekday_host_6      UInt32         default 0,
+    weekday_guest_0     UInt32         default 0,
+    weekday_guest_1     UInt32         default 0,
+    weekday_guest_2     UInt32         default 0,
+    weekday_guest_3     UInt32         default 0,
+    weekday_guest_4     UInt32         default 0,
+    weekday_guest_5     UInt32         default 0,
+    weekday_guest_6     UInt32         default 0,
+    weekday_new_guest_0 UInt32         default 0,
+    weekday_new_guest_1 UInt32         default 0,
+    weekday_new_guest_2 UInt32         default 0,
+    weekday_new_guest_3 UInt32         default 0,
+    weekday_new_guest_4 UInt32         default 0,
+    weekday_new_guest_5 UInt32         default 0,
+    weekday_new_guest_6 UInt32         default 0,
+    weekday_session_0   UInt32         default 0,
+    weekday_session_1   UInt32         default 0,
+    weekday_session_2   UInt32         default 0,
+    weekday_session_3   UInt32         default 0,
+    weekday_session_4   UInt32         default 0,
+    weekday_session_5   UInt32         default 0,
+    weekday_session_6   UInt32         default 0,
+    weekday_hit_0       UInt32         default 0,
+    weekday_hit_1       UInt32         default 0,
+    weekday_hit_2       UInt32         default 0,
+    weekday_hit_3       UInt32         default 0,
+    weekday_hit_4       UInt32         default 0,
+    weekday_hit_5       UInt32         default 0,
+    weekday_hit_6       UInt32         default 0,
+    weekday_event_0     UInt32         default 0,
+    weekday_event_1     UInt32         default 0,
+    weekday_event_2     UInt32         default 0,
+    weekday_event_3     UInt32         default 0,
+    weekday_event_4     UInt32         default 0,
+    weekday_event_5     UInt32         default 0,
+    weekday_event_6     UInt32         default 0,
+    weekday_favorite_0  UInt32         default 0,
+    weekday_favorite_1  UInt32         default 0,
+    weekday_favorite_2  UInt32         default 0,
+    weekday_favorite_3  UInt32         default 0,
+    weekday_favorite_4  UInt32         default 0,
+    weekday_favorite_5  UInt32         default 0,
+    weekday_favorite_6  UInt32         default 0,
+    month_host_1        UInt32         default 0,
+    month_host_2        UInt32         default 0,
+    month_host_3        UInt32         default 0,
+    month_host_4        UInt32         default 0,
+    month_host_5        UInt32         default 0,
+    month_host_6        UInt32         default 0,
+    month_host_7        UInt32         default 0,
+    month_host_8        UInt32         default 0,
+    month_host_9        UInt32         default 0,
+    month_host_10       UInt32         default 0,
+    month_host_11       UInt32         default 0,
+    month_host_12       UInt32         default 0,
+    month_guest_1       UInt32         default 0,
+    month_guest_2       UInt32         default 0,
+    month_guest_3       UInt32         default 0,
+    month_guest_4       UInt32         default 0,
+    month_guest_5       UInt32         default 0,
+    month_guest_6       UInt32         default 0,
+    month_guest_7       UInt32         default 0,
+    month_guest_8       UInt32         default 0,
+    month_guest_9       UInt32         default 0,
+    month_guest_10      UInt32         default 0,
+    month_guest_11      UInt32         default 0,
+    month_guest_12      UInt32         default 0,
+    month_new_guest_1   UInt32         default 0,
+    month_new_guest_2   UInt32         default 0,
+    month_new_guest_3   UInt32         default 0,
+    month_new_guest_4   UInt32         default 0,
+    month_new_guest_5   UInt32         default 0,
+    month_new_guest_6   UInt32         default 0,
+    month_new_guest_7   UInt32         default 0,
+    month_new_guest_8   UInt32         default 0,
+    month_new_guest_9   UInt32         default 0,
+    month_new_guest_10  UInt32         default 0,
+    month_new_guest_11  UInt32         default 0,
+    month_new_guest_12  UInt32         default 0,
+    month_session_1     UInt32         default 0,
+    month_session_2     UInt32         default 0,
+    month_session_3     UInt32         default 0,
+    month_session_4     UInt32         default 0,
+    month_session_5     UInt32         default 0,
+    month_session_6     UInt32         default 0,
+    month_session_7     UInt32         default 0,
+    month_session_8     UInt32         default 0,
+    month_session_9     UInt32         default 0,
+    month_session_10    UInt32         default 0,
+    month_session_11    UInt32         default 0,
+    month_session_12    UInt32         default 0,
+    month_hit_1         UInt32         default 0,
+    month_hit_2         UInt32         default 0,
+    month_hit_3         UInt32         default 0,
+    month_hit_4         UInt32         default 0,
+    month_hit_5         UInt32         default 0,
+    month_hit_6         UInt32         default 0,
+    month_hit_7         UInt32         default 0,
+    month_hit_8         UInt32         default 0,
+    month_hit_9         UInt32         default 0,
+    month_hit_10        UInt32         default 0,
+    month_hit_11        UInt32         default 0,
+    month_hit_12        UInt32         default 0,
+    month_event_1       UInt32         default 0,
+    month_event_2       UInt32         default 0,
+    month_event_3       UInt32         default 0,
+    month_event_4       UInt32         default 0,
+    month_event_5       UInt32         default 0,
+    month_event_6       UInt32         default 0,
+    month_event_7       UInt32         default 0,
+    month_event_8       UInt32         default 0,
+    month_event_9       UInt32         default 0,
+    month_event_10      UInt32         default 0,
+    month_event_11      UInt32         default 0,
+    month_event_12      UInt32         default 0,
+    month_favorite_1    UInt32         default 0,
+    month_favorite_2    UInt32         default 0,
+    month_favorite_3    UInt32         default 0,
+    month_favorite_4    UInt32         default 0,
+    month_favorite_5    UInt32         default 0,
+    month_favorite_6    UInt32         default 0,
+    month_favorite_7    UInt32         default 0,
+    month_favorite_8    UInt32         default 0,
+    month_favorite_9    UInt32         default 0,
+    month_favorite_10   UInt32         default 0,
+    month_favorite_11   UInt32         default 0,
+    month_favorite_12   UInt32         default 0
 );
 
 
 ---------------------------- Event --------------------------------
 
-create table b_stat_event
+create table event
 (
-    ID                int(18) auto_increment
-        primary key,
-    EVENT1            varchar(166) null,
-    EVENT2            varchar(166) null,
-    MONEY             decimal(18, 4) default 0.0000 not null,
-    DATE_ENTER        datetime null,
-    DATE_CLEANUP      datetime null,
-    C_SORT            int(18)        default 100    null,
-    COUNTER           int(18)        default 0      not null,
-    ADV_VISIBLE       char           default 'Y' not null,
-    NAME              varchar(50) null,
-    DESCRIPTION       text null,
-    KEEP_DAYS         int(18)                       null,
-    DYNAMIC_KEEP_DAYS int(18)                       null,
-    DIAGRAM_DEFAULT   char           default 'Y' not null
-);
-
-create
-index IX_B_STAT_EVENT_2
-    on b_stat_event (KEEP_DAYS);
-
-create
-index IX_EVENT1_EVENT2
-    on b_stat_event (EVENT1, EVENT2);
-
+    uuid              UUID,
+    event1            String,
+    event2            String,
+    money             decimal(18, 4) default 0.0000,
+    date_enter        DateTime32('Europe/Moscow'),
+    date_cleanup      DateTime32('Europe/Moscow'),
+    sort              UInt32         default 100,
+    counter           UInt32         default 0,
+    ADV_VISIBLE       BOOLEAN        default true,
+    NAME              String,
+    description       String,
+    keep_days         UInt32,
+    dynamic_keep_days UInt32,
+    diagram_default   BOOLEAN        default true
+) engine = MergeTree
+      ORDER BY (event1, event2, keep_days);
 
 create table event_day
 (
-    ID        int(18) auto_increment
-        primary key,
-    DATE_STAT date null,
-    DATE_LAST datetime null,
-    EVENT_ID  int(18)        default 0      not null,
-    MONEY     decimal(18, 4) default 0.0000 not null,
-    COUNTER   int(18)        default 0      not null
-);
-
-create
-index IX_EVENT_ID_DATE_STAT
-    on b_stat_event_day (EVENT_ID, DATE_STAT);
+    uuid       UUID,
+    date_stat  DateTime32('Europe/Moscow'),
+    date_last  DateTime32('Europe/Moscow'),
+    event_uuid UInt32         default 0,
+    money      decimal(18, 4) default 0.0000,
+    counter    UInt32         default 0
+) engine = MergeTree
+      PARTITION BY toYYYYMM(date_stat)
+      ORDER BY (event_uuid, date_stat);
 
 create table event_list
 (
-    ID              int auto_increment
-        primary key,
-    EVENT_ID        int            default 0 not null,
-    EVENT3          varchar(255) null,
-    MONEY           decimal(18, 4) default 0.0000 not null,
-    DATE_ENTER      datetime not null,
-    REFERER_URL     text null,
-    URL             text null,
-    REDIRECT_URL    text null,
-    SESSION_ID      int null,
-    GUEST_ID        int null,
-    ADV_ID          int null,
-    ADV_BACK        char           default 'N' not null,
-    HIT_ID          int null,
-    COUNTRY_ID      char(2) null,
-    KEEP_DAYS       int null,
-    CHARGEBACK      char           default 'N' not null,
-    SITE_ID         char(2) null,
-    REFERER_SITE_ID char(2) null
-);
-
-create
-index IX_B_STAT_EVENT_LIST_2
-    on b_stat_event_list (EVENT_ID, DATE_ENTER);
-
-create
-index IX_B_STAT_EVENT_LIST_3
-    on b_stat_event_list (KEEP_DAYS, DATE_ENTER);
-
-create
-index IX_GUEST_ID
-    on b_stat_event_list (GUEST_ID);
+    uuid            UUID,
+    event_uuid      int            default 0,
+    event3          String,
+    money           decimal(18, 4) default 0.0000,
+    date_enter      DateTime32('Europe/Moscow'),
+    referer_url     String,
+    url             String,
+    redirect_url    String,
+    session_uuid    int,
+    guest_uuid      int,
+    guest_adv_uuid  int,
+    adv_back        BOOLEAN        default false,
+    hit_uuid        UUID,
+    country_id      FixedString(2),
+    keep_days       int,
+    chargeback      char           default 'N',
+    site_id         FixedString(2),
+    referer_site_id FixedString(2)
+) engine = MergeTree
+      PARTITION BY toYYYYMM(date_enter)
+      ORDER BY (date_enter);
 
 ----------------------- Guest ---------------------------
 
@@ -644,146 +619,116 @@ create table guest
     last_city_id      UUID,
     token             String
 )
-    engine = MergeTree PARTITION BY toYYYYMM(timestamp)
-        ORDER BY timestamp
-        SETTINGS index_granularity = 8192;
+    engine = MergeTree
+        PARTITION BY toYYYYMM(timestamp)
+        ORDER BY timestamp;
 
 
 ----------------------- Hit ---------------------------
 create table hit
 (
-    ID           int auto_increment
-        primary key,
-    SESSION_ID   int  default 0 not null,
-    DATE_HIT     datetime null,
-    GUEST_ID     int null,
-    NEW_GUEST    char default 'N' not null,
-    USER_ID      int null,
-    USER_AUTH    char null,
-    URL          text null,
-    URL_404      char default 'N' not null,
-    URL_FROM     text null,
-    IP           varchar(15) null,
-    METHOD       varchar(10) null,
-    COOKIES      text null,
-    USER_AGENT   text null,
-    STOP_LIST_ID int null,
-    COUNTRY_ID   char(2) null,
-    CITY_ID      int null,
-    SITE_ID      char(2) null
-);
-
-create
-index IX_DATE_HIT
-    on b_stat_hit (DATE_HIT);
+    uuid         UUID,
+    session_id   UInt32  default 0,
+    date_hit     DateTime32('Europe/Moscow'),
+    guest_uuid   UUID,
+    new_guest    BOOLEAN default false,
+    user_id      int,
+    user_auth    BOOLEAN default false,
+    url          String,
+    url_404      BOOLEAN default false,
+    url_from     String,
+    ip           IPv4,
+    method       String,
+    cookies      String,
+    user_agent   String,
+    stop_list_id int,
+    country_id   FixedString(2),
+    city_uuid    UUID,
+    site_id      FixedString(2)
+)
+    engine = MergeTree
+        PARTITION BY toYYYYMM(date_hit)
+        ORDER BY date_hit;
 
 ------------------ Page ----------------------
 
 create table page
 (
-    ID            int auto_increment
-        primary key,
-    DATE_STAT     date not null,
-    DIR           char default 'N' not null,
-    URL           text not null,
-    URL_404       char default 'N' not null,
-    URL_HASH      int null,
-    SITE_ID       char(2) null,
-    COUNTER       int  default 0 not null,
-    ENTER_COUNTER int  default 0 not null,
-    EXIT_COUNTER  int  default 0 not null
-);
-
-create
-index IX_DATE_STAT
-    on b_stat_page (DATE_STAT);
-
-create
-index IX_URL_HASH
-    on b_stat_page (URL_HASH);
-
+    uuid          UUID,
+    date_stat     DateTime32('Europe/Moscow'),
+    dir           BOOLEAN default false,
+    url           String,
+    url_404       BOOLEAN default false,
+    url_hash      UInt32,
+    site_id       FixedString(2),
+    counter       UInt32  default 0,
+    enter_counter UInt32  default 0,
+    exit_counter  UInt32  default 0
+) engine = MergeTree
+      PARTITION BY toYYYYMM(date_stat)
+      ORDER BY date_stat;
 
 ---------------------- Path ------------------------
 
 create table path
 (
-    ID                 int auto_increment
-        primary key,
-    PATH_ID            int  default 0 not null,
-    PARENT_PATH_ID     int null,
-    DATE_STAT          date null,
-    COUNTER            int  default 0 not null,
-    COUNTER_ABNORMAL   int  default 0 not null,
-    COUNTER_FULL_PATH  int  default 0 not null,
-    PAGES              text null,
-    FIRST_PAGE         varchar(255) null,
-    FIRST_PAGE_404     char default 'N' not null,
-    FIRST_PAGE_SITE_ID char(2) null,
-    PREV_PAGE          varchar(255) null,
-    PREV_PAGE_HASH     int null,
-    LAST_PAGE          varchar(255) null,
-    LAST_PAGE_404      char default 'N' not null,
-    LAST_PAGE_SITE_ID  char(2) null,
-    LAST_PAGE_HASH     int null,
-    STEPS              int  default 1 not null
-);
-
-create
-index IX_DATE_STAT
-    on b_stat_path (DATE_STAT);
-
-create
-index IX_PATH_ID_DATE_STAT
-    on b_stat_path (PATH_ID, DATE_STAT);
-
-create
-index IX_PREV_PAGE_HASH_LAST_PAGE_HASH
-    on b_stat_path (PREV_PAGE_HASH, LAST_PAGE_HASH);
+    uuid               UUID,
+    path_id            UInt32  default 0,
+    parent_path_id     UInt32,
+    date_stat          DateTime32('Europe/Moscow'),
+    counter            UInt32  default 0,
+    counter_abnormal   UInt32  default 0,
+    counter_full_path  UInt32  default 0,
+    pages              String,
+    first_page         String,
+    first_page_404     BOOLEAN default false,
+    first_page_site_id FixedString(2),
+    prev_page          String,
+    prev_page_hash     UInt32,
+    last_page          String,
+    last_page_404      BOOLEAN default false,
+    last_page_site_id  FixedString(2),
+    last_page_hash     UInt32,
+    steps              UInt32  default 1
+) engine = MergeTree
+      PARTITION BY toYYYYMM(date_stat)
+      ORDER BY date_stat;
 
 create table path_adv
 (
-    ID                     int auto_increment
-        primary key,
-    ADV_ID                 int default 0 not null,
-    PATH_ID                int default 0 not null,
-    DATE_STAT              date null,
-    COUNTER                int default 0 not null,
-    COUNTER_BACK           int default 0 not null,
-    COUNTER_FULL_PATH      int default 0 not null,
-    COUNTER_FULL_PATH_BACK int default 0 not null,
-    STEPS                  int default 0 not null
-);
-
-create
-index IX_DATE_STAT
-    on b_stat_path_adv (DATE_STAT);
-
-create
-index IX_PATH_ID_ADV_ID_DATE_STAT
-    on b_stat_path_adv (PATH_ID, ADV_ID, DATE_STAT);
+    uuid                   UUID,
+    adv_uuid               UUID   default 0,
+    path_uuid              UUID   default 0,
+    date_stat              DateTime32('Europe/Moscow'),
+    counter                UInt32 default 0,
+    counter_back           UInt32 default 0,
+    counter_full_path      UInt32 default 0,
+    counter_full_path_back UInt32 default 0,
+    steps                  UInt32 default 0
+) engine = MergeTree
+      PARTITION BY toYYYYMM(date_stat)
+      ORDER BY date_stat;
 
 
 create table path_cache
 (
-    ID                      int auto_increment
-        primary key,
-    SESSION_ID              int  default 0 not null,
-    DATE_HIT                datetime null,
-    PATH_ID                 int null,
-    PATH_PAGES              text null,
-    PATH_FIRST_PAGE         varchar(255) null,
-    PATH_FIRST_PAGE_404     char default 'N' not null,
-    PATH_FIRST_PAGE_SITE_ID char(2) null,
-    PATH_LAST_PAGE          varchar(255) null,
-    PATH_LAST_PAGE_404      char default 'N' not null,
-    PATH_LAST_PAGE_SITE_ID  char(2) null,
-    PATH_STEPS              int  default 1 not null,
-    IS_LAST_PAGE            char default 'Y' not null
-);
+    uuid                    UUID,
+    session_uuid            UUID    default 0,
+    date_hit                DateTime32('Europe/Moscow'),
+    path_uuid               UUID,
+    path_pages              String,
+    path_first_page         String,
+    path_first_page_404     BOOLEAN default false,
+    path_first_page_site_id FixedString(2),
+    path_last_page          String,
+    path_last_page_404      BOOLEAN default false,
+    path_last_page_site_id  FixedString(2),
+    path_steps              UInt32  default 1,
+    is_last_page            BOOLEAN default true
+)engine = MergeTree
+     PARTITION BY toYYYYMM(date_hit)
+     ORDER BY date_hit;
 
-create
-index IX_SESSION_ID
-    on b_stat_path_cache (SESSION_ID);
 
 ----------------------- Phrase ----------------------------
 
@@ -791,15 +736,15 @@ create table phrase_list
 (
     ID          int auto_increment
         primary key,
-    DATE_HIT    datetime null,
-    SEARCHER_ID int null,
-    REFERER_ID  int null,
-    PHRASE      varchar(255) not null,
-    URL_FROM    text null,
-    URL_TO      text null,
-    URL_TO_404  char default 'N' not null,
-    SESSION_ID  int null,
-    SITE_ID     char(2) null
+    date_hit    DateTime32('Europe/Moscow'),
+    searcher_id int,
+    referer_id  int,
+    phrase      String,
+    url_from    String,
+    url_to      String,
+    url_to_404  char default 'N',
+    session_id  int,
+    site_id     FixedString(2)
 );
 
 create
@@ -817,11 +762,11 @@ create table referer
 (
     ID         int auto_increment
         primary key,
-    DATE_FIRST datetime null,
-    DATE_LAST  datetime not null,
-    SITE_NAME  varchar(255) not null,
-    SESSIONS   int default 0 not null,
-    HITS       int default 0 not null
+    date_first DateTime32('Europe/Moscow'),
+    date_last  DateTime32('Europe/Moscow'),
+    site_name  String,
+    sessions   UInt32 default 0,
+    hits       UInt32 default 0
 );
 
 create
@@ -836,16 +781,16 @@ create table referer_list
 (
     ID         int auto_increment
         primary key,
-    REFERER_ID int null,
-    DATE_HIT   datetime null,
-    PROTOCOL   varchar(10) not null,
-    SITE_NAME  varchar(255) not null,
-    URL_FROM   text not null,
-    URL_TO     text null,
-    URL_TO_404 char default 'N' not null,
-    SESSION_ID int null,
-    ADV_ID     int null,
-    SITE_ID    char(2) null
+    referer_id int,
+    date_hit   DateTime32('Europe/Moscow'),
+    protocol   String,
+    site_name  String,
+    url_from   String,
+    url_to     String,
+    url_to_404 char default 'N',
+    session_id int,
+    adv_id     int,
+    site_id    FixedString(2)
 );
 
 create
@@ -859,19 +804,19 @@ index IX_SITE_NAME
 --------------------- Searcher -------------------------
 create table if not exists searcher
 (
-    `id`                int(18)      not null auto_increment,
-    `date_cleanup`      datetime,
-    `total_hits`        int(18)      not null default '0',
-    `save_statistic`    char(1) not null default 'Y',
-    `active`            char(1) not null default 'Y',
-    `name`              varchar(255) not null,
-    `user_agent`        text,
-    `diagram_default`   char(1) not null default 'N',
-    `hit_keep_days`     int(18),
-    `dynamic_keep_days` int(18),
-    `phrases`           int(18)      not null default '0',
-    `phrases_hits`      int(18)      not null default '0',
-    `check_activity`    char(1) not null default 'Y',
+    `id`                UInt32 auto_increment,
+    `date_cleanup`      DateTime32('Europe/Moscow'),
+    `total_hits`        UInt32  default '0',
+    `save_statistic`    BOOLEAN default true,
+    `active`            BOOLEAN default true,
+    `name`              String,
+    `user_agent`        String,
+    `diagram_default`   BOOLEAN default false,
+    `hit_keep_days`     UInt32,
+    `dynamic_keep_days` UInt32,
+    `phrases`           UInt32  default '0',
+    `phrases_hits`      UInt32  default '0',
+    `check_activity`    BOOLEAN default true,
     primary             key (`id`)
 );
 CREATE
@@ -879,27 +824,26 @@ INDEX IX_SEARCHER_1 ON searcher (`hit_keep_days`);
 
 create table if not exists searcher_day
 (
-    `id`          int(18) not null auto_increment,
+    `id`          UInt32 auto_increment,
     `date_stat`   date,
-    `date_last`   datetime,
-    `searcher_id` int(18) not null default '0',
-    `total_hits`  int(18) not null default '0',
+    `date_last`   DateTime32('Europe/Moscow'),
+    `searcher_id` UInt32 default '0',
+    `total_hits`  UInt32 default '0',
     primary       key (`id`),
     index IX_SEARCHER_ID_DATE_STAT (`searcher_id`, `date_stat`)
 );
 
 create table if not exists searcher_hit
 (
-    `uuid`          int(18) not null auto_increment,
-    `date_hit`      datetime,
-    `searcher_id`   int(18) not null default '0',
-    `url`           text not null,
-    `url_404`       char(1) not null default 'N',
-    `ip`            varchar(15),
-    `user_agent`    text,
-    `hit_keep_days` int(18),
-    `site_id`       char(2),
-    primary         key (`id`)
+    `uuid`          UUID,
+    `date_hit`      DateTime32('Europe/Moscow'),
+    `searcher_id`   UInt32  default '0',
+    `url`           String,
+    `url_404`       BOOLEAN default false,
+    `ip`            String,
+    `user_agent`    String,
+    `hit_keep_days` UInt32,
+    `site_id`       FixedString(2)
 );
 CREATE
 INDEX IX_SEARCHER_HIT_1 ON searcher_hit (`searcher_id`, `date_hit`);
@@ -910,10 +854,10 @@ create table searcher_params
 (
     ID          int auto_increment
         primary key,
-    SEARCHER_ID int default 0 not null,
-    DOMAIN      varchar(255) null,
-    VARIABLE    varchar(255) null,
-    CHAR_SET    varchar(255) null
+    searcher_id int default 0,
+    domain      String,
+    variable    String,
+    char_set    String
 );
 
 create
@@ -953,10 +897,10 @@ create table if not exists session
     referer2      String,
     referer3      String,
     STOP_LIST_ID  UUID,
---     COUNTRY_ID      char(2) null,
+--     COUNTRY_ID      FixedString(2) ,
     FIRST_SITE_ID String,
     LAST_SITE_ID  String
---     CITY_ID         int(18)             null
+--     CITY_ID         UInt32
 ) ENGINE = MergeTree
       PARTITION BY toYYYYMM(date_stat)
       ORDER BY (uuid, date_stat)
