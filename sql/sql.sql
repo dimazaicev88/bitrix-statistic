@@ -725,17 +725,16 @@ create table path_cache
     path_last_page_site_id  FixedString(2),
     path_steps              UInt32  default 1,
     is_last_page            BOOLEAN default true
-)engine = MergeTree
-     PARTITION BY toYYYYMM(date_hit)
-     ORDER BY date_hit;
+) engine = MergeTree
+      PARTITION BY toYYYYMM(date_hit)
+      ORDER BY date_hit;
 
 
 ----------------------- Phrase ----------------------------
 
 create table phrase_list
 (
-    ID          int auto_increment
-        primary key,
+    uuid        UUID,
     date_hit    DateTime32('Europe/Moscow'),
     searcher_id int,
     referer_id  int,
@@ -745,42 +744,27 @@ create table phrase_list
     url_to_404  char default 'N',
     session_id  int,
     site_id     FixedString(2)
-);
-
-create
-index IX_DATE_HIT
-    on b_stat_phrase_list (DATE_HIT);
-
-create
-index IX_URL_TO_SEARCHER_ID
-    on b_stat_phrase_list (URL_TO(100), SEARCHER_ID);
-
+) engine = MergeTree
+      PARTITION BY toYYYYMM(date_hit)
+      ORDER BY date_hit;
 
 --------------------- Referer -----------------------------
 
 create table referer
 (
-    ID         int auto_increment
-        primary key,
+    uuid       UUID,
     date_first DateTime32('Europe/Moscow'),
     date_last  DateTime32('Europe/Moscow'),
     site_name  String,
     sessions   UInt32 default 0,
     hits       UInt32 default 0
-);
-
-create
-index IX_B_STAT_REFERER_2
-    on b_stat_referer (DATE_LAST, ID);
-
-create
-index IX_SITE_NAME
-    on b_stat_referer (SITE_NAME);
+) engine = MergeTree
+      PARTITION BY toYYYYMM(date_last)
+      ORDER BY date_last;
 
 create table referer_list
 (
-    ID         int auto_increment
-        primary key,
+    uuid       UUID,
     referer_id int,
     date_hit   DateTime32('Europe/Moscow'),
     protocol   String,
@@ -791,20 +775,14 @@ create table referer_list
     session_id int,
     adv_id     int,
     site_id    FixedString(2)
-);
-
-create
-index IX_DATE_HIT
-    on b_stat_referer_list (DATE_HIT);
-
-create
-index IX_SITE_NAME
-    on b_stat_referer_list (SITE_NAME(100), URL_TO(100));
+) engine = MergeTree
+      PARTITION BY toYYYYMM(date_hit)
+      ORDER BY date_hit;
 
 --------------------- Searcher -------------------------
 create table if not exists searcher
 (
-    `id`                UInt32 auto_increment,
+    uuid                UUID,
     `date_cleanup`      DateTime32('Europe/Moscow'),
     `total_hits`        UInt32  default '0',
     `save_statistic`    BOOLEAN default true,
@@ -816,57 +794,49 @@ create table if not exists searcher
     `dynamic_keep_days` UInt32,
     `phrases`           UInt32  default '0',
     `phrases_hits`      UInt32  default '0',
-    `check_activity`    BOOLEAN default true,
-    primary             key (`id`)
-);
-CREATE
-INDEX IX_SEARCHER_1 ON searcher (`hit_keep_days`);
+    `check_activity`    BOOLEAN default true
+) engine = MergeTree
+--       PARTITION BY toYYYYMM(date_hit)
+      ORDER BY name;
 
 create table if not exists searcher_day
 (
-    `id`          UInt32 auto_increment,
-    `date_stat`   date,
-    `date_last`   DateTime32('Europe/Moscow'),
-    `searcher_id` UInt32 default '0',
-    `total_hits`  UInt32 default '0',
-    primary       key (`id`),
-    index IX_SEARCHER_ID_DATE_STAT (`searcher_id`, `date_stat`)
-);
+    uuid            UUID,
+    `date_stat`     date,
+    `date_last`     DateTime32('Europe/Moscow'),
+    `searcher_uuid` UUID,
+    `total_hits`    UInt32 default '0'
+) engine = MergeTree
+      PARTITION BY toYYYYMM(date_stat)
+      ORDER BY date_stat;
 
 create table if not exists searcher_hit
 (
     `uuid`          UUID,
     `date_hit`      DateTime32('Europe/Moscow'),
-    `searcher_id`   UInt32  default '0',
+    `searcher_uuid` UUID,
     `url`           String,
     `url_404`       BOOLEAN default false,
     `ip`            String,
     `user_agent`    String,
     `hit_keep_days` UInt32,
     `site_id`       FixedString(2)
-);
-CREATE
-INDEX IX_SEARCHER_HIT_1 ON searcher_hit (`searcher_id`, `date_hit`);
-CREATE
-INDEX IX_SEARCHER_HIT_2 ON searcher_hit (`hit_keep_days`, `date_hit`);
+) engine = MergeTree
+      PARTITION BY toYYYYMM(date_hit)
+      ORDER BY (date_hit, searcher_uuid);
 
 create table searcher_params
 (
-    ID          int auto_increment
-        primary key,
-    searcher_id int default 0,
-    domain      String,
-    variable    String,
-    char_set    String
-);
-
-create
-index IX_SEARCHER_DOMAIN
-    on b_stat_searcher_params (SEARCHER_ID, DOMAIN);
+    `uuid`        UUID,
+    searcher_uuid UUID,
+    domain        String,
+    variable      String,
+    char_set      String
+) engine = MergeTree
+      ORDER BY (domain);
 
 
 --------------------- session ---------------------------
-
 create table if not exists session
 (
     uuid          UUID,
