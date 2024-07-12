@@ -56,16 +56,16 @@ func (gm GuestModel) Add(guest entity.GuestDb) {
 
 func (gm GuestModel) AddGuest(statData entity.StatData) error {
 	gm.Add(entity.GuestDb{
-		Date:     time.Now(),
-		UrlFrom:  sql.NullString{String: statData.Referer, Valid: true},
-		UrlTo:    sql.NullString{String: statData.Url, Valid: true},
-		UrlTo404: statData.Error404,
-		SiteId:   sql.NullString{String: statData.SiteId, Valid: true},
-		AdvId:    0,                                       //TODO добавить реальные значения
-		Referer1: sql.NullString{String: "", Valid: true}, //TODO добавить реальные значения
-		Referer2: sql.NullString{String: "", Valid: true}, //TODO добавить реальные значения
-		Referer3: sql.NullString{String: "", Valid: true}, //TODO добавить реальные значения
-		Token:    statData.Token,
+		Timestamp: time.Now(),
+		UrlFrom:   statData.Referer,
+		UrlTo:     statData.Url,
+		UrlTo404:  statData.Error404,
+		SiteId:    statData.SiteId,
+		AdvId:     "", //TODO добавить реальные значения
+		Referer1:  "", //TODO добавить реальные значения
+		Referer2:  "", //TODO добавить реальные значения
+		Referer3:  "", //TODO добавить реальные значения
+		Token:     statData.Token,
 	})
 
 	return nil

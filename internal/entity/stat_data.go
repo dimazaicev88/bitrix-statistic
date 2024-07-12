@@ -10,6 +10,6 @@ type StatData struct {
 	UserId            int    `json:"userId"`
 	UserLogin         string `json:"userLogin"`
 	HttpXForwardedFor string `json:"httpXForwardedFor"`
-	Error404          int    `json:"error404"`
+	Error404          uint8  `json:"error404"`
 	SiteId            string `json:"siteId"`
 }
