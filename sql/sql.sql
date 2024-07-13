@@ -617,7 +617,7 @@ create table guest
     last_referer2     String,
     last_referer3     String,
     last_city_id      UUID,
-    token             String
+    guest_hash        String
 )
     engine = MergeTree
         PARTITION BY toYYYYMM(timestamp)
@@ -877,4 +877,15 @@ create table if not exists session
       PRIMARY KEY (uuid, date_stat);
 
 
+------------------- Option -----------------------
+
+create table if not exists option
+(
+    name        String,
+    value       String,
+    description String,
+    siteId      FixedString(2)
+) ENGINE = MergeTree
+      PARTITION BY siteId
+      ORDER BY (name);
 

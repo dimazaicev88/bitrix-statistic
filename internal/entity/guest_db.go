@@ -6,7 +6,7 @@ import (
 
 type GuestDb struct {
 	Uuid           string    `ch:"uuid"`
-	Token          string    `ch:"token"`
+	GuestHash      string    `ch:"guest_hash"`
 	Timestamp      time.Time `ch:"timestamp"`
 	Favorites      uint8     `ch:"favorites"`
 	Events         uint32    `ch:"events"`
