@@ -2,15 +2,17 @@ package models
 
 import (
 	"bitrix-statistic/internal/filters"
-	"bitrix-statistic/internal/storage"
+	"context"
+	"github.com/ClickHouse/clickhouse-go/v2/lib/driver"
 )
 
 type CityModel struct {
-	storage storage.Storage
+	ctx      context.Context
+	chClient driver.Conn
 }
 
-func NewCityModel(storageImpl storage.Storage) CityModel {
-	return CityModel{storage: storageImpl}
+func NewCityModel(ctx context.Context, chClient driver.Conn) *CityModel {
+	return &CityModel{ctx: ctx, chClient: chClient}
 }
 
 func (cm CityModel) Find(filter filters.Filter) (error, []map[string]interface{}) {
@@ -18,7 +20,7 @@ func (cm CityModel) Find(filter filters.Filter) (error, []map[string]interface{}
 }
 
 func (cm CityModel) DeleteById(id int) {
-	cm.storage.DB().MustExec("DELETE FROM city WHERE id=?", id)
+	//cm.storage.DB().MustExec("DELETE FROM city WHERE id=?", id)
 }
 
 func (cm CityModel) GetCountryCode() string {

@@ -9,15 +9,15 @@ import (
 )
 
 var storageConfig = config.ServerEnvConfig{
-	StorageHost:     "localhost",
-	StorageUser:     "bitrix",
-	StoragePassword: "123",
-	StorageDbName:   "bitrix",
-	StoragePort:     "3306",
+	ClickHouseHost:     "localhost",
+	ClickHouseUser:     "bitrix",
+	ClickHousePassword: "123",
+	ClickHouseDbName:   "bitrix",
+	StoragePort:        "3306",
 }
 
 func TestGuestModel_Add(t *testing.T) {
-	chClient := storage.NewCLickHouseClient(storageConfig)
+	chClient, _ := storage.NewClickHouseClient(storageConfig)
 	defer chClient.Close()
 	req := require.New(t)
 	err := NewStatistic(chClient).Add(entity.StatData{

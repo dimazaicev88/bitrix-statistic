@@ -1,22 +1,23 @@
 package server
 
 import (
-	"bitrix-statistic/internal/models"
-	"bitrix-statistic/internal/routes"
-	"bitrix-statistic/internal/storage"
+	"context"
+	"github.com/ClickHouse/clickhouse-go/v2/lib/driver"
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/template/html"
 	"strconv"
 )
 
 type Server struct {
-	app     *fiber.App
-	storage storage.Storage
+	app      *fiber.App
+	chClient driver.Conn
+	ctx      context.Context
 }
 
-func NewServer(storage storage.Storage) *Server {
+func NewServer(ctx context.Context, chClient driver.Conn) *Server {
 	return &Server{
-		storage: storage,
+		ctx:      ctx,
+		chClient: chClient,
 	}
 }
 
@@ -25,10 +26,6 @@ func (a *Server) Start(port int) error {
 		Views: html.New("./web/html", ".html"),
 	})
 	a.app.Static("/assets", "./web/assets")
-	routes.NewMainPageHandlers(a.app).AddHandler()
-	routes.NewHitHandlers(a.app, models.NewHitModel(a.storage)).AddHandlers()
-	routes.NewCityHandlers(a.app, models.NewCityModel(a.storage)).AddHandlers()
-	routes.NewSessionHandlers(a.app, models.NewSessionModel(a.storage)).AddHandlers()
 
 	err := a.app.Listen(":" + strconv.Itoa(port))
 	if err != nil {

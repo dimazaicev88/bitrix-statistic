@@ -1,26 +1,28 @@
 package app
 
 import (
+	"bitrix-statistic/internal/config"
+	"bitrix-statistic/internal/models"
 	"bitrix-statistic/internal/routes"
+	"bitrix-statistic/internal/storage"
 	"bitrix-statistic/internal/tasks"
 	"context"
 	"github.com/gofiber/fiber/v2"
 	"github.com/hibiken/asynq"
+	"github.com/sirupsen/logrus"
 	"log"
 	"strconv"
 )
 
 type App struct {
-	ctx          context.Context
-	redisAddress string
-	serverPort   int
+	ctx context.Context
+	cfg config.ServerEnvConfig
 }
 
-func New(ctx context.Context, redisAddress string, serverPort int) *App {
+func New(ctx context.Context, cfg config.ServerEnvConfig) *App {
 	return &App{
-		ctx:          ctx,
-		redisAddress: redisAddress,
-		serverPort:   serverPort,
+		ctx: ctx,
+		cfg: cfg,
 	}
 }
 
@@ -28,18 +30,26 @@ func (app *App) Start() {
 	errStartServer := make(chan error)
 
 	fb := fiber.New()
+	chClient, err := storage.NewClickHouseClient(config.GetServerConfig())
+
+	if err != nil {
+		logrus.Fatal(err)
+	}
 
 	routes.NewStatistic(fb).RegRoutes()
+	routes.NewHitHandlers(fb, models.NewHitModel(chClient)).AddHandlers()
+	routes.NewCityHandlers(fb, models.NewCityModel(chClient)).AddHandlers()
+	routes.NewSessionHandlers(fb, models.NewSessionModel(chClient)).AddHandlers()
 
 	//start fiber
 	go func() {
-		log.Println("starting fiber server on port:", app.serverPort)
-		errStartServer <- fb.Listen(":" + strconv.Itoa(app.serverPort))
+		log.Println("starting fiber server on port:", app.cfg.ServerPort)
+		errStartServer <- fb.Listen(":" + strconv.Itoa(app.cfg.ServerPort))
 	}()
 
-	tasks.NewClient(app.redisAddress)
+	tasks.NewClient(app.cfg.RedisHost)
 	serverQueue, serverMux := tasks.NewTaskServer(
-		app.redisAddress,
+		app.cfg.RedisHost,
 		asynq.Config{
 			Concurrency: 1,
 		},
