@@ -7,6 +7,8 @@ import (
 	jsoniter "github.com/json-iterator/go"
 )
 
+// получения данных по посетителям сайта.
+
 type GuestRoutes struct {
 	fbApp      *fiber.App
 	guestModel models.GuestModel

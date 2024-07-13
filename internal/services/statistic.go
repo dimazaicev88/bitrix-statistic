@@ -196,7 +196,7 @@ func (s Statistic) Add(statData entity.StatData) error {
 	//		}
 	//
 	//		/************************************************
-	//				Searcher section
+	//				SearcherDb section
 	//		************************************************/
 	//
 	//		// searcher detected

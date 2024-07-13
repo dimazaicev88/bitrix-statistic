@@ -30,8 +30,8 @@ func (sm SearcherModel) ExistById(id int) bool {
 	return false
 }
 
-func (sm SearcherModel) FindSearcherByUserAgent(httpUserAgent string) ([]entity.Searcher, error) {
-	var rows []entity.Searcher
+func (sm SearcherModel) FindSearcherByUserAgent(httpUserAgent string) ([]entity.SearcherDb, error) {
+	var rows []entity.SearcherDb
 	sql := `SELECT	id, name,  save_statistic, hit_keep_days, check_activity
 			FROM searcher
 			WHERE ACTIVE = 'Y' and LENGTH(user_agent)>0
@@ -57,8 +57,8 @@ func (sm SearcherModel) AddSearcherDay(id int) {
 	)
 }
 
-func (sm SearcherModel) ExistByIdAndCurrentDate(id int) ([]entity.SearcherDay, error) {
-	var rows []entity.SearcherDay
+func (sm SearcherModel) ExistByIdAndCurrentDate(id int) ([]entity.SearcherDayDb, error) {
+	var rows []entity.SearcherDayDb
 	sql := `SELECT id FROM searcher_day WHERE searcher_id='?' and date_stat=CURRENT_DATE ORDER BY id`
 	err := sm.storage.DB().Select(&rows, sql, id)
 	if err != nil {

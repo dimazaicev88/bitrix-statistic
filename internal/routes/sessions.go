@@ -7,6 +7,8 @@ import (
 	jsoniter "github.com/json-iterator/go"
 )
 
+//для получения данных о сессиях посетителей.
+
 type SessionHandlers struct {
 	app          *fiber.App
 	sessionModel models.SessionModel

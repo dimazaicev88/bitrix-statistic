@@ -520,7 +520,8 @@ create table day
     month_favorite_10   UInt32         default 0,
     month_favorite_11   UInt32         default 0,
     month_favorite_12   UInt32         default 0
-);
+) engine = MergeTree
+      ORDER BY (date_stat);
 
 
 ---------------------------- Event --------------------------------
@@ -866,10 +867,10 @@ create table if not exists session
     referer1      String,
     referer2      String,
     referer3      String,
-    STOP_LIST_ID  UUID,
+    stop_list_id  UUID,
 --     COUNTRY_ID      FixedString(2) ,
-    FIRST_SITE_ID String,
-    LAST_SITE_ID  String
+    first_site_id String,
+    last_site_id  String
 --     CITY_ID         UInt32
 ) ENGINE = MergeTree
       PARTITION BY toYYYYMM(date_stat)

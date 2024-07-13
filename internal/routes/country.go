@@ -21,6 +21,7 @@ func NewCountryHandlers(fbApp *fiber.App, countryModel models.CountryModel) Coun
 
 func (ch CountryHandlers) AddHandlers() {
 	ch.fbApp.Post("/country/filter", ch.Filter)
+	ch.fbApp.Post("/country/graph", ch.Filter) //Возвращает данные необходимые для построения графика и круговой диаграммы посещаемости в разрезе по странам.
 	ch.fbApp.Delete("/country/delete/:id/", ch.DeleteById)
 }
 

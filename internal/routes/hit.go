@@ -7,6 +7,8 @@ import (
 	jsoniter "github.com/json-iterator/go"
 )
 
+//получения данных по хитами посетителей.
+
 type HitHandlers struct {
 	fbApp    *fiber.App
 	hitModel models.HitModel
