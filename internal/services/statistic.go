@@ -3,8 +3,9 @@ package services
 import (
 	"bitrix-statistic/internal/entity"
 	"bitrix-statistic/internal/models"
-	"bitrix-statistic/internal/storage"
 	"bitrix-statistic/utils"
+	"context"
+	"github.com/ClickHouse/clickhouse-go/v2/lib/driver"
 	"golang.org/x/exp/slices"
 	_ "net/netip"
 	"regexp"
@@ -22,15 +23,15 @@ type Statistic struct {
 	guestModel     *models.GuestModel
 }
 
-func NewStatistic(storage *storage.MysqlStorage) Statistic {
+func NewStatistic(ctx context.Context, chClient driver.Conn) Statistic {
 	return Statistic{
-		statisticModel: models.NewStatisticModel(storage),
-		optionModel:    models.NewOptionModel(storage),
-		sessionModel:   models.NewSessionModel(storage),
-		searcherModel:  models.NewSearcherModel(storage),
-		cityModel:      models.NewCityModel(storage),
-		advModel:       models.NewAdvModel(storage, models.NewOptionModel(storage)),
-		guestModel:     models.NewGuestModel(storage),
+		statisticModel: models.NewStatisticModel(ctx, chClient),
+		optionModel:    models.NewOptionModel(ctx, chClient),
+		sessionModel:   models.NewSessionModel(ctx, ctx, chClient),
+		searcherModel:  models.NewSearcherModel(ctx, chClient),
+		cityModel:      models.NewCityModel(ctx, chClient),
+		advModel:       models.NewAdvModel(ctx, chClient, models.NewOptionModel(chClient)),
+		guestModel:     models.NewGuestModel(ctx, chClient),
 	}
 }
 
@@ -86,12 +87,12 @@ func (s Statistic) checkSkip(userGroups []int, remoteAddr string) (error, bool) 
 }
 
 func (s Statistic) Add(statData entity.StatData) error {
-	existsGuest, err := s.guestModel.ExistsGuestByToken(statData.Token)
+	existsGuest, err := s.guestModel.ExistsGuestByHash(statData.GuestHash)
 	if err != nil {
 		return err
 	}
 
-	//GuestDb не найден
+	//Гость не найден, добавляем гостя
 	if existsGuest == false {
 		err := s.guestModel.AddGuest(statData)
 		if err != nil {

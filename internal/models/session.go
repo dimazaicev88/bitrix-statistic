@@ -3,16 +3,18 @@ package models
 import (
 	"bitrix-statistic/internal/entity"
 	"bitrix-statistic/internal/filters"
-	"bitrix-statistic/internal/storage"
+	"context"
+	"github.com/ClickHouse/clickhouse-go/v2/lib/driver"
 	"time"
 )
 
 type SessionModel struct {
-	storage storage.Storage
+	ctx      context.Context
+	chClient driver.Conn
 }
 
-func NewSessionModel(storageImpl storage.Storage) SessionModel {
-	return SessionModel{storage: storageImpl}
+func NewSessionModel(ctx context.Context, chClient driver.Conn) *SessionModel {
+	return &SessionModel{ctx: ctx, chClient: chClient}
 }
 
 func (sm SessionModel) Find(filter filters.Filter) (error, []map[string]interface{}) {
@@ -20,10 +22,10 @@ func (sm SessionModel) Find(filter filters.Filter) (error, []map[string]interfac
 	return nil, nil
 }
 
-func (sm SessionModel) AddSession(session entity.SessionJson) error {
-	_, err := sm.storage.DB().MustExec(`INSERT INTO session (id, guest_id,events,hits, date, phpsessid,
+func (sm SessionModel) AddSession(session entity.SessionDb) error {
+	_, err := sm.chClient.Exec(sm.ctx, `INSERT INTO session (id, guest_id,events,hits, date, phpsessid,
          stop_list_id) VALUES (?, ?, ?, ?, ?, ?, ?) `,
-		session.GuestId, session.NewGuest, session.UserId, session.UserAuth, session.CEvents, session.Hits, session.Favorites, session.UrlFrom, session.UrlTo, session.UrlTo404, session.UrlLast, session.UrlLast404, session.UserAgent, time.Unix(session.DateStat, 0).Add(time.Hour*3),
+		session.GuestId, session.NewGuest, session.UserId, session.UserAuth, session.Events, session.Hits, session.Favorites, session.UrlFrom, session.UrlTo, session.UrlTo404, session.UrlLast, session.UrlLast404, session.UserAgent, time.Unix(session.DateStat, 0).Add(time.Hour*3),
 		time.Unix(session.DateFirst, 0).Add(time.Hour*3), time.Unix(session.DateLast, 0).Add(time.Hour*3), session.IpLast, session.IpFirstNumber, session.IpLast, session.IpLastNumber, session.FirstHitId, session.LastHitId, session.PhpSessionId,
 		session.AdvId, session.AdvBack, session.Referer1, session.Referer2, session.Referer3, session.StopListId, session.CountryId, session.CityId, session.FirstSiteId, session.LastSiteId).LastInsertId()
 	if err != nil {
@@ -32,20 +34,24 @@ func (sm SessionModel) AddSession(session entity.SessionJson) error {
 	return nil
 }
 
-func (sm SessionModel) DeleteById(id int) {
-	sm.storage.DB().MustExec("DELETE FROM session WHERE ID=?", id)
+func (sm SessionModel) DeleteById(id int) error {
+	err := sm.chClient.Exec(sm.ctx, "DELETE FROM session WHERE ID=?", id)
+	if err != nil {
+		return err
+	}
+	return nil
 }
 
-func (sm SessionModel) FindSessionByGuestMd5(guestMd5 string) (entity.SessionData, error) {
-	var sessionData entity.SessionData
-	err := sm.storage.DB().Get(&sessionData,
+func (sm SessionModel) FindSessionByGuestMd5(guestMd5 string) (entity.StatData, error) {
+	var sessionData entity.StatData
+	err := sm.chClient.Exec(&sessionData,
 		`SELECT * 
                FROM session_data
                WHERE guest_md5=? and date_last > DATE_ADD(now(), INTERVAL-? SECOND) 
                LIMIT 1`, guestMd5,
 	)
 	if err != nil {
-		return entity.SessionData{}, err
+		return entity.StatData{}, err
 	}
 	return sessionData, nil
 }
@@ -54,7 +60,7 @@ func (sm SessionModel) UpdateHits(get string, authorized string, agent string, i
 	//addr := net.ParseIP(ip)
 	//ipNum := addr.To4().String()
 	//
-	//sm.storage.DB().MustExec("UPDATE session SET  WHERE id=? ")
+	//sm.chClient.DB().MustExec("UPDATE session SET  WHERE id=? ")
 
 	return nil
 }

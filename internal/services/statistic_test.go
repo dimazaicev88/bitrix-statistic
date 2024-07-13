@@ -17,12 +17,12 @@ var storageConfig = config.ServerEnvConfig{
 }
 
 func TestGuestModel_Add(t *testing.T) {
-	mysqlStorage := storage.NewMysqlStorage(storageConfig)
-	defer mysqlStorage.Close()
+	chClient := storage.NewCLickHouseClient(storageConfig)
+	defer chClient.Close()
 	req := require.New(t)
-	err := NewStatistic(mysqlStorage).Add(entity.StatData{
+	err := NewStatistic(chClient).Add(entity.StatData{
 		PHPSessionId:      "",
-		Token:             "44c2870053b0a6378f5db40c96406f00",
+		GuestHash:         "44c2870053b0a6378f5db40c96406f00",
 		Url:               "http://localhost/catalog/dresses/dress-fashionista-on-a-walk/",
 		Referer:           "",
 		Ip:                "127.0.0.1",

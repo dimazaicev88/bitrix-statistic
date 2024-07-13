@@ -3,43 +3,46 @@ package models
 import (
 	"bitrix-statistic/internal/entity"
 	"bitrix-statistic/internal/filters"
-	"bitrix-statistic/internal/storage"
+	"context"
 	"database/sql"
 	"errors"
+	"github.com/ClickHouse/clickhouse-go/v2/lib/driver"
 	"time"
 )
 
 type GuestModel struct {
-	storage      storage.Storage
-	sessionModel SessionModel
+	ctx          context.Context
+	chClient     driver.Conn
+	sessionModel *SessionModel
 }
 
-func NewGuestModel(storage storage.Storage) *GuestModel {
+func NewGuestModel(ctx context.Context, chClient driver.Conn) *GuestModel {
 	return &GuestModel{
-		storage:      storage,
-		sessionModel: NewSessionModel(storage),
+		ctx:          ctx,
+		chClient:     chClient,
+		sessionModel: NewSessionModel(ctx, chClient),
 	}
 }
 
-func (gm GuestModel) FindLastById(id int) (int, string, int, int, string, error) {
-	row := gm.storage.DB().QueryRow(`
-				SELECT
-					G.id,
-					G.FAVORITES,
-					G.LAST_USER_ID,
-					A.ID as LAST_ADV_ID,
-					if(to_days(curdate())=to_days(G.LAST_DATE), 'Y', 'N') LAST
-				FROM guest G
-				LEFT JOIN adv A ON A.ID = G.LAST_ADV_ID
-				WHERE G.ID=?`, id)
-	var guestId, lastUserId, lastAdvId int
-	var favorites, last string
-	err := row.Scan(&guestId, favorites, lastUserId, lastAdvId, last)
-	if err != nil {
-		return 0, "", 0, 0, "", err
-	}
-	return guestId, favorites, lastUserId, lastAdvId, last, nil
-}
+//func (gm GuestModel) FindLastById(id int) (int, string, int, int, string, error) {
+//	row, err := gm.chClient.Query(gm.ctx, `
+//				SELECT
+//					G.id,
+//					G.FAVORITES,
+//					G.LAST_USER_ID,
+//					A.ID as LAST_ADV_ID,
+//					if(to_days(curdate())=to_days(G.LAST_DATE), 'Y', 'N') LAST
+//				FROM guest G
+//				LEFT JOIN adv A ON A.ID = G.LAST_ADV_ID
+//				WHERE G.ID=?`, id)
+//	var guestId, lastUserId, lastAdvId int
+//	var favorites, last string
+//	err := row.Scan(&guestId, favorites, lastUserId, lastAdvId, last)
+//	if err != nil {
+//		return 0, "", 0, 0, "", err
+//	}
+//	return guestId, favorites, lastUserId, lastAdvId, last, nil
+//}
 
 func (gm GuestModel) Add(guest entity.GuestDb) {
 	gm.storage.DB().MustExec(`INSERT INTO guest (
@@ -56,26 +59,26 @@ func (gm GuestModel) Add(guest entity.GuestDb) {
 
 func (gm GuestModel) AddGuest(statData entity.StatData) error {
 	gm.Add(entity.GuestDb{
-		Timestamp: time.Now(),
-		UrlFrom:   statData.Referer,
-		UrlTo:     statData.Url,
-		UrlTo404:  statData.Error404,
-		SiteId:    statData.SiteId,
-		AdvId:     "", //TODO добавить реальные значения
-		Referer1:  "", //TODO добавить реальные значения
-		Referer2:  "", //TODO добавить реальные значения
-		Referer3:  "", //TODO добавить реальные значения
-		Token:     statData.Token,
+		Timestamp:     time.Now(),
+		FirstUrlFrom:  statData.Referer,
+		FirstUrlTo:    statData.Url,
+		FirstUrlTo404: statData.Error404,
+		FirstSiteId:   statData.SiteId,
+		FirstAdvId:    "", //TODO добавить реальные значения
+		FirstReferer1: "", //TODO добавить реальные значения
+		FirstReferer2: "", //TODO добавить реальные значения
+		FirstReferer3: "", //TODO добавить реальные значения
+		GuestHash:     statData.GuestHash,
 	})
 
 	return nil
 }
 
-func (gm GuestModel) ExistsGuestByToken(token string) (bool, error) {
-	row := gm.storage.DB().QueryRow(`
-				SELECT cookie_token 
+func (gm GuestModel) ExistsGuestByHash(token string) (bool, error) {
+	row := gm.chClient.QueryRow(gm.ctx, `
+				SELECT guest_hash
 				FROM guest 				
-				WHERE cookie_token=?`, token)
+				WHERE guest_hash=?`, token)
 	var cookieToken string
 	err := row.Scan(&cookieToken)
 	if err != nil && errors.Is(err, sql.ErrNoRows) {
@@ -90,11 +93,11 @@ func (gm GuestModel) Find(filter filters.Filter) (entity.GuestDb, error) {
 	return entity.GuestDb{}, nil
 }
 
-func (gm GuestModel) FindByToken(token string) ([]entity.GuestDb, error) {
-	row := gm.storage.DB().QueryRow(`
+func (gm GuestModel) FindByHash(token string) ([]entity.GuestDb, error) {
+	row := gm.chClient.QueryRow(gm.ctx, `
 				SELECT * 
 				FROM guest 				
-				WHERE token=?`, token)
+				WHERE guest_hash=?`, token)
 	var guestDb []entity.GuestDb
 	err := row.Scan(&guestDb)
 	if err != nil {

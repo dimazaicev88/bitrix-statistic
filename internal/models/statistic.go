@@ -3,30 +3,33 @@ package models
 import (
 	"bitrix-statistic/internal/entity"
 	"bitrix-statistic/internal/session"
-	"bitrix-statistic/internal/storage"
+	"context"
+	"github.com/ClickHouse/clickhouse-go/v2/lib/driver"
 	"github.com/sirupsen/logrus"
 	"strconv"
 )
 
 type StatisticModel struct {
-	storage     storage.Storage
+	ctx         context.Context
+	chClient    driver.Conn
 	guestModel  *GuestModel
 	optionModel *OptionModel
 	advModel    *AdvModel
 	logger      logrus.Logger
 }
 
-func NewStatisticModel(storage storage.Storage) StatisticModel {
+func NewStatisticModel(ctx context.Context, chClient driver.Conn) StatisticModel {
 	return StatisticModel{
-		storage:     storage,
-		guestModel:  NewGuestModel(storage),
-		optionModel: NewOptionModel(storage),
-		advModel:    NewAdvModel(storage, NewOptionModel(storage)),
+		ctx:         ctx,
+		chClient:    chClient,
+		guestModel:  NewGuestModel(ctx, chClient),
+		optionModel: NewOptionModel(ctx, chClient),
+		advModel:    NewAdvModel(ctx, chClient, NewOptionModel(ctx, chClient)),
 	}
 }
 
 func (stm *StatisticModel) Add(data entity.StatData) error {
-	guestDb, err := stm.guestModel.FindByToken(data.Token)
+	guestDb, err := stm.guestModel.FindByHash(data.Token)
 	if err != nil {
 		stm.logger.Error(err)
 		return err

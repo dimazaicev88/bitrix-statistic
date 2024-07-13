@@ -12,7 +12,7 @@ type CountryModel struct {
 func (cm CountryModel) Find(filter filters.Filter) (error, []map[string]interface{}) {
 	var hits []map[string]interface{}
 	//_, sql := builders.NewCountrySQLBuilder(filter).BuildSQL()
-	//rows, err := cm.storage.DB().Queryx(sql.SQL, sql.Params...)
+	//rows, err := cm.chClient.DB().Queryx(sql.SQL, sql.Params...)
 	//for rows.Next() {
 	//	results := make(map[string]interface{})
 	//	err = rows.MapScan(results)

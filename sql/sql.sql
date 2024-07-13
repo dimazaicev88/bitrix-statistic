@@ -61,9 +61,9 @@ create table if not exists adv_event
     counter_back UInt32         default 0,
     money        decimal(18, 4) default 0.0000,
     money_back   decimal(18, 4) default 0.0000
-) ENGINE = MergeTree;
+) ENGINE = MergeTree
 --       PARTITION BY toYYYYMM(date_stat)
---       ORDER BY (`adv_uuid`, `date_stat`);
+      ORDER BY (money);
 
 create table if not exists adv_event_day
 (
@@ -112,7 +112,7 @@ create table if not exists adv_searcher
       ORDER BY (`adv_uuid`, `searcher_uuid`);
 
 ----------------------- Browser --------------------------
-create table browser
+create table if not exists browser
 (
     uuid       UUID,
     user_agent String
@@ -148,7 +148,7 @@ create table if not exists city_day
       ORDER BY (city_uuid, date_stat)
       SETTINGS index_granularity = 8192;
 
-create table city_ip
+create table if not exists city_ip
 (
     start_ip   UInt32,
     end_ip     UInt32,
@@ -159,7 +159,7 @@ create table city_ip
 
 ------------------ Country ---------------------
 
-create table country
+create table if not exists country
 (
     uuid       UUID,
     short_name String,
@@ -171,7 +171,7 @@ create table country
 ) engine = MergeTree
       ORDER BY (name);
 
-create table country_day
+create table if not exists country_day
 (
     uuid       UUID,
     country_id FixedString(2),
@@ -185,7 +185,7 @@ create table country_day
 
 ---------------------day---------------------
 
-create table day
+create table if not exists day
 (
     uuid                UUID,
     date_stat           DateTime32('Europe/Moscow'),
@@ -526,7 +526,7 @@ create table day
 
 ---------------------------- Event --------------------------------
 
-create table event
+create table if not exists event
 (
     uuid              UUID,
     event1            String,
@@ -545,7 +545,7 @@ create table event
 ) engine = MergeTree
       ORDER BY (event1, event2, keep_days);
 
-create table event_day
+create table if not exists event_day
 (
     uuid       UUID,
     date_stat  DateTime32('Europe/Moscow'),
@@ -557,7 +557,7 @@ create table event_day
       PARTITION BY toYYYYMM(date_stat)
       ORDER BY (event_uuid, date_stat);
 
-create table event_list
+create table if not exists event_list
 (
     uuid            UUID,
     event_uuid      int            default 0,
@@ -583,7 +583,7 @@ create table event_list
 
 ----------------------- Guest ---------------------------
 
-create table guest
+create table if not exists guest
 (
     uuid              UUID,
     timestamp         DateTime32('Europe/Moscow'),
@@ -626,7 +626,7 @@ create table guest
 
 
 ----------------------- Hit ---------------------------
-create table hit
+create table if not exists hit
 (
     uuid         UUID,
     session_id   UInt32  default 0,
@@ -653,7 +653,7 @@ create table hit
 
 ------------------ Page ----------------------
 
-create table page
+create table if not exists page
 (
     uuid          UUID,
     date_stat     DateTime32('Europe/Moscow'),
@@ -671,7 +671,7 @@ create table page
 
 ---------------------- Path ------------------------
 
-create table path
+create table if not exists path
 (
     uuid               UUID,
     path_id            UInt32  default 0,
@@ -695,11 +695,11 @@ create table path
       PARTITION BY toYYYYMM(date_stat)
       ORDER BY date_stat;
 
-create table path_adv
+create table if not exists path_adv
 (
     uuid                   UUID,
-    adv_uuid               UUID   default 0,
-    path_uuid              UUID   default 0,
+    adv_uuid               UUID,
+    path_uuid              UUID,
     date_stat              DateTime32('Europe/Moscow'),
     counter                UInt32 default 0,
     counter_back           UInt32 default 0,
@@ -711,10 +711,10 @@ create table path_adv
       ORDER BY date_stat;
 
 
-create table path_cache
+create table if not exists path_cache
 (
     uuid                    UUID,
-    session_uuid            UUID    default 0,
+    session_uuid            UUID,
     date_hit                DateTime32('Europe/Moscow'),
     path_uuid               UUID,
     path_pages              String,
@@ -733,7 +733,7 @@ create table path_cache
 
 ----------------------- Phrase ----------------------------
 
-create table phrase_list
+create table if not exists phrase_list
 (
     uuid        UUID,
     date_hit    DateTime32('Europe/Moscow'),
@@ -751,7 +751,7 @@ create table phrase_list
 
 --------------------- Referer -----------------------------
 
-create table referer
+create table if not exists referer
 (
     uuid       UUID,
     date_first DateTime32('Europe/Moscow'),
@@ -763,7 +763,7 @@ create table referer
       PARTITION BY toYYYYMM(date_last)
       ORDER BY date_last;
 
-create table referer_list
+create table if not exists referer_list
 (
     uuid       UUID,
     referer_id int,
@@ -826,7 +826,7 @@ create table if not exists searcher_hit
       PARTITION BY toYYYYMM(date_hit)
       ORDER BY (date_hit, searcher_uuid);
 
-create table searcher_params
+create table if not exists searcher_params
 (
     `uuid`        UUID,
     searcher_uuid UUID,

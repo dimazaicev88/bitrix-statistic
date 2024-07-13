@@ -20,7 +20,7 @@ func (hm HitModel) Find(filter filters.Filter) (error, []map[string]interface{})
 	//if err != nil {
 	//	return err, nil
 	//}
-	//rows, err := hm.storage.DB().Queryx(sql.SQL, sql.Params...)
+	//rows, err := hm.chClient.DB().Queryx(sql.SQL, sql.Params...)
 	//for rows.Next() {
 	//	results := make(map[string]interface{})
 	//	err = rows.MapScan(results)

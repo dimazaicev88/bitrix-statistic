@@ -2,15 +2,16 @@ package models
 
 import (
 	"bitrix-statistic/internal/entity"
-	"bitrix-statistic/internal/storage"
+	"context"
+	"github.com/ClickHouse/clickhouse-go/v2/lib/driver"
 )
 
 type OptionModel struct {
-	storage storage.Storage
+	chClient driver.Conn
 }
 
-func NewOptionModel(storage storage.Storage) *OptionModel {
-	return &OptionModel{storage: storage}
+func NewOptionModel(ctx context.Context, chClient driver.Conn) *OptionModel {
+	return &OptionModel{chClient: chClient}
 }
 
 func (o OptionModel) Add(options []entity.Option) error {
