@@ -5,6 +5,7 @@ import (
 	"bitrix-statistic/internal/models"
 	"context"
 	"github.com/ClickHouse/clickhouse-go/v2/lib/driver"
+	"github.com/google/uuid"
 )
 
 type SessionService struct {
@@ -20,7 +21,7 @@ func NewSessionService(ctx context.Context, chClient driver.Conn) *SessionServic
 	}
 }
 
-func (ss SessionService) AddSession(advBack, cityId, countryId, stopListUuid, guestUuid string, isNewGuest bool, statData entity.StatData) error {
+func (ss SessionService) AddSession(advBack, cityId string, countryId, stopListUuid, guestUuid uuid.UUID, isNewGuest bool, statData entity.StatData) error {
 	//	$arFields = array(
 	//		"GUEST_ID" => intval($_SESSION["SESS_GUEST_ID"]),
 	//	    "NEW_GUEST" => "'" . $DB->ForSql($_SESSION["SESS_GUEST_NEW"]) . "'",
@@ -88,4 +89,12 @@ func (ss SessionService) IsExistsSession(phpSession string) bool {
 		return false
 	}
 	return count > 0
+}
+
+func (ss SessionService) UpdateSession(data entity.StatData) error {
+	err := ss.sessionModel.Update(data)
+	if err != nil {
+		return err
+	}
+	return nil
 }

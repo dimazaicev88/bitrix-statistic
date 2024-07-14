@@ -5,6 +5,7 @@ import (
 	"bitrix-statistic/internal/config"
 	"context"
 	_ "github.com/go-sql-driver/mysql"
+	"github.com/huandu/go-sqlbuilder"
 	"github.com/joho/godotenv"
 	"github.com/sirupsen/logrus"
 	"os"
@@ -13,7 +14,7 @@ import (
 )
 
 func main() {
-
+	sqlbuilder.DefaultFlavor = sqlbuilder.ClickHouse
 	ctx, stop := signal.NotifyContext(context.Background(), os.Interrupt, syscall.SIGTERM)
 	defer stop()
 

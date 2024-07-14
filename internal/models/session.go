@@ -5,6 +5,7 @@ import (
 	"bitrix-statistic/internal/filters"
 	"context"
 	"github.com/ClickHouse/clickhouse-go/v2/lib/driver"
+	"github.com/huandu/go-sqlbuilder"
 	"time"
 )
 
@@ -61,11 +62,25 @@ func (sm SessionModel) FindSessionByGuestMd5(guestMd5 string) (entity.StatData, 
 	return sessionData, nil
 }
 
-func (sm SessionModel) UpdateHits(get string, authorized string, agent string, ip string) error {
-	//addr := net.ParseIP(ip)
-	//ipNum := addr.To4().String()
-	//
-	//sm.chClient.DB().MustExec("UPDATE session SET  WHERE id=? ")
+func (sm SessionModel) Update(statData entity.StatData) error {
+	updateBuilder := sqlbuilder.NewUpdateBuilder()
+	updateBuilder.SetFlavor(sqlbuilder.ClickHouse)
+
+	sql := updateBuilder.Update("session").
+		Set(
+			"user_id=?",
+			"user_auth=?",
+			"user_agent=?",
+			"date_last=now()",
+			"ip_last=?",
+			"hits=hits+1",
+		).
+		Where("phpsessid=?").String()
+
+	err := sm.chClient.Exec(sm.ctx, sql, statData.UserId, statData.IsUserAuth, statData.UserAgent, statData.Ip)
+	if err != nil {
+		return err
+	}
 
 	return nil
 }

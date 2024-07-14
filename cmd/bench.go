@@ -1,23 +1,25 @@
 package main
 
 import (
-	"context"
-	"log"
-	"strconv"
-	"time"
+	"fmt"
+	"github.com/google/uuid"
 )
-import "github.com/allegro/bigcache/v3"
 
 func main() {
 
-	cache, _ := bigcache.New(context.Background(), bigcache.DefaultConfig(1*time.Minute))
+	col1Data, _ := uuid.NewUUID()
 
-	for i := 0; i < 1000000; i++ {
-		err := cache.Set(strconv.Itoa(i), []byte("valueeeeeeeeeeeeeeeeee"))
-		if err != nil {
-			log.Fatal(err)
-		}
-	}
+	fmt.Println(col1Data.String())
+	//col1Data.String()
+
+	//cache, _ := bigcache.New(context.Background(), bigcache.DefaultConfig(1*time.Minute))
+	//
+	//for i := 0; i < 1000000; i++ {
+	//	err := cache.Set(strconv.Itoa(i), []byte("valueeeeeeeeeeeeeeeeee"))
+	//	if err != nil {
+	//		log.Fatal(err)
+	//	}
+	//}
 
 	//entry, _ := cache.Get("my-unique-key")
 	//fmt.Println(string(entry))
