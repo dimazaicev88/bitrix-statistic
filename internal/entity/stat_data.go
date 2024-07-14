@@ -7,11 +7,12 @@ type StatData struct {
 	Referer           string `json:"referer"`
 	Ip                string `json:"ip"`
 	UserAgent         string `json:"userAgent"`
-	UserId            int    `json:"userId"`
+	UserId            uint32 `json:"userId"`
 	UserLogin         string `json:"userLogin"`
 	HttpXForwardedFor string `json:"httpXForwardedFor"`
-	Error404          bool   `json:"error404"`
+	IsError404        bool   `json:"isError404"`
 	SiteId            string `json:"siteId"`
 	Event1            string `json:"event1"`
 	Event2            string `json:"event2"`
+	IsUserAuth        bool   `json:"isUserAuth"`
 }

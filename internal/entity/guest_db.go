@@ -39,26 +39,4 @@ type GuestDb struct {
 	LastReferer2    string    `ch:"last_referer2"`
 	LastReferer3    string    `ch:"last_referer3"`
 	LastCityId      string    `ch:"last_city_id"`
-
-	//SessionId string    `ch:"session_id"`
-	//UrlFrom   string    `ch:"url_from"`
-	//UrlTo     string    `ch:"url_to"`
-	//UrlTo404  uint8     `ch:"url_to_404"`
-	//SiteId    string    `ch:"site_id"`
-	//AdvId     string    `ch:"adv_id"`
-	//Referer1  string    `ch:"referer1"`
-	//Referer2  string    `ch:"referer2"`
-	//Referer3  string    `ch:"referer3"`
-	//UserId    uint32    `ch:"user_id"`
-	//UserAuth  uint8     `ch:"user_auth"`
-	//Url       string    `ch:"url"`
-	//Url404    uint8     `ch:"url_404"`
-	//UserAgent string    `ch:"user_agent"`
-	//Ip        string    `ch:"ip"`
-	//Cookie    string    `ch:"cookie"`
-	//Language  string    `ch:"language"`
-	//AdvBack   uint8     `ch:"adv_back"`
-	////CountryId  sql.NullString `ch:"country_id"`
-	////CityId     sql.NullInt32  `ch:"city_id"`
-	////CityInfo   sql.NullString `ch:"city_info"`
 }

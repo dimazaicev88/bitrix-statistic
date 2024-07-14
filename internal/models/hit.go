@@ -48,9 +48,9 @@ func (hm HitModel) DeleteById(id int) {
 }
 
 func (hm HitModel) AddHit(hit entity.HitJson) error {
-	//_, err := hm.storage.DB().MustExec("INSERT INTO hit(`SessionId`, `DATE_HIT`, `GuestId`, `NewGuest`, `USER_ID`, `USER_AUTH`, `Url`, `Url404`, `URL_FROM`, `Ip`, `METHOD`, `COOKIES`, `UserAgent`, `StopListId`, `CountryId`, `CityId`, `SiteId`)"+
+	//_, err := hm.storage.DB().MustExec("INSERT INTO hit(`SessionId`, `DATE_HIT`, `GuestUuid`, `IsNewGuest`, `USER_ID`, `USER_AUTH`, `Url`, `Url404`, `URL_FROM`, `Ip`, `METHOD`, `COOKIES`, `UserAgent`, `StopListUuid`, `CountryId`, `CityUuid`, `SiteId`)"+
 	//	"VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?,?)",
-	//	hit.SessionId, hit.DateHit, hit.GuestId, hit.NewGuest, hit.UserId, hit.UserAuth, hit.Url, hit.Url404, hit.UrlFrom, hit.Method, hit.Cookies, hit.UserAgent, hit.StopListId, hit.CountryId, hit.CityId, hit.SiteId).LastInsertId()
+	//	hit.SessionId, hit.DateHit, hit.GuestUuid, hit.IsNewGuest, hit.UserId, hit.IsUserAuth, hit.Url, hit.Url404, hit.UrlFrom, hit.Method, hit.Cookies, hit.UserAgent, hit.StopListUuid, hit.CountryId, hit.CityUuid, hit.SiteId).LastInsertId()
 	//if err != nil {
 	//	return err
 	//}

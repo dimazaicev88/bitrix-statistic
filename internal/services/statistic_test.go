@@ -29,7 +29,7 @@ func TestGuestModel_Add(t *testing.T) {
 		UserAgent:         "Mozila",
 		UserId:            0,
 		HttpXForwardedFor: "",
-		Error404:          0,
+		IsError404:        0,
 		SiteId:            "s1",
 	})
 	req.NoError(err)

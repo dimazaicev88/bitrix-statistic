@@ -4,10 +4,10 @@ import "time"
 
 type SessionDb struct {
 	Uuid          string    `ch:"uuid"`
-	GuestId       string    `ch:"guest_id"`
-	NewGuest      bool      `ch:"new_guest"`
+	GuestUuid     string    `ch:"guest_uuid"`
+	IsNewGuest    bool      `ch:"new_guest"`
 	UserId        uint32    `ch:"user_id"`
-	UserAuth      bool      `ch:"user_auth"`
+	IsUserAuth    bool      `ch:"user_auth"`
 	Events        uint32    `ch:"events"`
 	Hits          uint32    `ch:"hits"`
 	Favorites     bool      `ch:"favorites"`
@@ -24,17 +24,17 @@ type SessionDb struct {
 	IpFirstNumber string    `ch:"ip_first_number"`
 	IpLast        string    `ch:"ip_last"`
 	IpLastNumber  string    `ch:"ip_last_number"`
-	FirstHitId    string    `ch:"first_hit_id"`
-	LastHitId     string    `ch:"last_hit_id"`
+	FirstHitId    string    `ch:"first_hit_uuid"`
+	LastHitId     string    `ch:"last_hit_uuid"`
 	PhpSessionId  string    `ch:"phpsessid"`
 	AdvId         string    `ch:"adv_id"`
 	AdvBack       string    `ch:"adv_back"`
 	Referer1      string    `ch:"referer1"`
 	Referer2      string    `ch:"referer2"`
 	Referer3      string    `ch:"referer3"`
-	StopListId    string    `ch:"stop_list_id"`
-	//CountryId     string    `ch:"country_id"`
-	//CityId        int       `ch:"city_id"`
-	FirstSiteId string `ch:"first_site_id"`
-	LastSiteId  string `ch:"last_site_id"`
+	StopListUuid  string    `ch:"stop_list_uuid"`
+	CountryId     string    `ch:"country_id"`
+	CityUuid      string    `ch:"city_uuid"`
+	FirstSiteId   string    `ch:"first_site_id"`
+	LastSiteId    string    `ch:"last_site_id"`
 }

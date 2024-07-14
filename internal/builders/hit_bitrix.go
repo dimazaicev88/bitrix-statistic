@@ -27,13 +27,13 @@ func (hs HitBitrixSqlBuilder) buildStringField(fieldName, execMath, value string
 func (hs HitBitrixSqlBuilder) buildSQL() {
 	//hs.buildIntField("ID", hs.filter.Filter.IdExactMatch, hs.filter.Filter.ID)
 	//hs.buildIntField("SESSION_ID", hs.filter.Filter.SessionIdExactMatch, hs.filter.Filter.SessionId)
-	//hs.buildIntField("STOP_LIST_ID", hs.filter.Filter.StopListIdExactMatch, hs.filter.Filter.StopListId)
+	//hs.buildIntField("STOP_LIST_ID", hs.filter.Filter.StopListIdExactMatch, hs.filter.Filter.StopListUuid)
 	//hs.buildIntField("COUNTRY_ID", hs.filter.Filter.CountryIdExactMatch, hs.filter.Filter.CountryId)
-	//hs.buildIntField("CITY_ID", hs.filter.Filter.CityExactMatch, hs.filter.Filter.CityId)
+	//hs.buildIntField("CITY_ID", hs.filter.Filter.CityExactMatch, hs.filter.Filter.CityUuid)
 	//
 	//hs.buildStringField("URL", hs.filter.Filter.UrlExactMatch, hs.filter.Filter.Url)
 	//hs.buildStringField("URL_404", hs.filter.Filter.Url404ExactMatch, hs.filter.Filter.Url404)
-	//hs.buildStringField("NEW_GUEST", hs.filter.Filter.NewGuestExactMatch, hs.filter.Filter.NewGuest)
+	//hs.buildStringField("NEW_GUEST", hs.filter.Filter.NewGuestExactMatch, hs.filter.Filter.IsNewGuest)
 	//hs.buildStringField("IP", hs.filter.Filter.IpExactMatch, hs.filter.Filter.Ip)
 	//hs.buildStringField("USER_AGENT", hs.filter.Filter.UserAgentExactMatch, hs.filter.Filter.UserAgent)
 	//hs.buildStringField("COOKIE", hs.filter.Filter.CookieExactMatch, hs.filter.Filter.Cookie)

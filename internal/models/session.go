@@ -23,11 +23,16 @@ func (sm SessionModel) Find(filter filters.Filter) (error, []map[string]interfac
 }
 
 func (sm SessionModel) AddSession(session entity.SessionDb) error {
+
+	//		"DATE_STAT" => $DB_now_date,
+	//		"DATE_FIRST" => $DB_now,
+	//		"DATE_LAST" => $DB_now,
+
 	_, err := sm.chClient.Exec(sm.ctx, `INSERT INTO session (id, guest_id,events,hits, date, phpsessid,
          stop_list_id) VALUES (?, ?, ?, ?, ?, ?, ?) `,
-		session.GuestId, session.NewGuest, session.UserId, session.UserAuth, session.Events, session.Hits, session.Favorites, session.UrlFrom, session.UrlTo, session.UrlTo404, session.UrlLast, session.UrlLast404, session.UserAgent, time.Unix(session.DateStat, 0).Add(time.Hour*3),
+		session.GuestUuid, session.IsNewGuest, session.UserId, session.IsUserAuth, session.Events, session.Hits, session.Favorites, session.UrlFrom, session.UrlTo, session.UrlTo404, session.UrlLast, session.UrlLast404, session.UserAgent, time.Unix(session.DateStat, 0).Add(time.Hour*3),
 		time.Unix(session.DateFirst, 0).Add(time.Hour*3), time.Unix(session.DateLast, 0).Add(time.Hour*3), session.IpLast, session.IpFirstNumber, session.IpLast, session.IpLastNumber, session.FirstHitId, session.LastHitId, session.PhpSessionId,
-		session.AdvId, session.AdvBack, session.Referer1, session.Referer2, session.Referer3, session.StopListId, session.CountryId, session.CityId, session.FirstSiteId, session.LastSiteId).LastInsertId()
+		session.AdvId, session.AdvBack, session.Referer1, session.Referer2, session.Referer3, session.StopListUuid, session.CountryId, session.CityUuid, session.FirstSiteId, session.LastSiteId).LastInsertId()
 	if err != nil {
 		return err
 	}

@@ -90,6 +90,11 @@ func (s Statistic) Add(statData entity.StatData) error {
 	}
 
 	//---------------------------Секция гостя------------------------------------
+	var guestUuid string
+	var stopListUuid string
+	var advBack string
+	var cityUuid string
+	var countryUuid string
 
 	//Гость не найден, добавляем гостя
 	if existsGuest == false {
@@ -106,8 +111,16 @@ func (s Statistic) Add(statData entity.StatData) error {
 	}
 
 	//---------------------------Секция сессии------------------------------------
+	//Если сессия новая, добавляем.
 	if s.sessionService.IsExistsSession(statData.PHPSessionId) == false {
-		s.sessionService.AddSession(statData)
+		isNewGuest := existsGuest == false
+		err := s.sessionService.AddSession(advBack, cityUuid, countryUuid, stopListUuid, guestUuid, isNewGuest, statData)
+		if err != nil {
+			return err
+		}
+	} else { // Обновляем имеющуюся
+		s.sessionService.UpdateSession(statData.PHPSessionId, statData)
+
 	}
 	return nil
 }

@@ -17,7 +17,7 @@ func (s GuestService) AddGuest(statData entity.StatData, adv entity.AdvReferer) 
 		Timestamp:     time.Now(),
 		FirstUrlFrom:  statData.Referer,
 		FirstUrlTo:    statData.Url,
-		FirstUrlTo404: statData.Error404,
+		FirstUrlTo404: statData.IsError404,
 		FirstSiteId:   statData.SiteId,
 		FirstAdvUuid:  "",
 		FirstReferer1: adv.Referer1,
