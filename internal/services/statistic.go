@@ -14,8 +14,9 @@ type Statistic struct {
 	searcherModel  *models.SearcherModel
 	sessionModel   *models.SessionModel
 	cityModel      *models.CityModel
-	advModel       *models.AdvModel
-	guestModel     *models.GuestModel
+	advServices    *AdvServices
+	guestService   *GuestService
+	sessionService *SessionService
 }
 
 func NewStatistic(ctx context.Context, chClient driver.Conn) Statistic {
@@ -25,8 +26,9 @@ func NewStatistic(ctx context.Context, chClient driver.Conn) Statistic {
 		sessionModel:   models.NewSessionModel(ctx, chClient),
 		searcherModel:  models.NewSearcherModel(ctx, chClient),
 		cityModel:      models.NewCityModel(ctx, chClient),
-		advModel:       models.NewAdvModel(ctx, chClient, models.NewOptionModel(ctx, chClient)),
-		guestModel:     models.NewGuestModel(ctx, chClient),
+		guestService:   NewGuestService(ctx, chClient),
+		advServices:    NewAdvServices(ctx, chClient),
+		sessionService: NewSessionService(ctx, chClient),
 	}
 }
 
@@ -82,18 +84,30 @@ func (s Statistic) checkSkip(userGroups []int, remoteAddr string) (error, bool) 
 }
 
 func (s Statistic) Add(statData entity.StatData) error {
-	existsGuest, err := s.guestModel.ExistsGuestByHash(statData.GuestHash)
+	existsGuest, err := s.guestService.GuestModel.ExistsGuestByHash(statData.GuestHash)
 	if err != nil {
 		return err
 	}
 
+	//---------------------------Секция гостя------------------------------------
+
 	//Гость не найден, добавляем гостя
 	if existsGuest == false {
-		err := s.guestModel.AddGuest(statData)
+		adv, err := s.advServices.GetAdv(statData.Url)
+
+		if err != nil {
+			return err
+		}
+
+		err = s.guestService.AddGuest(statData, adv)
 		if err != nil {
 			return err
 		}
 	}
 
+	//---------------------------Секция сессии------------------------------------
+	if s.sessionService.IsExistsSession(statData.PHPSessionId) == false {
+		s.sessionService.AddSession(statData)
+	}
 	return nil
 }

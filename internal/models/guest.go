@@ -7,7 +7,6 @@ import (
 	"database/sql"
 	"errors"
 	"github.com/ClickHouse/clickhouse-go/v2/lib/driver"
-	"time"
 )
 
 type GuestModel struct {
@@ -44,8 +43,8 @@ func NewGuestModel(ctx context.Context, chClient driver.Conn) *GuestModel {
 //	return guestId, favorites, lastUserId, lastAdvId, last, nil
 //}
 
-func (gm GuestModel) Add(guest entity.GuestDb) {
-	gm.storage.DB().MustExec(`INSERT INTO guest (
+func (gm GuestModel) AddGuest(guest entity.GuestDb) error {
+	err := gm.chClient.Exec(gm.ctx, `INSERT INTO guest (
                    timestamp_x, favorites, events, sessions, hits, repair, session_id, date, url_from, url_to,
                    url_to_404, site_id, adv_id, referer1, referer2, referer3, user_id, user_auth, url, url_404, user_agent, ip,
                    cookie, language, adv_back, country_id, city_id, city_info, cookie_token) 
@@ -55,24 +54,17 @@ func (gm GuestModel) Add(guest entity.GuestDb) {
 		guest.Referer3, guest.UserId, guest.UserAuth, guest.Url, guest.Url404, guest.UserAgent, guest.Ip,
 		guest.Cookie, guest.Language, guest.AdvBack, guest.CountryId, guest.CityId, guest.CityInfo, guest.Token,
 	)
-}
-
-func (gm GuestModel) AddGuest(statData entity.StatData) error {
-	gm.Add(entity.GuestDb{
-		Timestamp:     time.Now(),
-		FirstUrlFrom:  statData.Referer,
-		FirstUrlTo:    statData.Url,
-		FirstUrlTo404: statData.Error404,
-		FirstSiteId:   statData.SiteId,
-		FirstAdvId:    "", //TODO добавить реальные значения
-		FirstReferer1: "", //TODO добавить реальные значения
-		FirstReferer2: "", //TODO добавить реальные значения
-		FirstReferer3: "", //TODO добавить реальные значения
-		GuestHash:     statData.GuestHash,
-	})
-
+	if err != nil {
+		return err
+	}
 	return nil
 }
+
+//func (gm GuestModel) AddGuest(guestDb entity.GuestDb) error {
+//
+//
+//	return nil
+//}
 
 func (gm GuestModel) ExistsGuestByHash(token string) (bool, error) {
 	row := gm.chClient.QueryRow(gm.ctx, `

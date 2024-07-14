@@ -128,3 +128,14 @@ func (sm SessionModel) GetAttentiveness(dateStat, siteId string) {
 	//}
 	//return $ar;
 }
+
+func (sm SessionModel) ExistsByPhpSession(session string) (int, error) {
+	var count int
+	row := sm.chClient.QueryRow(sm.ctx, `select count(uuid) as cnt from session where phpsessid=?`, session)
+
+	err := row.Scan(&count)
+	if err != nil {
+		return 0, err
+	}
+	return count, nil
+}
