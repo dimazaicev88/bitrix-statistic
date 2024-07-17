@@ -11,5 +11,12 @@ type StatDayService struct {
 }
 
 func NewStatDayService(ctx context.Context, chClient driver.Conn) *StatDayService {
-	return &StatDayService{}
+	return &StatDayService{
+		ctx:      ctx,
+		chClient: chClient,
+	}
+}
+
+func (sds StatDayService) Update() {
+
 }

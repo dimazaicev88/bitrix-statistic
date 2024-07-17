@@ -11,10 +11,10 @@ import (
 
 type GuestRoutes struct {
 	fbApp      *fiber.App
-	guestModel models.GuestModel
+	guestModel models.Guest
 }
 
-func NewGuestRoutes(fbApp *fiber.App, guestModel models.GuestModel) GuestRoutes {
+func NewGuestRoutes(fbApp *fiber.App, guestModel models.Guest) GuestRoutes {
 	return GuestRoutes{
 		fbApp:      fbApp,
 		guestModel: guestModel,

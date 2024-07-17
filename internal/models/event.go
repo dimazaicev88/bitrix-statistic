@@ -5,14 +5,13 @@ import (
 	"github.com/ClickHouse/clickhouse-go/v2/lib/driver"
 )
 
-// PathModel Поисковые фразы
-type PathModel struct {
+type Event struct {
 	ctx      context.Context
 	chClient driver.Conn
 }
 
-func NewPathModel(ctx context.Context, chClient driver.Conn) *PathModel {
-	return &PathModel{
+func NewEvent(ctx context.Context, chClient driver.Conn) *Event {
+	return &Event{
 		ctx:      ctx,
 		chClient: chClient,
 	}

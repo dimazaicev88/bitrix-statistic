@@ -7,26 +7,26 @@ import (
 	"github.com/sirupsen/logrus"
 )
 
-type StatisticModel struct {
+type Statistic struct {
 	ctx         context.Context
 	chClient    driver.Conn
-	guestModel  *GuestModel
-	optionModel *OptionModel
-	advModel    *AdvModel
+	guestModel  *Guest
+	optionModel *Option
+	advModel    *Adv
 	logger      logrus.Logger
 }
 
-func NewStatisticModel(ctx context.Context, chClient driver.Conn) *StatisticModel {
-	return &StatisticModel{
+func NewStatisticModel(ctx context.Context, chClient driver.Conn) *Statistic {
+	return &Statistic{
 		ctx:         ctx,
 		chClient:    chClient,
-		guestModel:  NewGuestModel(ctx, chClient),
+		guestModel:  NewGuest(ctx, chClient),
 		optionModel: NewOptionModel(ctx, chClient),
-		advModel:    NewAdvModel(ctx, chClient, NewOptionModel(ctx, chClient)),
+		advModel:    NewAdv(ctx, chClient, NewOptionModel(ctx, chClient)),
 	}
 }
 
-func (stm *StatisticModel) Add(data entity.StatData) error {
+func (stm *Statistic) Add(data entity.StatData) error {
 	guestDb, err := stm.guestModel.FindByHash(data.GuestHash)
 	if err != nil {
 		stm.logger.Error(err)
@@ -44,6 +44,6 @@ func (stm *StatisticModel) Add(data entity.StatData) error {
 	return nil
 }
 
-func (stm *StatisticModel) SetNewDay() {
+func (stm *Statistic) SetNewDay() {
 
 }

@@ -6,29 +6,29 @@ import (
 	"github.com/ClickHouse/clickhouse-go/v2/lib/driver"
 )
 
-type CityModel struct {
+type City struct {
 	ctx      context.Context
 	chClient driver.Conn
 }
 
-func NewCityModel(ctx context.Context, chClient driver.Conn) *CityModel {
-	return &CityModel{ctx: ctx, chClient: chClient}
+func NewCity(ctx context.Context, chClient driver.Conn) *City {
+	return &City{ctx: ctx, chClient: chClient}
 }
 
-func (cm CityModel) Find(filter filters.Filter) (error, []map[string]interface{}) {
+func (cm City) Find(filter filters.Filter) (error, []map[string]interface{}) {
 	return nil, nil
 }
 
-func (cm CityModel) DeleteById(id int) {
+func (cm City) DeleteById(id int) {
 	//cm.storage.DB().MustExec("DELETE FROM city WHERE id=?", id)
 }
 
-func (cm CityModel) GetCountryCode() string {
+func (cm City) GetCountryCode() string {
 	//TODO implement
 	return ""
 }
 
-func (cm CityModel) GetCityID() string {
+func (cm City) GetCityID() string {
 	//TODO implement
 	return ""
 }

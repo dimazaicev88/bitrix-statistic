@@ -38,7 +38,7 @@ func (app *App) Start() {
 
 	routes.NewStatistic(fb).RegRoutes()
 	routes.NewHitHandlers(fb, models.NewHitModel(chClient)).AddHandlers()
-	routes.NewCityHandlers(fb, models.NewCityModel(chClient)).AddHandlers()
+	routes.NewCityHandlers(fb, models.NewCity(chClient)).AddHandlers()
 	routes.NewSessionHandlers(fb, models.NewSessionModel(chClient)).AddHandlers()
 
 	//start fiber

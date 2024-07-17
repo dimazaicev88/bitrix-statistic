@@ -8,7 +8,7 @@ import (
 )
 
 type OptionService struct {
-	optionModel *models.OptionModel
+	optionModel *models.Option
 }
 
 func NewOptionService(ctx context.Context, chClient driver.Conn) *OptionService {

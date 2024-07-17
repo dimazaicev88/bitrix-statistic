@@ -2,14 +2,16 @@ package models
 
 import (
 	"bitrix-statistic/internal/filters"
-	"bitrix-statistic/internal/storage"
+	"context"
+	"github.com/ClickHouse/clickhouse-go/v2/lib/driver"
 )
 
-type CountryModel struct {
-	storage storage.Storage
+type Country struct {
+	ctx      context.Context
+	chClient driver.Conn
 }
 
-func (cm CountryModel) Find(filter filters.Filter) (error, []map[string]interface{}) {
+func (cm Country) Find(filter filters.Filter) (error, []map[string]interface{}) {
 	var hits []map[string]interface{}
 	//_, sql := builders.NewCountrySQLBuilder(filter).BuildSQL()
 	//rows, err := cm.chClient.DB().Queryx(sql.SQL, sql.Params...)
@@ -27,6 +29,6 @@ func (cm CountryModel) Find(filter filters.Filter) (error, []map[string]interfac
 	return nil, hits
 }
 
-func (cm CountryModel) DeleteById(id int) {
-	cm.storage.DB().MustExec("DELETE FROM country WHERE id=?", id)
+func (cm Country) DeleteById(id int) {
+	//cm.storage.DB().MustExec("DELETE FROM country WHERE id=?", id)
 }

@@ -5,10 +5,11 @@ import (
 	"github.com/ClickHouse/clickhouse-go/v2/lib/driver"
 )
 
-type OptionModel struct {
+type Option struct {
+	ctx      context.Context
 	chClient driver.Conn
 }
 
-func NewOptionModel(ctx context.Context, chClient driver.Conn) *OptionModel {
-	return &OptionModel{chClient: chClient}
+func NewOptionModel(ctx context.Context, chClient driver.Conn) *Option {
+	return &Option{ctx: ctx, chClient: chClient}
 }

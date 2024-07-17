@@ -9,10 +9,10 @@ import (
 
 type CountryHandlers struct {
 	fbApp        *fiber.App
-	countryModel models.CountryModel
+	countryModel models.Country
 }
 
-func NewCountryHandlers(fbApp *fiber.App, countryModel models.CountryModel) CountryHandlers {
+func NewCountryHandlers(fbApp *fiber.App, countryModel models.Country) CountryHandlers {
 	return CountryHandlers{
 		fbApp:        fbApp,
 		countryModel: countryModel,

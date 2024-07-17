@@ -6,24 +6,24 @@ import (
 	"github.com/ClickHouse/clickhouse-go/v2/lib/driver"
 )
 
-type AdvModel struct {
+type Adv struct {
 	chClient    driver.Conn
-	optionModel *OptionModel
+	optionModel *Option
 }
 
-func NewAdvModel(ctx context.Context, chClient driver.Conn, optionModel *OptionModel) *AdvModel {
-	return &AdvModel{
+func NewAdv(ctx context.Context, chClient driver.Conn, optionModel *Option) *Adv {
+	return &Adv{
 		chClient:    chClient,
 		optionModel: optionModel,
 	}
 }
 
-func (am AdvModel) SetAdv(fullRequestUri, openstat, referringSite string) error {
+func (am Adv) SetAdv(fullRequestUri, openstat, referringSite string) error {
 
 	return nil
 }
 
-func (am AdvModel) FindByByPage(page, cType string) ([]int, string, string, error) {
+func (am Adv) FindByByPage(page, cType string) ([]int, string, string, error) {
 	//strSql := `
 	//	SELECT A.id, A.referer1, A.referer2
 	//	FROM adv A
@@ -53,7 +53,7 @@ func (am AdvModel) FindByByPage(page, cType string) ([]int, string, string, erro
 	return listIdAdv, referer1, referer2, nil
 }
 
-func (am AdvModel) FindByByDomainSearcher(host string) ([]int, string, string, error) {
+func (am Adv) FindByByDomainSearcher(host string) ([]int, string, string, error) {
 	// проверяем поисковики
 	//sql := ` SELECT A.referer1, A.referer2, S.ADV_ID
 	//		 FROM 	adv A,
@@ -84,7 +84,7 @@ func (am AdvModel) FindByByDomainSearcher(host string) ([]int, string, string, e
 	return listIdAdv, referer1, referer2, nil
 }
 
-func (am AdvModel) FindByReferer(referer1, referer2 string) ([]int, string, string, error) {
+func (am Adv) FindByReferer(referer1, referer2 string) ([]int, string, string, error) {
 	//sql := `SELECT 	ID, REFERER1, REFERER2
 	//		FROM adv
 	//		WHERE  REFERER1=? and REFERER2=?`
@@ -148,7 +148,7 @@ func (am AdvModel) FindByReferer(referer1, referer2 string) ([]int, string, stri
 	return listIdAdv, referer1, referer2, nil
 }
 
-func (am AdvModel) AddAdv(referer1 string, referer2 string) error {
+func (am Adv) AddAdv(referer1 string, referer2 string) error {
 	//_, err := am.storage.DB().MustExec(`INSERT INTO adv(referer1, referer2, date_first, date_last)
 	//	VALUES (?, ?, now(), now())`, referer1, referer2).LastInsertId()
 	//if err != nil {
@@ -157,7 +157,7 @@ func (am AdvModel) AddAdv(referer1 string, referer2 string) error {
 	return nil
 }
 
-func (am AdvModel) FindById(id int) (entity.AdvDb, error) {
+func (am Adv) FindById(id int) (entity.AdvDb, error) {
 	var adv entity.AdvDb
 	//sql := `-- SELECT 	* FROM adv WHERE  id=?`
 	//err := am.storage.DB().Get(&adv, sql, id)

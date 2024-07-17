@@ -9,10 +9,10 @@ import (
 
 type CityHandlers struct {
 	fbApp     *fiber.App
-	cityModel models.CityModel
+	cityModel models.City
 }
 
-func NewCityHandlers(fbApp *fiber.App, cityModel models.CityModel) CityHandlers {
+func NewCityHandlers(fbApp *fiber.App, cityModel models.City) CityHandlers {
 	return CityHandlers{
 		fbApp:     fbApp,
 		cityModel: cityModel,

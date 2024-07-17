@@ -5,18 +5,20 @@ import (
 	"bitrix-statistic/internal/models"
 	"context"
 	"github.com/ClickHouse/clickhouse-go/v2/lib/driver"
+	"github.com/google/uuid"
 	_ "net/netip"
 )
 
 type Statistic struct {
-	statisticModel *models.StatisticModel
-	optionModel    *models.OptionModel
+	statisticModel *models.Statistic
+	optionModel    *models.Option
 	searcherModel  *models.SearcherModel
 	sessionModel   *models.SessionModel
-	cityModel      *models.CityModel
+	cityModel      *models.City
 	advServices    *AdvServices
 	guestService   *GuestService
 	sessionService *SessionService
+	statDayService *StatDayService
 }
 
 func NewStatistic(ctx context.Context, chClient driver.Conn) Statistic {
@@ -25,10 +27,11 @@ func NewStatistic(ctx context.Context, chClient driver.Conn) Statistic {
 		optionModel:    models.NewOptionModel(ctx, chClient),
 		sessionModel:   models.NewSessionModel(ctx, chClient),
 		searcherModel:  models.NewSearcherModel(ctx, chClient),
-		cityModel:      models.NewCityModel(ctx, chClient),
+		cityModel:      models.NewCity(ctx, chClient),
 		guestService:   NewGuestService(ctx, chClient),
 		advServices:    NewAdvServices(ctx, chClient),
 		sessionService: NewSessionService(ctx, chClient),
+		statDayService: NewStatDayService(ctx, chClient),
 	}
 }
 
@@ -90,11 +93,11 @@ func (s Statistic) Add(statData entity.StatData) error {
 	}
 
 	//---------------------------Секция гостя------------------------------------
-	var guestUuid string
-	var stopListUuid string
+	var guestUuid uuid.UUID
+	var stopListUuid uuid.UUID
 	var advBack string
 	var cityUuid string
-	var countryUuid string
+	var countryUuid uuid.UUID
 
 	//Гость не найден, добавляем гостя
 	if existsGuest == false {
@@ -119,8 +122,13 @@ func (s Statistic) Add(statData entity.StatData) error {
 			return err
 		}
 	} else { // Обновляем имеющуюся
-		s.sessionService.UpdateSession(statData.PHPSessionId, statData)
-
+		err := s.sessionService.UpdateSession(statData)
+		if err != nil {
+			return err
+		}
 	}
+
+	s.statDayService.Update() //TODO доделать update
+
 	return nil
 }

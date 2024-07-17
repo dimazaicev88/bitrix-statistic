@@ -9,21 +9,21 @@ import (
 	"github.com/ClickHouse/clickhouse-go/v2/lib/driver"
 )
 
-type GuestModel struct {
+type Guest struct {
 	ctx          context.Context
 	chClient     driver.Conn
 	sessionModel *SessionModel
 }
 
-func NewGuestModel(ctx context.Context, chClient driver.Conn) *GuestModel {
-	return &GuestModel{
+func NewGuest(ctx context.Context, chClient driver.Conn) *Guest {
+	return &Guest{
 		ctx:          ctx,
 		chClient:     chClient,
 		sessionModel: NewSessionModel(ctx, chClient),
 	}
 }
 
-//func (gm GuestModel) FindLastById(id int) (int, string, int, int, string, error) {
+//func (gm Guest) FindLastById(id int) (int, string, int, int, string, error) {
 //	row, err := gm.chClient.Query(gm.ctx, `
 //				SELECT
 //					G.id,
@@ -43,7 +43,7 @@ func NewGuestModel(ctx context.Context, chClient driver.Conn) *GuestModel {
 //	return guestId, favorites, lastUserId, lastAdvId, last, nil
 //}
 
-func (gm GuestModel) AddGuest(guest entity.GuestDb) error {
+func (gm Guest) AddGuest(guest entity.GuestDb) error {
 	err := gm.chClient.Exec(gm.ctx, `INSERT INTO guest (
                    timestamp_x, favorites, events, sessions, hits, repair, session_id, date, url_from, url_to,
                    url_to_404, site_id, adv_id, referer1, referer2, referer3, user_id, user_auth, url, url_404, user_agent, ip,
@@ -60,13 +60,13 @@ func (gm GuestModel) AddGuest(guest entity.GuestDb) error {
 	return nil
 }
 
-//func (gm GuestModel) AddGuest(guestDb entity.GuestDb) error {
+//func (gm Guest) AddGuest(guestDb entity.GuestDb) error {
 //
 //
 //	return nil
 //}
 
-func (gm GuestModel) ExistsGuestByHash(token string) (bool, error) {
+func (gm Guest) ExistsGuestByHash(token string) (bool, error) {
 	row := gm.chClient.QueryRow(gm.ctx, `
 				SELECT guest_hash
 				FROM guest 				
@@ -81,11 +81,11 @@ func (gm GuestModel) ExistsGuestByHash(token string) (bool, error) {
 	return len(cookieToken) > 0, nil
 }
 
-func (gm GuestModel) Find(filter filters.Filter) (entity.GuestDb, error) {
+func (gm Guest) Find(filter filters.Filter) (entity.GuestDb, error) {
 	return entity.GuestDb{}, nil
 }
 
-func (gm GuestModel) FindByHash(token string) ([]entity.GuestDb, error) {
+func (gm Guest) FindByHash(token string) ([]entity.GuestDb, error) {
 	row := gm.chClient.QueryRow(gm.ctx, `
 				SELECT * 
 				FROM guest 				

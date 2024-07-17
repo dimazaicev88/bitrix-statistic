@@ -7,10 +7,10 @@ import (
 
 type OptionHandlers struct {
 	app         *fiber.App
-	optionModel models.OptionModel
+	optionModel models.Option
 }
 
-func NewOptionHandlers(app *fiber.App, optionModel models.OptionModel) OptionHandlers {
+func NewOptionHandlers(app *fiber.App, optionModel models.Option) OptionHandlers {
 	return OptionHandlers{
 		app:         app,
 		optionModel: optionModel,

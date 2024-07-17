@@ -9,7 +9,7 @@ import (
 )
 
 type GuestService struct {
-	GuestModel *models.GuestModel
+	GuestModel *models.Guest
 }
 
 func (s GuestService) AddGuest(statData entity.StatData, adv entity.AdvReferer) error {
@@ -34,6 +34,6 @@ func (s GuestService) AddGuest(statData entity.StatData, adv entity.AdvReferer) 
 
 func NewGuestService(ctx context.Context, chClient driver.Conn) *GuestService {
 	return &GuestService{
-		GuestModel: models.NewGuestModel(ctx, chClient),
+		GuestModel: models.NewGuest(ctx, chClient),
 	}
 }

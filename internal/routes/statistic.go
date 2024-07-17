@@ -10,7 +10,7 @@ import (
 
 type Statistic struct {
 	fbApp          *fiber.App
-	statisticModel models.StatisticModel
+	statisticModel models.Statistic
 }
 
 type Answer struct {

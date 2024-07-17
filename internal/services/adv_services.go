@@ -11,11 +11,11 @@ import (
 //TODO добавить авто создание рекламной компании
 
 type AdvServices struct {
-	AdvModel *models.AdvModel
+	AdvModel *models.Adv
 }
 
 func NewAdvServices(ctx context.Context, chClient driver.Conn) *AdvServices {
-	return &AdvServices{AdvModel: models.NewAdvModel(ctx, chClient, models.NewOptionModel(ctx, chClient))}
+	return &AdvServices{AdvModel: models.NewAdv(ctx, chClient, models.NewOptionModel(ctx, chClient))}
 }
 
 // AutoCreateAdv Автоматическое создание рекламной компании
