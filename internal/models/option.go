@@ -10,6 +10,6 @@ type Option struct {
 	chClient driver.Conn
 }
 
-func NewOptionModel(ctx context.Context, chClient driver.Conn) *Option {
+func NewOption(ctx context.Context, chClient driver.Conn) *Option {
 	return &Option{ctx: ctx, chClient: chClient}
 }

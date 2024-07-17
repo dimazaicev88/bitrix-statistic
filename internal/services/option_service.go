@@ -11,9 +11,9 @@ type OptionService struct {
 	optionModel *models.Option
 }
 
-func NewOptionService(ctx context.Context, chClient driver.Conn) *OptionService {
+func NewOption(ctx context.Context, chClient driver.Conn) *OptionService {
 	return &OptionService{
-		optionModel: models.NewOptionModel(ctx, chClient),
+		optionModel: models.NewOption(ctx, chClient),
 	}
 }
 

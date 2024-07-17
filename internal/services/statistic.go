@@ -10,7 +10,6 @@ import (
 )
 
 type Statistic struct {
-	statisticModel *models.Statistic
 	optionModel    *models.Option
 	searcherModel  *models.SearcherModel
 	sessionModel   *models.SessionModel
@@ -23,15 +22,14 @@ type Statistic struct {
 
 func NewStatistic(ctx context.Context, chClient driver.Conn) Statistic {
 	return Statistic{
-		statisticModel: models.NewStatisticModel(ctx, chClient),
-		optionModel:    models.NewOptionModel(ctx, chClient),
-		sessionModel:   models.NewSessionModel(ctx, chClient),
-		searcherModel:  models.NewSearcherModel(ctx, chClient),
+		optionModel:    models.NewOption(ctx, chClient),
+		sessionModel:   models.NewSession(ctx, chClient),
+		searcherModel:  models.NewSearcher(ctx, chClient),
 		cityModel:      models.NewCity(ctx, chClient),
-		guestService:   NewGuestService(ctx, chClient),
-		advServices:    NewAdvServices(ctx, chClient),
-		sessionService: NewSessionService(ctx, chClient),
-		statDayService: NewStatDayService(ctx, chClient),
+		guestService:   NewGuest(ctx, chClient),
+		advServices:    NewAdv(ctx, chClient),
+		sessionService: NewSession(ctx, chClient),
+		statDayService: NewStatDay(ctx, chClient),
 	}
 }
 

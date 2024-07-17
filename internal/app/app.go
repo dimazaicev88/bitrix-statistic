@@ -37,9 +37,9 @@ func (app *App) Start() {
 	}
 
 	routes.NewStatistic(fb).RegRoutes()
-	routes.NewHitHandlers(fb, models.NewHitModel(chClient)).AddHandlers()
-	routes.NewCityHandlers(fb, models.NewCity(chClient)).AddHandlers()
-	routes.NewSessionHandlers(fb, models.NewSessionModel(chClient)).AddHandlers()
+	routes.NewHitHandlers(fb, models.NewHitModel(app.ctx, chClient)).AddHandlers()
+	routes.NewCityHandlers(fb, models.NewCity(app.ctx, chClient)).AddHandlers()
+	routes.NewSessionHandlers(fb, models.NewSession(app.ctx, chClient)).AddHandlers()
 
 	//start fiber
 	go func() {

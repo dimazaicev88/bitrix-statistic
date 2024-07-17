@@ -14,7 +14,7 @@ type SessionService struct {
 	sessionModel models.SessionModel
 }
 
-func NewSessionService(ctx context.Context, chClient driver.Conn) *SessionService {
+func NewSession(ctx context.Context, chClient driver.Conn) *SessionService {
 	return &SessionService{
 		ctx:      ctx,
 		chClient: chClient,

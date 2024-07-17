@@ -1,15 +1,11 @@
 package main
 
-import (
-	"fmt"
-	"github.com/google/uuid"
-)
-
 func main() {
+	ms := make(map[string][]int)
 
-	col1Data, _ := uuid.NewUUID()
-
-	fmt.Println(col1Data.String())
+	//col1Data, _ := uuid.NewUUID()
+	//
+	//fmt.Println(col1Data.String())
 	//col1Data.String()
 
 	//cache, _ := bigcache.New(context.Background(), bigcache.DefaultConfig(1*time.Minute))

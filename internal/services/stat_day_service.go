@@ -10,7 +10,7 @@ type StatDayService struct {
 	chClient driver.Conn
 }
 
-func NewStatDayService(ctx context.Context, chClient driver.Conn) *StatDayService {
+func NewStatDay(ctx context.Context, chClient driver.Conn) *StatDayService {
 	return &StatDayService{
 		ctx:      ctx,
 		chClient: chClient,

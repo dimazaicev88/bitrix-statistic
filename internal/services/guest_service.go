@@ -32,7 +32,7 @@ func (s GuestService) AddGuest(statData entity.StatData, adv entity.AdvReferer) 
 	return nil
 }
 
-func NewGuestService(ctx context.Context, chClient driver.Conn) *GuestService {
+func NewGuest(ctx context.Context, chClient driver.Conn) *GuestService {
 	return &GuestService{
 		GuestModel: models.NewGuest(ctx, chClient),
 	}

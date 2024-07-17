@@ -11,14 +11,11 @@ type PathDB struct {
 	CounterAbnormal uint32    `ch:"counter_abnormal"`
 	CounterFullPath uint32    `ch:"counter_full_path"`
 	Pages           string    `ch:"pages"`
-	FirstPage       string    `ch:"first_page"`
-	FirstPage404    bool      `ch:"first_page_404"`
-	FirstPageSiteId string    `ch:"first_page_site_id"`
+	Page            string    `ch:"page"`
+	Page404         bool      `ch:"page_404"`
+	PageSiteId      string    `ch:"page_site_id"`
 	PrevPage        string    `ch:"prev_page"`
 	PrevPageHash    uint32    `ch:"prev_page_hash"`
-	LastPage        string    `ch:"last_page"`
-	LastPage404     bool      `ch:"last_page_404"`
-	LastPageSiteId  string    `ch:"last_page_site_id"`
-	LastPageHash    uint32    `ch:"last_page_hash"`
+	PageHash        uint32    `ch:"page_hash"`
 	Steps           uint32    `ch:"steps"`
 }

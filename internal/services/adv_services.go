@@ -14,8 +14,8 @@ type AdvServices struct {
 	AdvModel *models.Adv
 }
 
-func NewAdvServices(ctx context.Context, chClient driver.Conn) *AdvServices {
-	return &AdvServices{AdvModel: models.NewAdv(ctx, chClient, models.NewOptionModel(ctx, chClient))}
+func NewAdv(ctx context.Context, chClient driver.Conn) *AdvServices {
+	return &AdvServices{AdvModel: models.NewAdv(ctx, chClient, models.NewOption(ctx, chClient))}
 }
 
 // AutoCreateAdv Автоматическое создание рекламной компании

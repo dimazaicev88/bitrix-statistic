@@ -11,7 +11,7 @@ type SearcherModel struct {
 	chClient driver.Conn
 }
 
-func NewSearcherModel(ctx context.Context, chClient driver.Conn) *SearcherModel {
+func NewSearcher(ctx context.Context, chClient driver.Conn) *SearcherModel {
 	return &SearcherModel{
 		ctx:      ctx,
 		chClient: chClient,

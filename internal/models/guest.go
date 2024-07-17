@@ -19,7 +19,7 @@ func NewGuest(ctx context.Context, chClient driver.Conn) *Guest {
 	return &Guest{
 		ctx:          ctx,
 		chClient:     chClient,
-		sessionModel: NewSessionModel(ctx, chClient),
+		sessionModel: NewSession(ctx, chClient),
 	}
 }
 

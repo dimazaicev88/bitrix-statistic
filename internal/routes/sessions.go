@@ -11,10 +11,10 @@ import (
 
 type SessionHandlers struct {
 	app          *fiber.App
-	sessionModel models.SessionModel
+	sessionModel *models.SessionModel
 }
 
-func NewSessionHandlers(app *fiber.App, sessionModel models.SessionModel) SessionHandlers {
+func NewSessionHandlers(app *fiber.App, sessionModel *models.SessionModel) SessionHandlers {
 	return SessionHandlers{
 		app:          app,
 		sessionModel: sessionModel,

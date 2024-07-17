@@ -17,7 +17,7 @@ type AdvDayDB struct {
 	GuestsBack    uint32    `ch:"guests_back"`
 	GuestsDayBack uint32    `ch:"guests_day_back"`
 	FavoritesBack uint32    `ch:"favorites_back"`
-	hostsBack     uint32    `ch:"hosts_back"`
+	HostsBack     uint32    `ch:"hosts_back"`
 	HostsDayBack  uint32    `ch:"hosts_day_back"`
 	SessionsBack  uint32    `ch:"sessions_back"`
 	HitsBack      uint32    `ch:"hits_back"`
