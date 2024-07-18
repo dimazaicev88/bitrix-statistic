@@ -776,7 +776,7 @@ create table if not exists referer_list
 create table if not exists searcher
 (
     uuid                UUID,
-    `date_cleanup`      DateTime32('Europe/Moscow'),
+    `date_cleanup`      Nullable(DateTime32('Europe/Moscow')),
     `total_hits`        UInt32  default '0',
     `save_statistic`    BOOLEAN default true,
     `active`            BOOLEAN default true,
@@ -876,4 +876,25 @@ create table if not exists option
 ) ENGINE = MergeTree
       PARTITION BY siteId
       ORDER BY (name);
+
+create table if not exists raw_request
+(
+    date                 DateTime32('Europe/Moscow'),
+    php_session_id       String,
+    url                  String,
+    referer              String,
+    ip                   IPv4,
+    user_agent           String,
+    userid               UInt32,
+    user_login           String,
+    http_x_forwarded_for String,
+    is_error404          bool,
+    site_id              String,
+    event1               String,
+    event2               String,
+    is_user_auth         bool
+) ENGINE = MergeTree
+      PARTITION BY toYYYYMM(date)
+      ORDER BY (date);
+
 
