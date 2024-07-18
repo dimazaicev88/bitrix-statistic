@@ -1,7 +1,8 @@
 package services
 
 import (
-	"bitrix-statistic/internal/entity"
+	"bitrix-statistic/internal/entitydb"
+	"bitrix-statistic/internal/entityjson"
 	"bitrix-statistic/internal/models"
 	"context"
 	"github.com/ClickHouse/clickhouse-go/v2/lib/driver"
@@ -21,7 +22,7 @@ func NewSession(ctx context.Context, chClient driver.Conn) *SessionService {
 	}
 }
 
-func (ss SessionService) AddSession(advBack, cityId string, countryId, stopListUuid, guestUuid uuid.UUID, isNewGuest bool, statData entity.StatData) error {
+func (ss SessionService) AddSession(advBack, cityId string, countryId, stopListUuid, guestUuid uuid.UUID, isNewGuest bool, statData entityjson.StatData) error {
 	//	$arFields = array(
 	//		"GUEST_ID" => intval($_SESSION["SESS_GUEST_ID"]),
 	//	    "NEW_GUEST" => "'" . $DB->ForSql($_SESSION["SESS_GUEST_NEW"]) . "'",
@@ -53,7 +54,7 @@ func (ss SessionService) AddSession(advBack, cityId string, countryId, stopListU
 	//		"HITS" => 1,
 	//);
 
-	err := ss.sessionModel.AddSession(entity.SessionDb{
+	err := ss.sessionModel.AddSession(entitydb.SessionDb{
 		GuestUuid:    guestUuid,
 		IsNewGuest:   isNewGuest,
 		UserId:       statData.UserId,
@@ -91,7 +92,7 @@ func (ss SessionService) IsExistsSession(phpSession string) bool {
 	return count > 0
 }
 
-func (ss SessionService) UpdateSession(data entity.StatData) error {
+func (ss SessionService) UpdateSession(data entityjson.StatData) error {
 	err := ss.sessionModel.Update(data)
 	if err != nil {
 		return err

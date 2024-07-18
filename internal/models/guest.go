@@ -1,7 +1,7 @@
 package models
 
 import (
-	"bitrix-statistic/internal/entity"
+	"bitrix-statistic/internal/entitydb"
 	"bitrix-statistic/internal/filters"
 	"context"
 	"database/sql"
@@ -43,7 +43,7 @@ func NewGuest(ctx context.Context, chClient driver.Conn) *Guest {
 //	return guestId, favorites, lastUserId, lastAdvId, last, nil
 //}
 
-func (gm Guest) AddGuest(guest entity.GuestDb) error {
+func (gm Guest) AddGuest(guest entitydb.GuestDb) error {
 	err := gm.chClient.Exec(gm.ctx, `INSERT INTO guest (
                    timestamp_x, favorites, events, sessions, hits, repair, session_id, date, url_from, url_to,
                    url_to_404, site_id, adv_id, referer1, referer2, referer3, user_id, user_auth, url, url_404, user_agent, ip,
@@ -60,7 +60,7 @@ func (gm Guest) AddGuest(guest entity.GuestDb) error {
 	return nil
 }
 
-//func (gm Guest) AddGuest(guestDb entity.GuestDb) error {
+//func (gm Guest) AddGuest(guestDb entitydb.GuestDb) error {
 //
 //
 //	return nil
@@ -81,19 +81,19 @@ func (gm Guest) ExistsGuestByHash(token string) (bool, error) {
 	return len(cookieToken) > 0, nil
 }
 
-func (gm Guest) Find(filter filters.Filter) (entity.GuestDb, error) {
-	return entity.GuestDb{}, nil
+func (gm Guest) Find(filter filters.Filter) (entitydb.GuestDb, error) {
+	return entitydb.GuestDb{}, nil
 }
 
-func (gm Guest) FindByHash(token string) ([]entity.GuestDb, error) {
+func (gm Guest) FindByHash(token string) ([]entitydb.GuestDb, error) {
 	row := gm.chClient.QueryRow(gm.ctx, `
 				SELECT * 
 				FROM guest 				
 				WHERE guest_hash=?`, token)
-	var guestDb []entity.GuestDb
+	var guestDb []entitydb.GuestDb
 	err := row.Scan(&guestDb)
 	if err != nil {
-		return []entity.GuestDb{}, nil
+		return []entitydb.GuestDb{}, nil
 	}
 
 	return guestDb, nil

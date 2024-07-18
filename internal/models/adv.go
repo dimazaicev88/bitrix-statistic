@@ -1,7 +1,7 @@
 package models
 
 import (
-	"bitrix-statistic/internal/entity"
+	"bitrix-statistic/internal/entitydb"
 	"context"
 	"github.com/ClickHouse/clickhouse-go/v2/lib/driver"
 )
@@ -157,12 +157,12 @@ func (am Adv) AddAdv(referer1 string, referer2 string) error {
 	return nil
 }
 
-func (am Adv) FindById(id int) (entity.AdvDb, error) {
-	var adv entity.AdvDb
+func (am Adv) FindById(id int) (entitydb.AdvDb, error) {
+	var adv entitydb.AdvDb
 	//sql := `-- SELECT 	* FROM adv WHERE  id=?`
 	//err := am.storage.DB().Get(&adv, sql, id)
 	//if err != nil {
-	//	return entity.AdvDb{}, err
+	//	return entitydb.AdvDb{}, err
 	//}
 	return adv, nil
 }

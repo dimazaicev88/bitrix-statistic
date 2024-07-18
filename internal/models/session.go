@@ -1,7 +1,8 @@
 package models
 
 import (
-	"bitrix-statistic/internal/entity"
+	"bitrix-statistic/internal/entitydb"
+	"bitrix-statistic/internal/entityjson"
 	"bitrix-statistic/internal/filters"
 	"context"
 	"github.com/ClickHouse/clickhouse-go/v2/lib/driver"
@@ -23,7 +24,7 @@ func (sm SessionModel) Find(filter filters.Filter) (error, []map[string]interfac
 	return nil, nil
 }
 
-func (sm SessionModel) AddSession(session entity.SessionDb) error {
+func (sm SessionModel) AddSession(session entitydb.SessionDb) error {
 
 	//		"DATE_STAT" => $DB_now_date,
 	//		"DATE_FIRST" => $DB_now,
@@ -52,8 +53,8 @@ func (sm SessionModel) DeleteById(id int) error {
 	return nil
 }
 
-func (sm SessionModel) FindSessionByGuestMd5(guestMd5 string) (entity.StatData, error) {
-	var sessionData entity.StatData
+func (sm SessionModel) FindSessionByGuestMd5(guestMd5 string) (entityjson.StatData, error) {
+	var sessionData entityjson.StatData
 	err := sm.chClient.Exec(&sessionData,
 		`SELECT * 
                FROM session_data
@@ -61,12 +62,12 @@ func (sm SessionModel) FindSessionByGuestMd5(guestMd5 string) (entity.StatData, 
                LIMIT 1`, guestMd5,
 	)
 	if err != nil {
-		return entity.StatData{}, err
+		return entityjson.StatData{}, err
 	}
 	return sessionData, nil
 }
 
-func (sm SessionModel) Update(statData entity.StatData) error {
+func (sm SessionModel) Update(statData entityjson.StatData) error {
 	updateBuilder := sqlbuilder.NewUpdateBuilder()
 	updateBuilder.SetFlavor(sqlbuilder.ClickHouse)
 

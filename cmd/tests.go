@@ -52,7 +52,7 @@ func main() {
 		logrus.Fatal(err)
 	}
 
-	//var guestDb entity.GuestDb
+	//var guestDb entitydb.GuestDb
 	//if err := conn.QueryRow(context.Background(), "SELECT * FROM guest").ScanStruct(&guestDb); err != nil {
 	//	logrus.Panicln(err)
 	//}
