@@ -4,7 +4,6 @@ go 1.22
 
 require (
 	github.com/ClickHouse/clickhouse-go/v2 v2.26.0
-	github.com/allegro/bigcache/v3 v3.1.0
 	github.com/caarlos0/env/v6 v6.10.1
 	github.com/codingsince1985/checksum v1.3.0
 	github.com/go-sql-driver/mysql v1.6.0
