@@ -9,8 +9,8 @@ import (
 
 func BenchmarkAddTask(b *testing.B) {
 
-	//// create a cache with capacity equal to 10000 elements
-	//cache, err := otter.MustBuilder[string, string](10_000).
+	//// create a optioncache with capacity equal to 10000 elements
+	//optioncache, err := otter.MustBuilder[string, string](10_000).
 	//	CollectStats().
 	//	Cost(func(key string, value string) uint32 {
 	//		return 1
@@ -22,15 +22,15 @@ func BenchmarkAddTask(b *testing.B) {
 	//}
 	//
 	//// set item with ttl (1 hour)
-	//cache.Set("key", "value")
+	//optioncache.Set("key", "value")
 	cache, _ := bigcache.New(context.Background(), bigcache.DefaultConfig(10*time.Minute))
 	cache.Set("my-unique-key", []byte("value"))
 	//fmt.Println(string(entry))
 	for i := 0; i < b.N; i++ {
-		//cache.Get("key")
+		//optioncache.Get("key")
 		cache.Get("my-unique-key")
 	}
-	//cache.Close()
+	//optioncache.Close()
 
 	//conn, err := clickhouse.Open(&clickhouse.Options{
 	//	Addr: []string{"127.0.0.1:9000"},
