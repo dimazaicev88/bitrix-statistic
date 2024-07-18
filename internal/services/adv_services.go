@@ -1,7 +1,7 @@
 package services
 
 import (
-	"bitrix-statistic/internal/entity"
+	"bitrix-statistic/internal/entitydb"
 	"bitrix-statistic/internal/models"
 	"context"
 	"github.com/ClickHouse/clickhouse-go/v2/lib/driver"
@@ -24,17 +24,17 @@ func (as AdvServices) AutoCreateAdv(fullUrl string) error {
 }
 
 // GetAdv Получить рекламную компанию
-func (as AdvServices) GetAdv(fullUrl string) (entity.AdvReferer, error) {
+func (as AdvServices) GetAdv(fullUrl string) (entitydb.AdvReferer, error) {
 	parse, err := url.Parse(fullUrl)
 
 	if err != nil {
-		return entity.AdvReferer{}, err
+		return entitydb.AdvReferer{}, err
 	}
 	urlQuery := parse.Query()
 
 	//TODO добавить установку дефолтной рекламной компании, в случае если  не установлена рекламная компания
 
-	return entity.AdvReferer{
+	return entitydb.AdvReferer{
 		Referer1: urlQuery.Get("referer1"),
 		Referer2: urlQuery.Get("referer2"),
 		Referer3: urlQuery.Get("referer3"),

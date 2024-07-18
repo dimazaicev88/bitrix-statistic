@@ -1,7 +1,7 @@
 package services
 
 import (
-	"bitrix-statistic/internal/entity"
+	"bitrix-statistic/internal/entityjson"
 	"bitrix-statistic/internal/models"
 	"context"
 	"github.com/ClickHouse/clickhouse-go/v2/lib/driver"
@@ -84,7 +84,7 @@ func (s Statistic) checkSkip(userGroups []int, remoteAddr string) (error, bool) 
 	return nil, isSkip
 }
 
-func (s Statistic) Add(statData entity.StatData) error {
+func (s Statistic) Add(statData entityjson.StatData) error {
 	existsGuest, err := s.guestService.GuestModel.ExistsGuestByHash(statData.GuestHash)
 	if err != nil {
 		return err

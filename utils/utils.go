@@ -1,7 +1,7 @@
 package utils
 
 import (
-	"bitrix-statistic/internal/entity"
+	"bitrix-statistic/internal/entityjson"
 	"github.com/codingsince1985/checksum"
 	"strconv"
 	"strings"
@@ -12,7 +12,7 @@ func StrToInt(value string) int {
 	return val
 }
 
-func GetGuestMd5(statData entity.StatData) (string, error) {
+func GetGuestMd5(statData entityjson.StatData) (string, error) {
 	var strBuilder strings.Builder
 	strBuilder.WriteString(statData.UserAgent)
 	strBuilder.WriteString(statData.Ip)

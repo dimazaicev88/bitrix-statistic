@@ -1,7 +1,8 @@
 package services
 
 import (
-	"bitrix-statistic/internal/entity"
+	"bitrix-statistic/internal/entitydb"
+	"bitrix-statistic/internal/entityjson"
 	"bitrix-statistic/internal/models"
 	"context"
 	"github.com/ClickHouse/clickhouse-go/v2/lib/driver"
@@ -12,8 +13,8 @@ type GuestService struct {
 	GuestModel *models.Guest
 }
 
-func (s GuestService) AddGuest(statData entity.StatData, adv entity.AdvReferer) error {
-	guest := entity.GuestDb{
+func (s GuestService) AddGuest(statData entityjson.StatData, adv entitydb.AdvReferer) error {
+	guest := entitydb.GuestDb{
 		Timestamp:     time.Now(),
 		FirstUrlFrom:  statData.Referer,
 		FirstUrlTo:    statData.Url,
