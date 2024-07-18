@@ -1,6 +1,7 @@
 package app
 
 import (
+	"bitrix-statistic/internal/cache"
 	"bitrix-statistic/internal/config"
 	"bitrix-statistic/internal/models"
 	"bitrix-statistic/internal/routes"
@@ -64,6 +65,7 @@ func (app *App) Start() {
 	select {
 	case <-app.ctx.Done():
 		serverQueue.Shutdown()
+		cache.Close()
 		return
 	case err := <-errStartServer:
 		log.Fatal(err)
