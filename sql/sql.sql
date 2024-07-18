@@ -1,3 +1,4 @@
+USE statistic;
 ---------------------- ADV -------------------------
 
 create table if not exists adv
@@ -14,7 +15,7 @@ create table if not exists adv
     `hosts`          UInt32         default 0,
     `sessions`       UInt32         default 0,
     `hits`           UInt32         default 0,
-    `date`     DateTime32('Europe/Moscow'),
+    `date`           DateTime32('Europe/Moscow'),
     `guests_back`    UInt32         default 0,
     `favorites_back` UInt32         default 0,
     `hosts_back`     UInt32         default 0,
@@ -581,6 +582,8 @@ create table if not exists event_list
 
 ----------------------- Guest ---------------------------
 
+CREATE TABLE statistic.guest_buffer AS statistic.guest ENGINE = Buffer(statistic, guest, 1, 30, 40, 0, 10000, 0, 0);
+
 create table if not exists guest
 (
     uuid         UUID,
@@ -594,7 +597,7 @@ create table if not exists guest
     date         DateTime32('Europe/Moscow'),
     url_from     String,
     url_to       String,
-    url_404   boolean default false,
+    url_404      boolean default false,
     site_id      String,
     adv_uuid     UUID,
     referer1     String,
@@ -603,7 +606,7 @@ create table if not exists guest
     session_uuid UUID,
     user_id      Int32,
     user_auth    boolean,
-    url     String,
+    url          String,
     user_agent   String,
     ip           IPv4,
     cookie       String,
@@ -711,9 +714,9 @@ create table if not exists path_cache
     path_first_page         String,
     path_first_page_404     BOOLEAN default false,
     path_first_page_site_id FixedString(2),
-    path_page          String,
-    path_page_404      BOOLEAN default false,
-    path_page_site_id  FixedString(2),
+    path_page               String,
+    path_page_404           BOOLEAN default false,
+    path_page_site_id       FixedString(2),
     path_steps              UInt32  default 1,
     is_last_page            BOOLEAN default true
 ) engine = MergeTree
@@ -743,11 +746,11 @@ create table if not exists phrase_list
 
 create table if not exists referer
 (
-    uuid       UUID,
-    date DateTime32('Europe/Moscow'),
-    site_name  String,
-    sessions   UInt32 default 0,
-    hits       UInt32 default 0
+    uuid      UUID,
+    date      DateTime32('Europe/Moscow'),
+    site_name String,
+    sessions  UInt32 default 0,
+    hits      UInt32 default 0
 ) engine = MergeTree
       PARTITION BY toYYYYMM(date)
       ORDER BY date;
@@ -792,7 +795,7 @@ create table if not exists searcher
 create table if not exists searcher_day
 (
     uuid            UUID,
-    `date`     DateTime32('Europe/Moscow'),
+    `date`          DateTime32('Europe/Moscow'),
     `searcher_uuid` UUID,
     `total_hits`    UInt32 default '0'
 ) engine = MergeTree
