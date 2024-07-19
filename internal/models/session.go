@@ -7,7 +7,6 @@ import (
 	"context"
 	"github.com/ClickHouse/clickhouse-go/v2/lib/driver"
 	"github.com/huandu/go-sqlbuilder"
-	"time"
 )
 
 type SessionModel struct {
@@ -30,18 +29,18 @@ func (sm SessionModel) AddSession(session entitydb.SessionDb) error {
 	//		"DATE_FIRST" => $DB_now,
 	//		"DATE_LAST" => $DB_now,
 
-	err := sm.chClient.Exec(sm.ctx, `INSERT INTO session (
-										   uuid, guest_id, new_guest, user_id, user_auth, events, hits, favorites,
-										   url_from, url_to, url_to_404, user_agent, date_stat, phpsessid, adv_id, adv_back,
-										   referer1, referer2, referer3, stop_list_id
-       ) VALUES (generateUUIDv7(), ?, ?, ?, ?, ?, ?) `,
-		session.GuestUuid, session.IsNewGuest, session.UserId, session.IsUserAuth, session.Events, session.Hits, session.Favorites, session.UrlFrom, session.UrlTo, session.UrlTo404, session.UrlLast, session.UrlLast404, session.UserAgent, time.Unix(session.DateStat, 0).Add(time.Hour*3),
-		time.Unix(session.Date, 0).Add(time.Hour*3), session.PhpSessionId,
-		session.AdvId, session.AdvBack, session.Referer1, session.Referer2, session.Referer3, session.StopListUuid, session.CountryId, session.CityUuid,
-	)
-	if err != nil {
-		return err
-	}
+	//err := sm.chClient.Exec(sm.ctx, `INSERT INTO session (
+	//									   uuid, guest_id, new_guest, user_id, user_auth, events, hits, favorites,
+	//									   url_from, url_to, url_to_404, user_agent, date_stat, phpsessid, adv_id, adv_back,
+	//									   referer1, referer2, referer3, stop_list_id
+	//   ) VALUES (generateUUIDv7(), ?, ?, ?, ?, ?, ?) `,
+	//	session.GuestUuid, session.IsNewGuest, session.UserId, session.IsUserAuth, session.Events, session.Hits, session.Favorites, session.UrlFrom, session.UrlTo, session.UrlTo404, session.UrlLast, session.UrlLast404, session.UserAgent, time.Unix(session.DateStat, 0).Add(time.Hour*3),
+	//	time.Unix(session.Date, 0).Add(time.Hour*3), session.PhpSessionId,
+	//	session.AdvId, session.AdvBack, session.Referer1, session.Referer2, session.Referer3, session.StopListUuid, session.CountryId, session.CityUuid,
+	//)
+	//if err != nil {
+	//	return err
+	//}
 	return nil
 }
 
@@ -55,15 +54,15 @@ func (sm SessionModel) DeleteById(id int) error {
 
 func (sm SessionModel) FindSessionByGuestMd5(guestMd5 string) (entityjson.StatData, error) {
 	var sessionData entityjson.StatData
-	err := sm.chClient.Exec(&sessionData,
-		`SELECT * 
-               FROM session_data
-               WHERE guest_md5=? and date_last > DATE_ADD(now(), INTERVAL-? SECOND) 
-               LIMIT 1`, guestMd5,
-	)
-	if err != nil {
-		return entityjson.StatData{}, err
-	}
+	//err := sm.chClient.Exec(&sessionData,
+	//	`SELECT *
+	//           FROM session_data
+	//           WHERE guest_md5=? and date_last > DATE_ADD(now(), INTERVAL-? SECOND)
+	//           LIMIT 1`, guestMd5,
+	//)
+	//if err != nil {
+	//	return entityjson.StatData{}, err
+	//}
 	return sessionData, nil
 }
 

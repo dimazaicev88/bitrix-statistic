@@ -794,13 +794,14 @@ create table if not exists searcher
 
 create table if not exists searcher_day
 (
-    uuid            UUID,
-    `date`          DateTime32('Europe/Moscow'),
-    `searcher_uuid` UUID,
-    `total_hits`    UInt32 default '0'
+    uuid          UUID,
+    date_stat     Date,
+    date_last     DateTime32('Europe/Moscow'),
+    searcher_uuid UUID,
+    total_hits    UInt32 default '0'
 ) engine = MergeTree
-      PARTITION BY toYYYYMM(date)
-      ORDER BY date;
+      PARTITION BY toYYYYMM(date_stat)
+      ORDER BY date_stat;
 
 create table if not exists searcher_hit
 (

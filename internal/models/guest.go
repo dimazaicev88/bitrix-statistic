@@ -44,19 +44,19 @@ func NewGuest(ctx context.Context, chClient driver.Conn) *Guest {
 //}
 
 func (gm Guest) AddGuest(guest entitydb.GuestDb) error {
-	err := gm.chClient.Exec(gm.ctx, `INSERT INTO guest (
-                   timestamp_x, favorites, events, sessions, hits, repair, session_id, date, url_from, url_to,
-                   url_to_404, site_id, adv_id, referer1, referer2, referer3, user_id, user_auth, url, url_404, user_agent, ip,
-                   cookie, language, adv_back, country_id, city_id, city_info, cookie_token) 
-		VALUES (?,?,?,?,?,?,now(),?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)`,
-		guest.Favorites, guest.Events, guest.Sessions, guest.Hits, guest.Repair, guest.SessionId, guest.Date,
-		guest.UrlFrom, guest.UrlTo, guest.UrlTo404, guest.SiteId, guest.AdvId, guest.Referer1, guest.Referer2,
-		guest.Referer3, guest.UserId, guest.UserAuth, guest.Url, guest.Url404, guest.UserAgent, guest.Ip,
-		guest.Cookie, guest.Language, guest.AdvBack, guest.CountryId, guest.CityId, guest.CityInfo, guest.Token,
-	)
-	if err != nil {
-		return err
-	}
+	//err := gm.chClient.Exec(gm.ctx, `INSERT INTO guest (
+	//               timestamp_x, favorites, events, sessions, hits, repair, session_id, date, url_from, url_to,
+	//               url_to_404, site_id, adv_id, referer1, referer2, referer3, user_id, user_auth, url, url_404, user_agent, ip,
+	//               cookie, language, adv_back, country_id, city_id, city_info, cookie_token)
+	//	VALUES (?,?,?,?,?,?,now(),?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)`,
+	//	guest.Favorites, guest.Events, guest.Sessions, guest.Hits, guest.Repair, guest.SessionId, guest.Date,
+	//	guest.UrlFrom, guest.UrlTo, guest.UrlTo404, guest.SiteId, guest.AdvId, guest.Referer1, guest.Referer2,
+	//	guest.Referer3, guest.UserId, guest.UserAuth, guest.Url, guest.Url404, guest.UserAgent, guest.Ip,
+	//	guest.Cookie, guest.Language, guest.AdvBack, guest.CountryId, guest.CityId, guest.CityInfo, guest.Token,
+	//)
+	//if err != nil {
+	//	return err
+	//}
 	return nil
 }
 

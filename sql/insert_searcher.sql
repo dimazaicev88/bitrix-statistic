@@ -1,4 +1,4 @@
-use statistic;
+use default;
 INSERT INTO searcher (uuid, date_cleanup, total_hits, save_statistic, active, name, user_agent, diagram_default, hit_keep_days, dynamic_keep_days, phrases, phrases_hits, check_activity) VALUES (generateUUIDv7(), null, 0, true, true, '<internal>', null, false, null, null, 0, 0, true);
 INSERT INTO searcher (uuid, date_cleanup, total_hits, save_statistic, active, name, user_agent, diagram_default, hit_keep_days, dynamic_keep_days, phrases, phrases_hits, check_activity) VALUES (generateUUIDv7(), null, 0, true, true, 'Google', 'Googlebot/', true, null, null, 0, 0, false);
 INSERT INTO searcher (uuid, date_cleanup, total_hits, save_statistic, active, name, user_agent, diagram_default, hit_keep_days, dynamic_keep_days, phrases, phrases_hits, check_activity) VALUES (generateUUIDv7(), null, 0, true, true, 'Yandex', 'YandexBot/', true, null, null, 0, 0, false);

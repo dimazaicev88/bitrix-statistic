@@ -2,7 +2,6 @@ package services
 
 import (
 	"bitrix-statistic/internal/entityjson"
-	"bitrix-statistic/internal/models"
 	"context"
 	"github.com/ClickHouse/clickhouse-go/v2/lib/driver"
 	"github.com/google/uuid"
@@ -10,31 +9,25 @@ import (
 )
 
 type Statistic struct {
-	optionModel    *models.Option
-	searcherModel  *models.SearcherModel
-	sessionModel   *models.SessionModel
-	cityModel      *models.City
-	advServices    *AdvServices
-	guestService   *GuestService
-	sessionService *SessionService
-	statDayService *StatDayService
+	advServices     *AdvServices
+	guestService    *GuestService
+	sessionService  *SessionService
+	statDayService  *StatDayService
+	searcherService *SearcherService
 }
 
 func NewStatistic(ctx context.Context, chClient driver.Conn) Statistic {
 	return Statistic{
-		optionModel:    models.NewOption(ctx, chClient),
-		sessionModel:   models.NewSession(ctx, chClient),
-		searcherModel:  models.NewSearcher(ctx, chClient),
-		cityModel:      models.NewCity(ctx, chClient),
-		guestService:   NewGuest(ctx, chClient),
-		advServices:    NewAdv(ctx, chClient),
-		sessionService: NewSession(ctx, chClient),
-		statDayService: NewStatDay(ctx, chClient),
+		guestService:    NewGuest(ctx, chClient),
+		advServices:     NewAdv(ctx, chClient),
+		sessionService:  NewSession(ctx, chClient),
+		statDayService:  NewStatDay(ctx, chClient),
+		searcherService: NewSearcherService(ctx, chClient),
 	}
 }
 
-func (s Statistic) checkSkip(userGroups []int, remoteAddr string) (error, bool) {
-	//skipMode := s.optionModel.Get("SKIP_STATISTIC_WHAT")
+func (stat Statistic) checkSkip(userGroups []int, remoteAddr string) (error, bool) {
+	//skipMode := stat.optionModel.Get("SKIP_STATISTIC_WHAT")
 
 	isSkip := false
 	//switch skipMode {
@@ -42,7 +35,7 @@ func (s Statistic) checkSkip(userGroups []int, remoteAddr string) (error, bool) 
 	//	break
 	//case "both":
 	//case "groups":
-	//	arSkipGroups := strings.Split(",", s.optionModel.Get("SKIP_STATISTIC_GROUPS"))
+	//	arSkipGroups := strings.Split(",", stat.optionModel.Get("SKIP_STATISTIC_GROUPS"))
 	//	for _, group := range arSkipGroups {
 	//		groupId, err := strconv.Atoi(group)
 	//		if err != nil {
@@ -57,12 +50,12 @@ func (s Statistic) checkSkip(userGroups []int, remoteAddr string) (error, bool) 
 	//		break
 	//	}
 	//	isSkip = true
-	//	var re = regexp.MustCompile(`/^.*?(\d+)\.(\d+)\.(\d+)\.(\d+)[\s-]*/`)
+	//	var re = regexp.MustCompile(`/^.*?(\d+)\.(\d+)\.(\d+)\.(\d+)[\stat-]*/`)
 	//	arIPAAddress := re.FindStringSubmatch(remoteAddr)
 	//	if len(re.FindStringSubmatch(remoteAddr)) > 0 {
-	//		arSkipIPRanges := strings.Split("\n", s.optionModel.Get("SKIP_STATISTIC_IP_RANGES"))
+	//		arSkipIPRanges := strings.Split("\n", stat.optionModel.Get("SKIP_STATISTIC_IP_RANGES"))
 	//		for _, skipRange := range arSkipIPRanges {
-	//			var re = regexp.MustCompile(`/^.*?(\d+)\.(\d+)\.(\d+)\.(\d+)[\s-]*(\d+)\.(\d+)\.(\d+)\.(\d+)/`)
+	//			var re = regexp.MustCompile(`/^.*?(\d+)\.(\d+)\.(\d+)\.(\d+)[\stat-]*(\d+)\.(\d+)\.(\d+)\.(\d+)/`)
 	//			matchSkipRange := re.FindStringSubmatch(skipRange)
 	//			if len(matchSkipRange) > 0 {
 	//				if utils.StrToInt(arIPAAddress[1]) >= int(skipRange[1]) &&
@@ -84,49 +77,61 @@ func (s Statistic) checkSkip(userGroups []int, remoteAddr string) (error, bool) 
 	return nil, isSkip
 }
 
-func (s Statistic) Add(statData entityjson.StatData) error {
-	existsGuest, err := s.guestService.GuestModel.ExistsGuestByHash(statData.GuestHash)
+func (stat Statistic) Add(statData entityjson.StatData) error {
+
+	isSearcher, err := stat.searcherService.IsSearcher(statData.UserAgent)
 	if err != nil {
 		return err
 	}
 
-	//---------------------------Секция гостя------------------------------------
-	var guestUuid uuid.UUID
-	var stopListUuid uuid.UUID
-	var advBack string
-	var cityUuid string
-	var countryUuid uuid.UUID
+	if isSearcher { //Это поисковик, не учитываем его как гостя
 
-	//Гость не найден, добавляем гостя
-	if existsGuest == false {
-		adv, err := s.advServices.GetAdv(statData.Url)
-
-		if err != nil {
+		if err = stat.searcherService.AddStatData(statData); err != nil { //Обновляем статистику за 1 день
 			return err
 		}
 
-		err = s.guestService.AddGuest(statData, adv)
+	} else {
+		existsGuest, err := stat.guestService.GuestModel.ExistsGuestByHash(statData.GuestHash)
 		if err != nil {
 			return err
 		}
+		//---------------------------Секция гостя------------------------------------
+		var guestUuid uuid.UUID
+		var stopListUuid uuid.UUID
+		var advBack string
+		var cityUuid string
+		var countryUuid uuid.UUID
+
+		//Гость не найден, добавляем гостя
+		if existsGuest == false {
+			adv, err := stat.advServices.GetAdv(statData.Url)
+
+			if err != nil {
+				return err
+			}
+
+			err = stat.guestService.AddGuest(statData, adv)
+			if err != nil {
+				return err
+			}
+		}
+
+		//---------------------------Секция сессии------------------------------------
+		//Если сессия новая, добавляем.
+		if stat.sessionService.IsExistsSession(statData.PHPSessionId) == false {
+			isNewGuest := existsGuest == false
+			err := stat.sessionService.AddSession(advBack, cityUuid, countryUuid, stopListUuid, guestUuid, isNewGuest, statData)
+			if err != nil {
+				return err
+			}
+		} else { // Обновляем имеющуюся
+			err := stat.sessionService.UpdateSession(statData)
+			if err != nil {
+				return err
+			}
+		}
+
+		stat.statDayService.Update() //TODO доделать update
 	}
-
-	//---------------------------Секция сессии------------------------------------
-	//Если сессия новая, добавляем.
-	if s.sessionService.IsExistsSession(statData.PHPSessionId) == false {
-		isNewGuest := existsGuest == false
-		err := s.sessionService.AddSession(advBack, cityUuid, countryUuid, stopListUuid, guestUuid, isNewGuest, statData)
-		if err != nil {
-			return err
-		}
-	} else { // Обновляем имеющуюся
-		err := s.sessionService.UpdateSession(statData)
-		if err != nil {
-			return err
-		}
-	}
-
-	s.statDayService.Update() //TODO доделать update
-
 	return nil
 }

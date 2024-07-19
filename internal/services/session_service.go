@@ -1,7 +1,6 @@
 package services
 
 import (
-	"bitrix-statistic/internal/entitydb"
 	"bitrix-statistic/internal/entityjson"
 	"bitrix-statistic/internal/models"
 	"context"
@@ -54,32 +53,32 @@ func (ss SessionService) AddSession(advBack, cityId string, countryId, stopListU
 	//		"HITS" => 1,
 	//);
 
-	err := ss.sessionModel.AddSession(entitydb.SessionDb{
-		GuestUuid:    guestUuid,
-		IsNewGuest:   isNewGuest,
-		UserId:       statData.UserId,
-		IsUserAuth:   statData.IsUserAuth,
-		UrlFrom:      statData.Referer,
-		UrlTo:        statData.Url,
-		UrlTo404:     statData.IsError404,
-		UrlLast:      statData.Url,
-		UrlLast404:   statData.IsError404,
-		UserAgent:    statData.UserAgent,
-		IpFirst:      statData.Ip,
-		IpLast:       statData.Ip,
-		PhpSessionId: statData.PHPSessionId,
-		StopListUuid: stopListUuid,
-		CountryId:    countryId,
-		CityUuid:     cityId,
-		AdvBack:      advBack,
-		FirstSiteId:  statData.SiteId,
-		LastSiteId:   statData.SiteId,
-		Hits:         1,
-	})
-
-	if err != nil {
-		return err
-	}
+	//err := ss.sessionModel.AddSession(entitydb.SessionDb{
+	//	GuestUuid:    guestUuid,
+	//	IsNewGuest:   isNewGuest,
+	//	UserId:       statData.UserId,
+	//	IsUserAuth:   statData.IsUserAuth,
+	//	UrlFrom:      statData.Referer,
+	//	UrlTo:        statData.Url,
+	//	UrlTo404:     statData.IsError404,
+	//	UrlLast:      statData.Url,
+	//	UrlLast404:   statData.IsError404,
+	//	UserAgent:    statData.UserAgent,
+	//	IpFirst:      statData.Ip,
+	//	IpLast:       statData.Ip,
+	//	PhpSessionId: statData.PHPSessionId,
+	//	StopListUuid: stopListUuid,
+	//	CountryId:    countryId,
+	//	CityUuid:     cityId,
+	//	AdvBack:      advBack,
+	//	FirstSiteId:  statData.SiteId,
+	//	LastSiteId:   statData.SiteId,
+	//	Hits:         1,
+	//})
+	//
+	//if err != nil {
+	//	return err
+	//}
 
 	return nil
 }

@@ -1,13 +1,16 @@
 package main
 
-import (
-	"bitrix-statistic/internal/cache"
-	"fmt"
-)
+import "fmt"
+
+type ems struct {
+	Id int
+}
 
 func main() {
 
-	fmt.Println(cache.AdvDays())
+	fmt.Println(ems{} == ems{Id: 1})
+
+	//fmt.Println(cache.AdvDays())
 
 	//var q interface{} = 1844674407370955161
 	//

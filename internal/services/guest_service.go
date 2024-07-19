@@ -15,16 +15,16 @@ type GuestService struct {
 
 func (s GuestService) AddGuest(statData entityjson.StatData, adv entitydb.AdvReferer) error {
 	guest := entitydb.GuestDb{
-		Timestamp:     time.Now(),
-		FirstUrlFrom:  statData.Referer,
-		FirstUrlTo:    statData.Url,
-		FirstUrlTo404: statData.IsError404,
-		FirstSiteId:   statData.SiteId,
-		FirstAdvUuid:  "",
-		FirstReferer1: adv.Referer1,
-		FirstReferer2: adv.Referer2,
-		FirstReferer3: adv.Referer3,
-		GuestHash:     statData.GuestHash,
+		Timestamp: time.Now(),
+		UrlFrom:   statData.Referer,
+		UrlTo:     statData.Url,
+		UrlTo404:  statData.IsError404,
+		SiteId:    statData.SiteId,
+		AdvUuid:   "",
+		Referer1:  adv.Referer1,
+		Referer2:  adv.Referer2,
+		Referer3:  adv.Referer3,
+		GuestHash: statData.GuestHash,
 	}
 
 	if err := s.GuestModel.AddGuest(guest); err != nil {
