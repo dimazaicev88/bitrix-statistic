@@ -86,7 +86,7 @@ func (stat Statistic) Add(statData entityjson.StatData) error {
 
 	if isSearcher { //Это поисковик, не учитываем его как гостя
 
-		if err = stat.searcherService.AddStatData(statData); err != nil { //Обновляем статистику за 1 день
+		if err = stat.searcherService.AddHitSearcher(statData); err != nil { //Обновляем статистику за 1 день
 			return err
 		}
 

@@ -810,12 +810,11 @@ create table if not exists searcher_hit
     `searcher_uuid` UUID,
     `url`           String,
     `url_404`       BOOLEAN default false,
-    `ip`            String,
+    `ip`            IPv4,
     `user_agent`    String,
-    `hit_keep_days` UInt32,
     `site_id`       FixedString(2)
 ) engine = MergeTree
-      PARTITION BY toYYYYMM(date_hit)
+--       PARTITION BY toYYYYMM(date_hit)
       ORDER BY (date_hit, searcher_uuid);
 
 create table if not exists searcher_params
@@ -897,5 +896,13 @@ create table if not exists raw_request
 ) ENGINE = MergeTree
       PARTITION BY toYYYYMM(date)
       ORDER BY (date);
+
+create table if not exists statistic.searcher_total_hits
+(
+    `date_stat`     Date,
+    `searcher_uuid` UUID,
+    total_hits      UInt64
+) engine = SummingMergeTree(total_hits)
+      ORDER BY (date_stat, searcher_uuid);
 
 

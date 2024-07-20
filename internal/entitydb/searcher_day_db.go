@@ -1,11 +1,14 @@
 package entitydb
 
-import "time"
+import (
+	"github.com/google/uuid"
+	"time"
+)
 
 type SearcherDayDb struct {
-	Id         int       `ch:"uuid"`
-	DateStat   time.Time `ch:"date_stat"`
-	DateLast   time.Time `ch:"date_last"`
-	SearcherId int       `ch:"searcher_uuid"`
-	TotalHits  int       `ch:"total_hits"`
+	Id           uuid.UUID `ch:"uuid"`
+	DateStat     time.Time `ch:"date_stat"`
+	DateLast     time.Time `ch:"date_last"`
+	SearcherUuid uuid.UUID `ch:"searcher_uuid"`
+	TotalHits    uint64    `ch:"total_hits"`
 }

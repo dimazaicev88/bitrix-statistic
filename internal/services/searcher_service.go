@@ -34,22 +34,18 @@ func (ss SearcherService) IsSearcher(userAgent string) (bool, error) {
 	return searcher != entitydb.SearcherDb{}, nil
 }
 
-func (ss SearcherService) AddStatData(data entityjson.StatData) error {
+func (ss SearcherService) AddHitSearcher(data entityjson.StatData) error {
 	searcher, err := ss.SearcherModel.FindSearcherByUserAgent(data.UserAgent)
 	if err != nil {
 		return err
 	}
 
-	if ss.SearcherModel.ExistStatDayForSearcher(searcher.Uuid) {
-		err = ss.SearcherModel.UpdateSearcherDay(searcher.Uuid)
-		if err != nil {
-			return err
-		}
-	} else {
-		err = ss.SearcherModel.AddSearcherDay(searcher.Uuid)
-		if err != nil {
-			return err
-		}
+	if searcher == (entitydb.SearcherDb{}) {
+		return nil
+	}
+
+	if err = ss.SearcherModel.AddHitSearcher(searcher.Uuid, data); err != nil {
+		return err
 	}
 
 	return nil
