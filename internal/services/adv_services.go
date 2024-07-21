@@ -40,3 +40,7 @@ func (as AdvServices) GetAdv(fullUrl string) (entitydb.AdvReferer, error) {
 		Referer3: urlQuery.Get("referer3"),
 	}, err
 }
+
+func (as AdvServices) FindByPage(direction, page string) (entitydb.AdvDb, error) {
+	return as.AdvModel.FindByByPage(page, direction)
+}

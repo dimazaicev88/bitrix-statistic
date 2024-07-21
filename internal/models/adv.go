@@ -2,6 +2,7 @@ package models
 
 import (
 	"bitrix-statistic/internal/entitydb"
+	"bitrix-statistic/internal/utils"
 	"context"
 	"github.com/ClickHouse/clickhouse-go/v2/lib/driver"
 )
@@ -9,12 +10,14 @@ import (
 type Adv struct {
 	chClient    driver.Conn
 	optionModel *Option
+	ctx         context.Context
 }
 
 func NewAdv(ctx context.Context, chClient driver.Conn, optionModel *Option) *Adv {
 	return &Adv{
 		chClient:    chClient,
 		optionModel: optionModel,
+		ctx:         ctx,
 	}
 }
 
@@ -23,48 +26,34 @@ func (am Adv) SetAdv(fullRequestUri, openstat, referringSite string) error {
 	return nil
 }
 
-func (am Adv) FindByByPage(page, cType string) ([]int, string, string, error) {
-	//strSql := `
-	//	SELECT A.id, A.referer1, A.referer2
-	//	FROM adv A
-	//	INNER JOIN adv_page AP ON (AP.adv_id = A.id and AP.c_type='?')
-	//	WHERE length(AP.page) > 0 and ? like concat('%', AP.page, '%')`
-	//rows, err := am.storage.DB().Query(strSql, page, cType)
-	//if err != nil {
-	//	return nil, "", "", err
-	//}
+// FindByByPage Поиск Рекламной компании по странице
+func (am Adv) FindByByPage(page, direction string) (entitydb.AdvDb, error) {
+	strSql := `
+		SELECT t_adv.uuid, t_adv.referer1, t_adv.referer2
+		FROM adv t_adv
+		INNER JOIN adv_page t_adv_page  ON (t_adv_page.adv_uuid = t_adv.uuid and t_adv_page.type='?')
+ 		WHERE length(t_adv_page.page) > 0 and t_adv_page.page like ?`
 
-	var listIdAdv []int
-	var referer1 string
-	var referer2 string
-	//for rows.Next() {
-	//	var id int
-	//	err = rows.Scan(&id, &referer1, &referer2)
-	//	if err != nil {
-	//		return nil, "", "", err
-	//	}
-	//	listIdAdv = append(listIdAdv, id)
-	//}
-	//err = rows.Err()
-	//if err != nil {
-	//	return nil, "", "", err
-	//}
-
-	return listIdAdv, referer1, referer2, nil
+	var adv entitydb.AdvDb
+	err := am.chClient.QueryRow(am.ctx, strSql, utils.StringConcat("%", page, "%"), direction).ScanStruct(&adv)
+	if err != nil {
+		return entitydb.AdvDb{}, nil
+	}
+	return adv, nil
 }
 
 func (am Adv) FindByByDomainSearcher(host string) ([]int, string, string, error) {
-	// проверяем поисковики
-	//sql := ` SELECT A.referer1, A.referer2, S.ADV_ID
-	//		 FROM 	adv A,
-	//		        adv_searcher S,
-	//		        searcher_params P
-	//		 WHERE  S.ADV_ID = A.ID and P.SEARCHER_ID = S.SEARCHER_ID and upper(?) like concat("'%'",upper(P.DOMAIN),"'%'")`
-	//
-	//rows, err := am.storage.DB().Query(sql, host)
-	//if err != nil {
-	//	return nil, "", "", err
-	//}
+	//проверяем поисковики
+	sql := ` SELECT A.referer1, A.referer2, S.ADV_ID
+			 FROM 	adv A,
+			        adv_searcher S,
+			        searcher_params P
+			 WHERE  S.ADV_ID = A.ID and P.SEARCHER_ID = S.SEARCHER_ID and upper(?) like concat("'%'",upper(P.DOMAIN),"'%'")`
+
+	rows, err := am.storage.DB().Query(sql, host)
+	if err != nil {
+		return nil, "", "", err
+	}
 
 	var listIdAdv []int
 	var referer1 string

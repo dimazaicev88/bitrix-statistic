@@ -22,7 +22,7 @@ func init() {
 	godotenv.Load()
 }
 
-const pathToEnvFile = "/home/zajtsev/projects/bitrix-statistic/.env"
+const pathToEnvFile = "E:\\projects\\bitrix-statistic\\.env"
 
 func TestGuestModel_Searcher(t *testing.T) {
 	if err := godotenv.Load(pathToEnvFile); err != nil {
