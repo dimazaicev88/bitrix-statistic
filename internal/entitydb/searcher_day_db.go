@@ -5,10 +5,9 @@ import (
 	"time"
 )
 
-type SearcherDayDb struct {
-	Id           uuid.UUID `ch:"uuid"`
-	DateStat     time.Time `ch:"date_stat"`
-	DateLast     time.Time `ch:"date_last"`
+type SearcherDayHitsDb struct {
+	Uuid         uuid.UUID `ch:"uuid"`
+	DateStat     time.Time `ch:"hit_day"`
 	SearcherUuid uuid.UUID `ch:"searcher_uuid"`
 	TotalHits    uint64    `ch:"total_hits"`
 }

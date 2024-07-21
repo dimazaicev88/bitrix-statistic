@@ -48,5 +48,9 @@ func (ss SearcherService) AddHitSearcher(data entityjson.StatData) error {
 		return err
 	}
 
+	if err = ss.SearcherModel.AddSearcherDayHits(searcher.Uuid); err != nil {
+		return err
+	}
+
 	return nil
 }

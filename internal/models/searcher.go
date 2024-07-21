@@ -41,8 +41,8 @@ func (s Searcher) FindSearcherByUserAgent(httpUserAgent string) (entitydb.Search
 	return searcher, nil
 }
 
-func (s Searcher) ExistByIdAndCurrentDate(id int) ([]entitydb.SearcherDayDb, error) {
-	var rows []entitydb.SearcherDayDb
+func (s Searcher) ExistByIdAndCurrentDate(id int) ([]entitydb.SearcherDayHitsDb, error) {
+	var rows []entitydb.SearcherDayHitsDb
 	//sql := `SELECT id FROM searcher_day WHERE searcher_id='?' and date_stat=CURRENT_DATE ORDER BY id`
 	//err := s.storage.DB().Select(&rows, sql, id)
 	//if err != nil {
@@ -52,11 +52,21 @@ func (s Searcher) ExistByIdAndCurrentDate(id int) ([]entitydb.SearcherDayDb, err
 	return rows, nil
 }
 
-func (s Searcher) AddHitSearcher(searcherId uuid.UUID, statData entityjson.StatData) error {
+func (s Searcher) AddHitSearcher(searcherUuid uuid.UUID, statData entityjson.StatData) error {
 	err := s.chClient.Exec(s.ctx,
 		`INSERT INTO searcher_hit (uuid,date_hit,searcher_uuid,url,url_404,ip,user_agent,site_id)
-			   VALUES(generateUUIDv7(),NOW(),?,?,?,?,?,?)`, searcherId, statData.Url, statData.IsError404, statData.Ip,
+			   VALUES(generateUUIDv7(),NOW(),?,?,?,?,?,?)`, searcherUuid, statData.Url, statData.IsError404, statData.Ip,
 		statData.UserAgent, statData.SiteId)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func (s Searcher) AddSearcherDayHits(searcherUuid uuid.UUID) error {
+	err := s.chClient.Exec(s.ctx,
+		`insert into searcher_day_hits (hit_day, searcher_uuid, total_hits)
+				VALUES (curdate(), ?, 1)`, searcherUuid)
 	if err != nil {
 		return err
 	}

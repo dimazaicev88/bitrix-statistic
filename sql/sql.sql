@@ -792,16 +792,13 @@ create table if not exists searcher
 --       PARTITION BY toYYYYMM(date_hit)
       ORDER BY name;
 
-create table if not exists searcher_day
+create table if not exists statistic.searcher_day_hits
 (
-    uuid          UUID,
-    date_stat     Date,
-    date_last     DateTime32('Europe/Moscow'),
+    hit_day     Date,
     searcher_uuid UUID,
-    total_hits    UInt32 default '0'
-) engine = MergeTree
-      PARTITION BY toYYYYMM(date_stat)
-      ORDER BY date_stat;
+    total_hits    UInt64
+) engine = SummingMergeTree(total_hits)
+      ORDER BY (hit_day, searcher_uuid);
 
 create table if not exists searcher_hit
 (
@@ -904,5 +901,6 @@ create table if not exists statistic.searcher_total_hits
     total_hits      UInt64
 ) engine = SummingMergeTree(total_hits)
       ORDER BY (date_stat, searcher_uuid);
+
 
 

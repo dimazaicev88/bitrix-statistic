@@ -69,7 +69,7 @@ func TestSearcherService_AllTests(t *testing.T) {
 		req.Equal(searcher[0].Url, "https://test.local.com")
 		req.Equal(searcher[0].Ip, "192.168.1.98")
 		req.Equal(searcher[0].UserAgent, "Abilon")
-		req.Equal(searcher[0].SearcherId, "0190c649-2821-7886-bddf-723a522c66d2")
+		req.Equal(searcher[0].SearcherId, "0190d4cb-825b-7512-8008-efd0c75f0fbc")
 		req.Equal(searcher[0].SiteId, "mg")
 	})
 
@@ -104,6 +104,7 @@ func TestSearcherService_AllTests(t *testing.T) {
 
 	t.Run("AddSearcherHit check searcher day values", func(t *testing.T) {
 		utils.TruncateTable("searcher_hit", chClient)
+		utils.TruncateTable("searcher_day_hits", chClient)
 		searchService.AddHitSearcher(entityjson.StatData{
 			PHPSessionId:      "",
 			GuestHash:         "",
@@ -156,15 +157,15 @@ func TestSearcherService_AllTests(t *testing.T) {
 			IsUserAuth:        false,
 		},
 		)
-
-		var searcher []entitydb.SearcherDayDb
-		resultSql := `select date_stat, date_last, searcher_uuid, total_hits from searcher_day`
+		chClient.Exec(context.Background(), "OPTIMIZE TABLE searcher_day_hits DEDUPLICATE;")
+		var searcher []entitydb.SearcherDayHitsDb
+		resultSql := `select hit_day, searcher_uuid, total_hits from searcher_day_hits`
 		err := chClient.Select(context.Background(), &searcher, resultSql)
 		req.NoError(err)
 
 		req.Equal(1, len(searcher))
 		req.Equal(uint64(3), searcher[0].TotalHits)
-		req.Equal("0190c649-2821-7886-bddf-723a522c66d2", searcher[0].SearcherUuid.String())
+		req.Equal("0190d4cb-825b-7512-8008-efd0c75f0fbc", searcher[0].SearcherUuid.String())
 		req.Equal(time.Now().Format("2006-01-02"), searcher[0].DateStat.Format("2006-01-02"))
 	})
 }
