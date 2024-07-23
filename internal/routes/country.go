@@ -14,7 +14,7 @@ type CountryHandlers struct {
 	ctx          context.Context
 }
 
-func NewCountryHandlers(fbApp *fiber.App, countryModel models.Country) CountryHandlers {
+func NewCountry(fbApp *fiber.App, countryModel models.Country) CountryHandlers {
 	return CountryHandlers{
 		fbApp:        fbApp,
 		countryModel: countryModel,
@@ -22,9 +22,9 @@ func NewCountryHandlers(fbApp *fiber.App, countryModel models.Country) CountryHa
 }
 
 func (ch CountryHandlers) AddHandlers() {
-	ch.fbApp.Post("/country/filter", ch.Filter)
-	ch.fbApp.Post("/country/graph", ch.Filter) //Возвращает данные необходимые для построения графика и круговой диаграммы посещаемости в разрезе по странам.
-	ch.fbApp.Delete("/country/delete/:id/", ch.DeleteById)
+	ch.fbApp.Post("/v1/country/filter", ch.Filter)
+	ch.fbApp.Post("/v1/country/graph", ch.Filter) //Возвращает данные необходимые для построения графика и круговой диаграммы посещаемости в разрезе по странам.
+	ch.fbApp.Delete("/v1/country/:uuid/", ch.DeleteById)
 }
 
 func (ch CountryHandlers) Filter(ctx *fiber.Ctx) error {

@@ -8,15 +8,14 @@ import (
 	jsoniter "github.com/json-iterator/go"
 )
 
-// получения данных по посетителям сайта.
-
+// GuestRoutes Получения данных по посетителям сайта.
 type GuestRoutes struct {
 	fbApp      *fiber.App
 	guestModel models.Guest
 	ctx        context.Context
 }
 
-func NewGuestRoutes(fbApp *fiber.App, guestModel models.Guest) GuestRoutes {
+func NewGuest(fbApp *fiber.App, guestModel models.Guest) GuestRoutes {
 	return GuestRoutes{
 		fbApp:      fbApp,
 		guestModel: guestModel,
@@ -25,7 +24,7 @@ func NewGuestRoutes(fbApp *fiber.App, guestModel models.Guest) GuestRoutes {
 
 func (hh GuestRoutes) AddHandlers() {
 	hh.fbApp.Post("/v1/guest/filter", hh.filter)
-	hh.fbApp.Delete("/v1/guest/delete/:id/", hh.DeleteById)
+	hh.fbApp.Get("/v1/guest/:uuid", hh.findById)
 }
 
 func (hh GuestRoutes) filter(ctx *fiber.Ctx) error {
@@ -52,5 +51,9 @@ func (hh GuestRoutes) filter(ctx *fiber.Ctx) error {
 
 func (hh GuestRoutes) DeleteById(ctx *fiber.Ctx) error {
 
+	return nil
+}
+
+func (hh GuestRoutes) findById(ctx *fiber.Ctx) error {
 	return nil
 }

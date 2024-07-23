@@ -8,8 +8,7 @@ import (
 	jsoniter "github.com/json-iterator/go"
 )
 
-//получения данных по хитами посетителей.
-
+// HitHandlers Получения данных по хитами посетителей.
 type HitHandlers struct {
 	fbApp    *fiber.App
 	hitModel models.HitModel
@@ -25,7 +24,7 @@ func NewHitHandlers(fbApp *fiber.App, hitModel models.HitModel) HitHandlers {
 
 func (hh HitHandlers) AddHandlers() {
 	hh.fbApp.Post("/v1/hit/filter", hh.filter)
-	hh.fbApp.Delete("/v1/hit/delete/:id/", hh.DeleteById)
+	hh.fbApp.Delete("/v1/hit/:uuid/", hh.findById)
 }
 
 func (hh HitHandlers) filter(ctx *fiber.Ctx) error {
@@ -74,5 +73,9 @@ func (hh HitHandlers) filterBitrix(ctx *fiber.Ctx) error {
 
 func (hh HitHandlers) DeleteById(ctx *fiber.Ctx) error {
 
+	return nil
+}
+
+func (hh HitHandlers) findById(ctx *fiber.Ctx) error {
 	return nil
 }

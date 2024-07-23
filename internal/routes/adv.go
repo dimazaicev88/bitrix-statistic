@@ -12,7 +12,7 @@ type AdvHandlers struct {
 	advService services.AdvServices
 }
 
-func NewAdvHandlers(advService services.AdvServices, fbApp *fiber.App, ctx context.Context) *AdvHandlers {
+func NewAdv(advService services.AdvServices, fbApp *fiber.App, ctx context.Context) *AdvHandlers {
 	return &AdvHandlers{
 		fbApp:      fbApp,
 		ctx:        ctx,
@@ -21,10 +21,10 @@ func NewAdvHandlers(advService services.AdvServices, fbApp *fiber.App, ctx conte
 }
 
 func (ah AdvHandlers) AddHandlers() {
-	ah.fbApp.Post("/adv/filter", ah.Filter)
-	ah.fbApp.Get("/adv/:uuid/", ah.FindByUuid)
-	ah.fbApp.Post("/adv/event/filter", ah.FilterEvent)
-	ah.fbApp.Delete("/adv/delete/:uuid/", ah.DeleteByUuid)
+	ah.fbApp.Post("/v1/adv/filter", ah.Filter)
+	ah.fbApp.Get("/v1/adv/:uuid/", ah.FindByUuid)
+	ah.fbApp.Post("/v1/adv/event/filter", ah.FilterEvent)
+	ah.fbApp.Delete("/v1/adv/delete/:uuid/", ah.DeleteByUuid)
 }
 
 func (ah AdvHandlers) Filter(ctx *fiber.Ctx) error {
@@ -34,7 +34,10 @@ func (ah AdvHandlers) Filter(ctx *fiber.Ctx) error {
 func (ah AdvHandlers) DeleteByUuid(ctx *fiber.Ctx) error {
 	uuid := ctx.Params("uuid", "")
 	if len(uuid) > 0 {
-		ah.advService.DeleteByUuid(uuid)
+		err := ah.advService.DeleteByUuid(uuid)
+		if err != nil {
+			return err
+		}
 	}
 	return nil
 }

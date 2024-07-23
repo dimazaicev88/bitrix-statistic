@@ -3,7 +3,7 @@ package entityjson
 import "database/sql"
 
 type Hit struct {
-	Id         int            `json:"ID,omitempty" db:"id"`
+	Id         int            `json:"ID,omitempty"`
 	SessionId  int            `json:"SessionId,omitempty"`
 	GuestId    sql.NullInt32  `json:"GuestUuid,omitempty"`
 	NewGuest   string         `json:"IsNewGuest,omitempty"`
@@ -17,7 +17,7 @@ type Hit struct {
 	Cookies    sql.NullString `json:"COOKIES,omitempty"`
 	UserAgent  sql.NullString `json:"UserAgent,omitempty"`
 	StopListId sql.NullInt32  `json:"StopListUuid,omitempty"`
-	CountryId  sql.NullInt32  `json:"CountryId,omitempty" db:"CountryId"`
+	CountryId  sql.NullInt32  `json:"CountryId,omitempty" `
 	CityId     sql.NullInt32  `json:"CityUuid,omitempty"`
 	RegionName sql.NullString `json:"REGION_NAME,omitempty"`
 	CityName   sql.NullString `json:"CITY_NAME,omitempty"`

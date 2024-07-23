@@ -19,21 +19,21 @@ func NewOptionHandlers(app *fiber.App, optionModel models.Option) OptionHandlers
 	}
 }
 
-func (hh OptionHandlers) AddHandlers() {
-	hh.app.Post("/option/AddSession", hh.Add)
-	hh.app.Post("/option/list", hh.List)
-	hh.app.Delete("/option/delete/:id/", hh.DeleteById)
+func (oh OptionHandlers) AddHandlers() {
+	oh.app.Post("/v1/option/add", oh.add)
+	oh.app.Get("/v1/option/list", oh.list)
+	oh.app.Delete("/v1/option/:uuid/", oh.deleteByUuid)
 }
 
-func (hh OptionHandlers) DeleteById(ctx *fiber.Ctx) error {
+func (oh OptionHandlers) deleteByUuid(ctx *fiber.Ctx) error {
 
 	return nil
 }
 
-func (hh OptionHandlers) Add(ctx *fiber.Ctx) error {
+func (oh OptionHandlers) add(ctx *fiber.Ctx) error {
 	return nil
 }
 
-func (hh OptionHandlers) List(ctx *fiber.Ctx) error {
+func (oh OptionHandlers) list(ctx *fiber.Ctx) error {
 	return nil
 }

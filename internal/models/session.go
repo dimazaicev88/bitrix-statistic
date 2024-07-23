@@ -34,8 +34,8 @@ func (sm SessionModel) AddSession(session entitydb.SessionDb) error {
 	//									   url_from, url_to, url_to_404, user_agent, date_stat, phpsessid, adv_id, adv_back,
 	//									   referer1, referer2, referer3, stop_list_id
 	//   ) VALUES (generateUUIDv7(), ?, ?, ?, ?, ?, ?) `,
-	//	session.GuestUuid, session.IsNewGuest, session.UserId, session.IsUserAuth, session.Events, session.Hits, session.Favorites, session.UrlFrom, session.UrlTo, session.UrlTo404, session.UrlLast, session.UrlLast404, session.UserAgent, time.Unix(session.DateStat, 0).Add(time.Hour*3),
-	//	time.Unix(session.Date, 0).Add(time.Hour*3), session.PhpSessionId,
+	//	session.GuestUuid, session.IsNewGuest, session.UserId, session.IsUserAuth, session.Events, session.Hits, session.Favorites, session.UrlFrom, session.UrlTo, session.UrlTo404, session.UrlLast, session.UrlLast404, session.UserAgent, time.Unix(session.DateStat, 0).add(time.Hour*3),
+	//	time.Unix(session.Date, 0).add(time.Hour*3), session.PhpSessionId,
 	//	session.AdvId, session.AdvBack, session.Referer1, session.Referer2, session.Referer3, session.StopListUuid, session.CountryId, session.CityUuid,
 	//)
 	//if err != nil {
