@@ -55,9 +55,6 @@ func (am Adv) FindByByDomainSearcher(host string) ([]int, string, string, error)
 		return nil, "", "", err
 	}
 
-	var listIdAdv []int
-	var referer1 string
-	var referer2 string
 	//for rows.Next() {
 	//	var id int
 	//	err = rows.Scan(&id, &referer1, &referer2)
