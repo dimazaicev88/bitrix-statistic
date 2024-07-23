@@ -1,26 +1,28 @@
 package entityjson
 
-import "database/sql"
+import (
+	"database/sql"
+	"github.com/google/uuid"
+	"time"
+)
 
 type Hit struct {
-	Id         int            `json:"ID,omitempty"`
-	SessionId  int            `json:"SessionId,omitempty"`
-	GuestId    sql.NullInt32  `json:"GuestUuid,omitempty"`
-	NewGuest   string         `json:"IsNewGuest,omitempty"`
-	UserId     sql.NullInt32  `json:"USER_ID,omitempty"`
-	UserAuth   sql.NullString `json:"USER_AUTH,omitempty"`
-	Url        sql.NullString `json:"Url,omitempty"`
-	Url404     string         `json:"Url404,omitempty"`
-	UrlFrom    sql.NullString `json:"URL_FROM,omitempty"`
-	Ip         sql.NullString `json:"Ip,omitempty"`
-	Method     sql.NullString `json:"METHOD,omitempty"`
-	Cookies    sql.NullString `json:"COOKIES,omitempty"`
-	UserAgent  sql.NullString `json:"UserAgent,omitempty"`
-	StopListId sql.NullInt32  `json:"StopListUuid,omitempty"`
-	CountryId  sql.NullInt32  `json:"CountryId,omitempty" `
-	CityId     sql.NullInt32  `json:"CityUuid,omitempty"`
-	RegionName sql.NullString `json:"REGION_NAME,omitempty"`
-	CityName   sql.NullString `json:"CITY_NAME,omitempty"`
-	SiteId     sql.NullString `json:"SiteId,omitempty"`
-	DateHit    sql.NullString `json:"DATE_HIT,omitempty"`
+	Uuid        uuid.UUID        `json:"uuid,omitempty"`         // UUID хита
+	SessionUuid uuid.UUID        `json:"sessionUuid,omitempty"`  // UUID сессии
+	DateHit     time.Time        `json:"dateHit,omitempty"`      // Время хита
+	GuestId     uuid.UUID        `json:"guestUuid,omitempty"`    // UUID посетителя
+	NewGuest    bool             `json:"isNewGuest,omitempty"`   // Флаг "был ли это новый посетитель на сайте"
+	UserId      sql.Null[uint32] `json:"userId,omitempty"`       // ID пользователя под которым посетитель был авторизован (в момент хита или до этого)
+	UserAuth    bool             `json:"userAuth,omitempty"`     // Флаг "был ли посетитель авторизован в момент хита"
+	Url         sql.NullString   `json:"url,omitempty"`          // Страница хита
+	Url404      bool             `json:"url404,omitempty"`       // Была ли 404 ошибка на странице хита
+	UrlFrom     sql.NullString   `json:"urlFrom,omitempty"`      // Страница откуда пришел посетитель
+	Ip          sql.NullString   `json:"ip,omitempty"`           // IP адрес посетитель в момент хита
+	Method      sql.NullString   `json:"method,omitempty"`       // HTTP метод отсылки данных
+	Cookies     sql.NullString   `json:"cookies,omitempty"`      // Содержимое Cookie посетителя в момент хита
+	UserAgent   sql.NullString   `json:"userAgent,omitempty"`    // UserAgent посетителя в момент хита
+	StopListId  sql.NullInt32    `json:"stopListUuid,omitempty"` // ID записи стоп-листа под которую попал посетитель (если это имело место)
+	CountryId   sql.NullString   `json:"countryId,omitempty" `   // ID страны (двух символьный идентификатор) посетителя сайта в момент хита (определяется по IP адресу)
+	CountryName sql.NullString   `json:"countryName,omitempty"`  // Название страны посетителя сайта в момент хита (определяется по IP адресу)
+	SiteId      sql.NullString   `json:"siteId,omitempty"`       // ID сайта (двух символьный идентификатор)
 }
