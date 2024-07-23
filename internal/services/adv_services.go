@@ -44,3 +44,12 @@ func (as AdvServices) GetAdv(fullUrl string) (entitydb.AdvReferer, error) {
 func (as AdvServices) FindByPage(direction, page string) (entitydb.AdvDb, error) {
 	return as.AdvModel.FindByByPage(page, direction)
 }
+
+func (as AdvServices) FindByUuid(advUuid string) (entitydb.AdvDb, error) {
+	return as.AdvModel.FindByUuid(advUuid)
+}
+
+// DeleteByUuid Удаление рекламной компании по uuid
+func (as AdvServices) DeleteByUuid(uuid string) error {
+	return as.AdvModel.DeleteByUuid(uuid)
+}

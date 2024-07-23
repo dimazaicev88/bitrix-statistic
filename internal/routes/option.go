@@ -2,12 +2,14 @@ package routes
 
 import (
 	"bitrix-statistic/internal/models"
+	"context"
 	"github.com/gofiber/fiber/v2"
 )
 
 type OptionHandlers struct {
 	app         *fiber.App
 	optionModel models.Option
+	ctx         context.Context
 }
 
 func NewOptionHandlers(app *fiber.App, optionModel models.Option) OptionHandlers {

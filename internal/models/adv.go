@@ -21,11 +21,6 @@ func NewAdv(ctx context.Context, chClient driver.Conn, optionModel *Option) *Adv
 	}
 }
 
-func (am Adv) SetAdv(fullRequestUri, openstat, referringSite string) error {
-
-	return nil
-}
-
 // FindByByPage Поиск Рекламной компании по странице
 func (am Adv) FindByByPage(page, direction string) (entitydb.AdvDb, error) {
 	strSql := `
@@ -42,18 +37,18 @@ func (am Adv) FindByByPage(page, direction string) (entitydb.AdvDb, error) {
 	return adv, nil
 }
 
-func (am Adv) FindByByDomainSearcher(host string) ([]int, string, string, error) {
+func (am Adv) FindByByDomainSearcher(host string) error {
 	//проверяем поисковики
-	sql := ` SELECT A.referer1, A.referer2, S.ADV_ID
-			 FROM 	adv A,
-			        adv_searcher S,
-			        searcher_params P
-			 WHERE  S.ADV_ID = A.ID and P.SEARCHER_ID = S.SEARCHER_ID and upper(?) like concat("'%'",upper(P.DOMAIN),"'%'")`
+	//sql := ` SELECT A.referer1, A.referer2, S.ADV_ID
+	//		 FROM 	adv A,
+	//		        adv_searcher S,
+	//		        searcher_params P
+	//		 WHERE  S.ADV_ID = A.ID and P.SEARCHER_ID = S.SEARCHER_ID and upper(?) like concat("'%'",upper(P.DOMAIN),"'%'")`
 
-	rows, err := am.storage.DB().Query(sql, host)
-	if err != nil {
-		return nil, "", "", err
-	}
+	//rows, err := am.storage.DB().Query(sql, host)
+	//if err != nil {
+	//	return nil, "", "", err
+	//}
 
 	//for rows.Next() {
 	//	var id int
@@ -67,7 +62,7 @@ func (am Adv) FindByByDomainSearcher(host string) ([]int, string, string, error)
 	//if err != nil {
 	//	return nil, "", "", err
 	//}
-	return listIdAdv, referer1, referer2, nil
+	return nil
 }
 
 func (am Adv) FindByReferer(referer1, referer2 string) ([]int, string, string, error) {
@@ -143,12 +138,19 @@ func (am Adv) AddAdv(referer1 string, referer2 string) error {
 	return nil
 }
 
-func (am Adv) FindById(id int) (entitydb.AdvDb, error) {
+func (am Adv) FindByUuid(uuid string) (entitydb.AdvDb, error) {
 	var adv entitydb.AdvDb
-	//sql := `-- SELECT 	* FROM adv WHERE  id=?`
-	//err := am.storage.DB().Get(&adv, sql, id)
-	//if err != nil {
-	//	return entitydb.AdvDb{}, err
-	//}
+	sql := `SELECT 	* FROM adv WHERE  uuid=?`
+	err := am.chClient.QueryRow(am.ctx, sql, uuid).ScanStruct(&adv)
+	if err != nil {
+		return entitydb.AdvDb{}, err
+	}
 	return adv, nil
+}
+
+func (am Adv) DeleteByUuid(uuid string) error {
+	if err := am.chClient.Exec(am.ctx, `DELETE FROM adv WHERE uuid=?`, uuid); err != nil {
+		return err
+	}
+	return nil
 }

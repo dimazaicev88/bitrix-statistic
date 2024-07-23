@@ -1,11 +1,13 @@
 package routes
 
 import (
+	"context"
 	"github.com/gofiber/fiber/v2"
 )
 
 type MainPageHandler struct {
 	fbApp *fiber.App
+	ctx   context.Context
 }
 
 func NewMainPageHandlers(fbApp *fiber.App) MainPageHandler {

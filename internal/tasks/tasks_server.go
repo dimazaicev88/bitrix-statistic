@@ -2,6 +2,7 @@ package tasks
 
 import (
 	"context"
+	"fmt"
 	"github.com/hibiken/asynq"
 	"log"
 )
@@ -21,7 +22,7 @@ func NewTaskServer(redisAddr string, cfg asynq.Config) (*asynq.Server, *asynq.Se
 }
 
 func HandleTask(ctx context.Context, t *asynq.Task) error {
-	//fmt.Println(string(t.Payload()))
+	fmt.Println(string(t.Payload()))
 
 	return nil
 }

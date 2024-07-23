@@ -852,17 +852,17 @@ create table if not exists referer
 
 create table if not exists referer_list
 (
-    uuid       UUID,
-    referer_id int,
-    date_hit   DateTime32('Europe/Moscow'),
-    protocol   String,
-    site_name  String,
-    url_from   String,
-    url_to     String,
-    url_to_404 char default 'N',
-    session_id int,
-    adv_id     int,
-    site_id    FixedString(2)
+    uuid         UUID,
+    referer_uuid int,
+    date_hit     DateTime32('Europe/Moscow'),
+    protocol     String,
+    site_name    String,
+    url_from     String,
+    url_to       String,
+    url_to_404   char default 'N',
+    session_uuid int,
+    adv_uuid     UUID,
+    site_id      FixedString(2)
 ) engine = MergeTree
       PARTITION BY toYYYYMM(date_hit)
       ORDER BY date_hit;

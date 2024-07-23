@@ -1,16 +1,16 @@
 package routes
 
 import (
-	"bitrix-statistic/internal/models"
 	"bitrix-statistic/internal/tasks"
+	"context"
 	"github.com/gofiber/fiber/v2"
 	"github.com/hibiken/asynq"
 	"log"
 )
 
 type Statistic struct {
-	fbApp          *fiber.App
-	statisticModel models.Statistic
+	fbApp *fiber.App
+	ctx   context.Context
 }
 
 type Answer struct {

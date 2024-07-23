@@ -3,6 +3,7 @@ package routes
 import (
 	"bitrix-statistic/internal/filters"
 	"bitrix-statistic/internal/models"
+	"context"
 	"github.com/gofiber/fiber/v2"
 	jsoniter "github.com/json-iterator/go"
 )
@@ -12,6 +13,7 @@ import (
 type HitHandlers struct {
 	fbApp    *fiber.App
 	hitModel models.HitModel
+	ctx      context.Context
 }
 
 func NewHitHandlers(fbApp *fiber.App, hitModel models.HitModel) HitHandlers {
