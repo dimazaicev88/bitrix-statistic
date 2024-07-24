@@ -2,7 +2,7 @@ package routes
 
 import (
 	"bitrix-statistic/internal/filters"
-	"bitrix-statistic/internal/models"
+	"bitrix-statistic/internal/services"
 	"context"
 	"github.com/gofiber/fiber/v2"
 	jsoniter "github.com/json-iterator/go"
@@ -10,15 +10,15 @@ import (
 
 // GuestRoutes Получения данных по посетителям сайта.
 type GuestRoutes struct {
-	fbApp      *fiber.App
-	guestModel models.Guest
-	ctx        context.Context
+	fbApp        *fiber.App
+	guestService *services.GuestService
+	ctx          context.Context
 }
 
-func NewGuest(fbApp *fiber.App, guestModel models.Guest) GuestRoutes {
+func NewGuest(fbApp *fiber.App, guestService *services.GuestService) GuestRoutes {
 	return GuestRoutes{
-		fbApp:      fbApp,
-		guestModel: guestModel,
+		fbApp:        fbApp,
+		guestService: guestService,
 	}
 }
 
@@ -35,7 +35,7 @@ func (hh GuestRoutes) filter(ctx *fiber.Ctx) error {
 		ctx.Status(502)
 		return err
 	}
-	result, err := hh.guestModel.Find(filter)
+	result, err := hh.guestService.Find(filter)
 	if err != nil {
 		ctx.Status(502)
 		return err

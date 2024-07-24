@@ -5,6 +5,7 @@ import (
 	"bitrix-statistic/internal/config"
 	"bitrix-statistic/internal/models"
 	"bitrix-statistic/internal/routes"
+	"bitrix-statistic/internal/services"
 	"bitrix-statistic/internal/storage"
 	"bitrix-statistic/internal/tasks"
 	"context"
@@ -37,9 +38,14 @@ func (app *App) Start() {
 		logrus.Fatal(err)
 	}
 
+	routes.NewAdv(services.NewAdv(app.ctx, chClient), fb, app.ctx).AddHandlers()
+	routes.NewCountry(fb, services.NewCountry(app.ctx, chClient)).AddHandlers()
+	routes.NewGuest(fb, services.NewGuest(app.ctx, chClient)).AddHandlers()
+	routes.NewHit(fb, services.NewHit(app.ctx, chClient)).AddHandlers()
+	routes.NewPage(fb, services.NewPageService(app.ctx, chClient), app.ctx).AddHandlers()
+
 	routes.NewStatistic(fb).RegRoutes()
-	routes.NewHitHandlers(fb, models.NewHitModel(app.ctx, chClient)).AddHandlers()
-	routes.NewCityHandlers(fb, models.NewCity(app.ctx, chClient)).AddHandlers()
+
 	routes.NewSessionHandlers(fb, models.NewSession(app.ctx, chClient)).AddHandlers()
 
 	//start fiber

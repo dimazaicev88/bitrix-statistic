@@ -1,20 +1,23 @@
 package routes
 
 import (
+	"bitrix-statistic/internal/services"
 	"context"
 	"github.com/gofiber/fiber/v2"
 )
 
 // Page Получения данных о посещенных страницах сайта.
 type Page struct {
-	fbApp *fiber.App
-	ctx   context.Context
+	fbApp       *fiber.App
+	ctx         context.Context
+	pageService *services.PageService
 }
 
-func NewPage(ctx context.Context, app *fiber.App) *Page {
+func NewPage(app *fiber.App, pageService *services.PageService, ctx context.Context) *Page {
 	return &Page{
-		fbApp: app,
-		ctx:   ctx,
+		fbApp:       app,
+		ctx:         ctx,
+		pageService: pageService,
 	}
 }
 

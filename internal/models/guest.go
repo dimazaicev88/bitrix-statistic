@@ -7,6 +7,7 @@ import (
 	"database/sql"
 	"errors"
 	"github.com/ClickHouse/clickhouse-go/v2/lib/driver"
+	"github.com/google/uuid"
 )
 
 type Guest struct {
@@ -81,8 +82,8 @@ func (gm Guest) ExistsGuestByHash(token string) (bool, error) {
 	return len(cookieToken) > 0, nil
 }
 
-func (gm Guest) Find(filter filters.Filter) (entitydb.GuestDb, error) {
-	return entitydb.GuestDb{}, nil
+func (gm Guest) Find(filter filters.Filter) ([]entitydb.GuestDb, error) {
+	return []entitydb.GuestDb{}, nil
 }
 
 func (gm Guest) FindByHash(token string) ([]entitydb.GuestDb, error) {
@@ -97,4 +98,14 @@ func (gm Guest) FindByHash(token string) ([]entitydb.GuestDb, error) {
 	}
 
 	return guestDb, nil
+}
+
+func (gm Guest) FindByUuid(uuid uuid.UUID) (entitydb.GuestDb, error) {
+	var hit entitydb.GuestDb
+	err := gm.chClient.QueryRow(gm.ctx, `select * from guest where uuid=?`, uuid.String()).Scan(&hit)
+	if err != nil {
+		return entitydb.GuestDb{}, err
+	}
+	return hit, nil
+
 }

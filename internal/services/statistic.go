@@ -91,7 +91,7 @@ func (stat Statistic) Add(statData entityjson.StatData) error {
 		}
 
 	} else {
-		existsGuest, err := stat.guestService.GuestModel.ExistsGuestByHash(statData.GuestHash)
+		existsGuest, err := stat.guestService.guestModel.ExistsGuestByHash(statData.GuestHash)
 		if err != nil {
 			return err
 		}

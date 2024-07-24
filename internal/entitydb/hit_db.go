@@ -4,7 +4,7 @@ import (
 	"time"
 )
 
-type HitJson struct {
+type Hit struct {
 	Uuid         string    `ch:"uuid"`
 	SessionUuid  string    `ch:"session_uuid"`
 	DateHit      time.Time `ch:"date_hit"`

@@ -1,6 +1,8 @@
 package models
 
 import (
+	"bitrix-statistic/internal/entitydb"
+	"bitrix-statistic/internal/filters"
 	"context"
 	"github.com/ClickHouse/clickhouse-go/v2/lib/driver"
 )
@@ -15,4 +17,8 @@ func NewPhrase(ctx context.Context, chClient driver.Conn) *Phrase {
 		ctx:      ctx,
 		chClient: chClient,
 	}
+}
+
+func (p Phrase) Filter(filter filters.Filter) ([]entitydb.PhraseListDB, error) {
+	return nil, nil
 }

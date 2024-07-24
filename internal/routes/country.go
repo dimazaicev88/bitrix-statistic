@@ -2,22 +2,22 @@ package routes
 
 import (
 	"bitrix-statistic/internal/filters"
-	"bitrix-statistic/internal/models"
+	"bitrix-statistic/internal/services"
 	"context"
 	"github.com/gofiber/fiber/v2"
 	jsoniter "github.com/json-iterator/go"
 )
 
 type CountryHandlers struct {
-	fbApp        *fiber.App
-	countryModel models.Country
-	ctx          context.Context
+	fbApp          *fiber.App
+	countryService *services.CountryServices
+	ctx            context.Context
 }
 
-func NewCountry(fbApp *fiber.App, countryModel models.Country) CountryHandlers {
-	return CountryHandlers{
-		fbApp:        fbApp,
-		countryModel: countryModel,
+func NewCountry(fbApp *fiber.App, countryService *services.CountryServices) *CountryHandlers {
+	return &CountryHandlers{
+		fbApp:          fbApp,
+		countryService: countryService,
 	}
 }
 
@@ -35,7 +35,7 @@ func (ch CountryHandlers) Filter(ctx *fiber.Ctx) error {
 		ctx.Status(502)
 		return err
 	}
-	err, result := ch.countryModel.Find(filter)
+	result, err := ch.countryService.Find(filter)
 	if err != nil {
 		ctx.Status(502)
 		return err

@@ -1,6 +1,8 @@
 package models
 
 import (
+	"bitrix-statistic/internal/entitydb"
+	"bitrix-statistic/internal/filters"
 	"context"
 	"github.com/ClickHouse/clickhouse-go/v2/lib/driver"
 )
@@ -11,9 +13,13 @@ type RefererModel struct {
 	chClient driver.Conn
 }
 
-func NewRefererModel(ctx context.Context, chClient driver.Conn) *RefererModel {
+func NewReferer(ctx context.Context, chClient driver.Conn) *RefererModel {
 	return &RefererModel{
 		ctx:      ctx,
 		chClient: chClient,
 	}
+}
+
+func (m RefererModel) Find(filter filters.Filter) ([]entitydb.RefererDB, error) {
+	return nil, nil
 }
