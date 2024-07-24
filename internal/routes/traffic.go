@@ -1,20 +1,23 @@
 package routes
 
 import (
+	"bitrix-statistic/internal/services"
 	"context"
 	"github.com/gofiber/fiber/v2"
 )
 
 // Traffic для получения общих данных по посещаемости сайта.
 type Traffic struct {
-	fbApp *fiber.App
-	ctx   context.Context
+	fbApp          *fiber.App
+	ctx            context.Context
+	trafficService *services.TrafficService
 }
 
-func NewTraffic(fbApp *fiber.App, ctx context.Context) *Traffic {
+func NewTraffic(ctx context.Context, fbApp *fiber.App, trafficService *services.TrafficService) *Traffic {
 	return &Traffic{
-		fbApp: fbApp,
-		ctx:   ctx,
+		fbApp:          fbApp,
+		ctx:            ctx,
+		trafficService: trafficService,
 	}
 }
 

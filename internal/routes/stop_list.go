@@ -1,18 +1,24 @@
 package routes
 
 import (
+	"bitrix-statistic/internal/services"
 	"context"
 	"github.com/gofiber/fiber/v2"
 )
 
 // StopList Для работы со стоп-листом.
 type StopList struct {
-	fbApp *fiber.App
-	ctx   context.Context
+	fbApp           *fiber.App
+	ctx             context.Context
+	stopListService *services.StopListService
 }
 
-func NewStopList(ctx context.Context, app *fiber.App) *StopList {
-	return &StopList{ctx: ctx, fbApp: app}
+func NewStopList(ctx context.Context, app *fiber.App, stopListService *services.StopListService) *StopList {
+	return &StopList{
+		ctx:             ctx,
+		fbApp:           app,
+		stopListService: stopListService,
+	}
 }
 
 func (sl StopList) AddHandlers() {

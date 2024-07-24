@@ -14,10 +14,11 @@ type CountryHandlers struct {
 	ctx            context.Context
 }
 
-func NewCountry(fbApp *fiber.App, countryService *services.CountryServices) *CountryHandlers {
+func NewCountry(ctx context.Context, fbApp *fiber.App, countryService *services.CountryServices) *CountryHandlers {
 	return &CountryHandlers{
 		fbApp:          fbApp,
 		countryService: countryService,
+		ctx:            ctx,
 	}
 }
 

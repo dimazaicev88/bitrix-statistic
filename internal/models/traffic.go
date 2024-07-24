@@ -5,14 +5,13 @@ import (
 	"github.com/ClickHouse/clickhouse-go/v2/lib/driver"
 )
 
-// Path  Поисковые фразы
-type Path struct {
+type Traffic struct {
 	ctx      context.Context
 	chClient driver.Conn
 }
 
-func NewPath(ctx context.Context, chClient driver.Conn) *Path {
-	return &Path{
+func NewTraffic(ctx context.Context, chClient driver.Conn) *Traffic {
+	return &Traffic{
 		ctx:      ctx,
 		chClient: chClient,
 	}

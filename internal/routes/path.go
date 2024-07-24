@@ -1,20 +1,23 @@
 package routes
 
 import (
+	"bitrix-statistic/internal/services"
 	"context"
 	"github.com/gofiber/fiber/v2"
 )
 
 // Path Для получения данных о путях по сайту.
 type Path struct {
-	fbApp *fiber.App
-	ctx   context.Context
+	fbApp       *fiber.App
+	ctx         context.Context
+	pathService *services.PathService
 }
 
-func NewPath(ctx context.Context, app *fiber.App) *Path {
+func NewPath(ctx context.Context, app *fiber.App, pathService *services.PathService) *Path {
 	return &Path{
-		fbApp: app,
-		ctx:   ctx,
+		fbApp:       app,
+		ctx:         ctx,
+		pathService: pathService,
 	}
 }
 

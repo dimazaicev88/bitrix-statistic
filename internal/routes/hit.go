@@ -15,10 +15,11 @@ type HitHandlers struct {
 	ctx        context.Context
 }
 
-func NewHit(fbApp *fiber.App, hitService *services.HitService) HitHandlers {
+func NewHit(ctx context.Context, fbApp *fiber.App, hitService *services.HitService) HitHandlers {
 	return HitHandlers{
 		fbApp:      fbApp,
 		hitService: hitService,
+		ctx:        ctx,
 	}
 }
 

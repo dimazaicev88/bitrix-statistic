@@ -1,19 +1,22 @@
 package routes
 
 import (
+	"bitrix-statistic/internal/services"
 	"context"
 	"github.com/gofiber/fiber/v2"
 )
 
 type Referer struct {
-	fbApp *fiber.App
-	ctx   context.Context
+	fbApp          *fiber.App
+	ctx            context.Context
+	refererService *services.RefererService
 }
 
-func NewReferer(fbApp *fiber.App, ctx context.Context) *Referer {
+func NewReferer(ctx context.Context, fbApp *fiber.App, refererService *services.RefererService) *Referer {
 	return &Referer{
-		fbApp: fbApp,
-		ctx:   ctx,
+		fbApp:          fbApp,
+		ctx:            ctx,
+		refererService: refererService,
 	}
 }
 

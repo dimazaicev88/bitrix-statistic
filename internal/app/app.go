@@ -3,7 +3,6 @@ package app
 import (
 	"bitrix-statistic/internal/cache"
 	"bitrix-statistic/internal/config"
-	"bitrix-statistic/internal/models"
 	"bitrix-statistic/internal/routes"
 	"bitrix-statistic/internal/services"
 	"bitrix-statistic/internal/storage"
@@ -38,15 +37,23 @@ func (app *App) Start() {
 		logrus.Fatal(err)
 	}
 
-	routes.NewAdv(services.NewAdv(app.ctx, chClient), fb, app.ctx).AddHandlers()
-	routes.NewCountry(fb, services.NewCountry(app.ctx, chClient)).AddHandlers()
-	routes.NewGuest(fb, services.NewGuest(app.ctx, chClient)).AddHandlers()
-	routes.NewHit(fb, services.NewHit(app.ctx, chClient)).AddHandlers()
-	routes.NewPage(fb, services.NewPageService(app.ctx, chClient), app.ctx).AddHandlers()
+	searcherService := services.NewSearcher(app.ctx, chClient)
 
-	routes.NewStatistic(fb).RegRoutes()
-
-	routes.NewSessionHandlers(fb, models.NewSession(app.ctx, chClient)).AddHandlers()
+	routes.NewAdv(app.ctx, fb, services.NewAdv(app.ctx, chClient)).AddHandlers()
+	routes.NewCountry(app.ctx, fb, services.NewCountry(app.ctx, chClient)).AddHandlers()
+	routes.NewGuest(app.ctx, fb, services.NewGuest(app.ctx, chClient)).AddHandlers()
+	routes.NewHit(app.ctx, fb, services.NewHit(app.ctx, chClient)).AddHandlers()
+	routes.NewPage(app.ctx, fb, services.NewPage(app.ctx, chClient)).AddHandlers()
+	routes.NewPath(app.ctx, fb, services.NewPath(app.ctx, chClient)).AddHandlers()
+	routes.NewReferer(app.ctx, fb, services.NewReferer(app.ctx, chClient)).AddHandlers()
+	routes.NewSearcher(app.ctx, fb, searcherService).AddHandlers()
+	routes.NewSearcherHit(app.ctx, fb, searcherService).AddHandlers()
+	routes.NewSession(app.ctx, fb, services.NewSession(app.ctx, chClient)).AddHandlers()
+	routes.NewStatEvent(app.ctx, fb, services.NewEvent(app.ctx, chClient)).AddHandlers()
+	routes.NewStatistic(app.ctx, fb, services.NewStatistic(app.ctx, chClient)).AddHandlers()
+	routes.NewStopList(app.ctx, fb, services.NewStopList(app.ctx, chClient)).AddHandlers()
+	routes.NewTraffic(app.ctx, fb, services.NewTraffic(app.ctx, chClient)).AddHandlers()
+	routes.NewUserOnline(app.ctx, fb, services.NewUserOnline(app.ctx, chClient)).AddHandlers()
 
 	//start fiber
 	go func() {

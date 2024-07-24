@@ -2,31 +2,30 @@ package routes
 
 import (
 	"bitrix-statistic/internal/filters"
-	"bitrix-statistic/internal/models"
+	"bitrix-statistic/internal/services"
 	"context"
 	"github.com/gofiber/fiber/v2"
 	jsoniter "github.com/json-iterator/go"
 )
 
-//для получения данных о сессиях посетителей.
-
+// SessionHandlers Для получения данных о сессиях посетителей.
 type SessionHandlers struct {
-	app          *fiber.App
-	sessionModel *models.SessionModel
-	ctx          context.Context
+	app            *fiber.App
+	sessionService *services.SessionService
+	ctx            context.Context
 }
 
-func NewSessionHandlers(app *fiber.App, sessionModel *models.SessionModel) SessionHandlers {
+func NewSession(ctx context.Context, app *fiber.App, sessionService *services.SessionService) SessionHandlers {
 	return SessionHandlers{
-		app:          app,
-		sessionModel: sessionModel,
+		app:            app,
+		sessionService: sessionService,
+		ctx:            ctx,
 	}
 }
 
 func (sh SessionHandlers) AddHandlers() {
 	sh.app.Post("/session/filter", sh.Filter)
-	sh.app.Delete("/session/delete/:id/", sh.DeleteById)
-	sh.app.Delete("/session/delete/list/:list", sh.DeleteByList)
+	sh.app.Get("/session/:uuid", sh.findByUuid)
 }
 
 func (sh SessionHandlers) Filter(ctx *fiber.Ctx) error {
@@ -37,7 +36,7 @@ func (sh SessionHandlers) Filter(ctx *fiber.Ctx) error {
 		ctx.Status(502)
 		return err
 	}
-	err, result := sh.sessionModel.Find(filter)
+	result, err := sh.sessionService.Filter(filter)
 	if err != nil {
 		ctx.Status(502)
 		return err
@@ -51,15 +50,10 @@ func (sh SessionHandlers) Filter(ctx *fiber.Ctx) error {
 	return ctx.SendString(json)
 }
 
-func (sh SessionHandlers) DeleteById(ctx *fiber.Ctx) error {
-	id, err := ctx.ParamsInt("id", -1)
-	if err != nil {
-		return err
-	}
-	sh.sessionModel.DeleteById(id)
+func (sh SessionHandlers) DeleteByList(ctx *fiber.Ctx) error {
 	return nil
 }
 
-func (sh SessionHandlers) DeleteByList(ctx *fiber.Ctx) error {
+func (sh SessionHandlers) findByUuid(ctx *fiber.Ctx) error {
 	return nil
 }

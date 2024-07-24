@@ -14,7 +14,7 @@ type SearcherService struct {
 	SearcherModel *models.Searcher
 }
 
-func NewSearcherService(ctx context.Context, chClient driver.Conn) *SearcherService {
+func NewSearcher(ctx context.Context, chClient driver.Conn) *SearcherService {
 	return &SearcherService{
 		ctx:           ctx,
 		chClient:      chClient,

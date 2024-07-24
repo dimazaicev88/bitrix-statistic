@@ -1,7 +1,9 @@
 package services
 
 import (
+	"bitrix-statistic/internal/entitydb"
 	"bitrix-statistic/internal/entityjson"
+	"bitrix-statistic/internal/filters"
 	"bitrix-statistic/internal/models"
 	"context"
 	"github.com/ClickHouse/clickhouse-go/v2/lib/driver"
@@ -97,4 +99,8 @@ func (ss SessionService) UpdateSession(data entityjson.StatData) error {
 		return err
 	}
 	return nil
+}
+
+func (ss SessionService) Filter(filter filters.Filter) ([]entitydb.SessionDb, error) {
+	return nil, nil
 }

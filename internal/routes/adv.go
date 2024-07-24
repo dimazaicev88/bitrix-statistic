@@ -12,7 +12,7 @@ type AdvHandlers struct {
 	advService *services.AdvServices
 }
 
-func NewAdv(advService *services.AdvServices, fbApp *fiber.App, ctx context.Context) *AdvHandlers {
+func NewAdv(ctx context.Context, fbApp *fiber.App, advService *services.AdvServices) *AdvHandlers {
 	return &AdvHandlers{
 		fbApp:      fbApp,
 		ctx:        ctx,

@@ -12,7 +12,7 @@ type RefererService struct {
 	refererModel *models.RefererModel
 }
 
-func NewRefererService(ctx context.Context, chClient driver.Conn) *RefererService {
+func NewReferer(ctx context.Context, chClient driver.Conn) *RefererService {
 	return &RefererService{
 		refererModel: models.NewReferer(ctx, chClient),
 	}

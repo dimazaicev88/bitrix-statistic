@@ -1,20 +1,23 @@
 package routes
 
 import (
+	"bitrix-statistic/internal/services"
 	"context"
 	"github.com/gofiber/fiber/v2"
 )
 
 // StatEvent Возвращает список хитов поисковых систем.
 type StatEvent struct {
-	fbApp *fiber.App
-	ctx   context.Context
+	fbApp        *fiber.App
+	ctx          context.Context
+	eventService *services.EventService
 }
 
-func NewStatEvent(fbApp *fiber.App, ctx context.Context) *StatEvent {
+func NewStatEvent(ctx context.Context, fbApp *fiber.App, eventService *services.EventService) *StatEvent {
 	return &StatEvent{
-		fbApp: fbApp,
-		ctx:   ctx,
+		fbApp:        fbApp,
+		ctx:          ctx,
+		eventService: eventService,
 	}
 }
 

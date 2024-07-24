@@ -12,7 +12,7 @@ type PageService struct {
 	pageModel *models.Page
 }
 
-func NewPageService(ctx context.Context, chClient driver.Conn) *PageService {
+func NewPage(ctx context.Context, chClient driver.Conn) *PageService {
 	return &PageService{pageModel: models.NewPage(ctx, chClient)}
 }
 

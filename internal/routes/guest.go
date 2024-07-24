@@ -15,10 +15,11 @@ type GuestRoutes struct {
 	ctx          context.Context
 }
 
-func NewGuest(fbApp *fiber.App, guestService *services.GuestService) GuestRoutes {
+func NewGuest(ctx context.Context, fbApp *fiber.App, guestService *services.GuestService) GuestRoutes {
 	return GuestRoutes{
 		fbApp:        fbApp,
 		guestService: guestService,
+		ctx:          ctx,
 	}
 }
 

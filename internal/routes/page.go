@@ -13,7 +13,7 @@ type Page struct {
 	pageService *services.PageService
 }
 
-func NewPage(app *fiber.App, pageService *services.PageService, ctx context.Context) *Page {
+func NewPage(ctx context.Context, app *fiber.App, pageService *services.PageService) *Page {
 	return &Page{
 		fbApp:       app,
 		ctx:         ctx,

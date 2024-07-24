@@ -21,7 +21,7 @@ func TestSearcherService_AllTests(t *testing.T) {
 	chClient, _ := storage.NewClickHouseClient(config.GetServerConfig())
 	defer chClient.Close()
 	req := require.New(t)
-	searchService := NewSearcherService(context.Background(), chClient)
+	searchService := NewSearcher(context.Background(), chClient)
 
 	t.Run("IsSearcher method", func(t *testing.T) {
 		utils.TruncateAllTables(chClient)

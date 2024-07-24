@@ -1,20 +1,23 @@
 package routes
 
 import (
+	"bitrix-statistic/internal/services"
 	"context"
 	"github.com/gofiber/fiber/v2"
 )
 
 // Searcher Для работы с поисковыми системами.
 type Searcher struct {
-	fbApp *fiber.App
-	ctx   context.Context
+	fbApp           *fiber.App
+	ctx             context.Context
+	searcherService *services.SearcherService
 }
 
-func NewSearcher(ctx context.Context, app *fiber.App) *Searcher {
+func NewSearcher(ctx context.Context, app *fiber.App, searcherService *services.SearcherService) *Searcher {
 	return &Searcher{
-		fbApp: app,
-		ctx:   ctx,
+		fbApp:           app,
+		ctx:             ctx,
+		searcherService: searcherService,
 	}
 }
 

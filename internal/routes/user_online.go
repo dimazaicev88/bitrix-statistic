@@ -17,7 +17,7 @@ func NewUserOnline(fbApp *fiber.App, ctx context.Context) *UserOnline {
 	}
 }
 
-func (uo *UserOnline) RegRoutes() {
+func (uo *UserOnline) AddHandlers() {
 	uo.fbApp.Get("/v1/userOnline/filter", uo.filter)
 	uo.fbApp.Get("/v1/userOnline/guestCount", uo.guestCount)
 }
