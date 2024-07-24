@@ -1,19 +1,22 @@
 package routes
 
 import (
+	"bitrix-statistic/internal/services"
 	"context"
 	"github.com/gofiber/fiber/v2"
 )
 
 type UserOnline struct {
-	fbApp *fiber.App
-	ctx   context.Context
+	fbApp             *fiber.App
+	ctx               context.Context
+	userOnlineService *services.UserOnlineService
 }
 
-func NewUserOnline(fbApp *fiber.App, ctx context.Context) *UserOnline {
+func NewUserOnline(ctx context.Context, fbApp *fiber.App, userOnlineService *services.UserOnlineService) *UserOnline {
 	return &UserOnline{
-		fbApp: fbApp,
-		ctx:   ctx,
+		fbApp:             fbApp,
+		ctx:               ctx,
+		userOnlineService: userOnlineService,
 	}
 }
 

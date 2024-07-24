@@ -1,25 +1,23 @@
 package routes
 
 import (
-	"context"
 	"github.com/gofiber/fiber/v2"
 )
 
-type MainPageHandler struct {
+type MainPage struct {
 	fbApp *fiber.App
-	ctx   context.Context
 }
 
-func NewMainPageHandlers(fbApp *fiber.App) MainPageHandler {
-	return MainPageHandler{
+func NewMain(fbApp *fiber.App) MainPage {
+	return MainPage{
 		fbApp: fbApp,
 	}
 }
 
-func (mph MainPageHandler) index(c *fiber.Ctx) error {
-	return c.Render("index", nil)
+func (mph MainPage) index(c *fiber.Ctx) error {
+	return c.SendString("Statistics server running")
 }
 
-func (mph MainPageHandler) AddHandler() {
+func (mph MainPage) AddHandlers() {
 	mph.fbApp.Get("/", mph.index)
 }

@@ -38,7 +38,7 @@ func (app *App) Start() {
 	}
 
 	searcherService := services.NewSearcher(app.ctx, chClient)
-
+	routes.NewMain(fb).AddHandlers()
 	routes.NewAdv(app.ctx, fb, services.NewAdv(app.ctx, chClient)).AddHandlers()
 	routes.NewCountry(app.ctx, fb, services.NewCountry(app.ctx, chClient)).AddHandlers()
 	routes.NewGuest(app.ctx, fb, services.NewGuest(app.ctx, chClient)).AddHandlers()

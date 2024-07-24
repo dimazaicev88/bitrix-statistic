@@ -20,10 +20,11 @@ func Cache() otter.Cache[string, interface{}] {
 			logrus.Fatal(err)
 		}
 	})
-
 	return otterCache
 }
 
 func Close() {
-	otterCache.Close()
+	if otterCache != (otter.Cache[string, interface{}]{}) {
+		otterCache.Close()
+	}
 }

@@ -1,4 +1,4 @@
-package entitydb
+package entityjson
 
 import "time"
 
