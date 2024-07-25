@@ -6,6 +6,7 @@ create table if not exists adv
     uuid        UUID,
     referer1    String,
     referer2    String,
+    date_create DateTime32('Europe/Moscow'),
     cost        decimal(18, 4) default 0.0000,
     events_view String,
     description String,
@@ -864,7 +865,7 @@ create table if not exists referer_list
     adv_uuid     UUID,
     site_id      FixedString(2)
 ) engine = MergeTree
-      PARTITION BY toYYYYMM(date_hit)
+      PARTITION BY toMonth(date_hit)
       ORDER BY date_hit;
 
 --------------------- Searcher -------------------------

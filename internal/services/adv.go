@@ -3,6 +3,7 @@ package services
 import (
 	"bitrix-statistic/internal/entitydb"
 	"bitrix-statistic/internal/models"
+	"bitrix-statistic/internal/utils"
 	"context"
 	"github.com/ClickHouse/clickhouse-go/v2/lib/driver"
 	"net/url"
@@ -25,24 +26,42 @@ func (as AdvServices) AutoCreateAdv(fullUrl string) error {
 
 // GetAdv Получить рекламную компанию
 func (as AdvServices) GetAdv(fullUrl string) (entitydb.AdvReferer, error) {
+	var totalListUuidAdv []string
 	parse, err := url.Parse(fullUrl)
-
 	if err != nil {
 		return entitydb.AdvReferer{}, err
 	}
-	urlQuery := parse.Query()
+	urlWithoutCheme, err := url.JoinPath(parse.Host, parse.Path)
+	if err != nil {
+		return entitydb.AdvReferer{}, err
+	}
 
-	//TODO добавить установку дефолтной рекламной компании, в случае если  не установлена рекламная компания
+	advUuidsPageTo, err := as.AdvModel.FindAdvUuidByByPage(urlWithoutCheme, "TO") //Поиск рекламных компаний по условию Куда пришли [%_]:	(полные адреса страниц вашего сайта	разделенные новой строкой)
+	if err != nil {
+		return entitydb.AdvReferer{}, err
+	}
 
-	return entitydb.AdvReferer{
-		Referer1: urlQuery.Get("referer1"),
-		Referer2: urlQuery.Get("referer2"),
-		Referer3: urlQuery.Get("referer3"),
-	}, err
-}
+	totalListUuidAdv = append(totalListUuidAdv, advUuidsPageTo...)
 
-func (as AdvServices) FindByPage(direction, page string) (entitydb.AdvDb, error) {
-	return as.AdvModel.FindByByPage(page, direction)
+	advUuidsSearcher, err := as.AdvModel.FindByByDomainSearcher(utils.StringConcat(parse.Scheme, parse.Host))
+	if err != nil {
+		return entitydb.AdvReferer{}, err
+	}
+
+	totalListUuidAdv = append(totalListUuidAdv, advUuidsSearcher...)
+
+	advUuidsPageFrom, err := as.AdvModel.FindAdvUuidByByPage("FROM", fullUrl) //Откуда пришли [%_]: (ссылающиеся страницы,	разделенные новой строкой)
+	if err != nil {
+		return entitydb.AdvReferer{}, err
+	}
+	totalListUuidAdv = append(totalListUuidAdv, advUuidsPageFrom...)
+
+	referer, err := as.AdvModel.FindRefererByListAdv(totalListUuidAdv)
+	if err != nil {
+		return entitydb.AdvReferer{}, err
+	}
+
+	return referer, nil
 }
 
 func (as AdvServices) FindByUuid(advUuid string) (entitydb.AdvDb, error) {

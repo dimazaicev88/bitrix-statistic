@@ -21,48 +21,52 @@ func NewAdv(ctx context.Context, chClient driver.Conn, optionModel *Option) *Adv
 	}
 }
 
-// FindByByPage Поиск Рекламной компании по странице
-func (am Adv) FindByByPage(page, direction string) (entitydb.AdvDb, error) {
+// FindAdvUuidByByPage Поиск Рекламной компании по странице
+func (am Adv) FindAdvUuidByByPage(page, direction string) ([]string, error) {
 	strSql := `
-		SELECT t_adv.uuid, t_adv.referer1, t_adv.referer2
+		SELECT t_adv.uuid
 		FROM adv t_adv
-		INNER JOIN adv_page t_adv_page  ON (t_adv_page.adv_uuid = t_adv.uuid and t_adv_page.type='?')
+		INNER JOIN adv_page t_adv_page  ON (t_adv_page.adv_uuid = t_adv.uuid and t_adv_page.type=?)
  		WHERE length(t_adv_page.page) > 0 and t_adv_page.page like ?`
 
-	var adv entitydb.AdvDb
-	err := am.chClient.QueryRow(am.ctx, strSql, utils.StringConcat("%", page, "%"), direction).ScanStruct(&adv)
+	var listAdvUuid []string
+
+	rows, err := am.chClient.Query(am.ctx, strSql, direction, utils.StringConcat("%", page, "%"))
 	if err != nil {
-		return entitydb.AdvDb{}, nil
+		return []string{}, err
 	}
-	return adv, nil
+
+	for rows.Next() {
+		var advUuid string
+		if err := rows.Scan(&advUuid); err != nil {
+			return []string{}, err
+		}
+		listAdvUuid = append(listAdvUuid, advUuid)
+	}
+	return listAdvUuid, nil
 }
 
-func (am Adv) FindByByDomainSearcher(host string) error {
+func (am Adv) FindByByDomainSearcher(host string) ([]string, error) {
 	//проверяем поисковики
-	//sql := ` SELECT A.referer1, A.referer2, S.ADV_ID
-	//		 FROM 	adv A,
-	//		        adv_searcher S,
-	//		        searcher_params P
-	//		 WHERE  S.ADV_ID = A.ID and P.SEARCHER_ID = S.SEARCHER_ID and upper(?) like concat("'%'",upper(P.DOMAIN),"'%'")`
+	sql := ` SELECT t_adv_searcher.adv_uuid
+			FROM adv_searcher t_adv_searcher
+					 JOIN searcher_params t_searcher_params ON t_adv_searcher.searcher_uuid = t_searcher_params.searcher_uuid
+			WHERE t_searcher_params.domain like ?`
 
-	//rows, err := am.storage.DB().Query(sql, host)
-	//if err != nil {
-	//	return nil, "", "", err
-	//}
+	var listAdvSearcherUuid []string
+	rows, err := am.chClient.Query(am.ctx, sql, utils.StringConcat("%", host, "%"))
+	if err != nil {
+		return []string{}, err
+	}
 
-	//for rows.Next() {
-	//	var id int
-	//	err = rows.Scan(&id, &referer1, &referer2)
-	//	if err != nil {
-	//		return nil, "", "", err
-	//	}
-	//	listIdAdv = append(listIdAdv, id)
-	//}
-	//err = rows.Err()
-	//if err != nil {
-	//	return nil, "", "", err
-	//}
-	return nil
+	for rows.Next() {
+		var advUuid string
+		if err := rows.Scan(&advUuid); err != nil {
+			return []string{}, err
+		}
+		listAdvSearcherUuid = append(listAdvSearcherUuid, advUuid)
+	}
+	return listAdvSearcherUuid, nil
 }
 
 func (am Adv) FindByReferer(referer1, referer2 string) ([]int, string, string, error) {
@@ -153,4 +157,14 @@ func (am Adv) DeleteByUuid(uuid string) error {
 		return err
 	}
 	return nil
+}
+
+func (am Adv) FindRefererByListAdv(listAdv []string) (entitydb.AdvReferer, error) {
+	var adv entitydb.AdvReferer
+	sql := `SELECT 	referer1,referer2 FROM adv WHERE  uuid IN (?) ORDER BY priority,date_create DESC LIMIT 1`
+	err := am.chClient.QueryRow(am.ctx, sql, listAdv).ScanStruct(&adv)
+	if err != nil {
+		return entitydb.AdvReferer{}, err
+	}
+	return adv, nil
 }

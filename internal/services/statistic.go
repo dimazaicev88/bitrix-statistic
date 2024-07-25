@@ -27,7 +27,6 @@ func NewStatistic(ctx context.Context, chClient driver.Conn) *Statistic {
 }
 
 func (stat Statistic) Add(statData entityjson.StatData) error {
-
 	isSearcher, err := stat.searcherService.IsSearcher(statData.UserAgent)
 	if err != nil {
 		return err
@@ -51,7 +50,8 @@ func (stat Statistic) Add(statData entityjson.StatData) error {
 
 		//Гость не найден, добавляем гостя
 		if existsGuest == false {
-			adv, err := stat.advServices.GetAdv(statData.Url)
+			adv, err := stat.advServices.GetAdv(statData.Url) //Получаем рекламную компанию
+			//TODO добавить установку дефолтной рекламной компании, в случае если  не установлена рекламная компания
 
 			if err != nil {
 				return err

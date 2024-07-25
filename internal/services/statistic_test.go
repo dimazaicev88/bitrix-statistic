@@ -11,17 +11,6 @@ import (
 	"testing"
 )
 
-var storageConfig = config.ServerEnvConfig{
-	ClickHouseHost:     "localhost",
-	ClickHouseUser:     "bitrix",
-	ClickHousePassword: "123",
-	ClickHouseDbName:   "bitrix",
-}
-
-func init() {
-	godotenv.Load()
-}
-
 const pathToEnvFile = "E:\\projects\\bitrix-statistic\\.env"
 
 func TestGuestModel_Searcher(t *testing.T) {
