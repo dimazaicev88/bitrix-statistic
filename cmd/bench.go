@@ -1,6 +1,7 @@
 package main
 
-import "fmt"
+import "log"
+import "github.com/barsuk/sxgeo"
 
 type ems struct {
 	Id int
@@ -8,7 +9,11 @@ type ems struct {
 
 func main() {
 
-	fmt.Println(ems{} == ems{Id: 1})
+	if _, err := sxgeo.ReadDBToMemory(dbPath); err != nil {
+		log.Fatalf("error: cannot read database file: %v", err)
+	}
+
+	//fmt.Println(ems{} == ems{Id: 1})
 
 	//fmt.Println(cache.AdvDays())
 

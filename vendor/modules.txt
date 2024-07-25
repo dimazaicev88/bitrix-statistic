@@ -13,12 +13,13 @@ github.com/ClickHouse/clickhouse-go/v2/lib/driver
 github.com/ClickHouse/clickhouse-go/v2/lib/proto
 github.com/ClickHouse/clickhouse-go/v2/lib/timezone
 github.com/ClickHouse/clickhouse-go/v2/resources
-# github.com/allegro/bigcache/v3 v3.1.0
-## explicit; go 1.16
 # github.com/andybalholm/brotli v1.1.0
 ## explicit; go 1.13
 github.com/andybalholm/brotli
 github.com/andybalholm/brotli/matchfinder
+# github.com/barsuk/sxgeo v0.0.1
+## explicit; go 1.14
+github.com/barsuk/sxgeo
 # github.com/caarlos0/env/v6 v6.10.1
 ## explicit; go 1.17
 github.com/caarlos0/env/v6
