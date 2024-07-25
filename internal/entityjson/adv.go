@@ -1,12 +1,11 @@
 package entityjson
 
 import (
-	"github.com/google/uuid"
 	"time"
 )
 
 type Adv struct {
-	Uuid                      uuid.UUID `json:"uuid"`                      // ID
+	Uuid                      string    `json:"uuid"`                      // ID
 	Priority                  uint32    `json:"priority"`                  //приоритет
 	Referer1                  string    `json:"referer1"`                  //идентификатор referer1
 	Referer2                  string    `json:"referer2"`                  //идентификатор referer2

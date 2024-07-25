@@ -1,12 +1,11 @@
 package entityjson
 
 import (
-	"github.com/google/uuid"
 	"time"
 )
 
 type Searcher struct {
-	Uuid           uuid.UUID `json:"uuid"`                     // ID поисковой системы
+	Uuid           string    `json:"uuid"`                     // ID поисковой системы
 	NAME           string    `json:"NAME,omitempty"`           // Название
 	UserAgent      string    `json:"userAgent,omitempty"`      // UserAgent
 	DiagramDefault bool      `json:"diagramDefault,omitempty"` // True|False флаг "включать в круговую диаграмму и график по умолчанию"

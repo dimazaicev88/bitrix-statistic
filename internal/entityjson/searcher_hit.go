@@ -1,14 +1,13 @@
 package entityjson
 
 import (
-	"github.com/google/uuid"
 	"time"
 )
 
 type SearcherHit struct {
-	Uuid         uuid.UUID `json:"uuid"`                   //ID хита
+	Uuid         string    `json:"uuid"`                   //ID хита
 	DateHit      time.Time `json:"dateHit"`                //Дата хита
-	SearcherUuid uuid.UUID `json:"searcherUuid,omitempty"` //ID поисковой системы
+	SearcherUuid string    `json:"searcherUuid,omitempty"` //ID поисковой системы
 	SearcherName string    `json:"searcherName,omitempty"` //Название поисковой системы
 	Url          string    `json:"url,omitempty"`          //Адрес проиндексированной страницы
 	Url404       bool      `json:"url404,omitempty"`       //True|False флаг 404 ошибки на проиндексированной странице
