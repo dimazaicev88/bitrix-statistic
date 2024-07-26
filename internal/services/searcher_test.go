@@ -60,7 +60,7 @@ func TestSearcherService_AllTests(t *testing.T) {
 		)
 		req.NoError(err)
 
-		var searcher []entitydb.SearcherHitDb
+		var searcher []entitydb.SearcherHit
 		resultSql := `select uuid, date_hit, searcher_uuid, url, url_404, ip, user_agent, site_id from searcher_hit`
 		err = chClient.Select(context.Background(), &searcher, resultSql)
 		req.NoError(err)
@@ -94,7 +94,7 @@ func TestSearcherService_AllTests(t *testing.T) {
 		)
 		req.NoError(err)
 
-		var searcher []entitydb.SearcherHitDb
+		var searcher []entitydb.SearcherHit
 		resultSql := `select uuid, date_hit, searcher_uuid, url, url_404, ip, user_agent, site_id from searcher_hit`
 		err = chClient.Select(context.Background(), &searcher, resultSql)
 		req.NoError(err)
@@ -158,7 +158,7 @@ func TestSearcherService_AllTests(t *testing.T) {
 		},
 		)
 		chClient.Exec(context.Background(), "OPTIMIZE TABLE searcher_day_hits DEDUPLICATE;")
-		var searcher []entitydb.SearcherDayHitsDb
+		var searcher []entitydb.SearcherDayHits
 		resultSql := `select hit_day, searcher_uuid, total_hits from searcher_day_hits`
 		err := chClient.Select(context.Background(), &searcher, resultSql)
 		req.NoError(err)
