@@ -5,7 +5,7 @@ import (
 	"time"
 )
 
-type SessionDb struct {
+type Session struct {
 	Uuid         uuid.UUID `ch:"uuid"`
 	GuestUuid    uuid.UUID `ch:"guest_uuid"`
 	IsNewGuest   bool      `ch:"new_guest"`

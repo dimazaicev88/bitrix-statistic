@@ -2,7 +2,7 @@ package entitydb
 
 import "time"
 
-type SearcherHitDb struct {
+type SearcherHit struct {
 	Uuid       string    `ch:"uuid"`
 	DateHit    time.Time `ch:"date_hit"`
 	SearcherId string    `ch:"searcher_uuid"`

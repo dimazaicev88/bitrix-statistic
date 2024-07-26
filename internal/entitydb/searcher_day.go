@@ -5,7 +5,7 @@ import (
 	"time"
 )
 
-type SearcherDayHitsDb struct {
+type SearcherDayHits struct {
 	Uuid         uuid.UUID `ch:"uuid"`
 	DateStat     time.Time `ch:"hit_day"`
 	SearcherUuid uuid.UUID `ch:"searcher_uuid"`

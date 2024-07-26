@@ -2,7 +2,7 @@ package entitydb
 
 import "time"
 
-type EventDayDB struct {
+type EventDay struct {
 	Uuid      string    `ch:"uuid"`
 	DateStat  time.Time `ch:"date_stat"`
 	DateLast  time.Time `ch:"date_last"`

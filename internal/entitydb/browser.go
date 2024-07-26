@@ -1,6 +1,6 @@
 package entitydb
 
-type BrowserDB struct {
+type Browser struct {
 	Uuid      string `ch:"uuid"`
 	UserAgent string `ch:"user_agent"`
 }

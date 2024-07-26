@@ -5,7 +5,7 @@ import (
 	"time"
 )
 
-type SearcherDb struct {
+type Searcher struct {
 	Uuid            uuid.UUID `ch:"uuid"`
 	DateCleanup     time.Time `ch:"date_cleanup"`
 	TotalHits       uint32    `ch:"total_hits"`

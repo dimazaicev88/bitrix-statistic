@@ -2,7 +2,7 @@ package entitydb
 
 import "time"
 
-type PhraseListDB struct {
+type PhraseList struct {
 	Uuid         string    `ch:"uuid"`
 	DateHit      time.Time `ch:"date_hit"`
 	SearcherUuid string    `ch:"searcher_uuid"`

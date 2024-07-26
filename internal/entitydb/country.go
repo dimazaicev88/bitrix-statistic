@@ -1,11 +1,9 @@
 package entitydb
 
-type CityDB struct {
+type Country struct {
 	Uuid      string `ch:"uuid"`
-	CountryId string `ch:"country_id"`
-	Region    string `ch:"region"`
+	ShortName string `ch:"short_name"`
 	Name      string `ch:"name"`
-	XmlId     string `ch:"xml_id"`
 	Sessions  uint32 `ch:"sessions"`
 	NewGuests uint32 `ch:"new_guests"`
 	Hits      uint32 `ch:"hits"`

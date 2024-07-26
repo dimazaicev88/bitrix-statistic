@@ -2,7 +2,7 @@ package entitydb
 
 import "time"
 
-type RefererDB struct {
+type Referer struct {
 	Uuid      string    `ch:"uuid"`
 	DateFirst time.Time `ch:"date_first"`
 	DateLast  time.Time `ch:"date_last"`

@@ -1,7 +1,7 @@
 package entitydb
 
-// AdvSearcherDB TODO Возможно нужно удалить
-type AdvSearcherDB struct {
+// AdvSearcher TODO Возможно нужно удалить
+type AdvSearcher struct {
 	Uuid         string `ch:"uuid"`
 	AdvUuid      string `ch:"adv_uuid"`
 	SearcherUuid string `ch:"searcher_uuid"`

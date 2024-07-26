@@ -2,7 +2,7 @@ package entitydb
 
 import "time"
 
-type AdvGuestDB struct {
+type AdvGuest struct {
 	Uuid         string    `ch:"uuid"`
 	AdvUuid      string    `ch:"adv_uuid"`
 	Back         bool      `ch:"back"`

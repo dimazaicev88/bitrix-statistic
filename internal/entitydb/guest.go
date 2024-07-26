@@ -4,7 +4,7 @@ import (
 	"time"
 )
 
-type GuestDb struct {
+type Guest struct {
 	Uuid        string    `ch:"uuid"`
 	GuestHash   string    `ch:"guest_hash"`
 	Timestamp   time.Time `ch:"timestamp"`

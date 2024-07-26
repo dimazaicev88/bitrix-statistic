@@ -2,7 +2,7 @@ package entitydb
 
 import "time"
 
-type DayDB struct {
+type Day struct {
 	uuid             string
 	dateStat         time.Time
 	hits             uint32

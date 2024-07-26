@@ -2,7 +2,7 @@ package entitydb
 
 import "time"
 
-type PageDB struct {
+type Page struct {
 	Uuid         string    `ch:"uuid"`
 	DateStat     time.Time `ch:"date_stat"`
 	Dir          bool      `ch:"dir"`

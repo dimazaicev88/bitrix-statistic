@@ -2,7 +2,7 @@ package entitydb
 
 import "time"
 
-type EventDb struct {
+type Event struct {
 	Uuid            string    `ch:"uuid"`
 	Event1          string    `ch:"event1"`
 	Event2          string    `ch:"event2"`

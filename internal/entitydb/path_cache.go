@@ -2,7 +2,7 @@ package entitydb
 
 import "time"
 
-type PathCacheDB struct {
+type PathCache struct {
 	Uuid                string    `ch:"uuid"`
 	SessionUuid         string    `ch:"session_uuid"`
 	DateHit             time.Time `ch:"date_hit"`

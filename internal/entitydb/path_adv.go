@@ -2,7 +2,7 @@ package entitydb
 
 import "time"
 
-type PathAdvDB struct {
+type PathAdv struct {
 	Uuid                string    `ch:"uuid"`
 	AdvUuid             string    `ch:"adv_uuid"`
 	PathUuid            string    `ch:"path_uuid"`

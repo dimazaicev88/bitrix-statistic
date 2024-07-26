@@ -2,7 +2,7 @@ package entitydb
 
 import "time"
 
-type PathDB struct {
+type Path struct {
 	Uuid            string    `ch:"uuid"`
 	PathId          uint32    `ch:"path_id"`
 	ParentPathId    uint32    `ch:"parent_path_id"`
