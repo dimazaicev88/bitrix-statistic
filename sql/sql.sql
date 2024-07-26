@@ -960,7 +960,7 @@ create table if not exists session
 
 ------------------- Option -----------------------
 
-create table if not exists option
+create table if not exists options
 (
     name        String,
     value       String,

@@ -27,11 +27,11 @@ func (as AdvServices) AutoCreateAdv(fullUrl string) error {
 // GetAdv Получить рекламную компанию
 func (as AdvServices) GetAdv(fullUrl string) (entitydb.AdvReferer, error) {
 	var totalListUuidAdv []string
-	parse, err := url.Parse(fullUrl)
+	urlValues, err := url.Parse(fullUrl)
 	if err != nil {
 		return entitydb.AdvReferer{}, err
 	}
-	urlWithoutCheme, err := url.JoinPath(parse.Host, parse.Path)
+	urlWithoutCheme, err := url.JoinPath(urlValues.Host, urlValues.Path)
 	if err != nil {
 		return entitydb.AdvReferer{}, err
 	}
@@ -43,7 +43,7 @@ func (as AdvServices) GetAdv(fullUrl string) (entitydb.AdvReferer, error) {
 
 	totalListUuidAdv = append(totalListUuidAdv, advUuidsPageTo...)
 
-	advUuidsSearcher, err := as.AdvModel.FindByByDomainSearcher(utils.StringConcat(parse.Scheme, parse.Host))
+	advUuidsSearcher, err := as.AdvModel.FindByByDomainSearcher(utils.StringConcat(urlValues.Scheme, urlValues.Host))
 	if err != nil {
 		return entitydb.AdvReferer{}, err
 	}
@@ -56,15 +56,32 @@ func (as AdvServices) GetAdv(fullUrl string) (entitydb.AdvReferer, error) {
 	}
 	totalListUuidAdv = append(totalListUuidAdv, advUuidsPageFrom...)
 
+	byReferer, err := as.AdvModel.FindByReferer(urlValues.Query().Get("referer1"), urlValues.Query().Get("referer2")) //Поиск по referrer
+	if err != nil {
+		return entitydb.AdvReferer{}, err
+	}
+
+	totalListUuidAdv = append(totalListUuidAdv, byReferer...)
+
 	referer, err := as.AdvModel.FindRefererByListAdv(totalListUuidAdv)
 	if err != nil {
 		return entitydb.AdvReferer{}, err
 	}
 
+	//	if am.optionModel.Get("ADV_NA") == "Y" {
+	//		Na1 := am.optionModel.Get("AVD_NA_REFERER1")
+	//		Na2 := am.optionModel.Get("AVD_NA_REFERER2")
+	//		if (Na1 != "" || Na2 != "") && referer1 == Na1 && referer2 == Na2 {
+	//			na = "Y"
+	//		}
+	//
+	//	}
+	//
+
 	return referer, nil
 }
 
-func (as AdvServices) FindByUuid(advUuid string) (entitydb.AdvDb, error) {
+func (as AdvServices) FindByUuid(advUuid string) (entitydb.Adv, error) {
 	return as.AdvModel.FindByUuid(advUuid)
 }
 

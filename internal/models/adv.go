@@ -5,6 +5,7 @@ import (
 	"bitrix-statistic/internal/utils"
 	"context"
 	"github.com/ClickHouse/clickhouse-go/v2/lib/driver"
+	"regexp"
 )
 
 type Adv struct {
@@ -69,68 +70,60 @@ func (am Adv) FindByByDomainSearcher(host string) ([]string, error) {
 	return listAdvSearcherUuid, nil
 }
 
-func (am Adv) FindByReferer(referer1, referer2 string) ([]int, string, string, error) {
-	//sql := `SELECT 	ID, REFERER1, REFERER2
-	//		FROM adv
-	//		WHERE  REFERER1=? and REFERER2=?`
-	//
-	//found := false
-	//rows, err := am.storage.DB().Query(sql, referer1, referer2)
-	//if err != nil {
-	//	return nil, "", "", err
-	//}
+func (am Adv) FindByReferer(referer1, referer2 string) ([]string, error) {
+	sql := `SELECT 	uuid
+			FROM adv
+			WHERE  referer1=? and referer2=?`
 
-	var listIdAdv []int
-	//for rows.Next() {
-	//	found = true
-	//	var id int
-	//	err = rows.Scan(&id, &referer1, &referer2)
-	//	if err != nil {
-	//		return nil, "", "", err
-	//	}
-	//	listIdAdv = append(listIdAdv, id)
-	//}
-	//err = rows.Err()
-	//if err != nil {
-	//	return nil, "", "", err
-	//}
-	//na := ""
-	//if !found {
-	//	if am.optionModel.Get("ADV_NA") == "Y" {
-	//		Na1 := am.optionModel.Get("AVD_NA_REFERER1")
-	//		Na2 := am.optionModel.Get("AVD_NA_REFERER2")
-	//		if (Na1 != "" || Na2 != "") && referer1 == Na1 && referer2 == Na2 {
-	//			na = "Y"
-	//		}
-	//
-	//	}
-	//
-	//	if am.optionModel.Get("ADV_AUTO_CREATE") == "Y" || (na == "Y") {
-	//		var bGoodR bool
-	//		if am.optionModel.Get("REFERER_CHECK") == "Y" {
-	//			bGoodR, err = regexp.MatchString("/^([0-9A-Za-z_:;.,-])*$/", referer1)
-	//			if err != nil {
-	//				return nil, "", "", err
-	//			}
-	//			if bGoodR {
-	//				bGoodR, err = regexp.MatchString("/^([0-9A-Za-z_:;.,-])*$/", referer2)
-	//			}
-	//			if err != nil {
-	//				return nil, "", "", err
-	//			}
-	//		} else {
-	//			bGoodR = true
-	//		}
-	//
-	//		if bGoodR {
-	//			err := am.AddAdv(referer1, referer2)
-	//			if err != nil {
-	//				return nil, "", "", err
-	//			}
-	//		}
-	//	}
-	//}
-	return listIdAdv, referer1, referer2, nil
+	var listUuid []string
+	rows, err := am.chClient.Query(am.ctx, sql, referer1, referer2)
+	if err != nil {
+		return []string{}, err
+	}
+
+	for rows.Next() {
+		var advUuid string
+		if err = rows.Scan(&advUuid); err != nil {
+			return []string{}, err
+		}
+		listUuid = append(listUuid, advUuid)
+	}
+	return listUuid, nil
+}
+
+func (am Adv) AutoCreateAdv(referer1, referer2 string) error {
+
+	referrers, err := am.FindByReferer(referer1, referer2)
+	if err != nil {
+		return err
+	}
+
+	if len(referrers) == 0 {
+		if am.optionModel.Get("ADV_AUTO_CREATE") == "Y" || (na == "Y") {
+			var bGoodR bool
+			if am.optionModel.Get("REFERER_CHECK") == "Y" {
+				bGoodR, err = regexp.MatchString("/^([0-9A-Za-z_:;.,-])*$/", referer1)
+				if err != nil {
+					return nil, "", "", err
+				}
+				if bGoodR {
+					bGoodR, err = regexp.MatchString("/^([0-9A-Za-z_:;.,-])*$/", referer2)
+				}
+				if err != nil {
+					return nil, "", "", err
+				}
+			} else {
+				bGoodR = true
+			}
+
+			if bGoodR {
+				err := am.AddAdv(referer1, referer2)
+				if err != nil {
+					return nil, "", "", err
+				}
+			}
+		}
+	}
 }
 
 func (am Adv) AddAdv(referer1 string, referer2 string) error {
@@ -142,12 +135,12 @@ func (am Adv) AddAdv(referer1 string, referer2 string) error {
 	return nil
 }
 
-func (am Adv) FindByUuid(uuid string) (entitydb.AdvDb, error) {
-	var adv entitydb.AdvDb
+func (am Adv) FindByUuid(uuid string) (entitydb.Adv, error) {
+	var adv entitydb.Adv
 	sql := `SELECT 	* FROM adv WHERE  uuid=?`
 	err := am.chClient.QueryRow(am.ctx, sql, uuid).ScanStruct(&adv)
 	if err != nil {
-		return entitydb.AdvDb{}, err
+		return entitydb.Adv{}, err
 	}
 	return adv, nil
 }
