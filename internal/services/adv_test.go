@@ -11,6 +11,9 @@ import (
 	"testing"
 )
 
+//TODO добавить проверку установки referer3;
+//TODO добавить проверку установки ADV NA;
+
 func TestAdvServices_AutoCreateAdv(t *testing.T) {
 
 }

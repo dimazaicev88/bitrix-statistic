@@ -41,412 +41,276 @@ func (o OptionService) Set(option entitydb.Option) error {
 	return nil
 }
 
-func (o OptionService) IsSaveVisits() bool {
-	val, ok := cache.Cache().Get("save_visits")
-	if !ok {
-
-		return true
-	}
+func (o OptionService) IsSaveVisits(siteId string) bool {
+	val, _ := o.get("save_visits", siteId, true)
 	return val.(bool)
 }
 
-func (o OptionService) IsSaveReferrers() bool {
-	val, ok := cache.Cache().Get("save_referrers")
-	if !ok {
-		return true
-	}
+func (o OptionService) IsSaveReferrers(siteId string) bool {
+	val, _ := o.get("save_referrers", siteId, true)
 	return val.(bool)
 }
 
-func (o OptionService) IsSaveHits() bool {
-	val, ok := cache.Cache().Get("save_hits")
-	if !ok {
-		return true
-	}
+func (o OptionService) IsSaveHits(siteId string) bool {
+	val, _ := o.get("save_hits", siteId, true)
 	return val.(bool)
 }
 
-func (o OptionService) IsSaveAdditional() bool {
-	val, ok := cache.Cache().Get("save_additional")
-	if !ok {
-		return true
-	}
+func (o OptionService) IsSaveAdditional(siteId string) bool {
+	val, _ := o.get("save_additional", siteId, true)
+	return val.(bool)
+
+}
+
+func (o OptionService) IsSavePathData(siteId string) bool {
+	val, _ := o.get("save_path_data", siteId, true)
 	return val.(bool)
 }
 
-func (o OptionService) IsSavePathData() bool {
-	val, ok := cache.Cache().Get("save_path_data")
-	if !ok {
-		return true
-	}
+func (o OptionService) IsAdvNa(siteId string) bool {
+	val, _ := o.get("adv_na", siteId, true)
 	return val.(bool)
 }
 
-func (o OptionService) IsAdvNa() bool {
-	val, ok := cache.Cache().Get("adv_na")
-	if !ok {
-		return false
-	}
+func (o OptionService) AvdNaReferer1(siteId string) string {
+	val, _ := o.get("avd_na_referer1", siteId, "NA")
+	return val.(string)
+}
+
+func (o OptionService) AvdNaReferer2(siteId string) string {
+	val, _ := o.get("avd_na_referer2", siteId, "NA")
+	return val.(string)
+}
+
+func (o OptionService) Referer1Syn(siteId string) string {
+	val, _ := o.get("referer1_syn", siteId, "r1")
+	return val.(string)
+}
+
+func (o OptionService) Referer2Syn(siteId string) string {
+	val, _ := o.get("referer2_syn", siteId, "r2")
+	return val.(string)
+}
+
+func (o OptionService) Referer3Syn(siteId string) string {
+	val, _ := o.get("referer3_syn", siteId, "r3")
+	return val.(string)
+}
+
+func (o OptionService) IsRefererCheck(siteId string) bool {
+	val, _ := o.get("referer_check", siteId, false)
+	return val.(bool)
+
+}
+
+func (o OptionService) OpenStatActive(siteId string) bool {
+	val, _ := o.get("open_stat_active", siteId, false)
 	return val.(bool)
 }
 
-func (o OptionService) AvdNaReferer1() string {
-	val, ok := cache.Cache().Get("avd_na_referer1")
-	if !ok {
-		return "NA"
-	}
+func (o OptionService) OpenStatR1Template(siteId string) string {
+	val, _ := o.get("open_stat_r1_template", siteId, "#service-name#_#campaign-id#")
 	return val.(string)
 }
 
-func (o OptionService) AvdNaReferer2() string {
-	val, ok := cache.Cache().Get("avd_na_referer2")
-	if !ok {
-		return "NA"
-	}
+func (o OptionService) OpenStatR2Template(siteId string) string {
+
+	val, _ := o.get("open_stat_r2_template", siteId, "#ad-id#_#source-id#")
 	return val.(string)
 }
 
-func (o OptionService) Referer1Syn() string {
-	val, ok := cache.Cache().Get("referer1_syn")
-	if !ok {
-		return "r1"
-	}
-	return val.(string)
-}
-
-func (o OptionService) Referer2Syn() string {
-	val, ok := cache.Cache().Get("referer2_syn")
-	if !ok {
-		return "r2"
-	}
-	return val.(string)
-}
-
-func (o OptionService) Referer3Syn() string {
-	val, ok := cache.Cache().Get("referer3_syn")
-	if !ok {
-		return "r3"
-	}
-	return val.(string)
-}
-
-func (o OptionService) IsRefererCheck() bool {
-	val, ok := cache.Cache().Get("referer_check")
-	if !ok {
-		return false
-	}
+func (o OptionService) IsAdvAutoCreate(siteId string) bool {
+	val, _ := o.get("adv_auto_create", siteId, true)
 	return val.(bool)
 }
 
-func (o OptionService) OpenStatActive() bool {
-	val, ok := cache.Cache().Get("open_stat_active")
-	if !ok {
-		return false
-	}
+func (o OptionService) AdvGuestDays(siteId string) uint32 {
+	val, _ := o.get("adv_guestDays", siteId, 3)
+	return val.(uint32)
+}
+
+func (o OptionService) AdvDays(siteId string) uint32 {
+	val, _ := o.get("adv_days", siteId, 365)
+	return val.(uint32)
+}
+
+func (o OptionService) SearcherHitDays(siteId string) uint32 {
+	val, _ := o.get("searcher_hit_days", siteId, 3)
+	return val.(uint32)
+}
+
+func (o OptionService) SearcherDays(siteId string) uint32 {
+	val, _ := o.get("searcher_days", siteId, 360)
+	return val.(uint32)
+}
+
+func (o OptionService) EventsDays(siteId string) uint32 {
+	val, _ := o.get("events_days", siteId, 3)
+	return val.(uint32)
+}
+
+func (o OptionService) EventDynamicDays(siteId string) uint32 {
+	val, _ := o.get("event_dynamic_days", siteId, 360)
+	return val.(uint32)
+}
+
+func (o OptionService) VisitDays(siteId string) uint32 {
+	val, _ := o.get("visit_days", siteId, 10)
+	return val.(uint32)
+}
+
+func (o OptionService) CityDays(siteId string) uint32 {
+	val, _ := o.get("city_days", siteId, 360)
+	return val.(uint32)
+}
+
+func (o OptionService) CountryDays(siteId string) uint32 {
+	val, _ := o.get("country_days", siteId, 360)
+	return val.(uint32)
+}
+
+func (o OptionService) PathDays(siteId string) uint32 {
+	val, _ := o.get("path_days", siteId, 10)
+	return val.(uint32)
+}
+
+func (o OptionService) GuestDays(siteId string) uint32 {
+	val, _ := o.get("guest_days", siteId, 3)
+	return val.(uint32)
+}
+
+func (o OptionService) SessionDays(siteId string) uint32 {
+	val, _ := o.get("session_days", siteId, 3)
+	return val.(uint32)
+}
+
+func (o OptionService) HitDays(siteId string) uint32 {
+	val, _ := o.get("hit_days", siteId, 3)
+	return val.(uint32)
+}
+
+func (o OptionService) PhrasesDays(siteId string) uint32 {
+	val, _ := o.get("phrases_days", siteId, 10)
+	return val.(uint32)
+}
+
+func (o OptionService) RefererListDays(siteId string) uint32 {
+	val, _ := o.get("referer_list_days", siteId, 10)
+	return val.(uint32)
+}
+
+func (o OptionService) RefererDays(siteId string) uint32 {
+	val, _ := o.get("referer_days", siteId, 360)
+	return val.(uint32)
+}
+
+func (o OptionService) RefererTop(siteId string) uint32 {
+	val, _ := o.get("referer_top", siteId, 500)
+	return val.(uint32)
+}
+
+func (o OptionService) MaxPathSteps(siteId string) uint32 {
+	val, _ := o.get("max_path_steps", siteId, 3)
+	return val.(uint32)
+}
+
+func (o OptionService) OnlineInterval(siteId string) uint32 {
+	val, _ := o.get("online_interval", siteId, 180)
+	return val.(uint32)
+}
+
+func (o OptionService) RecordsLimit(siteId string) uint32 {
+	val, _ := o.get("records_limit", siteId, 500)
+	return val.(uint32)
+}
+
+func (o OptionService) EventGidBase64Encode(siteId string) bool {
+	val, _ := o.get("event_gid_base64_encode", siteId, true)
 	return val.(bool)
 }
 
-func (o OptionService) OpenStatR1Template() string {
-	val, ok := cache.Cache().Get("open_stat_r1_template")
-	if !ok {
-		return "#service-name#_#campaign-id#"
-	}
+func (o OptionService) AdvEventsDefault(siteId string) string {
+	val, _ := o.get("adv_events_default", siteId, "list")
 	return val.(string)
 }
 
-func (o OptionService) OpenStatR2Template() string {
-	val, ok := cache.Cache().Get("open_stat_r2_template")
-	if !ok {
-		return "#ad-id#_#source-id#"
-	}
-	return val.(string)
-}
-
-func (o OptionService) IsAdvAutoCreate() bool {
-	val, ok := cache.Cache().Get("adv_auto_create")
-	if !ok {
-		return true
-	}
+func (o OptionService) UseAutoOptimize(siteId string) bool {
+	val, _ := o.get("use_auto_optimize", siteId, false)
 	return val.(bool)
 }
 
-func (o OptionService) AdvGuestDays() uint32 {
-	val, ok := cache.Cache().Get("adv_guestDays")
-	if !ok {
-		return 3
-	}
-	return val.(uint32)
+func (o OptionService) BaseCurrency(siteId string) string {
+	val, _ := o.get("base_currency", siteId, "xxx")
+	return val.(string)
 }
 
-func (o OptionService) AdvDays() uint32 {
-	val, ok := cache.Cache().Get("adv_days")
-	if !ok {
-		return 365
-	}
-	return val.(uint32)
-}
-
-func (o OptionService) SearcherHitDays() uint32 {
-	val, ok := cache.Cache().Get("searcher_hit_days")
-	if !ok {
-		return 3
-	}
-	return val.(uint32)
-}
-
-func (o OptionService) SearcherDays() uint32 {
-	val, ok := cache.Cache().Get("searcher_days")
-	if !ok {
-		return 360
-	}
-	return val.(uint32)
-}
-
-func (o OptionService) EventsDays() uint32 {
-	val, ok := cache.Cache().Get("events_days")
-	if !ok {
-		return 3
-	}
-	return val.(uint32)
-}
-
-func (o OptionService) EventDynamicDays() uint32 {
-	val, ok := cache.Cache().Get("event_dynamic_days")
-	if !ok {
-		return 360
-	}
-	return val.(uint32)
-}
-
-func (o OptionService) VisitDays() uint32 {
-	val, ok := cache.Cache().Get("visit_days")
-	if !ok {
-		return 10
-	}
-	return val.(uint32)
-}
-
-func (o OptionService) CityDays() uint32 {
-	val, ok := cache.Cache().Get("city_days")
-	if !ok {
-		return 360
-	}
-	return val.(uint32)
-}
-
-func (o OptionService) CountryDays() uint32 {
-	val, ok := cache.Cache().Get("country_days")
-	if !ok {
-		return 360
-	}
-	return val.(uint32)
-}
-
-func (o OptionService) PathDays() uint32 {
-	val, ok := cache.Cache().Get("path_days")
-	if !ok {
-		return 10
-	}
-	return val.(uint32)
-}
-
-func (o OptionService) GuestDays() uint32 {
-	val, ok := cache.Cache().Get("guest_days")
-	if !ok {
-		return 3
-	}
-	return val.(uint32)
-}
-
-func (o OptionService) SessionDays() uint32 {
-	val, ok := cache.Cache().Get("session_days")
-	if !ok {
-		return 3
-	}
-	return val.(uint32)
-}
-
-func (o OptionService) HitDays() uint32 {
-	val, ok := cache.Cache().Get("hit_days")
-	if !ok {
-		return 3
-	}
-	return val.(uint32)
-}
-
-func (o OptionService) PhrasesDays() uint32 {
-	val, ok := cache.Cache().Get("phrases_days")
-	if !ok {
-		return 10
-	}
-	return val.(uint32)
-}
-
-func (o OptionService) RefererListDays() uint32 {
-	val, ok := cache.Cache().Get("referer_list_days")
-	if !ok {
-		return 10
-	}
-	return val.(uint32)
-}
-
-func (o OptionService) RefererDays() uint32 {
-	val, ok := cache.Cache().Get("referer_days")
-	if !ok {
-		return 360
-	}
-	return val.(uint32)
-}
-
-func (o OptionService) RefererTop() uint32 {
-	val, ok := cache.Cache().Get("referer_top")
-	if !ok {
-		return 500
-	}
-	return val.(uint32)
-}
-
-func (o OptionService) MaxPathSteps() uint32 {
-	val, ok := cache.Cache().Get("max_path_steps")
-	if !ok {
-		return 3
-	}
-	return val.(uint32)
-}
-
-func (o OptionService) OnlineInterval() uint32 {
-	val, ok := cache.Cache().Get("online_interval")
-	if !ok {
-		return 180
-	}
-	return val.(uint32)
-}
-
-func (o OptionService) RecordsLimit() uint32 {
-	val, ok := cache.Cache().Get("records_limit")
-	if !ok {
-		return 500
-	}
-	return val.(uint32)
-}
-
-func (o OptionService) EventGidBase64Encode() bool {
-	val, ok := cache.Cache().Get("event_gid_base64_encode")
-	if !ok {
-		return true
-	}
+func (o OptionService) IsDefenceOn(siteId string) bool {
+	val, _ := o.get("defence_on", siteId, true)
 	return val.(bool)
 }
 
-func (o OptionService) AdvEventsDefault() string {
-	val, ok := cache.Cache().Get("adv_events_default")
-	if !ok {
-		return "list"
-	}
-	return val.(string)
-}
-
-func (o OptionService) UseAutoOptimize() bool {
-	val, ok := cache.Cache().Get("use_auto_optimize")
-	if !ok {
-		return false
-	}
-	return val.(bool)
-}
-
-func (o OptionService) BaseCurrency() string {
-	val, ok := cache.Cache().Get("base_currency")
-	if !ok {
-		return "xxx"
-	}
-	return val.(string)
-}
-
-func (o OptionService) IsDefenceOn() bool {
-	val, ok := cache.Cache().Get("defence_on")
-	if !ok {
-		return true
-	}
-	return val.(bool)
-}
-
-func (o OptionService) DefenceStackTime() uint32 {
-	val, ok := cache.Cache().Get("defence_stack_time")
-	if !ok {
-		return 10
-	}
+func (o OptionService) DefenceStackTime(siteId string) uint32 {
+	val, _ := o.get("defence_stack_time", siteId, 10)
 	return val.(uint32)
 }
 
-func (o OptionService) DefenceMaxStackHits() uint32 {
-	val, ok := cache.Cache().Get("defence_max_stack_hits")
-	if !ok {
-		return 15
-	}
+func (o OptionService) DefenceMaxStackHits(siteId string) uint32 {
+	val, _ := o.get("defence_max_stack_hits", siteId, 15)
 	return val.(uint32)
 }
 
-func (o OptionService) DefenceDelay() uint32 {
-	val, ok := cache.Cache().Get("defence_delay")
-	if !ok {
-		return 300
-	}
+func (o OptionService) DefenceDelay(siteId string) uint32 {
+	val, _ := o.get("defence_delay", siteId, 300)
 	return val.(uint32)
 }
 
-func (o OptionService) IsDefenceLog() bool {
-	val, ok := cache.Cache().Get("defence_log")
-	if !ok {
-		return false
-	}
+func (o OptionService) IsDefenceLog(siteId string) bool {
+	val, _ := o.get("defence_log", siteId, false)
 	return val.(bool)
 }
 
-func (o OptionService) ImportantPageParams() string {
-	val, ok := cache.Cache().Get("important_page_params")
-	if !ok {
-		return "ID, IBLOCK_ID, SECTION_ID, PARENT_ELEMENT_ID, FID, TID, MID, UID, VOTE_ID, print, goto"
-	}
+func (o OptionService) ImportantPageParams(siteId string) string {
+	val, _ := o.get("important_page_params", siteId, "ID, IBLOCK_ID, SECTION_ID, PARENT_ELEMENT_ID, FID, TID, MID, UID, VOTE_ID, print, goto")
 	return val.(string)
 }
 
-func (o OptionService) SkipStatisticWhat() string {
-	val, ok := cache.Cache().Get("skip_statistic_what")
-	if !ok {
-		return "none"
-	}
+func (o OptionService) SkipStatisticWhat(siteId string) string {
+	val, _ := o.get("skip_statistic_what", siteId, "none")
 	return val.(string)
 }
 
-func (o OptionService) SkipStatisticGroups() string {
-	val, ok := cache.Cache().Get("skip_statistic_groups")
-	if !ok {
-		return ""
-	}
+func (o OptionService) SkipStatisticGroups(siteId string) string {
+	val, _ := o.get("skip_statistic_groups", siteId, "")
 	return val.(string)
 }
 
-func (o OptionService) SkipStatisticIpRanges() string {
-	val, ok := cache.Cache().Get("skip_statistic_ip_ranges")
-	if !ok {
-		return ""
-	}
+func (o OptionService) SkipStatisticIpRanges(siteId string) string {
+	val, _ := o.get("skip_statistic_ip_ranges", siteId, "")
 	return val.(string)
 }
 
-func (o OptionService) DirectoryIndex() string {
-	val, ok := cache.Cache().Get("directory_index")
-	if !ok {
-		return ""
-	}
+func (o OptionService) DirectoryIndex(siteId string) string {
+	val, _ := o.get("directory_index", siteId, "")
 	return val.(string)
 }
 
 // IsSearcherEvents Учитывать события рекламных кампаний для поисковиков
-func (o OptionService) IsSearcherEvents() bool {
-	val, ok := cache.Cache().Get("searcher_events")
-	if !ok {
-		return true
-	}
+func (o OptionService) IsSearcherEvents(siteId string) bool {
+	val, _ := o.get("searcher_events", siteId, true)
 	return val.(bool)
+}
+
+func (o OptionService) get(name, site string, defValue interface{}) (interface{}, error) {
+	val, ok := cache.Cache().Get(utils.StringConcat(name, ":", site))
+	if !ok {
+		dbVal, err := o.optionModel.Find(name, site)
+		if err != nil {
+			return nil, err
+		}
+		if dbVal == (entitydb.Option{}) {
+			return defValue, nil
+		}
+		cache.Cache().Set(utils.StringConcat(name, ":", site), dbVal.Value)
+	}
+	return val, nil
 }

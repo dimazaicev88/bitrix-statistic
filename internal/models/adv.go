@@ -2,6 +2,7 @@ package models
 
 import (
 	"bitrix-statistic/internal/entitydb"
+	"bitrix-statistic/internal/services"
 	"bitrix-statistic/internal/utils"
 	"context"
 	"github.com/ClickHouse/clickhouse-go/v2/lib/driver"
@@ -9,16 +10,16 @@ import (
 )
 
 type Adv struct {
-	chClient    driver.Conn
-	optionModel *Option
-	ctx         context.Context
+	chClient      driver.Conn
+	optionService *services.OptionService
+	ctx           context.Context
 }
 
-func NewAdv(ctx context.Context, chClient driver.Conn, optionModel *Option) *Adv {
+func NewAdv(ctx context.Context, chClient driver.Conn, optionService *services.OptionService) *Adv {
 	return &Adv{
-		chClient:    chClient,
-		optionModel: optionModel,
-		ctx:         ctx,
+		chClient:      chClient,
+		optionService: optionService,
+		ctx:           ctx,
 	}
 }
 
@@ -99,27 +100,27 @@ func (am Adv) AutoCreateAdv(referer1, referer2 string) error {
 	}
 
 	if len(referrers) == 0 {
-		if am.optionModel.Get("ADV_AUTO_CREATE") == "Y" || (na == "Y") {
-			var bGoodR bool
-			if am.optionModel.Get("REFERER_CHECK") == "Y" {
-				bGoodR, err = regexp.MatchString("/^([0-9A-Za-z_:;.,-])*$/", referer1)
+		if am.optionService.IsAdvAutoCreate() {
+			var refererValid bool
+			if am.optionService.IsRefererCheck() {
+				refererValid, err = regexp.MatchString("/^([0-9A-Za-z_:;.,-])*$/", referer1)
 				if err != nil {
-					return nil, "", "", err
+					return err
 				}
-				if bGoodR {
-					bGoodR, err = regexp.MatchString("/^([0-9A-Za-z_:;.,-])*$/", referer2)
+				if refererValid {
+					refererValid, err = regexp.MatchString("/^([0-9A-Za-z_:;.,-])*$/", referer2)
 				}
 				if err != nil {
-					return nil, "", "", err
+					return err
 				}
 			} else {
-				bGoodR = true
+				refererValid = true
 			}
 
-			if bGoodR {
+			if refererValid {
 				err := am.AddAdv(referer1, referer2)
 				if err != nil {
-					return nil, "", "", err
+					return nil
 				}
 			}
 		}
@@ -127,11 +128,11 @@ func (am Adv) AutoCreateAdv(referer1, referer2 string) error {
 }
 
 func (am Adv) AddAdv(referer1 string, referer2 string) error {
-	//_, err := am.storage.DB().MustExec(`INSERT INTO adv(referer1, referer2, date_first, date_last)
-	//	VALUES (?, ?, now(), now())`, referer1, referer2).LastInsertId()
-	//if err != nil {
-	//	return err
-	//}
+	err := am.chClient.Exec(am.ctx, `INSERT INTO adv (uuid, referer1, referer2, date_create, cost, events_view, description, priority)
+		VALUES (generateUUIDv7(), ?, ?, now(),0.0,'','',1)`, referer1, referer2)
+	if err != nil {
+		return err
+	}
 	return nil
 }
 

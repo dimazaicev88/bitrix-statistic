@@ -68,9 +68,9 @@ func (as AdvServices) GetAdv(fullUrl string) (entitydb.AdvReferer, error) {
 		return entitydb.AdvReferer{}, err
 	}
 
-	//	if am.optionModel.Get("ADV_NA") == "Y" {
-	//		Na1 := am.optionModel.Get("AVD_NA_REFERER1")
-	//		Na2 := am.optionModel.Get("AVD_NA_REFERER2")
+	//	if am.optionModel.Find("ADV_NA") == "Y" {
+	//		Na1 := am.optionModel.Find("AVD_NA_REFERER1")
+	//		Na2 := am.optionModel.Find("AVD_NA_REFERER2")
 	//		if (Na1 != "" || Na2 != "") && referer1 == Na1 && referer2 == Na2 {
 	//			na = "Y"
 	//		}

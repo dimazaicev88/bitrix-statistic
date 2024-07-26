@@ -17,7 +17,7 @@ func NewOption(ctx context.Context, chClient driver.Conn) *Option {
 	return &Option{ctx: ctx, chClient: chClient}
 }
 
-func (o Option) Get(name, siteId string) (entitydb.Option, error) {
+func (o Option) Find(name, siteId string) (entitydb.Option, error) {
 	var optionRow entitydb.Option
 	err := o.chClient.QueryRow(o.ctx, `select * from options where name=? and  siteId=?`, name, siteId).Scan(&optionRow)
 	if err != nil {

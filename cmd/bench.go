@@ -44,6 +44,6 @@ func main() {
 	//	}
 	//}
 
-	//entry, _ := cache.Get("my-unique-key")
+	//entry, _ := cache.Find("my-unique-key")
 	//fmt.Println(string(entry))
 }
