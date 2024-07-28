@@ -6,20 +6,18 @@ import (
 	"bitrix-statistic/internal/filters"
 	"bitrix-statistic/internal/models"
 	"context"
-	"github.com/ClickHouse/clickhouse-go/v2/lib/driver"
 	"github.com/google/uuid"
 )
 
 type SessionService struct {
-	ctx          context.Context
-	chClient     driver.Conn
-	sessionModel models.SessionModel
+	ctx       context.Context
+	allModels *models.Models
 }
 
-func NewSession(ctx context.Context, chClient driver.Conn) *SessionService {
+func NewSession(ctx context.Context, allModels *models.Models) *SessionService {
 	return &SessionService{
-		ctx:      ctx,
-		chClient: chClient,
+		ctx:       ctx,
+		allModels: allModels,
 	}
 }
 
@@ -86,7 +84,7 @@ func (ss SessionService) AddSession(advBack, cityId string, countryId, stopListU
 }
 
 func (ss SessionService) IsExistsSession(phpSession string) bool {
-	count, err := ss.sessionModel.ExistsByPhpSession(phpSession)
+	count, err := ss.allModels.Session.ExistsByPhpSession(phpSession)
 	if err != nil {
 		return false
 	}
@@ -94,13 +92,13 @@ func (ss SessionService) IsExistsSession(phpSession string) bool {
 }
 
 func (ss SessionService) UpdateSession(data entityjson.StatData) error {
-	err := ss.sessionModel.Update(data)
+	err := ss.allModels.Session.Update(data)
 	if err != nil {
 		return err
 	}
 	return nil
 }
 
-func (ss SessionService) Filter(filter filters.Filter) ([]entitydb.SessionDb, error) {
+func (ss SessionService) Filter(filter filters.Filter) ([]entitydb.Session, error) {
 	return nil, nil
 }

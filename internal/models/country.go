@@ -19,10 +19,10 @@ func NewCountry(ctx context.Context, chClient driver.Conn) *Country {
 	}
 }
 
-func (cm Country) Find(filter filters.Filter) ([]entitydb.CountryDB, error) {
+func (cm Country) Find(filter filters.Filter) ([]entitydb.Country, error) {
 	return nil, nil
 }
 
 func (cm Country) DeleteById(id int) {
-	//cm.storage.DB().MustExec("DELETE FROM country WHERE id=?", id)
+	//cm.storage.().MustExec("DELETE FROM country WHERE id=?", id)
 }

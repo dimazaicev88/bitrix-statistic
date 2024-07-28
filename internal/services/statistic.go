@@ -2,8 +2,8 @@ package services
 
 import (
 	"bitrix-statistic/internal/entityjson"
+	"bitrix-statistic/internal/models"
 	"context"
-	"github.com/ClickHouse/clickhouse-go/v2/lib/driver"
 	"github.com/google/uuid"
 	_ "net/netip"
 )
@@ -16,13 +16,13 @@ type Statistic struct {
 	searcherService *SearcherService
 }
 
-func NewStatistic(ctx context.Context, chClient driver.Conn) *Statistic {
+func NewStatistic(ctx context.Context, allModels *models.Models) *Statistic {
 	return &Statistic{
-		guestService:    NewGuest(ctx, chClient),
-		advServices:     NewAdv(ctx, chClient),
-		sessionService:  NewSession(ctx, chClient),
-		statDayService:  NewStatDay(ctx, chClient),
-		searcherService: NewSearcher(ctx, chClient),
+		guestService:    NewGuest(ctx, allModels),
+		advServices:     NewAdv(ctx, allModels, NewOption(ctx, allModels)),
+		sessionService:  NewSession(ctx, allModels),
+		statDayService:  NewStatDay(ctx, allModels),
+		searcherService: NewSearcher(ctx, allModels),
 	}
 }
 
@@ -37,7 +37,7 @@ func (stat Statistic) Add(statData entityjson.StatData) error {
 			return err
 		}
 	} else {
-		existsGuest, err := stat.guestService.guestModel.ExistsGuestByHash(statData.GuestHash)
+		existsGuest, err := stat.guestService.ExistsGuestByHash(statData.GuestHash)
 		if err != nil {
 			return err
 		}

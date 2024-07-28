@@ -3,15 +3,16 @@ package services
 import (
 	"bitrix-statistic/internal/models"
 	"context"
-	"github.com/ClickHouse/clickhouse-go/v2/lib/driver"
 )
 
 type PathService struct {
-	pathModel *models.Path
+	allModels *models.Models
+	ctx       context.Context
 }
 
-func NewPath(ctx context.Context, chClient driver.Conn) *PathService {
+func NewPath(ctx context.Context, allModels *models.Models) *PathService {
 	return &PathService{
-		pathModel: models.NewPath(ctx, chClient),
+		ctx:       ctx,
+		allModels: allModels,
 	}
 }

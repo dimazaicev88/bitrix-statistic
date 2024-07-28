@@ -7,21 +7,22 @@ import (
 	"bitrix-statistic/internal/utils"
 	"context"
 	"errors"
-	"github.com/ClickHouse/clickhouse-go/v2/lib/driver"
 )
 
 type OptionService struct {
-	optionModel *models.Option
+	allModels *models.Models
+	ctx       context.Context
 }
 
-func NewOption(ctx context.Context, chClient driver.Conn) *OptionService {
+func NewOption(ctx context.Context, allModels *models.Models) *OptionService {
 	return &OptionService{
-		optionModel: models.NewOption(ctx, chClient),
+		ctx:       ctx,
+		allModels: allModels,
 	}
 }
 
 func (o OptionService) Add(options entitydb.Option) error {
-	return o.optionModel.Add(options)
+	return o.allModels.Option.Add(options)
 }
 
 func (o OptionService) Set(option entitydb.Option) error {
@@ -34,7 +35,7 @@ func (o OptionService) Set(option entitydb.Option) error {
 		return errors.New("option value type is invalid")
 	}
 
-	if err := o.optionModel.Set(option); err != nil {
+	if err := o.allModels.Option.Set(option); err != nil {
 		return err
 	}
 	cache.Cache().Set(utils.StringConcat(option.Name, ":", option.SiteId), option.Value)
@@ -303,7 +304,7 @@ func (o OptionService) IsSearcherEvents(siteId string) bool {
 func (o OptionService) get(name, site string, defValue interface{}) (interface{}, error) {
 	val, ok := cache.Cache().Get(utils.StringConcat(name, ":", site))
 	if !ok {
-		dbVal, err := o.optionModel.Find(name, site)
+		dbVal, err := o.allModels.Option.Find(name, site)
 		if err != nil {
 			return nil, err
 		}

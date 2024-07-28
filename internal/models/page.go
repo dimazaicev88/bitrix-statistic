@@ -19,10 +19,10 @@ func NewPage(ctx context.Context, chClient driver.Conn) *Page {
 	}
 }
 
-func (p *Page) Filter(filter filters.Filter) ([]entitydb.PageDB, error) {
+func (p *Page) Filter(filter filters.Filter) ([]entitydb.Page, error) {
 	return nil, nil
 }
 
-func (p *Page) DynamicList(filter filters.Filter) ([]entitydb.PageDB, error) {
+func (p *Page) DynamicList(filter filters.Filter) ([]entitydb.Page, error) {
 	return nil, nil
 }

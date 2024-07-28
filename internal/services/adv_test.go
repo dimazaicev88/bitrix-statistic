@@ -2,6 +2,7 @@ package services
 
 import (
 	"bitrix-statistic/internal/config"
+	"bitrix-statistic/internal/models"
 	"bitrix-statistic/internal/storage"
 	"bitrix-statistic/internal/utils"
 	"context"
@@ -25,7 +26,9 @@ func TestAdvServices_GetAdv(t *testing.T) {
 	chClient, _ := storage.NewClickHouseClient(config.GetServerConfig())
 	defer chClient.Close()
 	req := require.New(t)
-	advServices := NewAdv(context.Background(), chClient)
+	allModels := models.NewModels(context.Background(), chClient)
+	optionService := NewOption(context.Background(), allModels)
+	advServices := NewAdv(context.Background(), allModels, optionService)
 
 	t.Run("Указано 'Куда пришли'", func(t *testing.T) {
 		utils.TruncateAllTables(chClient)

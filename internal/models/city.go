@@ -20,7 +20,7 @@ func (cm City) Find(filter filters.Filter) (error, []map[string]interface{}) {
 }
 
 func (cm City) DeleteById(id int) {
-	//cm.storage.DB().MustExec("DELETE FROM city WHERE id=?", id)
+	//cm.storage.().MustExec("DELETE FROM city WHERE id=?", id)
 }
 
 func (cm City) GetCountryCode() string {

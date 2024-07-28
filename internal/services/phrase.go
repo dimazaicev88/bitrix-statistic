@@ -5,19 +5,20 @@ import (
 	"bitrix-statistic/internal/filters"
 	"bitrix-statistic/internal/models"
 	"context"
-	"github.com/ClickHouse/clickhouse-go/v2/lib/driver"
 )
 
 type PhraseService struct {
-	phraseModel *models.Phrase
+	allModels *models.Models
+	ctx       context.Context
 }
 
-func NewPhraseService(ctx context.Context, chClient driver.Conn) *PhraseService {
+func NewPhraseService(ctx context.Context, allModels *models.Models) *PhraseService {
 	return &PhraseService{
-		phraseModel: models.NewPhrase(ctx, chClient),
+		ctx:       ctx,
+		allModels: allModels,
 	}
 }
 
-func (s *PhraseService) Filter(filter filters.Filter) ([]entitydb.PhraseListDB, error) {
-	return s.phraseModel.Filter(filter)
+func (s *PhraseService) Filter(filter filters.Filter) ([]entitydb.PhraseList, error) {
+	return s.allModels.Phrase.Filter(filter)
 }

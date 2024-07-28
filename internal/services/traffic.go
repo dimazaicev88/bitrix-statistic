@@ -3,19 +3,16 @@ package services
 import (
 	"bitrix-statistic/internal/models"
 	"context"
-	"github.com/ClickHouse/clickhouse-go/v2/lib/driver"
 )
 
 type TrafficService struct {
-	ctx          context.Context
-	chClient     driver.Conn
-	trafficModel *models.Traffic
+	ctx       context.Context
+	allModels *models.Models
 }
 
-func NewTraffic(ctx context.Context, chClient driver.Conn) *TrafficService {
+func NewTraffic(ctx context.Context, allModels *models.Models) *TrafficService {
 	return &TrafficService{
-		ctx:          ctx,
-		chClient:     chClient,
-		trafficModel: models.NewTraffic(ctx, chClient),
+		ctx:       ctx,
+		allModels: allModels,
 	}
 }

@@ -5,21 +5,24 @@ import (
 	"bitrix-statistic/internal/filters"
 	"bitrix-statistic/internal/models"
 	"context"
-	"github.com/ClickHouse/clickhouse-go/v2/lib/driver"
 )
 
 type PageService struct {
-	pageModel *models.Page
+	allModels *models.Models
+	ctx       context.Context
 }
 
-func NewPage(ctx context.Context, chClient driver.Conn) *PageService {
-	return &PageService{pageModel: models.NewPage(ctx, chClient)}
+func NewPage(ctx context.Context, allModels *models.Models) *PageService {
+	return &PageService{
+		ctx:       ctx,
+		allModels: allModels,
+	}
 }
 
-func (ps PageService) Filter(filter filters.Filter) ([]entitydb.PageDB, error) {
-	return ps.pageModel.Filter(filter)
+func (ps PageService) Filter(filter filters.Filter) ([]entitydb.Page, error) {
+	return ps.allModels.Page.Filter(filter)
 }
 
-func (ps PageService) DynamicList(filter filters.Filter) ([]entitydb.PageDB, error) {
-	return ps.pageModel.DynamicList(filter)
+func (ps PageService) DynamicList(filter filters.Filter) ([]entitydb.Page, error) {
+	return ps.allModels.Page.DynamicList(filter)
 }

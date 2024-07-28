@@ -5,23 +5,24 @@ import (
 	"bitrix-statistic/internal/filters"
 	"bitrix-statistic/internal/models"
 	"context"
-	"github.com/ClickHouse/clickhouse-go/v2/lib/driver"
 )
 
 type HitService struct {
-	hitModel *models.HitModel
+	allModels *models.Models
+	ctx       context.Context
 }
 
-func NewHit(ctx context.Context, chClient driver.Conn) *HitService {
+func NewHit(ctx context.Context, allModels *models.Models) *HitService {
 	return &HitService{
-		hitModel: models.NewHit(ctx, chClient),
+		ctx:       ctx,
+		allModels: allModels,
 	}
 }
 
 func (hs *HitService) Find(filter filters.Filter) ([]entitydb.Hit, error) {
-	return hs.hitModel.Find(filter)
+	return hs.allModels.Hit.Find(filter)
 }
 
 func (hs *HitService) FindByUuid(uuid string) (entitydb.Hit, error) {
-	return hs.hitModel.FindByUuid(uuid)
+	return hs.allModels.Hit.FindByUuid(uuid)
 }

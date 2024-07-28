@@ -9,25 +9,25 @@ import (
 	"github.com/huandu/go-sqlbuilder"
 )
 
-type SessionModel struct {
+type Session struct {
 	ctx      context.Context
 	chClient driver.Conn
 }
 
-func NewSession(ctx context.Context, chClient driver.Conn) *SessionModel {
-	return &SessionModel{ctx: ctx, chClient: chClient}
+func NewSession(ctx context.Context, chClient driver.Conn) *Session {
+	return &Session{ctx: ctx, chClient: chClient}
 }
 
-func (sm SessionModel) Find(filter filters.Filter) (error, []map[string]interface{}) {
+func (sm Session) Find(filter filters.Filter) (error, []map[string]interface{}) {
 
 	return nil, nil
 }
 
-func (sm SessionModel) AddSession(session entitydb.SessionDb) error {
+func (sm Session) AddSession(session entitydb.Session) error {
 
-	//		"DATE_STAT" => $DB_now_date,
-	//		"DATE_FIRST" => $DB_now,
-	//		"DATE_LAST" => $DB_now,
+	//		"DATE_STAT" => $_now_date,
+	//		"DATE_FIRST" => $_now,
+	//		"DATE_LAST" => $_now,
 
 	//err := sm.chClient.Exec(sm.ctx, `INSERT INTO session (
 	//									   uuid, guest_id, new_guest, user_id, user_auth, events, hits, favorites,
@@ -44,7 +44,7 @@ func (sm SessionModel) AddSession(session entitydb.SessionDb) error {
 	return nil
 }
 
-func (sm SessionModel) DeleteById(id int) error {
+func (sm Session) DeleteById(id int) error {
 	err := sm.chClient.Exec(sm.ctx, "DELETE FROM session WHERE ID=?", id)
 	if err != nil {
 		return err
@@ -52,7 +52,7 @@ func (sm SessionModel) DeleteById(id int) error {
 	return nil
 }
 
-func (sm SessionModel) FindSessionByGuestMd5(guestMd5 string) (entityjson.StatData, error) {
+func (sm Session) FindSessionByGuestMd5(guestMd5 string) (entityjson.StatData, error) {
 	var sessionData entityjson.StatData
 	//err := sm.chClient.Exec(&sessionData,
 	//	`SELECT *
@@ -66,7 +66,7 @@ func (sm SessionModel) FindSessionByGuestMd5(guestMd5 string) (entityjson.StatDa
 	return sessionData, nil
 }
 
-func (sm SessionModel) Update(statData entityjson.StatData) error {
+func (sm Session) Update(statData entityjson.StatData) error {
 	updateBuilder := sqlbuilder.NewUpdateBuilder()
 	updateBuilder.SetFlavor(sqlbuilder.ClickHouse)
 
@@ -89,7 +89,7 @@ func (sm SessionModel) Update(statData entityjson.StatData) error {
 	return nil
 }
 
-func (sm SessionModel) GetAttentiveness(dateStat, siteId string) {
+func (sm Session) GetAttentiveness(dateStat, siteId string) {
 	//sqlSite := ""
 	//if len(siteId) > 0 {
 	//	sqlSite = " and S.FIRST_SITE_ID = '" + siteId + "' " //TODO переделать
@@ -131,11 +131,11 @@ func (sm SessionModel) GetAttentiveness(dateStat, siteId string) {
 	//	sum(if(S.HITS>=34, 1, 0))					AH_34
 	//FROM session S
 	//WHERE
-	//S.DATE_STAT = cast(".$DB->CharToDateFunction($DATE_STAT, "SHORT")." as date)
+	//S.DATE_STAT = cast(".$->CharToDateFunction($DATE_STAT, "SHORT")." as date)
 	//$str
 	//";
 	//
-	//$rs = $DB->Query($strSql, false, $err_mess.__LINE__);
+	//$rs = $->Query($strSql, false, $err_mess.__LINE__);
 	//$ar = $rs->Fetch();
 	//$arKeys = array_keys($ar);
 	//foreach($arKeys as $key)
@@ -153,7 +153,7 @@ func (sm SessionModel) GetAttentiveness(dateStat, siteId string) {
 	//return $ar;
 }
 
-func (sm SessionModel) ExistsByPhpSession(session string) (int, error) {
+func (sm Session) ExistsByPhpSession(session string) (int, error) {
 	var count int
 	row := sm.chClient.QueryRow(sm.ctx, `select count(uuid) as cnt from session where phpsessid=?`, session)
 

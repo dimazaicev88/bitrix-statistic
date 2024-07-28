@@ -5,19 +5,20 @@ import (
 	"bitrix-statistic/internal/filters"
 	"bitrix-statistic/internal/models"
 	"context"
-	"github.com/ClickHouse/clickhouse-go/v2/lib/driver"
 )
 
 type RefererService struct {
-	refererModel *models.RefererModel
+	allModels *models.Models
+	ctx       context.Context
 }
 
-func NewReferer(ctx context.Context, chClient driver.Conn) *RefererService {
+func NewReferer(ctx context.Context, allModels *models.Models) *RefererService {
 	return &RefererService{
-		refererModel: models.NewReferer(ctx, chClient),
+		ctx:       ctx,
+		allModels: allModels,
 	}
 }
 
-func (rs RefererService) Find(filter filters.Filter) ([]entitydb.RefererDB, error) {
-	return rs.refererModel.Find(filter)
+func (rs RefererService) Find(filter filters.Filter) ([]entitydb.Referer, error) {
+	return rs.allModels.Referer.Find(filter)
 }

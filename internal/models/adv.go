@@ -2,24 +2,23 @@ package models
 
 import (
 	"bitrix-statistic/internal/entitydb"
-	"bitrix-statistic/internal/services"
 	"bitrix-statistic/internal/utils"
 	"context"
 	"github.com/ClickHouse/clickhouse-go/v2/lib/driver"
-	"regexp"
 )
 
 type Adv struct {
-	chClient      driver.Conn
-	optionService *services.OptionService
-	ctx           context.Context
+	chClient driver.Conn
+	ctx      context.Context
 }
 
-func NewAdv(ctx context.Context, chClient driver.Conn, optionService *services.OptionService) *Adv {
+func NewAdv(
+	ctx context.Context,
+	chClient driver.Conn,
+) *Adv {
 	return &Adv{
-		chClient:      chClient,
-		optionService: optionService,
-		ctx:           ctx,
+		chClient: chClient,
+		ctx:      ctx,
 	}
 }
 
@@ -90,41 +89,6 @@ func (am Adv) FindByReferer(referer1, referer2 string) ([]string, error) {
 		listUuid = append(listUuid, advUuid)
 	}
 	return listUuid, nil
-}
-
-func (am Adv) AutoCreateAdv(referer1, referer2 string) error {
-
-	referrers, err := am.FindByReferer(referer1, referer2)
-	if err != nil {
-		return err
-	}
-
-	if len(referrers) == 0 {
-		if am.optionService.IsAdvAutoCreate() {
-			var refererValid bool
-			if am.optionService.IsRefererCheck() {
-				refererValid, err = regexp.MatchString("/^([0-9A-Za-z_:;.,-])*$/", referer1)
-				if err != nil {
-					return err
-				}
-				if refererValid {
-					refererValid, err = regexp.MatchString("/^([0-9A-Za-z_:;.,-])*$/", referer2)
-				}
-				if err != nil {
-					return err
-				}
-			} else {
-				refererValid = true
-			}
-
-			if refererValid {
-				err := am.AddAdv(referer1, referer2)
-				if err != nil {
-					return nil
-				}
-			}
-		}
-	}
 }
 
 func (am Adv) AddAdv(referer1 string, referer2 string) error {

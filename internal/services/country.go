@@ -5,19 +5,20 @@ import (
 	"bitrix-statistic/internal/filters"
 	"bitrix-statistic/internal/models"
 	"context"
-	"github.com/ClickHouse/clickhouse-go/v2/lib/driver"
 )
 
 type CountryServices struct {
-	countryModel *models.Country
+	allModels *models.Models
+	ctx       context.Context
 }
 
-func NewCountry(ctx context.Context, chClient driver.Conn) *CountryServices {
+func NewCountry(ctx context.Context, allModels *models.Models) *CountryServices {
 	return &CountryServices{
-		countryModel: models.NewCountry(ctx, chClient),
+		ctx:       ctx,
+		allModels: allModels,
 	}
 }
 
-func (cs CountryServices) Find(filter filters.Filter) ([]entitydb.CountryDB, error) {
-	return cs.countryModel.Find(filter)
+func (cs CountryServices) Find(filter filters.Filter) ([]entitydb.Country, error) {
+	return cs.allModels.Country.Find(filter)
 }

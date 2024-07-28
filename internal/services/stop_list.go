@@ -3,19 +3,16 @@ package services
 import (
 	"bitrix-statistic/internal/models"
 	"context"
-	"github.com/ClickHouse/clickhouse-go/v2/lib/driver"
 )
 
 type StopListService struct {
-	ctx           context.Context
-	chClient      driver.Conn
-	stopListModel *models.StopList
+	ctx       context.Context
+	allModels *models.Models
 }
 
-func NewStopList(ctx context.Context, chClient driver.Conn) *StopListService {
+func NewStopList(ctx context.Context, allModels *models.Models) *StopListService {
 	return &StopListService{
-		ctx:           ctx,
-		chClient:      chClient,
-		stopListModel: models.NewStopList(ctx),
+		ctx:       ctx,
+		allModels: allModels,
 	}
 }

@@ -19,6 +19,6 @@ func NewPhrase(ctx context.Context, chClient driver.Conn) *Phrase {
 	}
 }
 
-func (p Phrase) Filter(filter filters.Filter) ([]entitydb.PhraseListDB, error) {
+func (p Phrase) Filter(filter filters.Filter) ([]entitydb.PhraseList, error) {
 	return nil, nil
 }

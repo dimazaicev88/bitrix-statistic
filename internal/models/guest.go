@@ -13,7 +13,7 @@ import (
 type Guest struct {
 	ctx          context.Context
 	chClient     driver.Conn
-	sessionModel *SessionModel
+	sessionModel *Session
 }
 
 func NewGuest(ctx context.Context, chClient driver.Conn) *Guest {
@@ -44,7 +44,7 @@ func NewGuest(ctx context.Context, chClient driver.Conn) *Guest {
 //	return guestId, favorites, lastUserId, lastAdvId, last, nil
 //}
 
-func (gm Guest) AddGuest(guest entitydb.GuestDb) error {
+func (gm Guest) AddGuest(guest entitydb.Guest) error {
 	//err := gm.chClient.Exec(gm.ctx, `INSERT INTO guest (
 	//               timestamp_x, favorites, events, sessions, hits, repair, session_id, date, url_from, url_to,
 	//               url_to_404, site_id, adv_id, referer1, referer2, referer3, user_id, user_auth, url, url_404, user_agent, ip,
@@ -61,7 +61,7 @@ func (gm Guest) AddGuest(guest entitydb.GuestDb) error {
 	return nil
 }
 
-//func (gm Guest) AddGuest(guestDb entitydb.GuestDb) error {
+//func (gm Guest) AddGuest(guest entity.Guest) error {
 //
 //
 //	return nil
@@ -82,29 +82,29 @@ func (gm Guest) ExistsGuestByHash(token string) (bool, error) {
 	return len(cookieToken) > 0, nil
 }
 
-func (gm Guest) Find(filter filters.Filter) ([]entitydb.GuestDb, error) {
-	return []entitydb.GuestDb{}, nil
+func (gm Guest) Find(filter filters.Filter) ([]entitydb.Guest, error) {
+	return []entitydb.Guest{}, nil
 }
 
-func (gm Guest) FindByHash(token string) ([]entitydb.GuestDb, error) {
+func (gm Guest) FinyHash(token string) ([]entitydb.Guest, error) {
 	row := gm.chClient.QueryRow(gm.ctx, `
 				SELECT * 
 				FROM guest 				
 				WHERE guest_hash=?`, token)
-	var guestDb []entitydb.GuestDb
-	err := row.Scan(&guestDb)
+	var guest []entitydb.Guest
+	err := row.Scan(&guest)
 	if err != nil {
-		return []entitydb.GuestDb{}, nil
+		return []entitydb.Guest{}, nil
 	}
 
-	return guestDb, nil
+	return guest, nil
 }
 
-func (gm Guest) FindByUuid(uuid uuid.UUID) (entitydb.GuestDb, error) {
-	var hit entitydb.GuestDb
+func (gm Guest) FindByUuid(uuid uuid.UUID) (entitydb.Guest, error) {
+	var hit entitydb.Guest
 	err := gm.chClient.QueryRow(gm.ctx, `select * from guest where uuid=?`, uuid.String()).Scan(&hit)
 	if err != nil {
-		return entitydb.GuestDb{}, err
+		return entitydb.Guest{}, err
 	}
 	return hit, nil
 

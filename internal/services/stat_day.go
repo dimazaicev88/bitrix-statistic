@@ -1,19 +1,19 @@
 package services
 
 import (
+	"bitrix-statistic/internal/models"
 	"context"
-	"github.com/ClickHouse/clickhouse-go/v2/lib/driver"
 )
 
 type StatDayService struct {
-	ctx      context.Context
-	chClient driver.Conn
+	ctx       context.Context
+	allModels *models.Models
 }
 
-func NewStatDay(ctx context.Context, chClient driver.Conn) *StatDayService {
+func NewStatDay(ctx context.Context, allModels *models.Models) *StatDayService {
 	return &StatDayService{
-		ctx:      ctx,
-		chClient: chClient,
+		ctx:       ctx,
+		allModels: allModels,
 	}
 }
 

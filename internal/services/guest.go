@@ -6,23 +6,24 @@ import (
 	"bitrix-statistic/internal/filters"
 	"bitrix-statistic/internal/models"
 	"context"
-	"github.com/ClickHouse/clickhouse-go/v2/lib/driver"
 	"github.com/google/uuid"
 	"time"
 )
 
 type GuestService struct {
-	guestModel *models.Guest
+	allModels *models.Models
+	ctx       context.Context
 }
 
-func NewGuest(ctx context.Context, chClient driver.Conn) *GuestService {
+func NewGuest(ctx context.Context, allModels *models.Models) *GuestService {
 	return &GuestService{
-		guestModel: models.NewGuest(ctx, chClient),
+		ctx:       ctx,
+		allModels: allModels,
 	}
 }
 
 func (gs GuestService) AddGuest(statData entityjson.StatData, adv entitydb.AdvReferer) error {
-	guest := entitydb.GuestDb{
+	guest := entitydb.Guest{
 		Timestamp: time.Now(),
 		UrlFrom:   statData.Referer,
 		UrlTo:     statData.Url,
@@ -35,16 +36,20 @@ func (gs GuestService) AddGuest(statData entityjson.StatData, adv entitydb.AdvRe
 		GuestHash: statData.GuestHash,
 	}
 
-	if err := gs.guestModel.AddGuest(guest); err != nil {
+	if err := gs.allModels.Guest.AddGuest(guest); err != nil {
 		return err
 	}
 	return nil
 }
 
-func (gs GuestService) Find(filter filters.Filter) ([]entitydb.GuestDb, error) {
-	return gs.guestModel.Find(filter)
+func (gs GuestService) Find(filter filters.Filter) ([]entitydb.Guest, error) {
+	return gs.allModels.Guest.Find(filter)
 }
 
-func (gs GuestService) FindByUuid(uuid uuid.UUID) (entitydb.GuestDb, error) {
-	return gs.guestModel.FindByUuid(uuid)
+func (gs GuestService) FindByUuid(uuid uuid.UUID) (entitydb.Guest, error) {
+	return gs.allModels.Guest.FindByUuid(uuid)
+}
+
+func (gs GuestService) ExistsGuestByHash(hash string) (bool, error) {
+	return gs.allModels.Guest.ExistsGuestByHash(hash)
 }

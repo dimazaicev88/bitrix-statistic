@@ -3,6 +3,7 @@ package services
 import (
 	"bitrix-statistic/internal/config"
 	"bitrix-statistic/internal/entityjson"
+	"bitrix-statistic/internal/models"
 	"bitrix-statistic/internal/storage"
 	"context"
 	"github.com/joho/godotenv"
@@ -21,7 +22,7 @@ func TestGuestModel_Searcher(t *testing.T) {
 	//utils.TruncateAllTables(chClient)
 	defer chClient.Close()
 	req := require.New(t)
-	err := NewStatistic(context.Background(), chClient).Add(entityjson.StatData{
+	err := NewStatistic(context.Background(), models.NewModels(context.Background(), chClient)).Add(entityjson.StatData{
 		PHPSessionId:      "te2ctj3n1nt6c2ci5l0era5di2",
 		GuestHash:         "44c2870053b0a6378f5db40c96406f00",
 		Url:               "http://localhost/catalog/dresses/dress-fashionista-on-a-walk/",

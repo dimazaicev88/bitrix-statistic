@@ -4,6 +4,7 @@ import (
 	"bitrix-statistic/internal/config"
 	"bitrix-statistic/internal/entitydb"
 	"bitrix-statistic/internal/entityjson"
+	"bitrix-statistic/internal/models"
 	"bitrix-statistic/internal/storage"
 	"bitrix-statistic/internal/utils"
 	"context"
@@ -21,7 +22,7 @@ func TestSearcherService_AllTests(t *testing.T) {
 	chClient, _ := storage.NewClickHouseClient(config.GetServerConfig())
 	defer chClient.Close()
 	req := require.New(t)
-	searchService := NewSearcher(context.Background(), chClient)
+	searchService := NewSearcher(context.Background(), models.NewModels(context.Background(), chClient))
 
 	t.Run("IsSearcher method", func(t *testing.T) {
 		utils.TruncateAllTables(chClient)

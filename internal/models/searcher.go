@@ -24,8 +24,8 @@ func NewSearcher(ctx context.Context, chClient driver.Conn) *Searcher {
 	}
 }
 
-func (s Searcher) FindSearcherByUserAgent(httpUserAgent string) (entitydb.SearcherDb, error) {
-	var searcher entitydb.SearcherDb
+func (s Searcher) FindSearcherByUserAgent(httpUserAgent string) (entitydb.Searcher, error) {
+	var searcher entitydb.Searcher
 	resultSql := `SELECT	uuid, date_cleanup, total_hits, save_statistic,
     				active, name, user_agent, diagram_default, hit_keep_days, dynamic_keep_days, phrases, phrases_hits, check_activity    
 			FROM searcher
@@ -35,16 +35,16 @@ func (s Searcher) FindSearcherByUserAgent(httpUserAgent string) (entitydb.Search
 	userAgent := utils.StringConcat("%", strings.ToUpper(httpUserAgent), "%")
 	err := s.chClient.QueryRow(s.ctx, resultSql, userAgent, userAgent).ScanStruct(&searcher)
 	if err != nil && !errors.Is(err, sql.ErrNoRows) {
-		return entitydb.SearcherDb{}, err
+		return entitydb.Searcher{}, err
 	}
 
 	return searcher, nil
 }
 
-func (s Searcher) ExistByIdAndCurrentDate(id int) ([]entitydb.SearcherDayHitsDb, error) {
-	var rows []entitydb.SearcherDayHitsDb
+func (s Searcher) ExistByIdAndCurrentDate(id int) ([]entitydb.SearcherDayHits, error) {
+	var rows []entitydb.SearcherDayHits
 	//sql := `SELECT id FROM searcher_day WHERE searcher_id='?' and date_stat=CURRENT_DATE ORDER BY id`
-	//err := s.storage.DB().Select(&rows, sql, id)
+	//err := s.storage.().Select(&rows, sql, id)
 	//if err != nil {
 	//	return nil, err
 	//}

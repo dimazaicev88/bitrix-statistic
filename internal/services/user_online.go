@@ -3,19 +3,16 @@ package services
 import (
 	"bitrix-statistic/internal/models"
 	"context"
-	"github.com/ClickHouse/clickhouse-go/v2/lib/driver"
 )
 
 type UserOnlineService struct {
-	ctx             context.Context
-	chClient        driver.Conn
-	userOnlineModel *models.UserOnline
+	ctx       context.Context
+	allModels *models.Models
 }
 
-func NewUserOnline(ctx context.Context, chClient driver.Conn) *UserOnlineService {
+func NewUserOnline(ctx context.Context, allModels *models.Models) *UserOnlineService {
 	return &UserOnlineService{
-		ctx:             ctx,
-		chClient:        chClient,
-		userOnlineModel: models.NewUserOnline(ctx, chClient),
+		ctx:       ctx,
+		allModels: allModels,
 	}
 }
