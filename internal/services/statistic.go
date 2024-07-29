@@ -67,7 +67,7 @@ func (stat Statistic) Add(statData entityjson.StatData) error {
 		//Если сессия новая, добавляем.
 		if stat.sessionService.IsExistsSession(statData.PHPSessionId) == false {
 			isNewGuest := existsGuest == false
-			err := stat.sessionService.Add(guestUuid, statData.PHPSessionId)
+			err = stat.sessionService.Add(guestUuid, statData.PHPSessionId)
 			if err != nil {
 				return err
 			}

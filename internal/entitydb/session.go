@@ -1,7 +1,6 @@
 package entitydb
 
 import (
-	"github.com/google/uuid"
 	"time"
 )
 
@@ -40,8 +39,8 @@ type SessionStat struct {
 }
 
 type Session struct {
-	Uuid         uuid.UUID `ch:"uuid"`
-	GuestUuid    uuid.UUID `ch:"guest_uuid"`
+	Uuid         string    `ch:"uuid"`
+	GuestUuid    string    `ch:"guest_uuid"`
 	PhpSessionId string    `ch:"phpsessid"`
 	DateCreate   time.Time `ch:"date_create"`
 }

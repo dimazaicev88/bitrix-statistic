@@ -3,12 +3,19 @@ package entitydb
 import "time"
 
 type Adv struct {
-	Uuid          string    `ch:"uuid"`
-	Referer1      string    `ch:"referer1"`
-	Referer2      string    `ch:"referer2"`
-	Cost          float64   `ch:"cost"`
+	Uuid        string    `ch:"uuid"`
+	Referer1    string    `ch:"referer1"`
+	Referer2    string    `ch:"referer2"`
+	Cost        float64   `ch:"cost"`
+	DateCreated time.Time `ch:"date_created"`
+	EventsView  string    `ch:"events_view"`
+	Description string    `ch:"description"`
+	Priority    uint32    `ch:"priority"`
+}
+
+type AdvStat struct {
+	AdvUuid       string    `ch:"adv_uuid"`
 	Revenue       float64   `ch:"revenue"`
-	EventsView    string    `ch:"events_view"`
 	Guests        uint32    `ch:"guests"`
 	NewGuests     uint32    `ch:"new_guests"`
 	Favorites     uint32    `ch:"favorites"`
@@ -22,6 +29,4 @@ type Adv struct {
 	HostsBack     uint32    `ch:"hosts_back"`
 	SessionsBack  uint32    `ch:"sessions_back"`
 	HitsBack      uint32    `ch:"hits_back"`
-	Description   string    `ch:"description"`
-	Priority      uint32    `ch:"priority"`
 }

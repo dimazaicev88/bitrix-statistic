@@ -23,25 +23,7 @@ func NewSession(ctx context.Context, allModels *models.Models) *SessionService {
 func (ss SessionService) Add(guestUuid, phpSessionId string) error {
 	err := ss.allModels.Session.Add(entitydb.Session{
 		GuestUuid:    guestUuid,
-		IsNewGuest:   isNewGuest,
-		UserId:       statData.UserId,
-		IsUserAuth:   statData.IsUserAuth,
-		UrlFrom:      statData.Referer,
-		UrlTo:        statData.Url,
-		UrlTo404:     statData.IsError404,
-		UrlLast:      statData.Url,
-		UrlLast404:   statData.IsError404,
-		UserAgent:    statData.UserAgent,
-		IpFirst:      statData.Ip,
-		IpLast:       statData.Ip,
-		PhpSessionId: statData.PHPSessionId,
-		StopListUuid: stopListUuid,
-		CountryId:    countryId,
-		CityUuid:     cityId,
-		AdvBack:      advBack,
-		FirstSiteId:  statData.SiteId,
-		LastSiteId:   statData.SiteId,
-		Hits:         1,
+		PhpSessionId: phpSessionId,
 	})
 
 	if err != nil {
