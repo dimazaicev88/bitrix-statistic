@@ -47,8 +47,8 @@ func NewGuest(ctx context.Context, chClient driver.Conn) *Guest {
 func (gm Guest) Add(guest entitydb.Guest) error {
 	return gm.chClient.Exec(gm.ctx,
 		`INSERT INTO guest (uuid,guest_hash,user_agent,ip, x_forwarded_for,date_create) 
-			   VALUES (generateUUIDv7(), ?, ?, ?, ?, now())`,
-		guest.GuestHash, guest.UserAgent, guest.Ip, guest.XForwardedFor,
+			   VALUES (?, ?, ?, ?, ?, now())`,
+		guest.Uuid, guest.GuestHash, guest.UserAgent, guest.Ip, guest.XForwardedFor,
 	)
 }
 

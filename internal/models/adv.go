@@ -115,7 +115,7 @@ func (am Adv) DeleteByUuid(uuid string) error {
 
 func (am Adv) FindRefererByListAdv(listAdv []string) (entitydb.AdvReferer, error) {
 	var adv entitydb.AdvReferer
-	sql := `SELECT 	referer1,referer2 FROM adv WHERE  uuid IN (?) ORDER BY priority,date_create DESC LIMIT 1`
+	sql := `SELECT 	uuid as adv_uuid, referer1,referer2 FROM adv WHERE  uuid IN (?) ORDER BY priority,date_create DESC LIMIT 1`
 	err := am.chClient.QueryRow(am.ctx, sql, listAdv).ScanStruct(&adv)
 	if err != nil {
 		return entitydb.AdvReferer{}, err

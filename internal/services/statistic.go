@@ -1,10 +1,10 @@
 package services
 
 import (
+	"bitrix-statistic/internal/entitydb"
 	"bitrix-statistic/internal/entityjson"
 	"bitrix-statistic/internal/models"
 	"context"
-	"github.com/google/uuid"
 	_ "net/netip"
 )
 
@@ -14,6 +14,7 @@ type Statistic struct {
 	sessionService  *SessionService
 	statDayService  *StatDayService
 	searcherService *SearcherService
+	hitService      *HitService
 }
 
 func NewStatistic(ctx context.Context, allModels *models.Models) *Statistic {
@@ -23,10 +24,18 @@ func NewStatistic(ctx context.Context, allModels *models.Models) *Statistic {
 		sessionService:  NewSession(ctx, allModels),
 		statDayService:  NewStatDay(ctx, allModels),
 		searcherService: NewSearcher(ctx, allModels),
+		hitService:      NewHit(ctx, allModels),
 	}
 }
 
 func (stat Statistic) Add(statData entityjson.StatData) error {
+	var stopListUuid string
+	var guestUuid string
+	var advBack string
+	var advReferer entitydb.AdvReferer
+	var sessionDb entitydb.Session
+	var existsGuest = false
+
 	isSearcher, err := stat.searcherService.IsSearcher(statData.UserAgent)
 	if err != nil {
 		return err
@@ -37,48 +46,49 @@ func (stat Statistic) Add(statData entityjson.StatData) error {
 			return err
 		}
 	} else {
-		existsGuest, err := stat.guestService.ExistsGuestByHash(statData.GuestHash)
+		existsGuest, err = stat.guestService.ExistsGuestByHash(statData.GuestHash)
 		if err != nil {
 			return err
 		}
 		//---------------------------Секция гостя------------------------------------
-		var guestUuid string
-		var stopListUuid string
-		var advBack string
-		var cityUuid string
-		var countryUuid uuid.UUID
 
 		//Гость не найден, добавляем гостя
 		if existsGuest == false {
-			adv, err := stat.advServices.GetAdv(statData.Url) //Получаем рекламную компанию
+			advReferer, err = stat.advServices.GetAdv(statData.Url) //Получаем рекламную компанию
 			//TODO добавить установку дефолтной рекламной компании, в случае если  не установлена рекламная компания
 
 			if err != nil {
 				return err
 			}
 
-			err = stat.guestService.AddGuest(statData)
+			guestUuid, err = stat.guestService.AddGuest(statData)
 			if err != nil {
 				return err
 			}
 		}
 
 		//---------------------------Секция сессии------------------------------------
+		sessionDb, err = stat.sessionService.FindByPHPSessionId(statData.PHPSessionId)
+		if err != nil {
+			return err
+		}
+
 		//Если сессия новая, добавляем.
-		if stat.sessionService.IsExistsSession(statData.PHPSessionId) == false {
-			isNewGuest := existsGuest == false
-			err = stat.sessionService.Add(guestUuid, statData.PHPSessionId)
+		if sessionDb == (entitydb.Session{}) {
+			sessionUuid, err := stat.sessionService.Add(guestUuid, statData.PHPSessionId)
 			if err != nil {
 				return err
 			}
-		} else { // Обновляем имеющуюся
-			err := stat.sessionService.UpdateSession(statData)
-			if err != nil {
-				return err
+			sessionDb = entitydb.Session{
+				Uuid:         sessionUuid,
+				GuestUuid:    guestUuid,
+				PhpSessionId: statData.PHPSessionId,
 			}
 		}
 
-		stat.statDayService.Update() //TODO доделать update
+		stat.hitService.Add()
+
+		stat.statDayService.Add() //TODO доделать update
 	}
 	return nil
 }

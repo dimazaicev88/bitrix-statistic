@@ -15,4 +15,6 @@ type StatData struct {
 	Event1            string `json:"event1"`
 	Event2            string `json:"event2"`
 	IsUserAuth        bool   `json:"isUserAuth"`
+	Method            string `json:"method"`
+	Cookies           string `json:"cookies"`
 }

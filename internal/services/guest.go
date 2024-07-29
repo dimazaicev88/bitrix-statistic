@@ -22,23 +22,27 @@ func NewGuest(ctx context.Context, allModels *models.Models) *GuestService {
 	}
 }
 
-func (gs GuestService) AddGuest(statData entityjson.StatData) error {
+func (gs GuestService) AddGuest(statData entityjson.StatData) (string, error) {
 	guestHash, err := utils.GetGuestMd5(statData)
 	if err != nil {
-		return err
+		return "", err
 	}
-
+	newUUID, err := uuid.NewUUID()
+	if err != nil {
+		return "", err
+	}
 	guest := entitydb.Guest{
+		Uuid:          newUUID.String(),
 		GuestHash:     guestHash,
 		UserAgent:     statData.UserAgent,
 		Ip:            statData.Ip,
 		XForwardedFor: statData.HttpXForwardedFor,
 	}
 
-	if err := gs.allModels.Guest.Add(guest); err != nil {
-		return err
+	if err = gs.allModels.Guest.Add(guest); err != nil {
+		return "", err
 	}
-	return nil
+	return newUUID.String(), nil
 }
 
 func (gs GuestService) Find(filter filters.Filter) ([]entitydb.GuestStat, error) {

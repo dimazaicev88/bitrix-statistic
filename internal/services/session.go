@@ -2,10 +2,10 @@ package services
 
 import (
 	"bitrix-statistic/internal/entitydb"
-	"bitrix-statistic/internal/entityjson"
 	"bitrix-statistic/internal/filters"
 	"bitrix-statistic/internal/models"
 	"context"
+	"github.com/google/uuid"
 )
 
 type SessionService struct {
@@ -20,17 +20,22 @@ func NewSession(ctx context.Context, allModels *models.Models) *SessionService {
 	}
 }
 
-func (ss SessionService) Add(guestUuid, phpSessionId string) error {
-	err := ss.allModels.Session.Add(entitydb.Session{
+func (ss SessionService) Add(guestUuid, phpSessionId string) (string, error) {
+	sessionUuid, err := uuid.NewUUID()
+	if err != nil {
+		return "", err
+	}
+	err = ss.allModels.Session.Add(entitydb.Session{
+		Uuid:         sessionUuid.String(),
 		GuestUuid:    guestUuid,
 		PhpSessionId: phpSessionId,
 	})
 
 	if err != nil {
-		return err
+		return "", err
 	}
 
-	return nil
+	return sessionUuid.String(), nil
 }
 
 func (ss SessionService) IsExistsSession(phpSession string) bool {
@@ -41,14 +46,18 @@ func (ss SessionService) IsExistsSession(phpSession string) bool {
 	return count > 0
 }
 
-func (ss SessionService) UpdateSession(data entityjson.StatData) error {
-	err := ss.allModels.Session.Update(data)
-	if err != nil {
-		return err
-	}
-	return nil
+//func (ss SessionService) UpdateSession(data entityjson.StatData) error {
+//	err := ss.allModels.Session.Update(data)
+//	if err != nil {
+//		return err
+//	}
+//	return nil
+//}
+
+func (ss SessionService) Filter(filter filters.Filter) ([]entitydb.Session, error) {
+	return nil, nil
 }
 
-func (ss SessionService) Filter(filter filters.Filter) ([]entitydb.SessionStat, error) {
-	return nil, nil
+func (ss SessionService) FindByPHPSessionId(phpSessionId string) (entitydb.Session, error) {
+	return ss.allModels.Session.FindByPHPSessionId(phpSessionId)
 }

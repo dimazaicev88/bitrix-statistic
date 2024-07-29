@@ -7,6 +7,7 @@ import (
 type Hit struct {
 	Uuid         string    `ch:"uuid"`
 	SessionUuid  string    `ch:"session_uuid"`
+	AdvUuid      string    `ch:"adv_uuid"`
 	DateHit      time.Time `ch:"date_hit"`
 	GuestUuid    string    `ch:"guest_uuid"`
 	NewGuest     bool      `ch:"new_guest"`

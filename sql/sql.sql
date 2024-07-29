@@ -745,6 +745,7 @@ create table if not exists hit
 (
     uuid           UUID,
     session_uuid   UUID,
+    adv_uuid       String,
     date_hit       DateTime32('Europe/Moscow'),
     guest_uuid     UUID,
     new_guest      BOOLEAN default false,
@@ -1032,5 +1033,155 @@ create table if not exists statistic.searcher_total_hits
 ) engine = SummingMergeTree(total_hits)
       ORDER BY (date_stat, searcher_uuid);
 
+
+
+-- SELECT t_adv_stat.adv_uuid,
+--        t_adv.referer1,
+--        t_adv.referer2,
+--        t_adv.priority,
+--        t_adv.events_view,
+--        t_adv.description,
+-- --        t_adv_stat.DATE_FIRST                                                                            C_TIME_FIRST,
+-- --        t_adv_stat.DATE_LAST                                                                             C_TIME_LAST,
+--        'RUB'                                                                                    currency,
+-- --        DATE_FORMAT(t_adv_stat.date_first, '%d.%m.%Y')                                                          DATE_FIRST,
+-- --        DATE_FORMAT(t_adv_stat.date_last, '%d.%m.%Y')                                                           DATE_LAST,
+-- --        toUnixTimestamp(ifNull(t_adv_stat.DATE_LAST, 0)) - toUnixTimestamp(ifNull(t_adv_stat.date_first, 0))    ADV_TIME,
+--
+--        -- TODAY
+--        sum(if(TO_DAYS(curdate()) = TO_DAYS(t_adv_stat.date_stat), ifNull(t_adv_day.guests_day, 0),
+--               0))                                                                               guests_today,
+--        sum(if(TO_DAYS(curdate()) = TO_DAYS(t_adv_stat.date_stat), ifNull(t_adv_stat.new_guests, 0),
+--               0))                                                                               new_guests_today,
+--        sum(if(TO_DAYS(curdate()) = TO_DAYS(t_adv_stat.date_stat), ifNull(t_adv_stat.favorites, 0),
+--               0))                                                                               favorites_today,
+--        sum(if(TO_DAYS(curdate()) = TO_DAYS(t_adv_stat.date_stat), ifNull(t_adv_day.hosts_day, 0),
+--               0))                                                                               c_hosts_today,
+--        sum(if(TO_DAYS(curdate()) = TO_DAYS(t_adv_stat.date_stat), ifNull(t_adv_stat.sessions, 0),
+--               0))                                                                               sessions_today,
+--        sum(if(TO_DAYS(curdate()) = TO_DAYS(t_adv_stat.date_stat), ifNull(t_adv_stat.hits, 0),
+--               0))                                                                               hits_today,
+--        sum(if(TO_DAYS(curdate()) = TO_DAYS(t_adv_stat.date_stat), ifNull(t_adv_day.guests_day_back, 0),
+--               0))                                                                               guests_back_today,
+--        sum(if(TO_DAYS(curdate()) = TO_DAYS(t_adv_stat.date_stat), ifNull(t_adv_stat.favorites_back, 0),
+--               0))                                                                               favorites_back_today,
+--        sum(if(TO_DAYS(curdate()) = TO_DAYS(t_adv_stat.date_stat), ifNull(t_adv_day.hosts_day_back, 0),
+--               0))                                                                               hosts_back_today,
+--        sum(if(TO_DAYS(curdate()) = TO_DAYS(t_adv_stat.date_stat), ifNull(t_adv_stat.sessions_back, 0),
+--               0))                                                                               sessions_back_today,
+--        sum(if(TO_DAYS(curdate()) = TO_DAYS(t_adv_stat.date_stat), ifNull(t_adv_stat.hits_back, 0),
+--               0))                                                                               hits_back_today,
+--
+--        -- YESTERDAY
+--        sum(if(TO_DAYS(curdate()) - TO_DAYS(t_adv_stat.date_stat) = 1, ifNull(t_adv_day.guests_day, 0),
+--               0))                                                                               guests_yesterday,
+--        sum(if(TO_DAYS(curdate()) - TO_DAYS(t_adv_stat.date_stat) = 1, ifNull(t_adv_stat.new_guests, 0),
+--               0))                                                                               new_guests_yesterday,
+--        sum(if(TO_DAYS(curdate()) - TO_DAYS(t_adv_stat.date_stat) = 1, ifNull(t_adv_stat.favorites, 0),
+--               0))                                                                               favorites_yesterday,
+--        sum(if(TO_DAYS(curdate()) - TO_DAYS(t_adv_stat.date_stat) = 1, ifNull(t_adv_day.hosts_day, 0),
+--               0))                                                                               c_hosts_yesterday,
+--        sum(if(TO_DAYS(curdate()) - TO_DAYS(t_adv_stat.date_stat) = 1, ifNull(t_adv_stat.sessions, 0),
+--               0))                                                                               sessions_yesterday,
+--        sum(if(TO_DAYS(curdate()) - TO_DAYS(t_adv_stat.date_stat) = 1, ifNull(t_adv_stat.hits, 0),
+--               0))                                                                               hits_yesterday,
+--        sum(if(TO_DAYS(curdate()) - TO_DAYS(t_adv_stat.date_stat) = 1, ifNull(t_adv_day.guests_day_back, 0),
+--               0))                                                                               guests_back_yesterday,
+--        sum(if(TO_DAYS(curdate()) - TO_DAYS(t_adv_stat.date_stat) = 1, ifNull(t_adv_stat.favorites_back, 0),
+--               0))                                                                               favorites_back_yesterday,
+--        sum(if(TO_DAYS(curdate()) - TO_DAYS(t_adv_stat.date_stat) = 1, ifNull(t_adv_day.hosts_day_back, 0),
+--               0))                                                                               hosts_back_yesterday,
+--        sum(if(TO_DAYS(curdate()) - TO_DAYS(t_adv_stat.date_stat) = 1, ifNull(t_adv_stat.sessions_back, 0),
+--               0))                                                                               sessions_back_yesterday,
+--        sum(if(TO_DAYS(curdate()) - TO_DAYS(t_adv_stat.date_stat) = 1, ifNull(t_adv_stat.hits_back, 0),
+--               0))                                                                               hits_back_yesterday,
+--
+--        -- THE DAY BEFORE YESTERDAY
+--        sum(if(TO_DAYS(curdate()) - TO_DAYS(t_adv_stat.date_stat) = 2, ifNull(t_adv_day.guests_day, 0),
+--               0))                                                                               guests_bef_yesterday,
+--        sum(if(TO_DAYS(curdate()) - TO_DAYS(t_adv_stat.date_stat) = 2, ifNull(t_adv_stat.new_guests, 0),
+--               0))                                                                               new_guests_bef_yesterday,
+--        sum(if(TO_DAYS(curdate()) - TO_DAYS(t_adv_stat.date_stat) = 2, ifNull(t_adv_stat.favorites, 0),
+--               0))                                                                               favorites_bef_yesterday,
+--        sum(if(TO_DAYS(curdate()) - TO_DAYS(t_adv_stat.date_stat) = 2, ifNull(t_adv_day.hosts_day, 0),
+--               0))                                                                               hosts_bef_yesterday,
+--        sum(if(TO_DAYS(curdate()) - TO_DAYS(t_adv_stat.date_stat) = 2, ifNull(t_adv_stat.sessions, 0),
+--               0))                                                                               sessions_bef_yesterday,
+--        sum(if(TO_DAYS(curdate()) - TO_DAYS(t_adv_stat.date_stat) = 2, ifNull(t_adv_stat.hits, 0),
+--               0))                                                                               hits_bef_yesterday,
+--        sum(if(TO_DAYS(curdate()) - TO_DAYS(t_adv_stat.date_stat) = 2, ifNull(t_adv_day.guests_day_back, 0),
+--               0))                                                                               guests_back_bef_yesterday,
+--        sum(if(TO_DAYS(curdate()) - TO_DAYS(t_adv_stat.date_stat) = 2, ifNull(t_adv_stat.favorites_back, 0),
+--               0))                                                                               favorites_back_bef_yesterday,
+--        sum(if(TO_DAYS(curdate()) - TO_DAYS(t_adv_stat.date_stat) = 2, ifNull(t_adv_day.hosts_day_back, 0),
+--               0))                                                                               hosts_back_bef_yesterday,
+--        sum(if(TO_DAYS(curdate()) - TO_DAYS(t_adv_stat.date_stat) = 2, ifNull(t_adv_stat.sessions_back, 0),
+--               0))                                                                               sessions_back_bef_yesterday,
+--        sum(if(TO_DAYS(curdate()) - TO_DAYS(t_adv_stat.date_stat) = 2, ifNull(t_adv_stat.hits_back, 0),
+--               0))                                                                               hits_back_bef_yesterday,
+--
+--
+--        -- PERIOD
+--        t_adv_stat.guests                                                                        guests_period,
+--        t_adv_stat.hosts                                                                         hosts_period,
+--        t_adv_stat.new_guests                                                                    new_guests_period,
+--        t_adv_stat.favorites                                                                     favorites_period,
+--        t_adv_stat.sessions                                                                      sessions_period,
+--        t_adv_stat.hits                                                                          hits_period,
+--        t_adv_stat.guests_back                                                                   guests_back_period,
+--        t_adv_stat.hosts_back                                                                    hosts_back_period,
+--        t_adv_stat.favorites                                                                     favorites_back_period,
+--        t_adv_stat.sessions_back                                                                 sessions_back_period,
+--        t_adv_stat.hits_back                                                                     hits_back_period,
+--
+--        -- TOTAL
+--        t_adv_stat.guests,
+--        t_adv_stat.new_guests,
+--        t_adv_stat.favorites,
+--        t_adv_stat.hosts,
+--        t_adv_stat.sessions,
+--        t_adv_stat.hits,
+--        t_adv_stat.guests_back,
+--        t_adv_stat.favorites_back,
+--        t_adv_stat.hosts_back,
+--        t_adv_stat.sessions_back,
+--        t_adv_stat.hits_back,
+--
+--        -- AUDIENCE
+--        if(t_adv_stat.sessions > 0, round(t_adv_stat.hits / t_adv_stat.sessions, 2), -1)         attent,
+--        if(t_adv_stat.sessions_back > 0, round(t_adv_stat.hits_back / t_adv_stat.sessions_back, 2),
+--           -1)                                                                                   attent_back,
+--        if(t_adv_stat.guests > 0, round((t_adv_stat.new_guests / t_adv_stat.guests) * 100, 2),
+--           -1)                                                                                   new_visitors,
+--        if(t_adv_stat.guests > 0, round((t_adv_stat.guests_back / t_adv_stat.guests) * 100, 2),
+--           -1)                                                                                   returned_visitors,
+--        if(
+--                round((((toUnixTimestamp(ifNull(t_adv_stat.date_last, 0)) -
+--                         toUnixTimestamp(ifNull(t_adv_stat.date_first, 0))) / 86400)),
+--                      0) >= 1, round(t_adv_stat.guests / ((toUnixTimestamp(ifNull(t_adv_stat.date_last, 0)) -
+--                                                           toUnixTimestamp(ifNull(t_adv_stat.date_first, 0))) / 86400),
+--                                     2),
+--                -1)                                                                              visitors_per_day,
+--
+--        -- FINANCES
+--        round(round(t_adv.cost, 2) * 1, 2)                                                       cost,
+--        round(round(t_adv_stat.revenue, 2) * 1, 2)                                               revenue,
+--        round(round(t_adv_stat.revenue - t_adv.cost, 2) * 1, 2)                                  benefit,
+--        round(round(if(t_adv_stat.sessions > 0, t_adv.cost / t_adv_stat.sessions, 0), 2) * 1,
+--              2)                                                                                 session_cost,
+--        round(round(if(t_adv_stat.guests > 0, t_adv.cost / t_adv_stat.guests, 0), 2) * 1,
+--              2)                                                                                 visitor_cost,
+--        if(t_adv.cost > 0, round(((t_adv_stat.revenue - t_adv.cost) / t_adv.cost) * 100, 2), -1) roi
+--
+-- FROM adv t_adv
+--          JOIN adv_stat t_adv_stat ON t_adv.uuid = t_adv_stat.adv_uuid
+--          LEFT JOIN adv_day t_adv_day ON (t_adv_day.adv_uuid = t_adv_stat.adv_uuid)
+-- GROUP BY t_adv.uuid, t_adv.referer1, t_adv.referer2, t_adv.cost, t_adv_stat.revenue, t_adv.priority, t_adv.events_view,
+--          t_adv.description,--          t_adv_stat.date_first,         t_adv_stat.date_last,
+--          t_adv_stat.guests, t_adv_stat.new_guests, t_adv_stat.favorites, t_adv_stat.hosts,
+--          t_adv_stat.sessions, t_adv_stat.hits, t_adv_stat.guests_back,
+--          t_adv_stat.favorites_back, t_adv_stat.hosts_back, t_adv_stat.sessions_back, t_adv_stat.hits_back,
+--          t_adv_stat.adv_uuid
+-- LIMIT 500
 
 

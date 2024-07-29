@@ -153,3 +153,12 @@ func (sm Session) ExistsByPhpSession(session string) (int, error) {
 	}
 	return count, nil
 }
+
+func (sm Session) FindByPHPSessionId(phpSessionId string) (entitydb.Session, error) {
+	var sessionDb entitydb.Session
+	err := sm.chClient.QueryRow(sm.ctx, `select * from session where phpsessid=?`, phpSessionId).ScanStruct(&sessionDb)
+	if err != nil {
+		return entitydb.Session{}, err
+	}
+	return sessionDb, nil
+}

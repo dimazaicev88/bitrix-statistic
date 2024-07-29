@@ -16,3 +16,7 @@ func NewDay(ctx context.Context, chClient driver.Conn) *Day {
 		chClient: chClient,
 	}
 }
+
+func (d Day) Add() {
+
+}
