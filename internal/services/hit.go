@@ -26,3 +26,7 @@ func (hs *HitService) Find(filter filters.Filter) ([]entitydb.Hit, error) {
 func (hs *HitService) FindByUuid(uuid string) (entitydb.Hit, error) {
 	return hs.allModels.Hit.FindByUuid(uuid)
 }
+
+func (hs *HitService) Add(hit entitydb.Hit) error {
+	return hs.allModels.Hit.AddHit(hit)
+}

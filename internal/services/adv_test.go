@@ -27,8 +27,8 @@ func TestAdvServices_GetAdv(t *testing.T) {
 	defer chClient.Close()
 	req := require.New(t)
 	allModels := models.NewModels(context.Background(), chClient)
-	optionService := NewOption(context.Background(), allModels)
-	advServices := NewAdv(context.Background(), allModels, optionService)
+	//optionService := NewOption(context.Background(), allModels)
+	advServices := NewAdv(context.Background(), allModels)
 
 	t.Run("Указано 'Куда пришли'", func(t *testing.T) {
 		utils.TruncateAllTables(chClient)

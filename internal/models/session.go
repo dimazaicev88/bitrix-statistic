@@ -23,24 +23,14 @@ func (sm Session) Find(filter filters.Filter) (error, []map[string]interface{}) 
 	return nil, nil
 }
 
-func (sm Session) AddSession(session entitydb.Session) error {
-
-	//		"DATE_STAT" => $_now_date,
-	//		"DATE_FIRST" => $_now,
-	//		"DATE_LAST" => $_now,
-
-	//err := sm.chClient.Exec(sm.ctx, `INSERT INTO session (
-	//									   uuid, guest_id, new_guest, user_id, user_auth, events, hits, favorites,
-	//									   url_from, url_to, url_to_404, user_agent, date_stat, phpsessid, adv_id, adv_back,
-	//									   referer1, referer2, referer3, stop_list_id
-	//   ) VALUES (generateUUIDv7(), ?, ?, ?, ?, ?, ?) `,
-	//	session.GuestUuid, session.IsNewGuest, session.UserId, session.IsUserAuth, session.Events, session.Hits, session.Favorites, session.UrlFrom, session.UrlTo, session.UrlTo404, session.UrlLast, session.UrlLast404, session.UserAgent, time.Unix(session.DateStat, 0).add(time.Hour*3),
-	//	time.Unix(session.Date, 0).add(time.Hour*3), session.PhpSessionId,
-	//	session.AdvId, session.AdvBack, session.Referer1, session.Referer2, session.Referer3, session.StopListUuid, session.CountryId, session.CityUuid,
-	//)
-	//if err != nil {
-	//	return err
-	//}
+func (sm Session) Add(session entitydb.Session) error {
+	err := sm.chClient.Exec(sm.ctx,
+		`INSERT INTO session (uuid, guest_uuid, phpsessid, date_create) VALUES (generateUUIDv7(), ?, ?, now()) `,
+		session.GuestUuid, session.PhpSessionId,
+	)
+	if err != nil {
+		return err
+	}
 	return nil
 }
 

@@ -11,7 +11,7 @@ type Hit struct {
 	GuestUuid    string    `ch:"guest_uuid"`
 	NewGuest     bool      `ch:"new_guest"`
 	UserId       uint32    `ch:"user_id"`
-	UserAuth     bool      `ch:"user_auth"`
+	IsUserAuth   bool      `ch:"user_auth"`
 	Url          string    `ch:"url"`
 	Url404       bool      `ch:"url_404"`
 	UrlFrom      string    `ch:"url_from"`

@@ -20,7 +20,7 @@ type (
 	}
 
 	Phrase struct {
-		Uuid         string    `json:"uuid"`         //Uuid записи
+		Uuid         string    `json:"uuid"`         //GuestUuid записи
 		PHRASE       string    `json:"phrase"`       //Поисковая фраза
 		DateHit      time.Time `json:"dateHit"`      //время
 		SessionUuid  string    `json:"sessionUuid"`  //ID сессии

@@ -92,12 +92,8 @@ func (am Adv) FindByReferer(referer1, referer2 string) ([]string, error) {
 }
 
 func (am Adv) AddAdv(referer1 string, referer2 string) error {
-	err := am.chClient.Exec(am.ctx, `INSERT INTO adv (uuid, referer1, referer2, date_create, cost, events_view, description, priority)
+	return am.chClient.Exec(am.ctx, `INSERT INTO adv (uuid, referer1, referer2, date_create, cost, events_view, description, priority)
 		VALUES (generateUUIDv7(), ?, ?, now(),0.0,'','',1)`, referer1, referer2)
-	if err != nil {
-		return err
-	}
-	return nil
 }
 
 func (am Adv) FindByUuid(uuid string) (entitydb.Adv, error) {

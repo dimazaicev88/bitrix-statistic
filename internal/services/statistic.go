@@ -19,7 +19,7 @@ type Statistic struct {
 func NewStatistic(ctx context.Context, allModels *models.Models) *Statistic {
 	return &Statistic{
 		guestService:    NewGuest(ctx, allModels),
-		advServices:     NewAdv(ctx, allModels, NewOption(ctx, allModels)),
+		advServices:     NewAdv(ctx, allModels),
 		sessionService:  NewSession(ctx, allModels),
 		statDayService:  NewStatDay(ctx, allModels),
 		searcherService: NewSearcher(ctx, allModels),
@@ -42,8 +42,8 @@ func (stat Statistic) Add(statData entityjson.StatData) error {
 			return err
 		}
 		//---------------------------Секция гостя------------------------------------
-		var guestUuid uuid.UUID
-		var stopListUuid uuid.UUID
+		var guestUuid string
+		var stopListUuid string
 		var advBack string
 		var cityUuid string
 		var countryUuid uuid.UUID
@@ -57,7 +57,7 @@ func (stat Statistic) Add(statData entityjson.StatData) error {
 				return err
 			}
 
-			err = stat.guestService.AddGuest(statData, adv)
+			err = stat.guestService.AddGuest(statData)
 			if err != nil {
 				return err
 			}
@@ -67,7 +67,7 @@ func (stat Statistic) Add(statData entityjson.StatData) error {
 		//Если сессия новая, добавляем.
 		if stat.sessionService.IsExistsSession(statData.PHPSessionId) == false {
 			isNewGuest := existsGuest == false
-			err := stat.sessionService.AddSession(advBack, cityUuid, countryUuid, stopListUuid, guestUuid, isNewGuest, statData)
+			err := stat.sessionService.Add(guestUuid, statData.PHPSessionId)
 			if err != nil {
 				return err
 			}

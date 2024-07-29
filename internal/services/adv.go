@@ -17,11 +17,10 @@ type AdvServices struct {
 	optionService *OptionService
 }
 
-func NewAdv(ctx context.Context, allModels *models.Models, optionService *OptionService) *AdvServices {
+func NewAdv(ctx context.Context, allModels *models.Models) *AdvServices {
 	return &AdvServices{
-		ctx:           ctx,
-		allModels:     allModels,
-		optionService: optionService,
+		ctx:       ctx,
+		allModels: allModels,
 	}
 }
 

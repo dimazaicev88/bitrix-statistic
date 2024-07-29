@@ -5,9 +5,9 @@ import (
 	"bitrix-statistic/internal/entityjson"
 	"bitrix-statistic/internal/filters"
 	"bitrix-statistic/internal/models"
+	"bitrix-statistic/internal/utils"
 	"context"
 	"github.com/google/uuid"
-	"time"
 )
 
 type GuestService struct {
@@ -22,34 +22,33 @@ func NewGuest(ctx context.Context, allModels *models.Models) *GuestService {
 	}
 }
 
-func (gs GuestService) AddGuest(statData entityjson.StatData, adv entitydb.AdvReferer) error {
-	guest := entitydb.Guest{
-		Timestamp: time.Now(),
-		UrlFrom:   statData.Referer,
-		UrlTo:     statData.Url,
-		UrlTo404:  statData.IsError404,
-		SiteId:    statData.SiteId,
-		AdvUuid:   "",
-		Referer1:  adv.Referer1,
-		Referer2:  adv.Referer2,
-		Referer3:  adv.Referer3,
-		GuestHash: statData.GuestHash,
+func (gs GuestService) AddGuest(statData entityjson.StatData) error {
+	guestHash, err := utils.GetGuestMd5(statData)
+	if err != nil {
+		return err
 	}
 
-	if err := gs.allModels.Guest.AddGuest(guest); err != nil {
+	guest := entitydb.Guest{
+		GuestHash:     guestHash,
+		UserAgent:     statData.UserAgent,
+		Ip:            statData.Ip,
+		XForwardedFor: statData.HttpXForwardedFor,
+	}
+
+	if err := gs.allModels.Guest.Add(guest); err != nil {
 		return err
 	}
 	return nil
 }
 
-func (gs GuestService) Find(filter filters.Filter) ([]entitydb.Guest, error) {
+func (gs GuestService) Find(filter filters.Filter) ([]entitydb.GuestStat, error) {
 	return gs.allModels.Guest.Find(filter)
 }
 
-func (gs GuestService) FindByUuid(uuid uuid.UUID) (entitydb.Guest, error) {
+func (gs GuestService) FindByUuid(uuid uuid.UUID) (entitydb.GuestStat, error) {
 	return gs.allModels.Guest.FindByUuid(uuid)
 }
 
 func (gs GuestService) ExistsGuestByHash(hash string) (bool, error) {
-	return gs.allModels.Guest.ExistsGuestByHash(hash)
+	return gs.allModels.Guest.ExistsByHash(hash)
 }

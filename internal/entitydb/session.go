@@ -5,9 +5,8 @@ import (
 	"time"
 )
 
-type Session struct {
-	Uuid         uuid.UUID `ch:"uuid"`
-	GuestUuid    uuid.UUID `ch:"guest_uuid"`
+type SessionStat struct {
+	GuestUuid    string    `ch:"guest_uuid"`
 	IsNewGuest   bool      `ch:"new_guest"`
 	UserId       uint32    `ch:"user_id"`
 	IsUserAuth   bool      `ch:"user_auth"`
@@ -17,21 +16,32 @@ type Session struct {
 	UrlFrom      string    `ch:"url_from"`
 	UrlTo        string    `ch:"url_to"`
 	UrlTo404     bool      `ch:"url_to_404"`
-	Url          string    `ch:"url"`
-	Url404       bool      `ch:"url_last_404"`
+	UrlLast      string    `ch:"url_last"`
+	UrlLast404   bool      `ch:"url_last_404"`
 	UserAgent    string    `ch:"user_agent"`
 	DateStat     time.Time `ch:"date_stat"`
-	Date         int64     `ch:"date"`
-	Ip           string    `ch:"ip"`
-	HitId        uuid.UUID `ch:"hit_uuid"`
+	DateFirst    time.Time `ch:"date_first"`
+	DateLast     time.Time `ch:"date_last"`
+	IpFirst      string    `ch:"ip_first"`
+	IpLast       string    `ch:"ip_last"`
+	FirstHitUuid string    `ch:"first_hit_uuid"`
+	LastHitUuid  string    `ch:"first_hit_uuid"`
 	PhpSessionId string    `ch:"phpsessid"`
 	AdvId        string    `ch:"adv_id"`
 	AdvBack      string    `ch:"adv_back"`
 	Referer1     string    `ch:"referer1"`
 	Referer2     string    `ch:"referer2"`
 	Referer3     string    `ch:"referer3"`
-	StopListUuid uuid.UUID `ch:"stop_list_uuid"`
-	CountryId    uuid.UUID `ch:"country_uuid"`
+	StopListUuid string    `ch:"stop_list_uuid"`
+	CountryId    string    `ch:"country_uuid"`
+	FirstSiteId  string    `ch:"first_site_uuid"`
+	LastSiteId   string    `ch:"last_site_uuid"`
 	CityUuid     string    `ch:"city_uuid"`
-	SiteId       string    `ch:"site_id"`
+}
+
+type Session struct {
+	Uuid         uuid.UUID `ch:"uuid"`
+	GuestUuid    uuid.UUID `ch:"guest_uuid"`
+	PhpSessionId string    `ch:"phpsessid"`
+	DateCreate   time.Time `ch:"date_create"`
 }

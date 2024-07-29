@@ -4,9 +4,8 @@ import (
 	"time"
 )
 
-type Guest struct {
-	Uuid        string    `ch:"uuid"`
-	GuestHash   string    `ch:"guest_hash"`
+type GuestStat struct {
+	GuestUuid   string    `ch:"guest_uuid"`
 	Timestamp   time.Time `ch:"timestamp"`
 	Favorites   uint8     `ch:"favorites"`
 	Events      uint32    `ch:"events"`
@@ -34,4 +33,13 @@ type Guest struct {
 	AdvId       string    `ch:"adv_id"`
 	AdvBack     bool      `ch:"adv_back"`
 	CityId      string    `ch:"city_id"`
+}
+
+type Guest struct {
+	Uuid          string    `ch:"uuid"`
+	GuestHash     string    `ch:"guest_hash"`
+	UserAgent     string    `ch:"user_agent"`
+	Ip            string    `ch:"ip"`
+	XForwardedFor string    `ch:"x_forwarded_for"`
+	DateCreate    time.Time `ch:"date_create"`
 }
