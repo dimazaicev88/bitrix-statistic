@@ -22,3 +22,14 @@ func NewReferer(ctx context.Context, allModels *models.Models) *RefererService {
 func (rs RefererService) Find(filter filters.Filter) ([]entitydb.Referer, error) {
 	return rs.allModels.Referer.Find(filter)
 }
+
+func (rs RefererService) Add(referer string) (string, error) {
+	if referer == "" {
+		return "", nil
+	}
+	return rs.allModels.Referer.Add(referer)
+}
+
+func (rs RefererService) AddToRefererList(refererList entitydb.RefererList) error {
+	return rs.allModels.Referer.AddToRefererList(refererList)
+}

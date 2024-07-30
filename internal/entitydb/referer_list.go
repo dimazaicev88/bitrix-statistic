@@ -4,7 +4,7 @@ import "time"
 
 type RefererList struct {
 	Uuid        string    `ch:"uuid"`
-	RefererUuid string    `ch:"referer_uuid"`
+	RefererId   string    `ch:"referer_uuid"`
 	DateHit     time.Time `ch:"date_hit"`
 	Protocol    string    `ch:"protocol"`
 	SiteName    string    `ch:"site_name"`

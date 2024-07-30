@@ -867,13 +867,11 @@ create table if not exists phrase_list
 create table if not exists referer
 (
     uuid      UUID,
-    date      DateTime32('Europe/Moscow'),
     site_name String,
     sessions  UInt32 default 0,
     hits      UInt32 default 0
-) engine = MergeTree
-      PARTITION BY toMonth(date)
-      ORDER BY date;
+) engine = SummingMergeTree([sessions,hits])
+      ORDER BY site_name;
 
 create table if not exists referer_list
 (
@@ -982,6 +980,7 @@ create table if not exists session_stat
 ) ENGINE = MergeTree
       PARTITION BY toMonth(date_stat)
       ORDER BY (date_stat);
+
 create table if not exists session
 (
     uuid        UUID,

@@ -5,7 +5,10 @@ import (
 	"bitrix-statistic/internal/entityjson"
 	"bitrix-statistic/internal/models"
 	"context"
+	"github.com/google/uuid"
 	_ "net/netip"
+	"net/url"
+	"time"
 )
 
 type Statistic struct {
@@ -14,7 +17,9 @@ type Statistic struct {
 	sessionService  *SessionService
 	statDayService  *StatDayService
 	searcherService *SearcherService
+	optionService   *OptionService
 	hitService      *HitService
+	refererService  *RefererService
 }
 
 func NewStatistic(ctx context.Context, allModels *models.Models) *Statistic {
@@ -25,6 +30,8 @@ func NewStatistic(ctx context.Context, allModels *models.Models) *Statistic {
 		statDayService:  NewStatDay(ctx, allModels),
 		searcherService: NewSearcher(ctx, allModels),
 		hitService:      NewHit(ctx, allModels),
+		optionService:   NewOption(ctx, allModels),
+		refererService:  NewReferer(ctx, allModels),
 	}
 }
 
@@ -50,12 +57,13 @@ func (stat Statistic) Add(statData entityjson.StatData) error {
 		if err != nil {
 			return err
 		}
-		//---------------------------Секция гостя------------------------------------
+		//--------------------------- Guest ------------------------------------
 
 		//Гость не найден, добавляем гостя
 		if existsGuest == false {
 			advReferer, err = stat.advServices.GetAdv(statData.Url) //Получаем рекламную компанию
 			//TODO добавить установку дефолтной рекламной компании, в случае если  не установлена рекламная компания
+			//TODO добавить авто создание рекламной компании
 
 			if err != nil {
 				return err
@@ -67,7 +75,7 @@ func (stat Statistic) Add(statData entityjson.StatData) error {
 			}
 		}
 
-		//---------------------------Секция сессии------------------------------------
+		//--------------------------- Sessions ------------------------------------
 		sessionDb, err = stat.sessionService.FindByPHPSessionId(statData.PHPSessionId)
 		if err != nil {
 			return err
@@ -86,9 +94,51 @@ func (stat Statistic) Add(statData entityjson.StatData) error {
 			}
 		}
 
-		stat.hitService.Add()
+		//------------------------- Referring -------------------------
+		if stat.optionService.IsSaveReferrers(statData.SiteId) {
+			parse, err := url.Parse(statData.Referer)
+			if err != nil {
+				return err
+			}
+			if len(statData.Referer) > 0 {
+				idReferer, err := stat.refererService.Add(statData.Referer)
+				if err != nil {
+					return err
+				}
+				err = stat.refererService.AddToRefererList(entitydb.RefererList{
+					Uuid:        uuid.New().String(),
+					RefererId:   idReferer,
+					DateHit:     time.Time{},
+					Protocol:    parse.Scheme,
+					SiteName:    parse.Hostname(),
+					UrlFrom:     statData.Referer,
+					UrlTo:       statData.Url,
+					UrlTo404:    statData.IsError404,
+					SessionUuid: sessionDb.Uuid,
+					AdvUuid:     advReferer.AdvUuid,
+					SiteId:      statData.SiteId,
+				})
+				if err != nil {
+					return err
+				}
+			}
 
-		stat.statDayService.Add() //TODO доделать update
+			// TODO ADD Search phrases
+		}
+
+		//------------------------------- Hits ---------------------------------
+		if stat.optionService.IsSaveHits(statData.SiteId) {
+			if err = stat.hitService.Add(existsGuest, sessionDb, advReferer, statData); err != nil {
+				return err
+			}
+		}
+
+		//------------------------------ Path data -----------------------------
+		if stat.optionService.IsSavePathData(statData.SiteId) {
+
+		}
+
 	}
+
 	return nil
 }

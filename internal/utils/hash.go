@@ -2,15 +2,22 @@ package utils
 
 import (
 	"bitrix-statistic/internal/entityjson"
-	"github.com/codingsince1985/checksum"
+	"crypto/md5"
+	"encoding/hex"
 	"strings"
 )
 
-func GetGuestMd5(statData entityjson.StatData) (string, error) {
+func GetGuestMd5(statData entityjson.StatData) string {
 	var strBuilder strings.Builder
 	strBuilder.WriteString(statData.UserAgent)
 	strBuilder.WriteString(statData.Ip)
 	strBuilder.WriteString(statData.HttpXForwardedFor)
-	sum, err := checksum.MD5sum(strBuilder.String())
-	return sum, err
+	sum := GetMD5Hash(strBuilder.String())
+	return sum
+}
+
+func GetMD5Hash(text string) string {
+	hasher := md5.New()
+	hasher.Write([]byte(text))
+	return hex.EncodeToString(hasher.Sum(nil))
 }
