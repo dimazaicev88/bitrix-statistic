@@ -6,6 +6,8 @@ import (
 	"bitrix-statistic/internal/models"
 	"context"
 	"github.com/google/uuid"
+	"github.com/maypok86/otter"
+	"github.com/sirupsen/logrus"
 	_ "net/netip"
 	"net/url"
 	"time"
@@ -20,9 +22,18 @@ type Statistic struct {
 	optionService   *OptionService
 	hitService      *HitService
 	refererService  *RefererService
+	sessionCache    otter.Cache[string, entitydb.Session]
 }
 
 func NewStatistic(ctx context.Context, allModels *models.Models) *Statistic {
+	otterCache, err := otter.MustBuilder[string, entitydb.Session](15000).
+		CollectStats().
+		WithTTL(time.Minute * 15).
+		Build()
+
+	if err != nil {
+		logrus.Fatal(err)
+	}
 	return &Statistic{
 		guestService:    NewGuest(ctx, allModels),
 		advServices:     NewAdv(ctx, allModels),
@@ -32,15 +43,17 @@ func NewStatistic(ctx context.Context, allModels *models.Models) *Statistic {
 		hitService:      NewHit(ctx, allModels),
 		optionService:   NewOption(ctx, allModels),
 		refererService:  NewReferer(ctx, allModels),
+		sessionCache:    otterCache,
 	}
 }
 
 func (stat Statistic) Add(statData entityjson.StatData) error {
-	var stopListUuid string
+	//var stopListUuid string
 	var guestUuid string
-	var advBack string
+	//var advBack string
 	var advReferer entitydb.AdvReferer
 	var sessionDb entitydb.Session
+	var guestDb entitydb.Guest
 	var existsGuest = false
 
 	isSearcher, err := stat.searcherService.IsSearcher(statData.UserAgent)
@@ -69,10 +82,12 @@ func (stat Statistic) Add(statData entityjson.StatData) error {
 				return err
 			}
 
-			guestUuid, err = stat.guestService.AddGuest(statData)
+			guestUuid, err = stat.guestService.AddGuest(statData, advReferer)
 			if err != nil {
 				return err
 			}
+		} else { //Если гость уже есть
+
 		}
 
 		//--------------------------- Sessions ------------------------------------

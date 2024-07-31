@@ -44,3 +44,9 @@ type Session struct {
 	PhpSessionId string    `ch:"phpsessid"`
 	DateCreate   time.Time `ch:"date_create"`
 }
+
+type SS struct {
+	GuestUuid   string
+	LastUserId  uint32
+	LastAdvUuid string
+}

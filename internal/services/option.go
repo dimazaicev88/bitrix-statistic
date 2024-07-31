@@ -1,23 +1,35 @@
 package services
 
 import (
-	"bitrix-statistic/internal/cache"
 	"bitrix-statistic/internal/entitydb"
 	"bitrix-statistic/internal/models"
 	"bitrix-statistic/internal/utils"
 	"context"
 	"errors"
+	"github.com/maypok86/otter"
+	"github.com/sirupsen/logrus"
+	"time"
 )
 
 type OptionService struct {
-	allModels *models.Models
-	ctx       context.Context
+	allModels   *models.Models
+	ctx         context.Context
+	optionCache otter.Cache[string, interface{}]
 }
 
 func NewOption(ctx context.Context, allModels *models.Models) *OptionService {
+	otterCache, err := otter.MustBuilder[string, interface{}](100).
+		CollectStats().
+		WithTTL(time.Hour * 730).
+		Build()
+
+	if err != nil {
+		logrus.Fatal(err)
+	}
 	return &OptionService{
-		ctx:       ctx,
-		allModels: allModels,
+		ctx:         ctx,
+		allModels:   allModels,
+		optionCache: otterCache,
 	}
 }
 
@@ -38,7 +50,7 @@ func (o OptionService) Set(option entitydb.Option) error {
 	if err := o.allModels.Option.Set(option); err != nil {
 		return err
 	}
-	cache.Cache().Set(utils.StringConcat(option.Name, ":", option.SiteId), option.Value)
+	o.optionCache.Set(utils.StringConcat(option.Name, ":", option.SiteId), option.Value)
 	return nil
 }
 
@@ -302,7 +314,7 @@ func (o OptionService) IsSearcherEvents(siteId string) bool {
 }
 
 func (o OptionService) get(name, site string, defValue interface{}) (interface{}, error) {
-	val, ok := cache.Cache().Get(utils.StringConcat(name, ":", site))
+	val, ok := o.optionCache.Get(utils.StringConcat(name, ":", site))
 	if !ok {
 		dbVal, err := o.allModels.Option.Find(name, site)
 		if err != nil {
@@ -311,7 +323,7 @@ func (o OptionService) get(name, site string, defValue interface{}) (interface{}
 		if dbVal == (entitydb.Option{}) {
 			return defValue, nil
 		}
-		cache.Cache().Set(utils.StringConcat(name, ":", site), dbVal.Value)
+		o.optionCache.Set(utils.StringConcat(name, ":", site), dbVal.Value)
 	}
 	return val, nil
 }

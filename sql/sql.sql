@@ -1,6 +1,6 @@
 -- DROP DATABASE statistic;
 -- create database statistic;
--- USE statistic;
+USE statistic;
 ---------------------- ADV -------------------------
 
 create table if not exists adv
@@ -685,18 +685,6 @@ create table if not exists event_list
 
 create table if not exists guest
 (
-    uuid            String,
-    guest_hash      String,
-    user_agent      String,
-    ip              String,
-    x_forwarded_for String,
-    date_create     DateTime32('Europe/Moscow')
-) engine = MergeTree
-      PARTITION BY toMonth(date_create)
-      ORDER BY (date_create);
-
-create table if not exists guest_stat
-(
     guest_uuid         UUID,
     timestamp          DateTime32('Europe/Moscow'),
     favorites          boolean default false,
@@ -732,10 +720,12 @@ create table if not exists guest_stat
     last_site_id       String,
     last_country_id    FixedString(2),
     last_city_id       String,
-    last_city_info     String
-
+    last_city_info     String,
+    guest_hash         FixedString(32),
+    sign               Int8,
+    version            UInt32
 )
-    engine = MergeTree
+    engine = VersionedCollapsingMergeTree(sign, version)
         PARTITION BY toMonth(timestamp)
         ORDER BY timestamp;
 
@@ -870,7 +860,7 @@ create table if not exists referer
     site_name String,
     sessions  UInt32 default 0,
     hits      UInt32 default 0
-) engine = SummingMergeTree([sessions,hits])
+) engine = SummingMergeTree((sessions, hits))
       ORDER BY site_name;
 
 create table if not exists referer_list
