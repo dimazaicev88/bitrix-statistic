@@ -43,8 +43,9 @@ func (gs GuestService) AddGuest(statData entityjson.StatData, advReferer entityd
 		return "", err
 	}
 
-	guestDb.GuestUuid = newUUID.String()
+	guestDb.Uuid = newUUID.String()
 	guestDb.FirstDate = time.Now()
+	guestDb.PhpSessionId = statData.PHPSessionId
 	guestDb.FirstUrlFrom = statData.Referer
 	guestDb.FirstUrlTo = statData.Url
 	guestDb.FirstUrlTo404 = statData.IsError404
@@ -54,7 +55,7 @@ func (gs GuestService) AddGuest(statData entityjson.StatData, advReferer entityd
 	guestDb.FirstReferer2 = advReferer.Referer2
 	guestDb.FirstReferer3 = advReferer.Referer3
 	guestDb.Sessions = 1
-	guestDb.Sign = -1
+	guestDb.Sign = 1
 	guestDb.Version = 1
 	gs.cacheGuest.Set(newUUID.String(), guestDb)
 	if err = gs.allModels.Guest.Add(guestDb); err != nil {
@@ -68,10 +69,29 @@ func (gs GuestService) Find(filter filters.Filter) ([]entitydb.Guest, error) {
 	return gs.allModels.Guest.Find(filter)
 }
 
-func (gs GuestService) FindByUuid(uuid uuid.UUID) (entitydb.Guest, error) {
+func (gs GuestService) FindByUuid(uuid string) (entitydb.Guest, error) {
 	return gs.allModels.Guest.FindByUuid(uuid)
 }
 
 func (gs GuestService) ExistsGuestByHash(hash string) (bool, error) {
 	return gs.allModels.Guest.ExistsByHash(hash)
+}
+
+func (gs GuestService) FindByHash(hash string) (entitydb.Guest, error) {
+	return gs.allModels.Guest.FindByHash(hash)
+}
+
+func (gs GuestService) UpdateGuest(guestDb entitydb.Guest, statData entityjson.StatData, referer entitydb.AdvReferer) error {
+	var newGuestDbValue entitydb.Guest
+	oldGuestDbValue, err := gs.FindByUuid(guestDb.Uuid)
+	if err != nil {
+		return err
+	}
+
+	//Если это новая сессия увеличиваем счетчик сессий
+	if oldGuestDbValue.PhpSessionId != statData.PHPSessionId {
+		newGuestDbValue.Sessions += oldGuestDbValue.Sessions
+	}
+
+	return nil
 }

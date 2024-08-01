@@ -5,13 +5,14 @@ import (
 )
 
 type Guest struct {
-	GuestUuid        string    `ch:"guest_uuid"`
-	DateInsert       time.Time `ch:"date_insert"`
+	Uuid             string    `ch:"uuid"`
+	DateAdd          time.Time `ch:"date_add"`
 	Favorites        uint8     `ch:"favorites"`
 	Events           uint32    `ch:"events"`
 	Sessions         uint32    `ch:"sessions"`
 	Hits             uint32    `ch:"hits"`
 	Repair           uint8     `ch:"repair"`
+	PhpSessionId     string    `ch:"php_session_id"`
 	FirstSessionUuid string    `ch:"session_uuid"`
 	FirstDate        time.Time `ch:"first_date"`
 	FirstUrlFrom     string    `ch:"first_url_from"`
@@ -42,4 +43,6 @@ type Guest struct {
 	LastCityId       string    `ch:"last_city_id"`
 	Sign             int8      `ch:"sign"`
 	Version          uint32    `ch:"version"`
+	LastCityInfo     uint32    `ch:"last_city_info"`
+	GuestHash        string    `ch:"guest_hash"`
 }
