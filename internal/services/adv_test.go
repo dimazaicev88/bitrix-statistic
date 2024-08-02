@@ -48,7 +48,7 @@ func TestAdvServices_GetAdv(t *testing.T) {
 	//	utils.TruncateTable("searcher_hit", chClient)
 	//	err := advServices.AddHitSearcher(entityjson.StatData{
 	//		PHPSessionId:      "",
-	//		GuestHash:         "",
+	//		GuestUuid:         "",
 	//		Url:               "https://test.local.com",
 	//		Referer:           "",
 	//		Ip:                "192.168.1.98",

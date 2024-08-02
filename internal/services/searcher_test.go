@@ -44,7 +44,7 @@ func TestSearcherService_AllTests(t *testing.T) {
 		utils.TruncateTable("searcher_hit", chClient)
 		err := searchService.AddHitSearcher(entityjson.StatData{
 			PHPSessionId:      "",
-			GuestHash:         "",
+			GuestUuid:         "",
 			Url:               "https://test.local.com",
 			Referer:           "",
 			Ip:                "192.168.1.98",
@@ -78,7 +78,7 @@ func TestSearcherService_AllTests(t *testing.T) {
 		utils.TruncateTable("searcher_hit", chClient)
 		err := searchService.AddHitSearcher(entityjson.StatData{
 			PHPSessionId:      "",
-			GuestHash:         "",
+			GuestUuid:         "",
 			Url:               "https://test.local.com",
 			Referer:           "",
 			Ip:                "192.168.1.98",
@@ -108,7 +108,7 @@ func TestSearcherService_AllTests(t *testing.T) {
 		utils.TruncateTable("searcher_day_hits", chClient)
 		searchService.AddHitSearcher(entityjson.StatData{
 			PHPSessionId:      "",
-			GuestHash:         "",
+			GuestUuid:         "",
 			Url:               "https://test.local.com",
 			Referer:           "",
 			Ip:                "192.168.1.98",
@@ -126,7 +126,7 @@ func TestSearcherService_AllTests(t *testing.T) {
 
 		searchService.AddHitSearcher(entityjson.StatData{
 			PHPSessionId:      "",
-			GuestHash:         "",
+			GuestUuid:         "",
 			Url:               "https://test.local.com",
 			Referer:           "",
 			Ip:                "192.168.1.98",
@@ -143,7 +143,7 @@ func TestSearcherService_AllTests(t *testing.T) {
 		)
 		searchService.AddHitSearcher(entityjson.StatData{
 			PHPSessionId:      "",
-			GuestHash:         "",
+			GuestUuid:         "",
 			Url:               "https://test.local.com",
 			Referer:           "",
 			Ip:                "192.168.1.98",

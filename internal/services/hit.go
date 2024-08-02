@@ -49,3 +49,7 @@ func (hs *HitService) Add(existsGuest bool, sessionDb entitydb.Session, advRefer
 		SiteId:       "",
 	})
 }
+
+func (hs *HitService) FindLastHitWithoutSession(guestUuid, withoutPhpSessionId string) (entitydb.Hit, error) {
+	return hs.allModels.Hit.FindLastHitWithoutSession(guestUuid, withoutPhpSessionId)
+}

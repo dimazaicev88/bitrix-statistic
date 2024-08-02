@@ -66,7 +66,7 @@ func (stat Statistic) Add(statData entityjson.StatData) error {
 			return err
 		}
 	} else {
-		guestDb, err = stat.guestService.FindByHash(statData.GuestHash)
+		guestDb, err = stat.guestService.FindByHash(statData.GuestUuid)
 		if err != nil {
 			return err
 		}
@@ -74,7 +74,7 @@ func (stat Statistic) Add(statData entityjson.StatData) error {
 
 		//Гость не найден, добавляем гостя
 		if guestDb == (entitydb.Guest{}) {
-			advReferer, err = stat.advServices.GetAdv(statData.Url) //Получаем рекламную компанию
+			advReferer, err = stat.advServices.GetAdv(statData) //Получаем рекламную компанию
 			//TODO добавить установку дефолтной рекламной компании, в случае если  не установлена рекламная компания
 			//TODO добавить авто создание рекламной компании
 
@@ -87,7 +87,9 @@ func (stat Statistic) Add(statData entityjson.StatData) error {
 				return err
 			}
 		} else { //Если гость уже есть
-			stat.guestService.UpdateGuest(guestDb, statData, advReferer)
+			if err = stat.guestService.UpdateGuest(guestDb, statData, advReferer); err != nil {
+				return err
+			}
 		}
 
 		//--------------------------- Sessions ------------------------------------

@@ -2,6 +2,7 @@ package services
 
 import (
 	"bitrix-statistic/internal/entitydb"
+	"bitrix-statistic/internal/entityjson"
 	"bitrix-statistic/internal/models"
 	"bitrix-statistic/internal/utils"
 	"context"
@@ -15,20 +16,40 @@ type AdvServices struct {
 	allModels     *models.Models
 	ctx           context.Context
 	optionService *OptionService
+	hitService    *HitService
 }
 
-func NewAdv(ctx context.Context, allModels *models.Models) *AdvServices {
+func NewAdv(ctx context.Context, allModels *models.Models, hitService *HitService) *AdvServices {
 	return &AdvServices{
-		ctx:       ctx,
-		allModels: allModels,
+		ctx:        ctx,
+		allModels:  allModels,
+		hitService: hitService,
 	}
 }
 
 // GetAdv Получить рекламную компанию
-func (as AdvServices) GetAdv(fullUrl string) (entitydb.AdvReferer, error) {
+func (as AdvServices) GetAdv(statData entityjson.StatData) (entitydb.AdvReferer, error) {
 	var totalListUuidAdv []string
 
-	urlValues, err := url.Parse(fullUrl)
+	previewHit, err := as.hitService.FindLastHitWithoutSession(statData.GuestUuid, statData.PHPSessionId)
+	if err != nil {
+		return entitydb.AdvReferer{}, err
+	}
+
+	adv, err := as.FindByUuid(previewHit.AdvUuid)
+	if err != nil {
+		return entitydb.AdvReferer{}, err
+	}
+	if adv != (entitydb.Adv{}) {
+		return entitydb.AdvReferer{
+			AdvUuid:  adv.Uuid,
+			Referer1: adv.Referer1,
+			Referer2: adv.Referer2,
+			Referer3: adv.Referer3,
+		}, nil
+	}
+
+	urlValues, err := url.Parse(statData.Url)
 	if err != nil {
 		return entitydb.AdvReferer{}, err
 	}
@@ -52,7 +73,7 @@ func (as AdvServices) GetAdv(fullUrl string) (entitydb.AdvReferer, error) {
 
 	totalListUuidAdv = append(totalListUuidAdv, advUuidsSearcher...)
 
-	advUuidsPageFrom, err := as.allModels.AdvModel.FindAdvUuidByByPage("FROM", fullUrl) //Откуда пришли [%_]: (ссылающиеся страницы,	разделенные новой строкой)
+	advUuidsPageFrom, err := as.allModels.AdvModel.FindAdvUuidByByPage("FROM", statData.Url) //Откуда пришли [%_]: (ссылающиеся страницы,	разделенные новой строкой)
 	if err != nil {
 		return entitydb.AdvReferer{}, err
 	}
@@ -127,4 +148,8 @@ func (as AdvServices) AutoCreateAdv(referer1, referer2, siteId string) error {
 		}
 	}
 	return nil
+}
+
+func (as AdvServices) IsExistsAdv(uuid string) (bool, error) {
+	return as.allModels.AdvModel.IsExistsAdv(uuid)
 }

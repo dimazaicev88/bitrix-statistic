@@ -13,12 +13,14 @@ import (
 )
 
 type GuestService struct {
-	allModels  *models.Models
-	ctx        context.Context
-	cacheGuest otter.Cache[string, entitydb.Guest]
+	allModels   *models.Models
+	ctx         context.Context
+	cacheGuest  otter.Cache[string, entitydb.Guest]
+	hitService  HitService
+	advServices AdvServices
 }
 
-func NewGuest(ctx context.Context, allModels *models.Models) *GuestService {
+func NewGuest(ctx context.Context, allModels *models.Models, hitService HitService, advServices AdvServices) *GuestService {
 	otterCache, err := otter.MustBuilder[string, entitydb.Guest](15000).
 		CollectStats().
 		WithTTL(time.Minute * 15).
@@ -29,9 +31,11 @@ func NewGuest(ctx context.Context, allModels *models.Models) *GuestService {
 	}
 
 	return &GuestService{
-		ctx:        ctx,
-		allModels:  allModels,
-		cacheGuest: otterCache,
+		ctx:         ctx,
+		allModels:   allModels,
+		cacheGuest:  otterCache,
+		hitService:  hitService,
+		advServices: advServices,
 	}
 }
 
@@ -92,6 +96,14 @@ func (gs GuestService) UpdateGuest(guestDb entitydb.Guest, statData entityjson.S
 	if oldGuestDbValue.PhpSessionId != statData.PHPSessionId {
 		newGuestDbValue.Sessions += oldGuestDbValue.Sessions
 	}
+
+	newGuestDbValue.FirstAdvUuid = referer.AdvUuid
+	newGuestDbValue.LastAdvUUid = referer.AdvUuid
+	newGuestDbValue.LastAdvBack = true
+	newGuestDbValue.FirstReferer1 = referer.Referer1
+	newGuestDbValue.FirstReferer2 = referer.Referer2
+	newGuestDbValue.LastReferer1 = referer.Referer1
+	newGuestDbValue.LastReferer2 = referer.Referer2
 
 	return nil
 }

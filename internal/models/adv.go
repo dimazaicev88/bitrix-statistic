@@ -122,3 +122,21 @@ func (am Adv) FindRefererByListAdv(listAdv []string) (entitydb.AdvReferer, error
 	}
 	return adv, nil
 }
+
+func (am Adv) IsExistsAdv(advUuid string) (bool, error) {
+	rows, err := am.chClient.Query(am.ctx, `select 1 from adv where uuid=?`, advUuid)
+	if err != nil {
+		return false, err
+	}
+
+	for rows.Next() {
+		var isExists uint8
+		err = rows.Scan(&isExists)
+		if err != nil {
+			return false, err
+		}
+		return isExists == 1, nil
+	}
+
+	return false, nil
+}

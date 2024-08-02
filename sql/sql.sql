@@ -737,6 +737,7 @@ create table if not exists hit
     session_uuid   UUID,
     adv_uuid       String,
     date_hit       DateTime32('Europe/Moscow'),
+    php_session_id String,
     guest_uuid     UUID,
     new_guest      BOOLEAN default false,
     user_id        UInt32,

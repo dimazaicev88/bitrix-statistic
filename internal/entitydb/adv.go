@@ -11,6 +11,7 @@ type Adv struct {
 	EventsView  string    `ch:"events_view"`
 	Description string    `ch:"description"`
 	Priority    uint32    `ch:"priority"`
+	Referer3    string    `ch:"referer3"`
 }
 
 type AdvStat struct {
