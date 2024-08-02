@@ -683,10 +683,10 @@ create table if not exists event_list
 -- CREATE TABLE statistic.guest_buffer AS statistic.guest ENGINE = Buffer(statistic, guest, 1, 30, 40, 0, 10000, 0, 0);
 
 
-create table if not exists guest
+create table if not exists statistic.guest
 (
     guest_uuid         UUID,
-    timestamp          DateTime32('Europe/Moscow'),
+    date_add           DateTime32('Europe/Moscow'),
     favorites          boolean default false,
     events             UInt32  default 0,
     sessions           UInt32  default 0,
@@ -726,8 +726,9 @@ create table if not exists guest
     version            UInt32
 )
     engine = VersionedCollapsingMergeTree(sign, version)
-        PARTITION BY toMonth(timestamp)
-        ORDER BY timestamp;
+        PARTITION BY toMonth(date_add)
+        ORDER BY date_add;
+
 
 
 ----------------------- Hit ---------------------------

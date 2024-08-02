@@ -25,7 +25,11 @@ type Statistic struct {
 	sessionCache    otter.Cache[string, entitydb.Session]
 }
 
-func NewStatistic(ctx context.Context, allModels *models.Models) *Statistic {
+func NewStatistic(ctx context.Context, allModels *models.Models,
+	hitService *HitService,
+	advServices *AdvServices,
+	guestService *GuestService,
+) *Statistic {
 	otterCache, err := otter.MustBuilder[string, entitydb.Session](15000).
 		CollectStats().
 		WithTTL(time.Minute * 15).
@@ -35,12 +39,12 @@ func NewStatistic(ctx context.Context, allModels *models.Models) *Statistic {
 		logrus.Fatal(err)
 	}
 	return &Statistic{
-		guestService:    NewGuest(ctx, allModels),
-		advServices:     NewAdv(ctx, allModels),
+		guestService:    guestService,
+		advServices:     advServices,
 		sessionService:  NewSession(ctx, allModels),
 		statDayService:  NewStatDay(ctx, allModels),
 		searcherService: NewSearcher(ctx, allModels),
-		hitService:      NewHit(ctx, allModels),
+		hitService:      hitService,
 		optionService:   NewOption(ctx, allModels),
 		refererService:  NewReferer(ctx, allModels),
 		sessionCache:    otterCache,

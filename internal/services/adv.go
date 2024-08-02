@@ -42,10 +42,11 @@ func (as AdvServices) GetAdv(statData entityjson.StatData) (entitydb.AdvReferer,
 	}
 	if adv != (entitydb.Adv{}) {
 		return entitydb.AdvReferer{
-			AdvUuid:  adv.Uuid,
-			Referer1: adv.Referer1,
-			Referer2: adv.Referer2,
-			Referer3: adv.Referer3,
+			AdvUuid:     adv.Uuid,
+			Referer1:    adv.Referer1,
+			Referer2:    adv.Referer2,
+			Referer3:    adv.Referer3,
+			LastAdvBack: true,
 		}, nil
 	}
 

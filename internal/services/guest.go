@@ -99,11 +99,16 @@ func (gs GuestService) UpdateGuest(guestDb entitydb.Guest, statData entityjson.S
 
 	newGuestDbValue.FirstAdvUuid = referer.AdvUuid
 	newGuestDbValue.LastAdvUUid = referer.AdvUuid
-	newGuestDbValue.LastAdvBack = true
+	newGuestDbValue.LastAdvBack = referer.LastAdvBack
 	newGuestDbValue.FirstReferer1 = referer.Referer1
 	newGuestDbValue.FirstReferer2 = referer.Referer2
 	newGuestDbValue.LastReferer1 = referer.Referer1
 	newGuestDbValue.LastReferer2 = referer.Referer2
+
+	err = gs.allModels.Guest.Update(oldGuestDbValue, newGuestDbValue)
+	if err != nil {
+		return err
+	}
 
 	return nil
 }
