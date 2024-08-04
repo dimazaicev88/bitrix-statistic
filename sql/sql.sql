@@ -721,7 +721,6 @@ create table if not exists statistic.guest
     last_country_id    FixedString(2),
     last_city_id       String,
     last_city_info     String,
-    guest_hash         FixedString(32),
     sign               Int8,
     version            UInt32
 )
@@ -730,13 +729,13 @@ create table if not exists statistic.guest
         ORDER BY date_add;
 
 
-
 ----------------------- Hit ---------------------------
 create table if not exists hit
 (
     uuid           UUID,
     session_uuid   UUID,
     adv_uuid       String,
+    phpSessionId   String,
     date_hit       DateTime32('Europe/Moscow'),
     php_session_id String,
     guest_uuid     UUID,
@@ -935,8 +934,9 @@ create table if not exists searcher_params
 
 
 --------------------- session ---------------------------
-create table if not exists session_stat
+create table if not exists session
 (
+    uuid            UUID,
     guest_uuid      UUID,
     new_guest       boolean,
     user_id         Int32,
@@ -958,7 +958,7 @@ create table if not exists session_stat
     first_hit_uuid  UUID,
     last_hit_uuid   UUID,
     phpsessid       String,
-    adv_id          UUID,
+    adv_uuid        UUID,
     adv_back        boolean,
     referer1        String,
     referer2        String,
@@ -967,9 +967,11 @@ create table if not exists session_stat
     country_id      FixedString(2),
     first_site_uuid String,
     last_site_uuid  String,
-    city_uuid       String
+    city_id         String,
+    sign            Int8,
+    version         UInt32
 
-) ENGINE = MergeTree
+) ENGINE = VersionedCollapsingMergeTree(sign, version)
       PARTITION BY toMonth(date_stat)
       ORDER BY (date_stat);
 

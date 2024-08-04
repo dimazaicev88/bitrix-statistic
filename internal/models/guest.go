@@ -60,10 +60,7 @@ func (gm Guest) Add(guest entitydb.Guest) error {
 }
 
 func (gm Guest) ExistsByHash(token string) (bool, error) {
-	row := gm.chClient.QueryRow(gm.ctx, `
-				SELECT guest_hash
-				FROM guest 				
-				WHERE guest_hash=?`, token)
+	row := gm.chClient.QueryRow(gm.ctx, `SELECT guest_hash FROM guest WHERE guest_hash=?`, token)
 	var cookieToken string
 	err := row.Scan(&cookieToken)
 	if err != nil && errors.Is(err, sql.ErrNoRows) {
@@ -79,10 +76,7 @@ func (gm Guest) Find(filter filters.Filter) ([]entitydb.Guest, error) {
 }
 
 func (gm Guest) FindByHash(token string) (entitydb.Guest, error) {
-	row := gm.chClient.QueryRow(gm.ctx, `
-				SELECT * 
-				FROM guest 				
-				WHERE guest_hash=?`, token)
+	row := gm.chClient.QueryRow(gm.ctx, `SELECT * FROM guest WHERE guest_hash=?`, token)
 	var guest entitydb.Guest
 	err := row.Scan(&guest)
 	if err != nil {

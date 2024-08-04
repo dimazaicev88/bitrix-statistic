@@ -6,7 +6,7 @@ import (
 	"bitrix-statistic/internal/filters"
 	"context"
 	"github.com/ClickHouse/clickhouse-go/v2/lib/driver"
-	"github.com/huandu/go-sqlbuilder"
+	"github.com/google/uuid"
 )
 
 type Session struct {
@@ -23,15 +23,21 @@ func (sm Session) Find(filter filters.Filter) (error, []map[string]interface{}) 
 	return nil, nil
 }
 
-func (sm Session) Add(session entitydb.Session) error {
+func (sm Session) Add(session entitydb.Session) (string, error) {
+	sessionUuid := uuid.New().String()
 	err := sm.chClient.Exec(sm.ctx,
-		`INSERT INTO session (uuid, guest_uuid, phpsessid, date_create) VALUES (generateUUIDv7(), ?, ?, now()) `,
-		session.GuestUuid, session.PhpSessionId,
+		`INSERT INTO session (uuid, guest_uuid, new_guest, user_id, user_auth, events, hits, favorites, url_from, 
+                     url_to, url_to_404, url_last, url_last_404, user_agent, date_stat, date_first, date_last, ip_first, ip_last, first_hit_uuid, 
+                     last_hit_uuid, phpsessid, adv_uuid, adv_back, referer1, referer2, referer3, stop_list_uuid, country_id, first_site_uuid, last_site_uuid, city_id, sign, version) 
+					VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)`,
+		sessionUuid, session.GuestUuid, session.IsNewGuest, session.UserId, session.IsUserAuth, session.Events, session.Hits, session.Favorites, session.UrlFrom,
+		session.FirstHitUuid, session.LastHitUuid, session.PhpSessionId, session.AdvUuid, session.AdvBack, session.Referer1, session.Referer2, session.Referer3,
+		session.StopListUuid, session.CountryId, session.FirstSiteUuid, session.LastSiteUuid, session.CityId, session.Sign, session.Version,
 	)
 	if err != nil {
-		return err
+		return "", err
 	}
-	return nil
+	return sessionUuid, nil
 }
 
 func (sm Session) DeleteById(id int) error {
@@ -56,22 +62,31 @@ func (sm Session) FindSessionByGuestMd5(guestMd5 string) (entityjson.StatData, e
 	return sessionData, nil
 }
 
-func (sm Session) Update(statData entityjson.StatData) error {
-	updateBuilder := sqlbuilder.NewUpdateBuilder()
-	updateBuilder.SetFlavor(sqlbuilder.ClickHouse)
+func (sm Session) Update(oldSession entitydb.Session, newSession entitydb.Session) error {
 
-	sql := updateBuilder.Update("session").
-		Set(
-			"user_id=?",
-			"user_auth=?",
-			"user_agent=?",
-			"date_last=now()",
-			"ip_last=?",
-			"hits=hits+1",
-		).
-		Where("phpsessid=?").String()
+	err := sm.chClient.Exec(sm.ctx,
+		`INSERT INTO session (uuid, guest_uuid, new_guest, user_id, user_auth, events,
+                               hits, favorites, url_from, url_to, url_to_404, url_last, url_last_404, user_agent, date_stat, date_first, 
+                               date_last, ip_first, ip_last, first_hit_uuid, last_hit_uuid, phpsessid, adv_uuid, adv_back,
+                               referer1, referer2, referer3, stop_list_uuid, country_id, first_site_uuid, last_site_uuid, city_id,sign,version) 
+								VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)`,
+		oldSession.Uuid, oldSession.GuestUuid, oldSession.IsNewGuest, oldSession.UserId, oldSession.IsUserAuth, oldSession.Events, oldSession.Hits, oldSession.Favorites, oldSession.UrlFrom,
+		oldSession.FirstHitUuid, oldSession.LastHitUuid, oldSession.PhpSessionId, oldSession.AdvUuid, oldSession.AdvBack, oldSession.Referer1, oldSession.Referer2, oldSession.Referer3,
+		oldSession.StopListUuid, oldSession.CountryId, oldSession.FirstSiteUuid, oldSession.LastSiteUuid, oldSession.CityId, oldSession.Sign, oldSession.Version)
 
-	err := sm.chClient.Exec(sm.ctx, sql, statData.UserId, statData.IsUserAuth, statData.UserAgent, statData.Ip)
+	if err != nil {
+		return err
+	}
+
+	err = sm.chClient.Exec(sm.ctx,
+		`INSERT INTO statistic.session (uuid, guest_uuid, new_guest, user_id, user_auth, events,
+                               hits, favorites, url_from, url_to, url_to_404, url_last, url_last_404, user_agent, date_stat, date_first, 
+                               date_last, ip_first, ip_last, first_hit_uuid, last_hit_uuid, phpsessid, adv_uuid, adv_back,
+                               referer1, referer2, referer3, stop_list_uuid, country_id, first_site_uuid, last_site_uuid, city_id,sign,version) 
+								VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)`, newSession.Uuid, newSession.GuestUuid, newSession.IsNewGuest, newSession.UserId, newSession.IsUserAuth, newSession.Events,
+		newSession.Hits, newSession.Favorites, newSession.UrlFrom, newSession.FirstHitUuid, newSession.LastHitUuid, newSession.PhpSessionId, newSession.AdvUuid, newSession.AdvBack, newSession.Referer1, newSession.Referer2,
+		newSession.Referer3, newSession.StopListUuid, newSession.CountryId, newSession.FirstSiteUuid, newSession.LastSiteUuid, newSession.CityId, 1, oldSession.Version+1)
+
 	if err != nil {
 		return err
 	}

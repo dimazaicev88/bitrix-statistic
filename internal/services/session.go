@@ -5,7 +5,6 @@ import (
 	"bitrix-statistic/internal/filters"
 	"bitrix-statistic/internal/models"
 	"context"
-	"github.com/google/uuid"
 )
 
 type SessionService struct {
@@ -21,21 +20,17 @@ func NewSession(ctx context.Context, allModels *models.Models) *SessionService {
 }
 
 func (ss SessionService) Add(guestUuid, phpSessionId string) (string, error) {
-	sessionUuid, err := uuid.NewUUID()
-	if err != nil {
-		return "", err
-	}
-	err = ss.allModels.Session.Add(entitydb.Session{
-		Uuid:         sessionUuid.String(),
-		GuestUuid:    guestUuid,
-		PhpSessionId: phpSessionId,
+	sessionUuid, err := ss.allModels.Session.Add(entitydb.Session{
+		//Uuid:         sessionUuid.String(),
+		//GuestUuid:    guestUuid,
+		//PhpSessionId: phpSessionId,
 	})
 
 	if err != nil {
 		return "", err
 	}
 
-	return sessionUuid.String(), nil
+	return sessionUuid, nil
 }
 
 func (ss SessionService) IsExistsSession(phpSession string) bool {
@@ -60,4 +55,8 @@ func (ss SessionService) Filter(filter filters.Filter) ([]entitydb.Session, erro
 
 func (ss SessionService) FindByPHPSessionId(phpSessionId string) (entitydb.Session, error) {
 	return ss.allModels.Session.FindByPHPSessionId(phpSessionId)
+}
+
+func (ss SessionService) Update(oldSession entitydb.Session, newSession entitydb.Session) error {
+	return ss.allModels.Session.Update(oldSession, newSession)
 }

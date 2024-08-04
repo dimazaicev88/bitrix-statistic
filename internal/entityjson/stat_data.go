@@ -2,7 +2,7 @@ package entityjson
 
 type StatData struct {
 	PHPSessionId      string `json:"phpsessid"`
-	GuestUuid         string `json:"guestHash"`
+	GuestUuid         string `json:"guestUuid"`
 	Url               string `json:"url"`
 	Referer           string `json:"referer"`
 	Ip                string `json:"ip"`

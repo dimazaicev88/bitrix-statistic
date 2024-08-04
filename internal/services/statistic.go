@@ -25,7 +25,9 @@ type Statistic struct {
 	sessionCache    otter.Cache[string, entitydb.Session]
 }
 
-func NewStatistic(ctx context.Context, allModels *models.Models,
+func NewStatistic(
+	ctx context.Context,
+	allModels *models.Models,
 	hitService *HitService,
 	advServices *AdvServices,
 	guestService *GuestService,
@@ -74,7 +76,12 @@ func (stat Statistic) Add(statData entityjson.StatData) error {
 		if err != nil {
 			return err
 		}
+
 		//--------------------------- Guest ------------------------------------
+		sessionDb, err = stat.sessionService.FindByPHPSessionId(statData.PHPSessionId)
+		if err != nil {
+			return err
+		}
 
 		//Гость не найден, добавляем гостя
 		if guestDb == (entitydb.Guest{}) {
@@ -97,10 +104,6 @@ func (stat Statistic) Add(statData entityjson.StatData) error {
 		}
 
 		//--------------------------- Sessions ------------------------------------
-		sessionDb, err = stat.sessionService.FindByPHPSessionId(statData.PHPSessionId)
-		if err != nil {
-			return err
-		}
 
 		//Если сессия новая, добавляем.
 		if sessionDb == (entitydb.Session{}) {
@@ -112,6 +115,11 @@ func (stat Statistic) Add(statData entityjson.StatData) error {
 				Uuid:         sessionUuid,
 				GuestUuid:    guestUuid,
 				PhpSessionId: statData.PHPSessionId,
+			}
+		} else {
+			err = stat.sessionService.Update(sessionDb, entitydb.Session{})
+			if err != nil {
+				return err
 			}
 		}
 
