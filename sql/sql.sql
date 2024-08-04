@@ -680,10 +680,10 @@ create table if not exists event_list
 
 ----------------------- Guest ---------------------------
 
--- CREATE TABLE statistic.guest_buffer AS statistic.guest ENGINE = Buffer(statistic, guest, 1, 30, 40, 0, 10000, 0, 0);
+-- CREATE TABLE guest_buffer AS guest ENGINE = Buffer(statistic, guest, 1, 30, 40, 0, 10000, 0, 0);
 
 
-create table if not exists statistic.guest
+create table if not exists guest
 (
     guest_uuid         UUID,
     date_add           DateTime32('Europe/Moscow'),
@@ -900,7 +900,7 @@ create table if not exists searcher
 ) engine = MergeTree
       ORDER BY name;
 
-create table if not exists statistic.searcher_day_hits
+create table if not exists searcher_day_hits
 (
     hit_day       Date,
     searcher_uuid UUID,
@@ -1018,7 +1018,7 @@ create table if not exists raw_request
       PARTITION BY toMonth(date)
       ORDER BY (date);
 
-create table if not exists statistic.searcher_total_hits
+create table if not exists searcher_total_hits
 (
     date_stat     Date,
     searcher_uuid UUID,
