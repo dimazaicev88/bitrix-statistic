@@ -28,7 +28,7 @@ func (hs *HitService) FindByUuid(uuid string) (entitydb.Hit, error) {
 	return hs.allModels.Hit.FindByUuid(uuid)
 }
 
-func (hs *HitService) Add(existsGuest bool, sessionDb entitydb.Session, advReferer entitydb.AdvReferer, statData entityjson.StatData) error {
+func (hs *HitService) Add(existsGuest bool, sessionDb entitydb.Session, advReferer entitydb.AdvReferer, statData entityjson.StatData) (string, error) {
 	return hs.allModels.Hit.AddHit(entitydb.Hit{
 		SessionUuid:  sessionDb.Uuid,
 		AdvUuid:      advReferer.AdvUuid,
@@ -46,7 +46,7 @@ func (hs *HitService) Add(existsGuest bool, sessionDb entitydb.Session, advRefer
 		StopListUuid: "",
 		CountryId:    "",
 		CityUuid:     "",
-		SiteId:       "",
+		SiteId:       statData.SiteId,
 	})
 }
 

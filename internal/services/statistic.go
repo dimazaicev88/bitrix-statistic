@@ -3,9 +3,6 @@ package services
 import (
 	"bitrix-statistic/internal/entitydb"
 	"bitrix-statistic/internal/entityjson"
-	"bitrix-statistic/internal/models"
-	"context"
-	"github.com/google/uuid"
 	"github.com/maypok86/otter"
 	"github.com/sirupsen/logrus"
 	_ "net/netip"
@@ -26,11 +23,14 @@ type Statistic struct {
 }
 
 func NewStatistic(
-	ctx context.Context,
-	allModels *models.Models,
-	hitService *HitService,
 	advServices *AdvServices,
 	guestService *GuestService,
+	sessionService *SessionService,
+	statDayService *StatDayService,
+	searcherService *SearcherService,
+	optionService *OptionService,
+	hitService *HitService,
+	refererService *RefererService,
 ) *Statistic {
 	otterCache, err := otter.MustBuilder[string, entitydb.Session](15000).
 		CollectStats().
@@ -40,27 +40,31 @@ func NewStatistic(
 	if err != nil {
 		logrus.Fatal(err)
 	}
+
 	return &Statistic{
 		guestService:    guestService,
 		advServices:     advServices,
-		sessionService:  NewSession(ctx, allModels),
-		statDayService:  NewStatDay(ctx, allModels),
-		searcherService: NewSearcher(ctx, allModels),
+		sessionService:  sessionService,
+		statDayService:  statDayService,
+		searcherService: searcherService,
 		hitService:      hitService,
-		optionService:   NewOption(ctx, allModels),
-		refererService:  NewReferer(ctx, allModels),
+		optionService:   optionService,
+		refererService:  refererService,
 		sessionCache:    otterCache,
 	}
 }
 
 func (stat Statistic) Add(statData entityjson.StatData) error {
 	//var stopListUuid string
-	var guestUuid string
+
 	//var advBack string
 	var advReferer entitydb.AdvReferer
 	var sessionDb entitydb.Session
 	var guestDb entitydb.Guest
-	var existsGuest = false
+	existsGuest := false
+	guestUuid := ""
+	hitUuid := ""
+	sessionUuid := ""
 
 	isSearcher, err := stat.searcherService.IsSearcher(statData.UserAgent)
 	if err != nil {
@@ -98,7 +102,15 @@ func (stat Statistic) Add(statData entityjson.StatData) error {
 				return err
 			}
 		} else { //Если гость уже есть
+			existsGuest = true
 			if err = stat.guestService.UpdateGuest(guestDb, statData, advReferer); err != nil {
+				return err
+			}
+		}
+
+		//------------------------------- Hits ---------------------------------
+		if stat.optionService.IsSaveHits(statData.SiteId) {
+			if hitUuid, err = stat.hitService.Add(existsGuest, sessionDb, advReferer, statData); err != nil {
 				return err
 			}
 		}
@@ -107,7 +119,7 @@ func (stat Statistic) Add(statData entityjson.StatData) error {
 
 		//Если сессия новая, добавляем.
 		if sessionDb == (entitydb.Session{}) {
-			sessionUuid, err := stat.sessionService.Add(guestUuid, statData.PHPSessionId)
+			sessionUuid, err := stat.sessionService.Add(guestUuid, hitUuid, existsGuest == true, statData, advReferer)
 			if err != nil {
 				return err
 			}
@@ -134,32 +146,13 @@ func (stat Statistic) Add(statData entityjson.StatData) error {
 				if err != nil {
 					return err
 				}
-				err = stat.refererService.AddToRefererList(entitydb.RefererList{
-					Uuid:        uuid.New().String(),
-					RefererId:   idReferer,
-					DateHit:     time.Time{},
-					Protocol:    parse.Scheme,
-					SiteName:    parse.Hostname(),
-					UrlFrom:     statData.Referer,
-					UrlTo:       statData.Url,
-					UrlTo404:    statData.IsError404,
-					SessionUuid: sessionDb.Uuid,
-					AdvUuid:     advReferer.AdvUuid,
-					SiteId:      statData.SiteId,
-				})
+				_, err = stat.refererService.AddToRefererList(advReferer.AdvUuid, sessionUuid, idReferer, parse, statData)
 				if err != nil {
 					return err
 				}
 			}
 
 			// TODO ADD Search phrases
-		}
-
-		//------------------------------- Hits ---------------------------------
-		if stat.optionService.IsSaveHits(statData.SiteId) {
-			if err = stat.hitService.Add(existsGuest, sessionDb, advReferer, statData); err != nil {
-				return err
-			}
 		}
 
 		//------------------------------ Path data -----------------------------

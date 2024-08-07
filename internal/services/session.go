@@ -2,9 +2,11 @@ package services
 
 import (
 	"bitrix-statistic/internal/entitydb"
+	"bitrix-statistic/internal/entityjson"
 	"bitrix-statistic/internal/filters"
 	"bitrix-statistic/internal/models"
 	"context"
+	"time"
 )
 
 type SessionService struct {
@@ -19,12 +21,35 @@ func NewSession(ctx context.Context, allModels *models.Models) *SessionService {
 	}
 }
 
-func (ss SessionService) Add(guestUuid, phpSessionId string) (string, error) {
-	sessionUuid, err := ss.allModels.Session.Add(entitydb.Session{
-		//Uuid:         sessionUuid.String(),
-		//GuestUuid:    guestUuid,
-		//PhpSessionId: phpSessionId,
-	})
+func (ss SessionService) Add(guestUuid, hitUuid string, existGuest bool, statData entityjson.StatData, adv entitydb.AdvReferer) (string, error) {
+	var sessionDb entitydb.Session
+	sessionDb.GuestUuid = guestUuid
+	sessionDb.PhpSessionId = statData.PHPSessionId
+	sessionDb.IsNewGuest = existGuest
+	sessionDb.UserId = statData.UserId
+	sessionDb.Favorites = statData.IsFavorite
+	sessionDb.UrlFrom = statData.Referer
+	sessionDb.UrlTo = statData.Url
+	sessionDb.UrlTo404 = statData.IsError404
+	sessionDb.UrlLast = statData.Url
+	sessionDb.UrlLast404 = statData.IsError404
+	sessionDb.UserAgent = statData.UserAgent
+	sessionDb.DateStat = time.Now()
+	sessionDb.DateFirst = time.Now()
+	sessionDb.DateLast = time.Now()
+	sessionDb.IpFirst = statData.Ip
+	sessionDb.IpLast = statData.Ip
+	sessionDb.FirstHitUuid = hitUuid
+	sessionDb.LastHitUuid = hitUuid
+	sessionDb.AdvUuid = adv.AdvUuid
+	sessionDb.AdvBack = adv.LastAdvBack
+	sessionDb.Referer1 = adv.Referer1
+	sessionDb.Referer2 = adv.Referer2
+	sessionDb.Referer3 = adv.Referer3
+	sessionDb.FirstSiteId = statData.SiteId
+	sessionDb.LastSiteId = statData.SiteId
+
+	sessionUuid, err := ss.allModels.Session.Add(sessionDb)
 
 	if err != nil {
 		return "", err
