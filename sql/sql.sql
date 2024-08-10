@@ -825,8 +825,8 @@ create table if not exists path_cache
     path_first_page         String,
     path_first_page_404     BOOLEAN default false,
     path_first_page_site_id FixedString(2),
-    path_page               String,
-    path_page_404           BOOLEAN default false,
+    path_last_page               String,
+    path_last_page_404           BOOLEAN default false,
     path_page_site_id       FixedString(2),
     path_steps              UInt32  default 1,
     is_last_page            BOOLEAN default true

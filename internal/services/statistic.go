@@ -3,8 +3,6 @@ package services
 import (
 	"bitrix-statistic/internal/entitydb"
 	"bitrix-statistic/internal/entityjson"
-	"bitrix-statistic/internal/models"
-	"context"
 	"github.com/google/uuid"
 	"github.com/maypok86/otter"
 	"github.com/sirupsen/logrus"
@@ -22,15 +20,20 @@ type Statistic struct {
 	optionService   *OptionService
 	hitService      *HitService
 	refererService  *RefererService
+	pathService     *PathService
 	sessionCache    otter.Cache[string, entitydb.Session]
 }
 
 func NewStatistic(
-	ctx context.Context,
-	allModels *models.Models,
 	hitService *HitService,
 	advServices *AdvServices,
 	guestService *GuestService,
+	pathService *PathService,
+	sessionService *SessionService,
+	statDayService *StatDayService,
+	searcherService *SearcherService,
+	optionService *OptionService,
+	refererService *RefererService,
 ) *Statistic {
 	otterCache, err := otter.MustBuilder[string, entitydb.Session](15000).
 		CollectStats().
@@ -43,13 +46,14 @@ func NewStatistic(
 	return &Statistic{
 		guestService:    guestService,
 		advServices:     advServices,
-		sessionService:  NewSession(ctx, allModels),
-		statDayService:  NewStatDay(ctx, allModels),
-		searcherService: NewSearcher(ctx, allModels),
+		sessionService:  sessionService,
+		statDayService:  statDayService,
+		searcherService: searcherService,
 		hitService:      hitService,
-		optionService:   NewOption(ctx, allModels),
-		refererService:  NewReferer(ctx, allModels),
+		optionService:   optionService,
+		refererService:  refererService,
 		sessionCache:    otterCache,
+		pathService:     pathService,
 	}
 }
 
@@ -164,7 +168,7 @@ func (stat Statistic) Add(statData entityjson.StatData) error {
 
 		//------------------------------ Path data -----------------------------
 		if stat.optionService.IsSavePathData(statData.SiteId) {
-
+			stat.pathService.SavePath()
 		}
 
 	}
