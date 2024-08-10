@@ -3,7 +3,6 @@ package services
 import (
 	"bitrix-statistic/internal/entitydb"
 	"bitrix-statistic/internal/entityjson"
-	"github.com/google/uuid"
 	"github.com/maypok86/otter"
 	"github.com/sirupsen/logrus"
 	_ "net/netip"
@@ -33,12 +32,6 @@ func NewStatistic(
 	statDayService *StatDayService,
 	searcherService *SearcherService,
 	optionService *OptionService,
-	refererService *RefererService,
-	sessionService *SessionService,
-	statDayService *StatDayService,
-	searcherService *SearcherService,
-	optionService *OptionService,
-	hitService *HitService,
 	refererService *RefererService,
 ) *Statistic {
 	otterCache, err := otter.MustBuilder[string, entitydb.Session](15000).
