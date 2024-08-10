@@ -17,4 +17,5 @@ type StatData struct {
 	IsUserAuth        bool   `json:"isUserAuth"`
 	Method            string `json:"method"`
 	Cookies           string `json:"cookies"`
+	IsFavorite        bool   `json:"isFavorite"`
 }

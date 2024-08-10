@@ -2,9 +2,13 @@ package services
 
 import (
 	"bitrix-statistic/internal/entitydb"
+	"bitrix-statistic/internal/entityjson"
 	"bitrix-statistic/internal/filters"
 	"bitrix-statistic/internal/models"
 	"context"
+	"github.com/google/uuid"
+	"net/url"
+	"time"
 )
 
 type RefererService struct {
@@ -30,6 +34,26 @@ func (rs RefererService) Add(referer string) (string, error) {
 	return rs.allModels.Referer.Add(referer)
 }
 
-func (rs RefererService) AddToRefererList(refererList entitydb.RefererList) error {
-	return rs.allModels.Referer.AddToRefererList(refererList)
+func (rs RefererService) AddToRefererList(advUuid, sessionUuid, idReferer string, parsedUrl *url.URL, statData entityjson.StatData) (string, error) {
+	uuidReferer := uuid.New().String()
+	refererList := entitydb.RefererList{
+		Uuid:        uuidReferer,
+		RefererId:   idReferer,
+		DateHit:     time.Time{},
+		Protocol:    parsedUrl.Scheme,
+		SiteName:    parsedUrl.Hostname(),
+		UrlFrom:     statData.Referer,
+		UrlTo:       statData.Url,
+		UrlTo404:    statData.IsError404,
+		SessionUuid: sessionUuid,
+		AdvUuid:     advUuid,
+		SiteId:      statData.SiteId,
+	}
+
+	err := rs.allModels.Referer.AddToRefererList(refererList)
+	if err != nil {
+		return "", err
+	}
+
+	return uuidReferer, err
 }

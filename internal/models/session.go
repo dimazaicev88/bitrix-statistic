@@ -32,7 +32,7 @@ func (sm Session) Add(session entitydb.Session) (string, error) {
 					VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)`,
 		sessionUuid, session.GuestUuid, session.IsNewGuest, session.UserId, session.IsUserAuth, session.Events, session.Hits, session.Favorites, session.UrlFrom,
 		session.FirstHitUuid, session.LastHitUuid, session.PhpSessionId, session.AdvUuid, session.AdvBack, session.Referer1, session.Referer2, session.Referer3,
-		session.StopListUuid, session.CountryId, session.FirstSiteUuid, session.LastSiteUuid, session.CityId, session.Sign, session.Version,
+		session.StopListUuid, session.CountryId, session.FirstSiteId, session.LastSiteId, session.CityId, session.Sign, session.Version,
 	)
 	if err != nil {
 		return "", err
@@ -72,7 +72,7 @@ func (sm Session) Update(oldSession entitydb.Session, newSession entitydb.Sessio
 								VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)`,
 		oldSession.Uuid, oldSession.GuestUuid, oldSession.IsNewGuest, oldSession.UserId, oldSession.IsUserAuth, oldSession.Events, oldSession.Hits, oldSession.Favorites, oldSession.UrlFrom,
 		oldSession.FirstHitUuid, oldSession.LastHitUuid, oldSession.PhpSessionId, oldSession.AdvUuid, oldSession.AdvBack, oldSession.Referer1, oldSession.Referer2, oldSession.Referer3,
-		oldSession.StopListUuid, oldSession.CountryId, oldSession.FirstSiteUuid, oldSession.LastSiteUuid, oldSession.CityId, oldSession.Sign, oldSession.Version)
+		oldSession.StopListUuid, oldSession.CountryId, oldSession.FirstSiteId, oldSession.LastSiteId, oldSession.CityId, oldSession.Sign, oldSession.Version)
 
 	if err != nil {
 		return err
@@ -85,7 +85,7 @@ func (sm Session) Update(oldSession entitydb.Session, newSession entitydb.Sessio
                                referer1, referer2, referer3, stop_list_uuid, country_id, first_site_uuid, last_site_uuid, city_id,sign,version) 
 								VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)`, newSession.Uuid, newSession.GuestUuid, newSession.IsNewGuest, newSession.UserId, newSession.IsUserAuth, newSession.Events,
 		newSession.Hits, newSession.Favorites, newSession.UrlFrom, newSession.FirstHitUuid, newSession.LastHitUuid, newSession.PhpSessionId, newSession.AdvUuid, newSession.AdvBack, newSession.Referer1, newSession.Referer2,
-		newSession.Referer3, newSession.StopListUuid, newSession.CountryId, newSession.FirstSiteUuid, newSession.LastSiteUuid, newSession.CityId, 1, oldSession.Version+1)
+		newSession.Referer3, newSession.StopListUuid, newSession.CountryId, newSession.FirstSiteId, newSession.LastSiteId, newSession.CityId, 1, oldSession.Version+1)
 
 	if err != nil {
 		return err
