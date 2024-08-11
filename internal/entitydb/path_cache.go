@@ -6,7 +6,7 @@ type PathCache struct {
 	Uuid                string    `ch:"uuid"`
 	SessionUuid         string    `ch:"session_uuid"`
 	DateHit             time.Time `ch:"date_hit"`
-	PathUuid            string    `ch:"path_uuid"`
+	PathId              int32     `ch:"path_id"`
 	PathPages           string    `ch:"path_pages"`
 	PathFirstPage       string    `ch:"path_first_page"`
 	PathFirstPage404    bool      `ch:"path_first_page_404"`

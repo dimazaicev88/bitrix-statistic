@@ -19,11 +19,11 @@ func NewPath(ctx context.Context, chClient driver.Conn) *Path {
 	}
 }
 
-func (p Path) AddCache(pathCache entitydb.PathCache) error {
+func (p Path) AddPathCache(pathCache entitydb.PathCache) error {
 	return p.chClient.Exec(p.ctx,
 		`INSERT INTO path_cache (uuid, session_uuid, date_hit, path_uuid, path_pages, path_first_page, path_first_page_404, path_first_page_site_id, path_last_page, path_last_page_404, path_page_site_id, path_steps, is_last_page) 
 			   VALUES (generateUUIDv7(),?,now(),?,?,?,?,?,?,?,?,?,?)`,
-		pathCache.SessionUuid, pathCache.DateHit, pathCache.PathUuid, pathCache.PathPages, pathCache.PathFirstPage, pathCache.PathFirstPage404, pathCache.PathFirstPageSiteId,
+		pathCache.SessionUuid, pathCache.DateHit, pathCache.PathId, pathCache.PathPages, pathCache.PathFirstPage, pathCache.PathFirstPage404, pathCache.PathFirstPageSiteId,
 		pathCache.PathLastPage, pathCache.PathLastPage404, pathCache.PathLastPageSiteId,
 	)
 }
@@ -53,4 +53,9 @@ func (p Path) FindBySession(uuid string) (entitydb.PathCache, error) {
 		return entitydb.PathCache{}, err
 	}
 	return pathCache, nil
+}
+
+func (p Path) AddPath(path entitydb.Path) error {
+	return p.chClient.Exec(p.ctx, `INSERT INTO path (uuid, parent_path_id, date_stat, pages, page, page_site_id, prev_page, prev_page_hash, page_hash) VALUES (generateUUIDv7(),?,?,?,?,?,?,?,?)`,
+		path.ParentPathId, path.DateStat, path.Pages, path.Page, path.PageSiteId, path.PrevPage, path.PrevPageHash, path.PageHash)
 }
