@@ -794,8 +794,10 @@ create table if not exists path
     prev_page         String,
     prev_page_hash    UInt32,
     page_hash         UInt32,
-    steps             UInt32  default 1
-) engine = MergeTree
+    steps             UInt32  default 1,
+    sign              Int8,
+    version           UInt32
+) engine = VersionedCollapsingMergeTree(sign, version)
       PARTITION BY toMonth(date_stat)
       ORDER BY date_stat;
 
