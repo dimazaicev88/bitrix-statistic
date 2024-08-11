@@ -22,7 +22,7 @@ func NewPath(ctx context.Context, chClient driver.Conn) *Path {
 func (p Path) AddCache(pathCache entitydb.PathCache) error {
 	return p.chClient.Exec(p.ctx,
 		`INSERT INTO path_cache (uuid, session_uuid, date_hit, path_uuid, path_pages, path_first_page, path_first_page_404, path_first_page_site_id, path_last_page, path_last_page_404, path_page_site_id, path_steps, is_last_page) 
-			   VALUES (generateUUIDv7(),?,?,?,?,?,?,?,?,?,?,?,?)`,
+			   VALUES (generateUUIDv7(),?,now(),?,?,?,?,?,?,?,?,?,?)`,
 		pathCache.SessionUuid, pathCache.DateHit, pathCache.PathUuid, pathCache.PathPages, pathCache.PathFirstPage, pathCache.PathFirstPage404, pathCache.PathFirstPageSiteId,
 		pathCache.PathLastPage, pathCache.PathLastPage404, pathCache.PathLastPageSiteId,
 	)

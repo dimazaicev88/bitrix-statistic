@@ -50,7 +50,21 @@ func (ps PathService) SavePath(sessionUuid, currentUrl, referer string) error {
 		pathCache, err = ps.FindBySession(sessionUuid)
 	}
 
-	ps.allModels.Path.AddCache()
+	ps.allModels.Path.AddCache(entitydb.PathCache{
+		SessionUuid:         sessionUuid,
+		PathUuid:            "",
+		PathPages:           "",
+		PathFirstPage:       "",
+		PathFirstPage404:    false,
+		PathFirstPageSiteId: "",
+		PathLastPage:        "",
+		PathLastPage404:     false,
+		PathLastPageSiteId:  "",
+		PathSteps:           0,
+		IsLastPage:          false,
+	})
+
+	return nil
 }
 
 func (ps PathService) FindLastBySessionUuid(uuid string) (entitydb.PathCache, error) {
