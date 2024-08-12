@@ -1,5 +1,6 @@
--- DROP DATABASE statistic;
--- create database statistic;
+use default;
+DROP DATABASE statistic;
+create database statistic;
 USE statistic;
 ---------------------- ADV -------------------------
 
@@ -780,23 +781,26 @@ create table if not exists page
 
 create table if not exists path
 (
-    uuid              UUID,
-    path_id           UInt32  default 0,
-    parent_path_id    UInt32,
-    date_stat         DateTime32('Europe/Moscow'),
-    counter           UInt32  default 0,
-    counter_abnormal  UInt32  default 0,
-    counter_full_path UInt32  default 0,
-    pages             String,
-    page              String,
-    page_404          BOOLEAN default false,
-    page_site_id      FixedString(2),
-    prev_page         String,
-    prev_page_hash    UInt32,
-    page_hash         UInt32,
-    steps             UInt32  default 1,
-    sign              Int8,
-    version           UInt32
+    uuid               UUID,
+    path_id            Int32   default 0,
+    parent_path_id     UInt32,
+    date_stat          DATE,
+    counter            UInt32  default 0,
+    counter_abnormal   UInt32  default 0,
+    counter_full_path  UInt32  default 0,
+    pages              String,
+    first_page         String,
+    first_page_404     BOOLEAN default false,
+    first_page_site_id FixedString(2),
+    prev_page          String,
+    prev_page_hash     UInt32,
+    last_page          String,
+    last_page_404      bool    default false,
+    last_page_site_id  FixedString(2),
+    last_page_hash     UInt32,
+    steps              UInt32  default 1,
+    sign               Int8,
+    version            UInt32
 ) engine = VersionedCollapsingMergeTree(sign, version)
       PARTITION BY toMonth(date_stat)
       ORDER BY date_stat;
@@ -805,14 +809,16 @@ create table if not exists path_adv
 (
     uuid                   UUID,
     adv_uuid               UUID,
-    path_uuid              UUID,
-    date_stat              DateTime32('Europe/Moscow'),
+    path_id                Int32,
+    date_stat              DATE,
     counter                UInt32 default 0,
     counter_back           UInt32 default 0,
     counter_full_path      UInt32 default 0,
     counter_full_path_back UInt32 default 0,
-    steps                  UInt32 default 0
-) engine = MergeTree
+    steps                  UInt32 default 0,
+    sign                   Int8,
+    version                UInt32
+) engine = VersionedCollapsingMergeTree(sign, version)
       PARTITION BY toMonth(date_stat)
       ORDER BY date_stat;
 
@@ -831,8 +837,10 @@ create table if not exists path_cache
     path_last_page_404      BOOLEAN default false,
     path_page_site_id       FixedString(2),
     path_steps              UInt32  default 1,
-    is_last_page            BOOLEAN default true
-) engine = MergeTree
+    is_last_page            BOOLEAN default true,
+    sign                    Int8,
+    version                 UInt32
+) engine = VersionedCollapsingMergeTree(sign, version)
       PARTITION BY toMonth(date_hit)
       ORDER BY date_hit;
 

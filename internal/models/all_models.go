@@ -17,6 +17,8 @@ type Models struct {
 	Option     *Option
 	Page       *Page
 	Path       *Path
+	PathAdv    *PathAdv
+	PathCache  *PathCache
 	Phrase     *Phrase
 	Referer    *Referer
 	Searcher   *Searcher
@@ -39,6 +41,8 @@ func NewModels(ctx context.Context, chClient driver.Conn) *Models {
 		Option:     NewOption(ctx, chClient),
 		Page:       NewPage(ctx, chClient),
 		Path:       NewPath(ctx, chClient),
+		PathAdv:    NewPathAdv(ctx, chClient),
+		PathCache:  NewPathCache(ctx, chClient),
 		Phrase:     NewPhrase(ctx, chClient),
 		Referer:    NewReferer(ctx, chClient),
 		Searcher:   NewSearcher(ctx, chClient),

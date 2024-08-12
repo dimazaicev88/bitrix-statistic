@@ -7,7 +7,7 @@ import (
 	"github.com/ClickHouse/clickhouse-go/v2/lib/driver"
 )
 
-// Path  Поисковые фразы
+// Path  Пути
 type Path struct {
 	ctx      context.Context
 	chClient driver.Conn
@@ -24,43 +24,39 @@ func (p Path) Find(filter filters.Filter) {
 
 }
 
-func (p Path) AddCache(pathCache entitydb.PathCache) error {
+func (p Path) Add(path entitydb.Path) error {
 	return p.chClient.Exec(p.ctx,
-		`INSERT INTO path_cache (uuid, session_uuid, date_hit, path_uuid, path_pages, path_first_page, path_first_page_404, path_first_page_site_id, path_last_page, path_last_page_404, path_page_site_id, path_steps, is_last_page) 
-			   VALUES (generateUUIDv7(),?,now(),?,?,?,?,?,?,?,?,?,?)`,
-		pathCache.SessionUuid, pathCache.DateHit, pathCache.PathId, pathCache.PathPages, pathCache.PathFirstPage, pathCache.PathFirstPage404, pathCache.PathFirstPageSiteId,
-		pathCache.PathLastPage, pathCache.PathLastPage404, pathCache.PathLastPageSiteId,
-	)
+		`INSERT INTO path (uuid, parent_path_id, date_stat, pages, first_page, first_page_site_id, prev_page, prev_page_hash, last_page, last_page_site_id, last_page_hash, sign, version) 
+			   VALUES (generateUUIDv7(),?,?,?,?,?,?,?,?,?,?)`,
+		path.ParentPathId, path.Pages, path.FirstPage, path.FirstPageSiteId, path.PrevPage, path.PrevPageHash, path.LastPage, path.LastPageSiteId,
+		path.LastPageHash, path.Sign*-1, path.Version)
 }
 
-func (p Path) FindLastBySessionUuid(uuid string) (entitydb.PathCache, error) {
-	var pathCache entitydb.PathCache
-	err := p.chClient.QueryRow(p.ctx, `SELECT * FROM path_cache WHERE session_uuid = ?`, uuid).ScanStruct(&pathCache)
+func (p Path) FindByPathId(pathId int32, dateStat string) (entitydb.Path, error) {
+	var path entitydb.Path
+	err := p.chClient.QueryRow(p.ctx, `SELECT * FROM path WHERE path_id = ?`, pathId).ScanStruct(&path)
+
 	if err != nil {
-		return entitydb.PathCache{}, err
+		return entitydb.Path{}, err
 	}
-	return pathCache, nil
+	return path, nil
 }
 
-func (p Path) FindByReferer(uuid string, referer string) (entitydb.PathCache, error) {
-	var pathCache entitydb.PathCache
-	err := p.chClient.QueryRow(p.ctx, `SELECT * FROM path_cache WHERE session_uuid = ? and path_last_page=?`, uuid, referer).ScanStruct(&pathCache)
+func (p Path) Update(oldPath entitydb.Path, newPath entitydb.Path) error {
+	err := p.chClient.Exec(p.ctx,
+		`INSERT INTO path (uuid, parent_path_id, date_stat, pages, first_page, first_page_site_id, prev_page, prev_page_hash, last_page, last_page_site_id, last_page_hash, sign, version)
+			   VALUES (generateUUIDv7(),?,curdate(),?,?,?,?,?,?,?,?,?,?)`,
+		oldPath.ParentPathId, oldPath.Pages, oldPath.FirstPage, oldPath.FirstPageSiteId, oldPath.PrevPage, oldPath.PrevPageHash, oldPath.LastPage, oldPath.LastPageSiteId,
+		oldPath.LastPageHash, oldPath.Sign*-1, oldPath.Version)
 	if err != nil {
-		return entitydb.PathCache{}, err
+		return err
 	}
-	return pathCache, nil
-}
 
-func (p Path) FindBySession(uuid string) (entitydb.PathCache, error) {
-	var pathCache entitydb.PathCache
-	err := p.chClient.QueryRow(p.ctx, `SELECT * FROM path_cache WHERE session_uuid = ? and length(path_last_page)<0`, uuid).ScanStruct(&pathCache)
-	if err != nil {
-		return entitydb.PathCache{}, err
-	}
-	return pathCache, nil
-}
+	err = p.chClient.Exec(p.ctx,
+		`INSERT INTO path (uuid, parent_path_id, date_stat, pages, first_page, first_page_site_id, prev_page, prev_page_hash, last_page, last_page_site_id, last_page_hash, sign, version) 
+			   VALUES (generateUUIDv7(),?,?,?,?,?,?,?,?,?,?)`,
+		newPath.ParentPathId, newPath.Pages, newPath.FirstPage, newPath.FirstPageSiteId, newPath.PrevPage, newPath.PrevPageHash, newPath.LastPage, newPath.LastPageSiteId,
+		newPath.LastPageHash, 1, newPath.Version+1)
 
-func (p Path) AddPath(path entitydb.Path) error {
-	return p.chClient.Exec(p.ctx, `INSERT INTO path (uuid, parent_path_id, date_stat, pages, page, page_site_id, prev_page, prev_page_hash, page_hash) VALUES (generateUUIDv7(),?,?,?,?,?,?,?,?)`,
-		path.ParentPathId, path.DateStat, path.Pages, path.Page, path.PageSiteId, path.PrevPage, path.PrevPageHash, path.PageHash)
+	return nil
 }

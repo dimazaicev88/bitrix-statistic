@@ -16,4 +16,6 @@ type PathCache struct {
 	PathLastPageSiteId  string    `ch:"path_last_page_site_id"`
 	PathSteps           uint32    `ch:"path_steps"`
 	IsLastPage          bool      `ch:"is_last_page"`
+	Sign                int       `ch:"sign"`
+	Version             uint32    `ch:"version"`
 }
