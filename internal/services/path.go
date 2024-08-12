@@ -15,6 +15,7 @@ type PathService struct {
 	ctx              context.Context
 	pathCacheService *PathCacheService
 	pathAdvService   *PathAdvService
+	optionService    *OptionService
 }
 
 func NewPath(
@@ -22,12 +23,14 @@ func NewPath(
 	allModels *models.Models,
 	pathCacheService *PathCacheService,
 	pathAdvService *PathAdvService,
+	optionService *OptionService,
 ) *PathService {
 	return &PathService{
 		ctx:              ctx,
 		allModels:        allModels,
 		pathCacheService: pathCacheService,
 		pathAdvService:   pathAdvService,
+		optionService:    optionService,
 	}
 }
 
@@ -204,19 +207,21 @@ func (ps PathService) SavePath(siteId, sessionUuid, currentUrl, referer string, 
 		return err
 	}
 	if pathAdv == (entitydb.PathAdv{}) {
-		err = ps.pathAdvService.Add(entitydb.PathAdv{
-			AdvUuid:             advReferer.AdvUuid,
-			PathId:              currentPathId,
-			Counter:             advCounter,
-			CounterBack:         advCounterBack,
-			CounterFullPath:     advCounterFullPath,
-			CounterFullPathBack: advCounterFullPathBack,
-			Steps:               currentPathSteps,
-			Sign:                1,
-			Version:             1,
-		})
-		if err != nil {
-			return err
+		if currentPathSteps <= ps.optionService.MaxPathSteps(siteId) {
+			err = ps.pathAdvService.Add(entitydb.PathAdv{
+				AdvUuid:             advReferer.AdvUuid,
+				PathId:              currentPathId,
+				Counter:             advCounter,
+				CounterBack:         advCounterBack,
+				CounterFullPath:     advCounterFullPath,
+				CounterFullPathBack: advCounterFullPathBack,
+				Steps:               currentPathSteps,
+				Sign:                1,
+				Version:             1,
+			})
+			if err != nil {
+				return err
+			}
 		}
 	} else {
 		newPath := pathAdv
@@ -228,5 +233,15 @@ func (ps PathService) SavePath(siteId, sessionUuid, currentUrl, referer string, 
 		ps.pathAdvService.Update(pathAdv, newPath)
 	}
 
+	if pathCache.IsLastPage {
+		if advBack {
+
+		}
+	}
+
 	return nil
+}
+
+func (ps PathService) SaveVisits() {
+
 }
