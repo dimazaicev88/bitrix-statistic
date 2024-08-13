@@ -12,7 +12,7 @@ var hitFields = map[string]string{
 	"ID":                 " t1.ID",
 	"SessionId":          " t1.SessionId ",
 	"GuestId":            " t1.GuestId ",
-	"NewGuest":           " t1.NewGuest ",
+	"IsNewGuest":         " t1.IsNewGuest ",
 	"USER_ID":            " t1.USER_ID ",
 	"USER_AUTH":          " t1.USER_AUTH ",
 	"Url":                " t1.Url ",

@@ -61,7 +61,7 @@ func (p *Page) Update(oldValue entitydb.Page, newValue entitydb.Page) error {
 	err := p.chClient.Exec(p.ctx,
 		`INSERT INTO page (uuid, date_stat, dir, url, url_404, url_hash, site_id, counter, enter_counter, exit_counter,sign,version) 
 			   VALUES (generateUUIDv7(),curdate(),?,?,?,?,?,?,?,?,?,?)`,
-		oldValue.Dir, oldValue.UrlHash, oldValue.Url404, oldValue.UrlHash, oldValue.SiteId, oldValue.Counter, oldValue.EnterCounter, oldValue.ExitCounter, oldValue.Sign, oldValue.Version,
+		oldValue.Dir, oldValue.UrlHash, oldValue.Url404, oldValue.UrlHash, oldValue.SiteId, oldValue.Counter, oldValue.EnterCounter, oldValue.ExitCounter, oldValue.Sign*-1, oldValue.Version,
 	)
 
 	if err != nil {
@@ -71,6 +71,6 @@ func (p *Page) Update(oldValue entitydb.Page, newValue entitydb.Page) error {
 	return p.chClient.Exec(p.ctx,
 		`INSERT INTO page (uuid, date_stat, dir, url, url_404, url_hash, site_id, counter, enter_counter, exit_counter,sign,version) 
 			   VALUES (generateUUIDv7(),curdate(),?,?,?,?,?,?,?,?,?,?)`,
-		newValue.Dir, newValue.UrlHash, newValue.Url404, newValue.UrlHash, newValue.SiteId, newValue.Counter, newValue.EnterCounter, newValue.ExitCounter, newValue.Sign, newValue.Version,
+		newValue.Dir, newValue.UrlHash, newValue.Url404, newValue.UrlHash, newValue.SiteId, newValue.Counter, newValue.EnterCounter, newValue.ExitCounter, newValue.Sign, newValue.Version+1,
 	)
 }

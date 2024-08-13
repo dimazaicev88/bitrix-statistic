@@ -2,10 +2,12 @@ package services
 
 import (
 	"bitrix-statistic/internal/config"
+	"bitrix-statistic/internal/entityjson"
 	"bitrix-statistic/internal/models"
 	"bitrix-statistic/internal/storage"
 	"bitrix-statistic/internal/utils"
 	"context"
+	"github.com/google/uuid"
 	"github.com/joho/godotenv"
 	"github.com/sirupsen/logrus"
 	"github.com/stretchr/testify/require"
@@ -27,8 +29,8 @@ func TestAdvServices_GetAdv(t *testing.T) {
 	defer chClient.Close()
 	req := require.New(t)
 	allModels := models.NewModels(context.Background(), chClient)
-	//optionService := NewOption(context.Background(), allModels)
-	advServices := NewAdv(context.Background(), allModels)
+	hitService := NewHit(context.Background(), allModels)
+	advServices := NewAdv(context.Background(), allModels, hitService)
 
 	t.Run("Указано 'Куда пришли'", func(t *testing.T) {
 		utils.TruncateAllTables(chClient)
@@ -38,7 +40,25 @@ func TestAdvServices_GetAdv(t *testing.T) {
 		row.Scan(&advUuid)
 		chClient.Exec(context.Background(), "insert into adv_page(uuid, adv_uuid, page)\nVALUES (generateUUIDv7(),?,'localhost/catalog')", advUuid)
 
-		referer, err := advServices.GetAdv("http://localhost/catalog")
+		referer, err := advServices.GetAdv(entityjson.StatData{
+			PHPSessionId:      "",
+			GuestUuid:         uuid.UUID{},
+			Url:               "http://localhost/catalog",
+			Referer:           "",
+			Ip:                "",
+			UserAgent:         "",
+			UserId:            0,
+			UserLogin:         "",
+			HttpXForwardedFor: "",
+			IsError404:        false,
+			SiteId:            "",
+			Event1:            "",
+			Event2:            "",
+			IsUserAuth:        false,
+			Method:            "",
+			Cookies:           "",
+			IsFavorite:        false,
+		})
 		req.NoError(err)
 		req.Equal(referer.Referer1, "rt_1")
 		req.Equal(referer.Referer2, "rt_2")

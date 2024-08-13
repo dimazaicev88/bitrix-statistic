@@ -3,6 +3,7 @@ package services
 import (
 	"bitrix-statistic/internal/entitydb"
 	"bitrix-statistic/internal/entityjson"
+	"github.com/google/uuid"
 	"github.com/maypok86/otter"
 	"github.com/sirupsen/logrus"
 	_ "net/netip"
@@ -65,9 +66,8 @@ func (stat Statistic) Add(statData entityjson.StatData) error {
 	var sessionDb entitydb.Session
 	var guestDb entitydb.Guest
 	existsGuest := false
-	guestUuid := ""
-	hitUuid := ""
-	sessionUuid := ""
+	var guestUuid uuid.UUID
+	var hitUuid uuid.UUID
 
 	isSearcher, err := stat.searcherService.IsSearcher(statData.UserAgent)
 	if err != nil {
@@ -79,7 +79,7 @@ func (stat Statistic) Add(statData entityjson.StatData) error {
 			return err
 		}
 	} else {
-		guestDb, err = stat.guestService.FindByHash(statData.GuestUuid)
+		guestDb, err = stat.guestService.FindByUuid(statData.GuestUuid)
 		if err != nil {
 			return err
 		}
@@ -113,23 +113,18 @@ func (stat Statistic) Add(statData entityjson.StatData) error {
 
 		//------------------------------- Hits ---------------------------------
 		if stat.optionService.IsSaveHits(statData.SiteId) {
-			if hitUuid, err = stat.hitService.Add(existsGuest, sessionDb, advReferer, statData); err != nil {
-				return err
-			}
+			//if hitUuid, err = stat.hitService.Add(existsGuest, sessionDb, advReferer, statData); err != nil {
+			//	return err
+			//}
 		}
 
 		//--------------------------- Sessions ------------------------------------
 
 		//Если сессия новая, добавляем.
 		if sessionDb == (entitydb.Session{}) {
-			sessionUuid, err := stat.sessionService.Add(guestUuid, hitUuid, existsGuest == true, statData, advReferer)
+			sessionDb, err = stat.sessionService.Add(guestUuid, hitUuid, existsGuest == true, statData, advReferer)
 			if err != nil {
 				return err
-			}
-			sessionDb = entitydb.Session{
-				Uuid:         sessionUuid,
-				GuestUuid:    guestUuid,
-				PhpSessionId: statData.PHPSessionId,
 			}
 		} else {
 			err = stat.sessionService.Update(sessionDb, entitydb.Session{})
@@ -149,7 +144,7 @@ func (stat Statistic) Add(statData entityjson.StatData) error {
 				if err != nil {
 					return err
 				}
-				_, err = stat.refererService.AddToRefererList(advReferer.AdvUuid, sessionUuid, idReferer, parse, statData)
+				_, err = stat.refererService.AddToRefererList(advReferer.AdvUuid, sessionDb.Uuid, idReferer, parse, statData)
 				if err != nil {
 					return err
 				}
@@ -160,7 +155,7 @@ func (stat Statistic) Add(statData entityjson.StatData) error {
 
 		//------------------------------ Path data -----------------------------
 		if stat.optionService.IsSavePathData(statData.SiteId) {
-			stat.pathService.SavePath()
+			//stat.pathService.SavePath()
 		}
 
 	}

@@ -16,6 +16,7 @@ type Models struct {
 	Hit        *Hit
 	Option     *Option
 	Page       *Page
+	PageAdv    *PageAdv
 	Path       *Path
 	PathAdv    *PathAdv
 	PathCache  *PathCache
@@ -40,6 +41,7 @@ func NewModels(ctx context.Context, chClient driver.Conn) *Models {
 		Hit:        NewHit(ctx, chClient),
 		Option:     NewOption(ctx, chClient),
 		Page:       NewPage(ctx, chClient),
+		PageAdv:    NewPageAdv(ctx, chClient),
 		Path:       NewPath(ctx, chClient),
 		PathAdv:    NewPathAdv(ctx, chClient),
 		PathCache:  NewPathCache(ctx, chClient),

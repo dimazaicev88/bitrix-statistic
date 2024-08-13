@@ -1,11 +1,12 @@
 package entitydb
 
 import (
+	"github.com/google/uuid"
 	"time"
 )
 
 type Guest struct {
-	Uuid             string    `ch:"uuid"`
+	Uuid             uuid.UUID `ch:"uuid"`
 	DateAdd          time.Time `ch:"date_add"`
 	Favorites        uint8     `ch:"favorites"`
 	Events           uint32    `ch:"events"`
@@ -19,7 +20,7 @@ type Guest struct {
 	FirstUrlTo       string    `ch:"first_url_to"`
 	FirstUrlTo404    bool      `ch:"first_url_to_404"`
 	FirstSiteId      string    `ch:"first_site_id"`
-	FirstAdvUuid     string    `ch:"first_adv_uuid"`
+	FirstAdvUuid     uuid.UUID `ch:"first_adv_uuid"`
 	FirstReferer1    string    `ch:"first_referer1"`
 	FirstReferer2    string    `ch:"first_referer2"`
 	FirstReferer3    string    `ch:"first_referer3"`
@@ -33,7 +34,7 @@ type Guest struct {
 	LastIp           string    `ch:"last_ip"`
 	LastCookie       string    `ch:"last_cookie"`
 	LastLanguage     string    `ch:"last_language"`
-	LastAdvUUid      string    `ch:"last_adv_uuid"`
+	LastAdvUUid      uuid.UUID `ch:"last_adv_uuid"`
 	LastAdvBack      bool      `ch:"last_adv_back"`
 	LastReferer1     string    `ch:"last_referer1"`
 	LastReferer2     string    `ch:"last_referer2"`

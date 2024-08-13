@@ -47,7 +47,7 @@ func (gs GuestService) AddGuest(statData entityjson.StatData, advReferer entityd
 		return "", err
 	}
 
-	guestDb.Uuid = newUUID.String()
+	guestDb.Uuid = newUUID
 	guestDb.FirstDate = time.Now()
 	guestDb.PhpSessionId = statData.PHPSessionId
 	guestDb.FirstUrlFrom = statData.Referer
@@ -73,16 +73,12 @@ func (gs GuestService) Find(filter filters.Filter) ([]entitydb.Guest, error) {
 	return gs.allModels.Guest.Find(filter)
 }
 
-func (gs GuestService) FindByUuid(uuid string) (entitydb.Guest, error) {
+func (gs GuestService) FindByUuid(uuid uuid.UUID) (entitydb.Guest, error) {
 	return gs.allModels.Guest.FindByUuid(uuid)
 }
 
 func (gs GuestService) ExistsGuestByHash(hash string) (bool, error) {
 	return gs.allModels.Guest.ExistsByHash(hash)
-}
-
-func (gs GuestService) FindByHash(hash string) (entitydb.Guest, error) {
-	return gs.allModels.Guest.FindByHash(hash)
 }
 
 func (gs GuestService) UpdateGuest(guestDb entitydb.Guest, statData entityjson.StatData, referer entitydb.AdvReferer) error {

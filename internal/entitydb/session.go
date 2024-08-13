@@ -1,12 +1,13 @@
 package entitydb
 
 import (
+	"github.com/google/uuid"
 	"time"
 )
 
 type Session struct {
-	Uuid         string    `ch:"uuid"`
-	GuestUuid    string    `ch:"guest_uuid"`
+	Uuid         uuid.UUID `ch:"uuid"`
+	GuestUuid    uuid.UUID `ch:"guest_uuid"`
 	IsNewGuest   bool      `ch:"new_guest"`
 	UserId       uint32    `ch:"user_id"`
 	IsUserAuth   bool      `ch:"user_auth"`
@@ -24,10 +25,10 @@ type Session struct {
 	DateLast     time.Time `ch:"date_last"`
 	IpFirst      string    `ch:"ip_first"`
 	IpLast       string    `ch:"ip_last"`
-	FirstHitUuid string    `ch:"first_hit_uuid"`
-	LastHitUuid  string    `ch:"last_hit_uuid"`
+	FirstHitUuid uuid.UUID `ch:"first_hit_uuid"`
+	LastHitUuid  uuid.UUID `ch:"last_hit_uuid"`
 	PhpSessionId string    `ch:"phpsessid"`
-	AdvUuid      string    `ch:"adv_uuid"`
+	AdvUuid      uuid.UUID `ch:"adv_uuid"`
 	AdvBack      bool      `ch:"adv_back"`
 	Referer1     string    `ch:"referer1"`
 	Referer2     string    `ch:"referer2"`

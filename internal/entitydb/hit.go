@@ -1,16 +1,18 @@
 package entitydb
 
 import (
+	"github.com/google/uuid"
 	"time"
 )
 
 type Hit struct {
-	Uuid         string    `ch:"uuid"`
-	SessionUuid  string    `ch:"session_uuid"`
-	AdvUuid      string    `ch:"adv_uuid"`
+	Uuid         uuid.UUID `ch:"uuid"`
+	SessionUuid  uuid.UUID `ch:"session_uuid"`
+	AdvUuid      uuid.UUID `ch:"adv_uuid"`
+	PhpSessionId string    `ch:"php_session_id"`
 	DateHit      time.Time `ch:"date_hit"`
-	GuestUuid    string    `ch:"guest_uuid"`
-	NewGuest     bool      `ch:"new_guest"`
+	GuestUuid    uuid.UUID `ch:"guest_uuid"`
+	IsNewGuest   bool      `ch:"new_guest"`
 	UserId       uint32    `ch:"user_id"`
 	IsUserAuth   bool      `ch:"user_auth"`
 	Url          string    `ch:"url"`
@@ -20,8 +22,8 @@ type Hit struct {
 	Method       string    `ch:"method"`
 	Cookies      string    `ch:"cookies"`
 	UserAgent    string    `ch:"user_agent"`
-	StopListUuid string    `ch:"stop_list_uuid"`
+	StopListUuid uuid.UUID `ch:"stop_list_uuid"`
 	CountryId    string    `ch:"country_id"`
-	CityUuid     string    `ch:"city_uuid"`
+	CityUuid     uuid.UUID `ch:"city_uuid"`
 	SiteId       string    `ch:"site_id"`
 }

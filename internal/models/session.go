@@ -6,7 +6,6 @@ import (
 	"bitrix-statistic/internal/filters"
 	"context"
 	"github.com/ClickHouse/clickhouse-go/v2/lib/driver"
-	"github.com/google/uuid"
 )
 
 type Session struct {
@@ -23,21 +22,16 @@ func (sm Session) Find(filter filters.Filter) (error, []map[string]interface{}) 
 	return nil, nil
 }
 
-func (sm Session) Add(session entitydb.Session) (string, error) {
-	sessionUuid := uuid.New().String()
-	err := sm.chClient.Exec(sm.ctx,
+func (sm Session) Add(session entitydb.Session) error {
+	return sm.chClient.Exec(sm.ctx,
 		`INSERT INTO session (uuid, guest_uuid, new_guest, user_id, user_auth, events, hits, favorites, url_from, 
                      url_to, url_to_404, url_last, url_last_404, user_agent, date_stat, date_first, date_last, ip_first, ip_last, first_hit_uuid, 
                      last_hit_uuid, phpsessid, adv_uuid, adv_back, referer1, referer2, referer3, stop_list_uuid, country_id, first_site_uuid, last_site_uuid, city_id, sign, version) 
 					VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)`,
-		sessionUuid, session.GuestUuid, session.IsNewGuest, session.UserId, session.IsUserAuth, session.Events, session.Hits, session.Favorites, session.UrlFrom,
+		session.Uuid, session.GuestUuid, session.IsNewGuest, session.UserId, session.IsUserAuth, session.Events, session.Hits, session.Favorites, session.UrlFrom,
 		session.FirstHitUuid, session.LastHitUuid, session.PhpSessionId, session.AdvUuid, session.AdvBack, session.Referer1, session.Referer2, session.Referer3,
 		session.StopListUuid, session.CountryId, session.FirstSiteId, session.LastSiteId, session.CityId, session.Sign, session.Version,
 	)
-	if err != nil {
-		return "", err
-	}
-	return sessionUuid, nil
 }
 
 func (sm Session) DeleteById(id int) error {
@@ -79,7 +73,7 @@ func (sm Session) Update(oldSession entitydb.Session, newSession entitydb.Sessio
 	}
 
 	err = sm.chClient.Exec(sm.ctx,
-		`INSERT INTO statistic.session (uuid, guest_uuid, new_guest, user_id, user_auth, events,
+		`INSERT INTO session (uuid, guest_uuid, new_guest, user_id, user_auth, events,
                                hits, favorites, url_from, url_to, url_to_404, url_last, url_last_404, user_agent, date_stat, date_first, 
                                date_last, ip_first, ip_last, first_hit_uuid, last_hit_uuid, phpsessid, adv_uuid, adv_back,
                                referer1, referer2, referer3, stop_list_uuid, country_id, first_site_uuid, last_site_uuid, city_id,sign,version) 

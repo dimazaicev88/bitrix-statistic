@@ -11,8 +11,8 @@ type Page struct {
 	UrlHash      uint32    `ch:"url_hash"`
 	SiteId       string    `ch:"site_id"`
 	Counter      uint32    `ch:"counter"`
-	EnterCounter uint32    `ch:"enter_counter"`
-	ExitCounter  uint32    `ch:"exit_counter"`
+	EnterCounter int32     `ch:"enter_counter"`
+	ExitCounter  int32     `ch:"exit_counter"`
 	Sign         int8      `ch:"sign"`
 	Version      uint32    `ch:"version"`
 }

@@ -1,9 +1,12 @@
 package entitydb
 
-import "time"
+import (
+	"github.com/google/uuid"
+	"time"
+)
 
 type Adv struct {
-	Uuid        string    `ch:"uuid"`
+	Uuid        uuid.UUID `ch:"uuid"`
 	Referer1    string    `ch:"referer1"`
 	Referer2    string    `ch:"referer2"`
 	Cost        float64   `ch:"cost"`
@@ -15,7 +18,7 @@ type Adv struct {
 }
 
 type AdvStat struct {
-	AdvUuid       string    `ch:"adv_uuid"`
+	AdvUuid       uuid.UUID `ch:"adv_uuid"`
 	Revenue       float64   `ch:"revenue"`
 	Guests        uint32    `ch:"guests"`
 	NewGuests     uint32    `ch:"new_guests"`

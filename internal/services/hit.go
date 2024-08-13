@@ -6,6 +6,7 @@ import (
 	"bitrix-statistic/internal/filters"
 	"bitrix-statistic/internal/models"
 	"context"
+	"github.com/google/uuid"
 )
 
 type HitService struct {
@@ -28,12 +29,13 @@ func (hs *HitService) FindByUuid(uuid string) (entitydb.Hit, error) {
 	return hs.allModels.Hit.FindByUuid(uuid)
 }
 
-func (hs *HitService) Add(existsGuest bool, sessionDb entitydb.Session, advReferer entitydb.AdvReferer, statData entityjson.StatData) (string, error) {
-	return hs.allModels.Hit.AddHit(entitydb.Hit{
+func (hs *HitService) Add(existsGuest bool, sessionDb entitydb.Session, advReferer entitydb.AdvReferer, statData entityjson.StatData) (entitydb.Hit, error) {
+	hit := entitydb.Hit{
+		Uuid:         uuid.New(),
 		SessionUuid:  sessionDb.Uuid,
 		AdvUuid:      advReferer.AdvUuid,
 		GuestUuid:    sessionDb.GuestUuid,
-		NewGuest:     existsGuest == false,
+		IsNewGuest:   existsGuest == false,
 		UserId:       statData.UserId,
 		IsUserAuth:   statData.UserId > 0,
 		Url:          statData.Url,
@@ -43,13 +45,18 @@ func (hs *HitService) Add(existsGuest bool, sessionDb entitydb.Session, advRefer
 		Method:       statData.Method,
 		Cookies:      statData.Cookies,
 		UserAgent:    statData.UserAgent,
-		StopListUuid: "",
+		StopListUuid: uuid.New(),
 		CountryId:    "",
-		CityUuid:     "",
+		CityUuid:     uuid.New(),
 		SiteId:       statData.SiteId,
-	})
+	}
+
+	if err := hs.allModels.Hit.AddHit(hit); err != nil {
+		return entitydb.Hit{}, err
+	}
+	return hit, nil
 }
 
-func (hs *HitService) FindLastHitWithoutSession(guestUuid, withoutPhpSessionId string) (entitydb.Hit, error) {
+func (hs *HitService) FindLastHitWithoutSession(guestUuid uuid.UUID, withoutPhpSessionId string) (entitydb.Hit, error) {
 	return hs.allModels.Hit.FindLastHitWithoutSession(guestUuid, withoutPhpSessionId)
 }

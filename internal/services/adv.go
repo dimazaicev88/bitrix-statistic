@@ -6,6 +6,7 @@ import (
 	"bitrix-statistic/internal/models"
 	"bitrix-statistic/internal/utils"
 	"context"
+	"github.com/google/uuid"
 	"net/url"
 	"regexp"
 )
@@ -105,7 +106,7 @@ func (as AdvServices) GetAdv(statData entityjson.StatData) (entitydb.AdvReferer,
 	return referer, nil
 }
 
-func (as AdvServices) FindByUuid(advUuid string) (entitydb.Adv, error) {
+func (as AdvServices) FindByUuid(advUuid uuid.UUID) (entitydb.Adv, error) {
 	return as.allModels.AdvModel.FindByUuid(advUuid)
 }
 

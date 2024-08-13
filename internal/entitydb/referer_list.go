@@ -1,9 +1,12 @@
 package entitydb
 
-import "time"
+import (
+	"github.com/google/uuid"
+	"time"
+)
 
 type RefererList struct {
-	Uuid        string    `ch:"uuid"`
+	Uuid        uuid.UUID `ch:"uuid"`
 	RefererId   string    `ch:"referer_uuid"`
 	DateHit     time.Time `ch:"date_hit"`
 	Protocol    string    `ch:"protocol"`
@@ -11,7 +14,7 @@ type RefererList struct {
 	UrlFrom     string    `ch:"url_from"`
 	UrlTo       string    `ch:"url_to"`
 	UrlTo404    bool      `ch:"url_to_404"`
-	SessionUuid string    `ch:"session_uuid"`
-	AdvUuid     string    `ch:"adv_uuid"`
+	SessionUuid uuid.UUID `ch:"session_uuid"`
+	AdvUuid     uuid.UUID `ch:"adv_uuid"`
 	SiteId      string    `ch:"site_id"`
 }

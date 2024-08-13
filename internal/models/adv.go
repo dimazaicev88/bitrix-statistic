@@ -5,6 +5,7 @@ import (
 	"bitrix-statistic/internal/utils"
 	"context"
 	"github.com/ClickHouse/clickhouse-go/v2/lib/driver"
+	"github.com/google/uuid"
 )
 
 type Adv struct {
@@ -96,7 +97,7 @@ func (am Adv) AddAdv(referer1 string, referer2 string) error {
 		VALUES (generateUUIDv7(), ?, ?, now(),0.0,'','',1)`, referer1, referer2)
 }
 
-func (am Adv) FindByUuid(uuid string) (entitydb.Adv, error) {
+func (am Adv) FindByUuid(uuid uuid.UUID) (entitydb.Adv, error) {
 	var adv entitydb.Adv
 	sql := `SELECT 	* FROM adv WHERE  uuid=?`
 	err := am.chClient.QueryRow(am.ctx, sql, uuid).ScanStruct(&adv)

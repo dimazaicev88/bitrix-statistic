@@ -34,10 +34,9 @@ func (rs RefererService) Add(referer string) (string, error) {
 	return rs.allModels.Referer.Add(referer)
 }
 
-func (rs RefererService) AddToRefererList(advUuid, sessionUuid, idReferer string, parsedUrl *url.URL, statData entityjson.StatData) (string, error) {
-	uuidReferer := uuid.New().String()
+func (rs RefererService) AddToRefererList(advUuid, sessionUuid uuid.UUID, idReferer string, parsedUrl *url.URL, statData entityjson.StatData) (entitydb.RefererList, error) {
 	refererList := entitydb.RefererList{
-		Uuid:        uuidReferer,
+		Uuid:        uuid.New(),
 		RefererId:   idReferer,
 		DateHit:     time.Time{},
 		Protocol:    parsedUrl.Scheme,
@@ -52,8 +51,8 @@ func (rs RefererService) AddToRefererList(advUuid, sessionUuid, idReferer string
 
 	err := rs.allModels.Referer.AddToRefererList(refererList)
 	if err != nil {
-		return "", err
+		return entitydb.RefererList{}, err
 	}
 
-	return uuidReferer, err
+	return refererList, err
 }

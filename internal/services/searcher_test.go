@@ -8,6 +8,7 @@ import (
 	"bitrix-statistic/internal/storage"
 	"bitrix-statistic/internal/utils"
 	"context"
+	"github.com/google/uuid"
 	"github.com/joho/godotenv"
 	"github.com/sirupsen/logrus"
 	"github.com/stretchr/testify/require"
@@ -21,10 +22,11 @@ func TestSearcherService_AllTests(t *testing.T) {
 	}
 	chClient, _ := storage.NewClickHouseClient(config.GetServerConfig())
 	defer chClient.Close()
-	req := require.New(t)
+
 	searchService := NewSearcher(context.Background(), models.NewModels(context.Background(), chClient))
 
 	t.Run("IsSearcher method", func(t *testing.T) {
+		req := require.New(t)
 		utils.TruncateAllTables(chClient)
 
 		searcher, err := searchService.IsSearcher("FeedDemon")
@@ -41,10 +43,11 @@ func TestSearcherService_AllTests(t *testing.T) {
 	})
 
 	t.Run("AddSearcherHit user agent exists", func(t *testing.T) {
+		req := require.New(t)
 		utils.TruncateTable("searcher_hit", chClient)
 		err := searchService.AddHitSearcher(entityjson.StatData{
 			PHPSessionId:      "",
-			GuestUuid:         "",
+			GuestUuid:         uuid.New(),
 			Url:               "https://test.local.com",
 			Referer:           "",
 			Ip:                "192.168.1.98",
@@ -75,10 +78,11 @@ func TestSearcherService_AllTests(t *testing.T) {
 	})
 
 	t.Run("AddSearcherHit user agent not exists", func(t *testing.T) {
+		req := require.New(t)
 		utils.TruncateTable("searcher_hit", chClient)
 		err := searchService.AddHitSearcher(entityjson.StatData{
 			PHPSessionId:      "",
-			GuestUuid:         "",
+			GuestUuid:         uuid.New(),
 			Url:               "https://test.local.com",
 			Referer:           "",
 			Ip:                "192.168.1.98",
@@ -104,11 +108,12 @@ func TestSearcherService_AllTests(t *testing.T) {
 	})
 
 	t.Run("AddSearcherHit check searcher day values", func(t *testing.T) {
+		req := require.New(t)
 		utils.TruncateTable("searcher_hit", chClient)
 		utils.TruncateTable("searcher_day_hits", chClient)
 		searchService.AddHitSearcher(entityjson.StatData{
 			PHPSessionId:      "",
-			GuestUuid:         "",
+			GuestUuid:         uuid.New(),
 			Url:               "https://test.local.com",
 			Referer:           "",
 			Ip:                "192.168.1.98",
@@ -126,7 +131,7 @@ func TestSearcherService_AllTests(t *testing.T) {
 
 		searchService.AddHitSearcher(entityjson.StatData{
 			PHPSessionId:      "",
-			GuestUuid:         "",
+			GuestUuid:         uuid.New(),
 			Url:               "https://test.local.com",
 			Referer:           "",
 			Ip:                "192.168.1.98",
@@ -143,7 +148,7 @@ func TestSearcherService_AllTests(t *testing.T) {
 		)
 		searchService.AddHitSearcher(entityjson.StatData{
 			PHPSessionId:      "",
-			GuestUuid:         "",
+			GuestUuid:         uuid.New(),
 			Url:               "https://test.local.com",
 			Referer:           "",
 			Ip:                "192.168.1.98",

@@ -686,7 +686,7 @@ create table if not exists event_list
 
 create table if not exists guest
 (
-    guest_uuid         UUID,
+    uuid         UUID,
     date_add           DateTime32('Europe/Moscow'),
     favorites          boolean default false,
     events             UInt32  default 0,
@@ -736,7 +736,6 @@ create table if not exists hit
     uuid           UUID,
     session_uuid   UUID,
     adv_uuid       String,
-    phpSessionId   String,
     date_hit       DateTime32('Europe/Moscow'),
     php_session_id String,
     guest_uuid     UUID,
@@ -779,6 +778,21 @@ create table if not exists page
       PARTITION BY toMonth(date_stat)
       ORDER BY date_stat;
 
+create table if not exists page_adv
+(
+    date_stat          DateTime32('Europe/Moscow'),
+    page_uuid          BOOLEAN default false,
+    adv_uuid           String,
+    enter_counter      UInt32  default 0,
+    exit_counter       UInt32  default 0,
+    counter_back       UInt32,
+    enter_counter_back UInt32,
+    exit_counter_back  UInt32
+
+) engine = SummingMergeTree((date_stat, page_uuid, adv_uuid))
+      PARTITION BY toMonth(date_stat)
+      ORDER BY date_stat;
+
 ---------------------- Path ------------------------
 
 create table if not exists path
@@ -809,7 +823,6 @@ create table if not exists path
 
 create table if not exists path_adv
 (
-    uuid                   UUID,
     adv_uuid               UUID,
     path_id                Int32,
     date_stat              DATE,
@@ -817,10 +830,8 @@ create table if not exists path_adv
     counter_back           UInt32 default 0,
     counter_full_path      UInt32 default 0,
     counter_full_path_back UInt32 default 0,
-    steps                  UInt32 default 0,
-    sign                   Int8,
-    version                UInt32
-) engine = VersionedCollapsingMergeTree(sign, version)
+    steps                  UInt32 default 0
+) engine = SummingMergeTree((adv_uuid, path_id, date_stat))
       PARTITION BY toMonth(date_stat)
       ORDER BY date_stat;
 

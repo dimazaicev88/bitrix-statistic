@@ -6,6 +6,7 @@ import (
 	"bitrix-statistic/internal/filters"
 	"bitrix-statistic/internal/models"
 	"context"
+	"github.com/google/uuid"
 	"time"
 )
 
@@ -21,8 +22,9 @@ func NewSession(ctx context.Context, allModels *models.Models) *SessionService {
 	}
 }
 
-func (ss SessionService) Add(guestUuid, hitUuid string, existGuest bool, statData entityjson.StatData, adv entitydb.AdvReferer) (string, error) {
+func (ss SessionService) Add(guestUuid, hitUuid uuid.UUID, existGuest bool, statData entityjson.StatData, adv entitydb.AdvReferer) (entitydb.Session, error) {
 	var sessionDb entitydb.Session
+	sessionDb.Uuid = uuid.New()
 	sessionDb.GuestUuid = guestUuid
 	sessionDb.PhpSessionId = statData.PHPSessionId
 	sessionDb.IsNewGuest = existGuest
@@ -49,13 +51,13 @@ func (ss SessionService) Add(guestUuid, hitUuid string, existGuest bool, statDat
 	sessionDb.FirstSiteId = statData.SiteId
 	sessionDb.LastSiteId = statData.SiteId
 
-	sessionUuid, err := ss.allModels.Session.Add(sessionDb)
+	err := ss.allModels.Session.Add(sessionDb)
 
 	if err != nil {
-		return "", err
+		return entitydb.Session{}, err
 	}
 
-	return sessionUuid, nil
+	return sessionDb, nil
 }
 
 func (ss SessionService) IsExistsSession(phpSession string) bool {
