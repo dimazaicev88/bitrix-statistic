@@ -55,3 +55,7 @@ func (pa PathAdv) Update(oldValue entitydb.PathAdv, newValue entitydb.PathAdv) e
 	}
 	return nil
 }
+
+func (pa PathAdv) FindByPageAndAdvUuid(pageId, advUuid string) ([]entitydb.PathAdv, error) {
+	pa.chClient.QueryRow(pa.ctx, `SELECT * FROM path_adv WHERE page = ?`, advUuid`)
+}

@@ -8,14 +8,13 @@ import (
 	"time"
 )
 
-//TODO сделать рефакторинг.
-
 type PathService struct {
 	allModels        *models.Models
 	ctx              context.Context
 	pathCacheService *PathCacheService
 	pathAdvService   *PathAdvService
 	optionService    *OptionService
+	pageService      *PageService
 }
 
 func NewPath(
@@ -24,6 +23,7 @@ func NewPath(
 	pathCacheService *PathCacheService,
 	pathAdvService *PathAdvService,
 	optionService *OptionService,
+	pageService *PageService,
 ) *PathService {
 	return &PathService{
 		ctx:              ctx,
@@ -31,9 +31,11 @@ func NewPath(
 		pathCacheService: pathCacheService,
 		pathAdvService:   pathAdvService,
 		optionService:    optionService,
+		pageService:      pageService,
 	}
 }
 
+// SavePath TODO рефакторинг.
 func (ps PathService) SavePath(siteId, sessionUuid, currentUrl, referer string, isError404 bool, advReferer entitydb.AdvReferer) error {
 
 	if currentUrl == referer {
@@ -121,7 +123,9 @@ func (ps PathService) SavePath(siteId, sessionUuid, currentUrl, referer string, 
 		return err
 	}
 
-	path, err := ps.allModels.Path.FindByPathId(currentPathId, time.Now().Local().Format("2006-01-02"))
+	currentDay := time.Now().Local().Format("2006-01-02")
+
+	path, err := ps.allModels.Path.FindByPathId(currentPathId, currentDay)
 	if err != nil {
 		return err
 	}
@@ -156,21 +160,20 @@ func (ps PathService) SavePath(siteId, sessionUuid, currentUrl, referer string, 
 		newPath.CounterFullPath += 1
 		newPath.CounterAbnormal += 1
 
-		err = ps.allModels.Path.Update(path, newPath)
-		if err != nil {
+		if err = ps.allModels.Path.Update(path, newPath); err != nil {
 			return err
 		}
 	}
 
 	if pathCache.IsLastPage {
-		previewPath, err := ps.allModels.Path.FindByPathId(pathCache.PathId, time.Now().Local().Format("2006-01-02"))
+		previewPath, err := ps.allModels.Path.FindByPathId(pathCache.PathId, currentDay)
 		if err != nil {
 			return err
 		}
 		newPath := previewPath
 		newPath.CounterFullPath -= 1
-		err = ps.allModels.Path.Update(previewPath, newPath)
-		if err != nil {
+
+		if err = ps.allModels.Path.Update(previewPath, newPath); err != nil {
 			return err
 		}
 		newPathCache := pathCache
@@ -202,7 +205,7 @@ func (ps PathService) SavePath(siteId, sessionUuid, currentUrl, referer string, 
 		return nil
 	}
 
-	pathAdv, err := ps.pathAdvService.FindByPathId(currentPathId, time.Now().Local().Format("2006-01-02"))
+	pathAdv, err := ps.pathAdvService.FindByPathId(currentPathId, currentDay)
 	if err != nil {
 		return err
 	}
@@ -224,24 +227,100 @@ func (ps PathService) SavePath(siteId, sessionUuid, currentUrl, referer string, 
 			}
 		}
 	} else {
-		newPath := pathAdv
-		newPath.Counter += advCounter
-		newPath.CounterBack += advCounterBack
-		newPath.CounterBack += advCounterBack
-		newPath.CounterFullPath += advCounterFullPath
-		newPath.CounterFullPathBack += advCounterFullPathBack
-		ps.pathAdvService.Update(pathAdv, newPath)
+		newPathAdv := pathAdv
+		newPathAdv.Counter += advCounter
+		newPathAdv.CounterBack += advCounterBack
+		newPathAdv.CounterBack += advCounterBack
+		newPathAdv.CounterFullPath += advCounterFullPath
+		newPathAdv.CounterFullPathBack += advCounterFullPathBack
+
+		if err = ps.pathAdvService.Update(pathAdv, newPathAdv); err != nil {
+			return err
+		}
 	}
 
+	pathAdv, err = ps.pathAdvService.FindByPathId(currentPathId, currentDay)
+	newPathAdv := pathAdv
 	if pathCache.IsLastPage {
 		if advBack {
+			newPathAdv.CounterFullPath -= 1
 
+			if err = ps.pathAdvService.Update(pathAdv, newPathAdv); err != nil {
+				return err
+			}
+		} else {
+			newPathAdv.CounterFullPathBack -= 1
 		}
 	}
 
 	return nil
 }
 
-func (ps PathService) SaveVisits() {
+func (ps PathService) SaveVisits(siteId, sessionNew,
+	currentDir, currentPage, lastDir, lastDirUuid,
+	lastPage, lastPageUuid string, isError404 bool,
+	adv entitydb.AdvReferer,
+) error {
+
+	if len(currentPage) == 0 && len(currentDir) == 0 {
+		return nil
+	}
+	var currentDirUuid string
+	var currentPageUuid string
+	var exitDirCounter uint32
+	var exitPageCounter uint32
+
+	if len(lastDir) == 0 || lastDir != currentDir || len(lastPage) == 0 || lastPage != currentPage {
+
+		pages, err := ps.pageService.FindByPageAndDir(currentPage, currentPage, utils.GetCurrentDate())
+		if err != nil {
+			return err
+		}
+
+		for _, page := range pages {
+			if page.Dir {
+				currentDirUuid = page.Uuid
+			} else {
+				currentPageUuid = page.Uuid
+			}
+		}
+		if currentDirUuid != lastDirUuid {
+			exitDirCounter = 1
+		}
+		if currentPageUuid != lastPageUuid {
+			exitPageCounter = 1
+		}
+	} else {
+		currentDirUuid = lastDirUuid
+		currentPageUuid = lastPageUuid
+	}
+
+	if len(lastDirUuid) > 0 && exitDirCounter > 0 {
+		pages, err := ps.pageService.FindByUuid(lastDirUuid)
+		if err != nil {
+			return err
+		}
+		newPages := pages
+		newPages.ExitCounter -= 1
+
+		if err = ps.pageService.Update(pages, newPages); err != nil {
+			return err
+		}
+
+		if len(adv.AdvUuid) > 0 && adv.LastAdvBack {
+			pathAdv, err := ps.pathAdvService.FindByPageAndAdvUuid(lastDirUuid, adv.AdvUuid)
+			if err != nil {
+				return err
+			}
+
+			pathAdvNew := pathAdv
+
+			if adv.LastAdvBack {
+				pathAdvNew. =
+			}
+
+			ps.pathAdvService.Update()
+		}
+	}
 
 }

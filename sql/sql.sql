@@ -772,8 +772,10 @@ create table if not exists page
     site_id       FixedString(2),
     counter       UInt32  default 0,
     enter_counter UInt32  default 0,
-    exit_counter  UInt32  default 0
-) engine = MergeTree
+    exit_counter  UInt32  default 0,
+    sign          Int8,
+    version       UInt32
+) engine = VersionedCollapsingMergeTree(sign, version)
       PARTITION BY toMonth(date_stat)
       ORDER BY date_stat;
 

@@ -13,4 +13,6 @@ type Page struct {
 	Counter      uint32    `ch:"counter"`
 	EnterCounter uint32    `ch:"enter_counter"`
 	ExitCounter  uint32    `ch:"exit_counter"`
+	Sign         int8      `ch:"sign"`
+	Version      uint32    `ch:"version"`
 }

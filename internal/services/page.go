@@ -26,3 +26,15 @@ func (ps PageService) Filter(filter filters.Filter) ([]entitydb.Page, error) {
 func (ps PageService) DynamicList(filter filters.Filter) ([]entitydb.Page, error) {
 	return ps.allModels.Page.DynamicList(filter)
 }
+
+func (ps PageService) FindByPageAndDir(dir, page, dateStat string) ([]entitydb.Page, error) {
+	return ps.allModels.Page.FindByPageAndDir(dir, page, dateStat)
+}
+
+func (ps PageService) FindByUuid(uuid string) (entitydb.Page, error) {
+	return ps.allModels.Page.FindByUuid(uuid)
+}
+
+func (ps PageService) Update(oldValue entitydb.Page, newValue entitydb.Page) error {
+	return ps.allModels.Page.Update(oldValue, newValue)
+}
