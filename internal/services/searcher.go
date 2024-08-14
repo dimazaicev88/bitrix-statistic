@@ -31,7 +31,7 @@ func (ss SearcherService) IsSearcher(userAgent string) (bool, error) {
 	return searcher != entitydb.Searcher{}, nil
 }
 
-func (ss SearcherService) AddHitSearcher(data entityjson.StatData) error {
+func (ss SearcherService) AddHitSearcher(data entityjson.UserData) error {
 	searcher, err := ss.allModels.Searcher.FindSearcherByUserAgent(data.UserAgent)
 	if err != nil {
 		return err

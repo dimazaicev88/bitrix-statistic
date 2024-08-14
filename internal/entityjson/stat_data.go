@@ -2,7 +2,7 @@ package entityjson
 
 import "github.com/google/uuid"
 
-type StatData struct {
+type UserData struct {
 	PHPSessionId      string    `json:"phpsessid"`
 	GuestUuid         uuid.UUID `json:"guestUuid"`
 	Url               string    `json:"url"`

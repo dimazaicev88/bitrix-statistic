@@ -40,7 +40,7 @@ func TestAdvServices_GetAdv(t *testing.T) {
 		row.Scan(&advUuid)
 		chClient.Exec(context.Background(), "insert into adv_page(uuid, adv_uuid, page)\nVALUES (generateUUIDv7(),?,'localhost/catalog')", advUuid)
 
-		referer, err := advServices.GetAdv(entityjson.StatData{
+		referer, err := advServices.GetAdv(entityjson.UserData{
 			PHPSessionId:      "",
 			GuestUuid:         uuid.UUID{},
 			Url:               "http://localhost/catalog",
@@ -66,7 +66,7 @@ func TestAdvServices_GetAdv(t *testing.T) {
 
 	//t.Run("AddSearcherHit user agent exists", func(t *testing.T) {
 	//	utils.TruncateTable("searcher_hit", chClient)
-	//	err := advServices.AddHitSearcher(entityjson.StatData{
+	//	err := advServices.AddHitSearcher(entityjson.UserData{
 	//		PHPSessionId:      "",
 	//		GuestUuid:         "",
 	//		Url:               "https://test.local.com",

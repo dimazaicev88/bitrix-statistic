@@ -29,7 +29,7 @@ func NewAdv(ctx context.Context, allModels *models.Models, hitService *HitServic
 }
 
 // GetAdv Получить рекламную компанию
-func (as AdvServices) GetAdv(statData entityjson.StatData) (entitydb.AdvReferer, error) {
+func (as AdvServices) GetAdv(statData entityjson.UserData) (entitydb.AdvReferer, error) {
 	var totalListUuidAdv []string
 
 	previewHit, err := as.hitService.FindLastHitWithoutSession(statData.GuestUuid, statData.PHPSessionId)

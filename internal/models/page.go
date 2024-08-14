@@ -4,6 +4,8 @@ import (
 	"bitrix-statistic/internal/entitydb"
 	"bitrix-statistic/internal/filters"
 	"context"
+	"database/sql"
+	"errors"
 	"github.com/ClickHouse/clickhouse-go/v2/lib/driver"
 )
 
@@ -34,7 +36,7 @@ func (p *Page) FindByPageAndDir(dir string, page string, stat string) ([]entityd
 			   WHERE date_stat = ?	and (url = ? and dir = 'Y') or (url = ? and dir ='N')`,
 		dir, page, stat)
 	defer rows.Close()
-	if err != nil {
+	if err != nil && errors.Is(err, sql.ErrNoRows) == false {
 		return nil, err
 	}
 	var results []entitydb.Page

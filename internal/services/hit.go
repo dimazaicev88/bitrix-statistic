@@ -6,6 +6,7 @@ import (
 	"bitrix-statistic/internal/filters"
 	"bitrix-statistic/internal/models"
 	"context"
+	"errors"
 	"github.com/google/uuid"
 )
 
@@ -25,11 +26,20 @@ func (hs *HitService) Find(filter filters.Filter) ([]entitydb.Hit, error) {
 	return hs.allModels.Hit.Find(filter)
 }
 
-func (hs *HitService) FindByUuid(uuid string) (entitydb.Hit, error) {
+func (hs *HitService) FindByUuid(uuid uuid.UUID) (entitydb.Hit, error) {
 	return hs.allModels.Hit.FindByUuid(uuid)
 }
 
-func (hs *HitService) Add(existsGuest bool, sessionDb entitydb.Session, advReferer entitydb.AdvReferer, statData entityjson.StatData) (entitydb.Hit, error) {
+func (hs *HitService) Add(existsGuest bool, sessionDb entitydb.Session, advReferer entitydb.AdvReferer, statData entityjson.UserData) (entitydb.Hit, error) {
+
+	if sessionDb == (entitydb.Session{}) {
+		return entitydb.Hit{}, errors.New("session is empty")
+	}
+
+	if statData == (entityjson.UserData{}) {
+		return entitydb.Hit{}, errors.New("stat data is empty")
+	}
+
 	hit := entitydb.Hit{
 		Uuid:         uuid.New(),
 		PhpSessionId: statData.PHPSessionId,
@@ -57,6 +67,7 @@ func (hs *HitService) Add(existsGuest bool, sessionDb entitydb.Session, advRefer
 	return hit, nil
 }
 
+// FindLastHitWithoutSession Найти хит, не включая указанную сессию
 func (hs *HitService) FindLastHitWithoutSession(guestUuid uuid.UUID, withoutPhpSessionId string) (entitydb.Hit, error) {
 	return hs.allModels.Hit.FindLastHitWithoutSession(guestUuid, withoutPhpSessionId)
 }

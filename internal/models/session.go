@@ -5,6 +5,8 @@ import (
 	"bitrix-statistic/internal/entityjson"
 	"bitrix-statistic/internal/filters"
 	"context"
+	"database/sql"
+	"errors"
 	"github.com/ClickHouse/clickhouse-go/v2/lib/driver"
 )
 
@@ -42,8 +44,8 @@ func (sm Session) DeleteById(id int) error {
 	return nil
 }
 
-func (sm Session) FindSessionByGuestMd5(guestMd5 string) (entityjson.StatData, error) {
-	var sessionData entityjson.StatData
+func (sm Session) FindSessionByGuestMd5(guestMd5 string) (entityjson.UserData, error) {
+	var sessionData entityjson.UserData
 	//err := sm.chClient.Exec(&sessionData,
 	//	`SELECT *
 	//           FROM session_data
@@ -51,7 +53,7 @@ func (sm Session) FindSessionByGuestMd5(guestMd5 string) (entityjson.StatData, e
 	//           LIMIT 1`, guestMd5,
 	//)
 	//if err != nil {
-	//	return entityjson.StatData{}, err
+	//	return entityjson.UserData{}, err
 	//}
 	return sessionData, nil
 }
@@ -157,7 +159,7 @@ func (sm Session) ExistsByPhpSession(session string) (int, error) {
 	row := sm.chClient.QueryRow(sm.ctx, `select count(uuid) as cnt from session where phpsessid=?`, session)
 
 	err := row.Scan(&count)
-	if err != nil {
+	if err != nil && errors.Is(err, sql.ErrNoRows) == false {
 		return 0, err
 	}
 	return count, nil

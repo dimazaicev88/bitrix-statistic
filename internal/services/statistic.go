@@ -58,7 +58,7 @@ func NewStatistic(
 	}
 }
 
-func (stat Statistic) Add(statData entityjson.StatData) error {
+func (stat Statistic) Add(statData entityjson.UserData) error {
 	//var stopListUuid string
 
 	//var advBack string

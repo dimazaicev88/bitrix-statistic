@@ -4,6 +4,8 @@ import (
 	"bitrix-statistic/internal/entitydb"
 	"bitrix-statistic/internal/utils"
 	"context"
+	"database/sql"
+	"errors"
 	"github.com/ClickHouse/clickhouse-go/v2/lib/driver"
 	"github.com/google/uuid"
 )
@@ -25,7 +27,7 @@ func NewAdv(
 
 // FindAdvUuidByByPage Поиск Рекламной компании по странице
 func (am Adv) FindAdvUuidByByPage(page, direction string) ([]string, error) {
-	strSql := `
+	resultSql := `
 		SELECT t_adv.uuid
 		FROM adv t_adv
 		INNER JOIN adv_page t_adv_page  ON (t_adv_page.adv_uuid = t_adv.uuid and t_adv_page.type=?)
@@ -33,8 +35,8 @@ func (am Adv) FindAdvUuidByByPage(page, direction string) ([]string, error) {
 
 	var listAdvUuid []string
 
-	rows, err := am.chClient.Query(am.ctx, strSql, direction, utils.StringConcat("%", page, "%"))
-	if err != nil {
+	rows, err := am.chClient.Query(am.ctx, resultSql, direction, utils.StringConcat("%", page, "%"))
+	if err != nil && errors.Is(err, sql.ErrNoRows) == false {
 		return []string{}, err
 	}
 
@@ -50,14 +52,14 @@ func (am Adv) FindAdvUuidByByPage(page, direction string) ([]string, error) {
 
 func (am Adv) FindByByDomainSearcher(host string) ([]string, error) {
 	//проверяем поисковики
-	sql := ` SELECT t_adv_searcher.adv_uuid
+	resultSql := ` SELECT t_adv_searcher.adv_uuid
 			FROM adv_searcher t_adv_searcher
 					 JOIN searcher_params t_searcher_params ON t_adv_searcher.searcher_uuid = t_searcher_params.searcher_uuid
 			WHERE t_searcher_params.domain like ?`
 
 	var listAdvSearcherUuid []string
-	rows, err := am.chClient.Query(am.ctx, sql, utils.StringConcat("%", host, "%"))
-	if err != nil {
+	rows, err := am.chClient.Query(am.ctx, resultSql, utils.StringConcat("%", host, "%"))
+	if err != nil && errors.Is(err, sql.ErrNoRows) == false {
 		return []string{}, err
 	}
 
@@ -72,13 +74,13 @@ func (am Adv) FindByByDomainSearcher(host string) ([]string, error) {
 }
 
 func (am Adv) FindByReferer(referer1, referer2 string) ([]string, error) {
-	sql := `SELECT 	uuid
+	resultSql := `SELECT 	uuid
 			FROM adv
 			WHERE  referer1=? and referer2=?`
 
 	var listUuid []string
-	rows, err := am.chClient.Query(am.ctx, sql, referer1, referer2)
-	if err != nil {
+	rows, err := am.chClient.Query(am.ctx, resultSql, referer1, referer2)
+	if err != nil && errors.Is(err, sql.ErrNoRows) == false {
 		return []string{}, err
 	}
 
@@ -99,9 +101,9 @@ func (am Adv) AddAdv(referer1 string, referer2 string) error {
 
 func (am Adv) FindByUuid(uuid uuid.UUID) (entitydb.Adv, error) {
 	var adv entitydb.Adv
-	sql := `SELECT 	* FROM adv WHERE  uuid=?`
-	err := am.chClient.QueryRow(am.ctx, sql, uuid).ScanStruct(&adv)
-	if err != nil {
+	resultSql := `SELECT 	* FROM adv WHERE  uuid=?`
+	err := am.chClient.QueryRow(am.ctx, resultSql, uuid).ScanStruct(&adv)
+	if err != nil && errors.Is(err, sql.ErrNoRows) == false {
 		return entitydb.Adv{}, err
 	}
 	return adv, nil
@@ -116,9 +118,9 @@ func (am Adv) DeleteByUuid(uuid string) error {
 
 func (am Adv) FindRefererByListAdv(listAdv []string) (entitydb.AdvReferer, error) {
 	var adv entitydb.AdvReferer
-	sql := `SELECT 	uuid as adv_uuid, referer1,referer2 FROM adv WHERE  uuid IN (?) ORDER BY priority,date_create DESC LIMIT 1`
-	err := am.chClient.QueryRow(am.ctx, sql, listAdv).ScanStruct(&adv)
-	if err != nil {
+	resultSql := `SELECT 	uuid as adv_uuid, referer1,referer2 FROM adv WHERE  uuid IN (?) ORDER BY priority,date_create DESC LIMIT 1`
+	err := am.chClient.QueryRow(am.ctx, resultSql, listAdv).ScanStruct(&adv)
+	if err != nil && errors.Is(err, sql.ErrNoRows) == false {
 		return entitydb.AdvReferer{}, err
 	}
 	return adv, nil
@@ -126,7 +128,7 @@ func (am Adv) FindRefererByListAdv(listAdv []string) (entitydb.AdvReferer, error
 
 func (am Adv) IsExistsAdv(advUuid string) (bool, error) {
 	rows, err := am.chClient.Query(am.ctx, `select 1 from adv where uuid=?`, advUuid)
-	if err != nil {
+	if err != nil && errors.Is(err, sql.ErrNoRows) == false {
 		return false, err
 	}
 

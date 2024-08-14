@@ -45,7 +45,7 @@ func TestSearcherService_AllTests(t *testing.T) {
 	t.Run("AddSearcherHit user agent exists", func(t *testing.T) {
 		req := require.New(t)
 		utils.TruncateTable("searcher_hit", chClient)
-		err := searchService.AddHitSearcher(entityjson.StatData{
+		err := searchService.AddHitSearcher(entityjson.UserData{
 			PHPSessionId:      "",
 			GuestUuid:         uuid.New(),
 			Url:               "https://test.local.com",
@@ -80,7 +80,7 @@ func TestSearcherService_AllTests(t *testing.T) {
 	t.Run("AddSearcherHit user agent not exists", func(t *testing.T) {
 		req := require.New(t)
 		utils.TruncateTable("searcher_hit", chClient)
-		err := searchService.AddHitSearcher(entityjson.StatData{
+		err := searchService.AddHitSearcher(entityjson.UserData{
 			PHPSessionId:      "",
 			GuestUuid:         uuid.New(),
 			Url:               "https://test.local.com",
@@ -111,7 +111,7 @@ func TestSearcherService_AllTests(t *testing.T) {
 		req := require.New(t)
 		utils.TruncateTable("searcher_hit", chClient)
 		utils.TruncateTable("searcher_day_hits", chClient)
-		searchService.AddHitSearcher(entityjson.StatData{
+		searchService.AddHitSearcher(entityjson.UserData{
 			PHPSessionId:      "",
 			GuestUuid:         uuid.New(),
 			Url:               "https://test.local.com",
@@ -129,7 +129,7 @@ func TestSearcherService_AllTests(t *testing.T) {
 		},
 		)
 
-		searchService.AddHitSearcher(entityjson.StatData{
+		searchService.AddHitSearcher(entityjson.UserData{
 			PHPSessionId:      "",
 			GuestUuid:         uuid.New(),
 			Url:               "https://test.local.com",
@@ -146,7 +146,7 @@ func TestSearcherService_AllTests(t *testing.T) {
 			IsUserAuth:        false,
 		},
 		)
-		searchService.AddHitSearcher(entityjson.StatData{
+		searchService.AddHitSearcher(entityjson.UserData{
 			PHPSessionId:      "",
 			GuestUuid:         uuid.New(),
 			Url:               "https://test.local.com",

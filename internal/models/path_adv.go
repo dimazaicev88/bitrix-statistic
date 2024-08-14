@@ -3,6 +3,8 @@ package models
 import (
 	"bitrix-statistic/internal/entitydb"
 	"context"
+	"database/sql"
+	"errors"
 	"github.com/ClickHouse/clickhouse-go/v2/lib/driver"
 )
 
@@ -29,7 +31,7 @@ func (pa PathAdv) Add(pathAdv entitydb.PathAdv) error {
 func (pa PathAdv) FindByPathUuid(pageId int32, dateStat string) (entitydb.PathAdv, error) {
 	var pathAdv entitydb.PathAdv
 	err := pa.chClient.QueryRow(pa.ctx, `SELECT * FROM path_adv WHERE path_id = ? and date_stat=?`, pageId, dateStat).Scan(&pathAdv)
-	if err != nil {
+	if err != nil && errors.Is(err, sql.ErrNoRows) == false {
 		return entitydb.PathAdv{}, err
 	}
 	return pathAdv, nil

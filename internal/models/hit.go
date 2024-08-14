@@ -4,6 +4,8 @@ import (
 	"bitrix-statistic/internal/entitydb"
 	"bitrix-statistic/internal/filters"
 	"context"
+	"database/sql"
+	"errors"
 	"github.com/ClickHouse/clickhouse-go/v2/lib/driver"
 	"github.com/google/uuid"
 )
@@ -21,11 +23,11 @@ func (hm Hit) Find(filter filters.Filter) ([]entitydb.Hit, error) {
 	return nil, nil
 }
 
-func (hm Hit) FindByUuid(uuid string) (entitydb.Hit, error) {
+func (hm Hit) FindByUuid(uuid uuid.UUID) (entitydb.Hit, error) {
 	var hit entitydb.Hit
 	err := hm.chClient.QueryRow(hm.ctx, `select * from hit where uuid=?`, uuid).Scan(&hit)
-	if err != nil {
-		return entitydb.Hit{}, err
+	if err != nil && errors.Is(err, sql.ErrNoRows) == false {
+		return hit, err
 	}
 	return hit, nil
 }
@@ -39,11 +41,11 @@ func (hm Hit) AddHit(hit entitydb.Hit) error {
 		hit.Method, hit.Cookies, hit.UserAgent, hit.StopListUuid, hit.CountryId, hit.CityUuid, hit.SiteId)
 }
 
-func (hm Hit) FindLastHitWithoutSession(guestUuid uuid.UUID, withoutPhpSessionId string) (entitydb.Hit, error) {
+func (hm Hit) FindLastHitWithoutSession(guestUuid uuid.UUID, sessionId string) (entitydb.Hit, error) {
 	var hit entitydb.Hit
-	err := hm.chClient.QueryRow(hm.ctx, `select * from guest`).ScanStruct(&hit)
-	if err != nil {
-		return entitydb.Hit{}, err
+	err := hm.chClient.QueryRow(hm.ctx, `select * from hit where guest_uuid=? and php_session_id!=? order by date_hit desc limit 1`, guestUuid, sessionId).ScanStruct(&hit)
+	if err != nil && errors.Is(err, sql.ErrNoRows) == false {
+		return hit, err
 	}
 	return hit, nil
 }

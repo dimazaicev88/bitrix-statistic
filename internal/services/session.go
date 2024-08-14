@@ -22,7 +22,7 @@ func NewSession(ctx context.Context, allModels *models.Models) *SessionService {
 	}
 }
 
-func (ss SessionService) Add(guestUuid, hitUuid uuid.UUID, existGuest bool, statData entityjson.StatData, adv entitydb.AdvReferer) (entitydb.Session, error) {
+func (ss SessionService) Add(guestUuid, hitUuid uuid.UUID, existGuest bool, statData entityjson.UserData, adv entitydb.AdvReferer) (entitydb.Session, error) {
 	var sessionDb entitydb.Session
 	sessionDb.Uuid = uuid.New()
 	sessionDb.GuestUuid = guestUuid
@@ -68,7 +68,7 @@ func (ss SessionService) IsExistsSession(phpSession string) bool {
 	return count > 0
 }
 
-//func (ss SessionService) UpdateSession(data entityjson.StatData) error {
+//func (ss SessionService) UpdateSession(data entityjson.UserData) error {
 //	err := ss.allModels.Session.Update(data)
 //	if err != nil {
 //		return err

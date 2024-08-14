@@ -8,7 +8,7 @@ import (
 	"strings"
 )
 
-func GetGuestMd5(statData entityjson.StatData) string {
+func GetGuestMd5(statData entityjson.UserData) string {
 	var strBuilder strings.Builder
 	strBuilder.WriteString(statData.UserAgent)
 	strBuilder.WriteString(statData.Ip)

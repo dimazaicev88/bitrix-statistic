@@ -77,21 +77,21 @@ func (gm Guest) Find(filter filters.Filter) ([]entitydb.Guest, error) {
 	return []entitydb.Guest{}, nil
 }
 
-func (gm Guest) FindByHash(token string) (entitydb.Guest, error) {
-	row := gm.chClient.QueryRow(gm.ctx, `SELECT * FROM guest WHERE guest_hash=?`, token)
-	var guest entitydb.Guest
-	err := row.Scan(&guest)
-	if err != nil {
-		return entitydb.Guest{}, nil
-	}
-
-	return guest, nil
-}
+//func (gm Guest) FindByHash(token string) (entitydb.Guest, error) {
+//	row := gm.chClient.QueryRow(gm.ctx, `SELECT * FROM guest WHERE guest_hash=?`, token)
+//	var guest entitydb.Guest
+//	err := row.Scan(&guest)
+//	if err != nil {
+//		return entitydb.Guest{}, nil
+//	}
+//
+//	return guest, nil
+//}
 
 func (gm Guest) FindByUuid(uuid uuid.UUID) (entitydb.Guest, error) {
 	var hit entitydb.Guest
 	err := gm.chClient.QueryRow(gm.ctx, `select * from guest where uuid=?`, uuid).Scan(&hit)
-	if err != nil {
+	if err != nil && errors.Is(err, sql.ErrNoRows) == false {
 		return entitydb.Guest{}, err
 	}
 	return hit, nil

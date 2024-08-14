@@ -52,7 +52,7 @@ func (s Searcher) ExistByIdAndCurrentDate(id int) ([]entitydb.SearcherDayHits, e
 	return rows, nil
 }
 
-func (s Searcher) AddHitSearcher(searcherUuid uuid.UUID, statData entityjson.StatData) error {
+func (s Searcher) AddHitSearcher(searcherUuid uuid.UUID, statData entityjson.UserData) error {
 	err := s.chClient.Exec(s.ctx,
 		`INSERT INTO searcher_hit (uuid,date_hit,searcher_uuid,url,url_404,ip,user_agent,site_id)
 			   VALUES(generateUUIDv7(),NOW(),?,?,?,?,?,?)`, searcherUuid, statData.Url, statData.IsError404, statData.Ip,

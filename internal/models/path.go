@@ -4,6 +4,8 @@ import (
 	"bitrix-statistic/internal/entitydb"
 	"bitrix-statistic/internal/filters"
 	"context"
+	"database/sql"
+	"errors"
 	"github.com/ClickHouse/clickhouse-go/v2/lib/driver"
 )
 
@@ -36,7 +38,7 @@ func (p Path) FindByPathId(pathId int32, dateStat string) (entitydb.Path, error)
 	var path entitydb.Path
 	err := p.chClient.QueryRow(p.ctx, `SELECT * FROM path WHERE path_id = ?`, pathId).ScanStruct(&path)
 
-	if err != nil {
+	if err != nil && errors.Is(err, sql.ErrNoRows) == false {
 		return entitydb.Path{}, err
 	}
 	return path, nil

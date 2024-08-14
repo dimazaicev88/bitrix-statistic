@@ -3,6 +3,8 @@ package models
 import (
 	"bitrix-statistic/internal/entitydb"
 	"context"
+	"database/sql"
+	"errors"
 	"github.com/ClickHouse/clickhouse-go/v2/lib/driver"
 )
 
@@ -24,7 +26,7 @@ func (pa PageAdv) Add(pageAdv entitydb.PageAdv) error {
 		       VALUES (curdate(),?,?,?,?)`,
 		pageAdv.AdvUuid, pageAdv.CounterBack, pageAdv.EnterCounterBack, pageAdv.ExitCounterBack,
 	)
-	if err != nil {
+	if err != nil && errors.Is(err, sql.ErrNoRows) == false {
 		return err
 	}
 	return nil

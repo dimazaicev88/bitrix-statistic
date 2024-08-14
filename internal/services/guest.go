@@ -39,7 +39,7 @@ func NewGuest(ctx context.Context, allModels *models.Models, hitService HitServi
 	}
 }
 
-func (gs GuestService) AddGuest(statData entityjson.StatData, advReferer entitydb.AdvReferer) (entitydb.Guest, error) {
+func (gs GuestService) AddGuest(statData entityjson.UserData, advReferer entitydb.AdvReferer) (entitydb.Guest, error) {
 	guestDb := entitydb.Guest{
 		Uuid:          uuid.New(),
 		FirstDate:     time.Now(),
@@ -71,11 +71,11 @@ func (gs GuestService) FindByUuid(uuid uuid.UUID) (entitydb.Guest, error) {
 	return gs.allModels.Guest.FindByUuid(uuid)
 }
 
-func (gs GuestService) ExistsGuestByHash(hash string) (bool, error) {
-	return gs.allModels.Guest.ExistsByHash(hash)
-}
+//func (gs GuestService) ExistsGuestByHash(hash string) (bool, error) {
+//	return gs.allModels.Guest.ExistsByHash(hash)
+//}
 
-func (gs GuestService) UpdateGuest(guestDb entitydb.Guest, statData entityjson.StatData, referer entitydb.AdvReferer) error {
+func (gs GuestService) UpdateGuest(guestDb entitydb.Guest, statData entityjson.UserData, referer entitydb.AdvReferer) error {
 	var newGuestDbValue entitydb.Guest
 	oldGuestDbValue, err := gs.FindByUuid(guestDb.Uuid)
 	if err != nil {
