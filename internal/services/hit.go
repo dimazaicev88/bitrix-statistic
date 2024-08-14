@@ -51,7 +51,6 @@ func (hs *HitService) Add(existsGuest bool, sessionDb entitydb.Session, advRefer
 		CityUuid:     uuid.New(),
 		SiteId:       statData.SiteId,
 	}
-
 	if err := hs.allModels.Hit.AddHit(hit); err != nil {
 		return entitydb.Hit{}, err
 	}

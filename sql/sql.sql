@@ -735,7 +735,7 @@ create table if not exists hit
 (
     uuid           UUID,
     session_uuid   UUID,
-    adv_uuid       String,
+    adv_uuid       UUID,
     date_hit       DateTime32('Europe/Moscow'),
     php_session_id String,
     guest_uuid     UUID,

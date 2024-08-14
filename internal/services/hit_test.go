@@ -11,6 +11,7 @@ import (
 	"github.com/joho/godotenv"
 	"github.com/sirupsen/logrus"
 	"github.com/stretchr/testify/require"
+	"strings"
 	"testing"
 	"time"
 )
@@ -28,7 +29,6 @@ func TestHitService_Add(t *testing.T) {
 	if err := chClient.Exec(context.Background(), "TRUNCATE hit"); err != nil {
 		logrus.Fatal(err)
 	}
-	existsGuest := true
 	guestUuid := uuid.New()
 	sessionDb := entitydb.Session{
 		Uuid:         uuid.New(),
@@ -76,7 +76,7 @@ func TestHitService_Add(t *testing.T) {
 	}
 
 	statData := entityjson.StatData{
-		PHPSessionId:      "",
+		PHPSessionId:      "b59c67bf196a4758191e42f76670ceba",
 		GuestUuid:         guestUuid,
 		Url:               "ttp://localhost/",
 		Referer:           "https://google.com/",
@@ -94,25 +94,86 @@ func TestHitService_Add(t *testing.T) {
 		Cookies:           "_ga=GA1.2.131634531.1723559453; _gid=GA1.2.1901415454.1723559453; _ga_PWTK27XVWP=GS1.1.1723559453.1.1.1723559817.0.0.0",
 		IsFavorite:        false,
 	}
-	hit, err := hitService.Add(existsGuest, sessionDb, advReferer, statData)
+	hit, err := hitService.Add(true, sessionDb, advReferer, statData)
 	req.Nil(err)
 
-	req.Equal("", hit.Uuid)
-	req.Equal("", hit.SessionUuid)
-	req.Equal("", hit.AdvUuid)
-	req.Equal("", hit.DateHit)
-	req.Equal("", hit.GuestUuid)
-	req.Equal("", hit.IsNewGuest)
-	req.Equal("", hit.UserId)
-	req.Equal("", hit.IsUserAuth)
-	req.Equal("", hit.Url)
-	req.Equal("", hit.Url404)
-	req.Equal("", hit.UrlFrom)
-	req.Equal("", hit.Method)
-	req.Equal("", hit.Cookies)
-	req.Equal("", hit.UserAgent)
-	req.Equal("", hit.StopListUuid)
-	req.Equal("", hit.CountryId)
-	req.Equal("", hit.CityUuid)
-	req.Equal("", hit.SiteId)
+	var allDbHits []entitydb.Hit
+	rows, _ := chClient.Query(context.Background(), "SELECT * from hit")
+
+	for rows.Next() {
+		var dbHit entitydb.Hit
+		rows.ScanStruct(&dbHit)
+		allDbHits = append(allDbHits, dbHit)
+	}
+	req.Equal(1, len(allDbHits))
+
+	req.Equal(hit.Uuid.String(), allDbHits[0].Uuid.String())
+	req.Equal(hit.SessionUuid.String(), allDbHits[0].SessionUuid.String())
+	req.Equal(hit.AdvUuid.String(), allDbHits[0].AdvUuid.String())
+	req.Equal(hit.GuestUuid.String(), allDbHits[0].GuestUuid.String())
+	req.Equal(hit.IsNewGuest, allDbHits[0].IsNewGuest)
+	req.Equal(hit.PhpSessionId, allDbHits[0].PhpSessionId)
+	req.Equal(hit.UserId, allDbHits[0].UserId)
+	req.Equal(hit.IsUserAuth, allDbHits[0].IsUserAuth)
+	req.Equal(hit.Url, allDbHits[0].Url)
+	req.Equal(hit.Url404, allDbHits[0].Url404)
+	req.Equal(hit.UrlFrom, allDbHits[0].UrlFrom)
+	req.Equal(hit.Method, allDbHits[0].Method)
+	req.Equal(hit.Cookies, allDbHits[0].Cookies)
+	req.Equal(hit.UserAgent, allDbHits[0].UserAgent)
+	req.Equal(hit.StopListUuid, allDbHits[0].StopListUuid)
+	req.Equal(strings.Trim(" ", hit.CountryId), strings.Trim(" ", allDbHits[0].CountryId))
+	req.Equal(hit.CityUuid.String(), allDbHits[0].CityUuid.String())
+	req.Equal(hit.SiteId, allDbHits[0].SiteId)
+}
+
+func TestHitService_Add_EmptyData(t *testing.T) {
+	if err := godotenv.Load(pathToEnvFile); err != nil {
+		logrus.Fatal("Error loading .env file")
+	}
+	chClient, _ := storage.NewClickHouseClient(config.GetServerConfig())
+	defer chClient.Close()
+	req := require.New(t)
+	allModels := models.NewModels(context.Background(), chClient)
+	hitService := NewHit(context.Background(), allModels)
+
+	if err := chClient.Exec(context.Background(), "TRUNCATE hit"); err != nil {
+		logrus.Fatal(err)
+	}
+	sessionDb := entitydb.Session{}
+
+	advReferer := entitydb.AdvReferer{}
+
+	statData := entityjson.StatData{}
+	hit, err := hitService.Add(true, sessionDb, advReferer, statData)
+	req.Nil(err)
+
+	var allDbHits []entitydb.Hit
+	rows, _ := chClient.Query(context.Background(), "SELECT * from hit")
+
+	for rows.Next() {
+		var dbHit entitydb.Hit
+		rows.ScanStruct(&dbHit)
+		allDbHits = append(allDbHits, dbHit)
+	}
+	req.Equal(1, len(allDbHits))
+
+	req.Equal(hit.Uuid.String(), allDbHits[0].Uuid.String())
+	req.Equal(hit.SessionUuid.String(), allDbHits[0].SessionUuid.String())
+	req.Equal(hit.AdvUuid.String(), allDbHits[0].AdvUuid.String())
+	req.Equal(hit.GuestUuid.String(), allDbHits[0].GuestUuid.String())
+	req.Equal(hit.IsNewGuest, allDbHits[0].IsNewGuest)
+	req.Equal(hit.PhpSessionId, allDbHits[0].PhpSessionId)
+	req.Equal(hit.UserId, allDbHits[0].UserId)
+	req.Equal(hit.IsUserAuth, allDbHits[0].IsUserAuth)
+	req.Equal(hit.Url, allDbHits[0].Url)
+	req.Equal(hit.Url404, allDbHits[0].Url404)
+	req.Equal(hit.UrlFrom, allDbHits[0].UrlFrom)
+	req.Equal(hit.Method, allDbHits[0].Method)
+	req.Equal(hit.Cookies, allDbHits[0].Cookies)
+	req.Equal(hit.UserAgent, allDbHits[0].UserAgent)
+	req.Equal(hit.StopListUuid, allDbHits[0].StopListUuid)
+	req.Equal(strings.Trim(" ", hit.CountryId), strings.Trim(" ", allDbHits[0].CountryId))
+	req.Equal(hit.CityUuid.String(), allDbHits[0].CityUuid.String())
+	req.Equal(hit.SiteId, allDbHits[0].SiteId)
 }
