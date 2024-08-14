@@ -100,7 +100,7 @@ func (stat Statistic) Add(statData entityjson.StatData) error {
 				return err
 			}
 
-			guestUuid, err = stat.guestService.AddGuest(statData, advReferer)
+			guestDb, err = stat.guestService.AddGuest(statData, advReferer)
 			if err != nil {
 				return err
 			}

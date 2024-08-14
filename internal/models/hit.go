@@ -31,12 +31,17 @@ func (hm Hit) FindByUuid(uuid string) (entitydb.Hit, error) {
 }
 
 func (hm Hit) AddHit(hit entitydb.Hit) error {
+	//return hm.chClient.Exec(hm.ctx,
+	//	`INSERT INTO hit (uuid, session_uuid, adv_uuid, date_hit, php_session_id, guest_uuid, new_guest, user_id, user_auth, url, url_404, url_from,
+	//             ip, method, cookies, user_agent, stop_list_uuid, country_id, city_uuid, site_id)
+	//	       VALUES (?,  ?, ?, now(), ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?,?,?,?,?,?)`,
+	//	hit.Uuid, hit.SessionUuid, hit.AdvUuid, hit.DateHit, hit.PhpSessionId, hit.GuestUuid, hit.IsNewGuest, hit.UserId, hit.IsUserAuth, hit.Url, hit.Url404, hit.UrlFrom, hit.Ip,
+	//	hit.Method, hit.Cookies, hit.UserAgent, hit.StopListUuid, hit.CountryId, hit.CityUuid, hit.SiteId)
+
 	return hm.chClient.Exec(hm.ctx,
-		`INSERT INTO hit (uuid, session_uuid, adv_uuid, date_hit, php_session_id, guest_uuid, new_guest, user_id, user_auth, url, url_404, url_from, 
-                 ip, method, cookies, user_agent, stop_list_uuid, country_id, city_uuid, site_id)
-		       VALUES (?,  ?, ?, now(), ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?,?,?,?,?,?)`,
-		hit.Uuid, hit.SessionUuid, hit.AdvUuid, hit.DateHit, hit.PhpSessionId, hit.GuestUuid, hit.IsNewGuest, hit.UserId, hit.IsUserAuth, hit.Url, hit.Url404, hit.UrlFrom, hit.Ip,
-		hit.Method, hit.Cookies, hit.UserAgent, hit.StopListUuid, hit.CountryId, hit.CityUuid, hit.SiteId)
+		`INSERT INTO hit (uuid,session_uuid,adv_uuid,date_hit,php_session_id, guest_uuid)
+		       VALUES (?,?,?,now(),?,?)`,
+		hit.Uuid, hit.SessionUuid, hit.AdvUuid, hit.DateHit, hit.PhpSessionId, hit.GuestUuid)
 }
 
 func (hm Hit) FindLastHitWithoutSession(guestUuid uuid.UUID, withoutPhpSessionId string) (entitydb.Hit, error) {

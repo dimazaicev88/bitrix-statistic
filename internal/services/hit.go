@@ -32,6 +32,7 @@ func (hs *HitService) FindByUuid(uuid string) (entitydb.Hit, error) {
 func (hs *HitService) Add(existsGuest bool, sessionDb entitydb.Session, advReferer entitydb.AdvReferer, statData entityjson.StatData) (entitydb.Hit, error) {
 	hit := entitydb.Hit{
 		Uuid:         uuid.New(),
+		PhpSessionId: statData.PHPSessionId,
 		SessionUuid:  sessionDb.Uuid,
 		AdvUuid:      advReferer.AdvUuid,
 		GuestUuid:    sessionDb.GuestUuid,

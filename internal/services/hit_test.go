@@ -76,7 +76,7 @@ func TestHitService_Add(t *testing.T) {
 	}
 
 	statData := entityjson.StatData{
-		PHPSessionId:      "b59c67bf196a4758191e42f76670ceba",
+		PHPSessionId:      "",
 		GuestUuid:         guestUuid,
 		Url:               "ttp://localhost/",
 		Referer:           "https://google.com/",

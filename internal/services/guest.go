@@ -39,34 +39,28 @@ func NewGuest(ctx context.Context, allModels *models.Models, hitService HitServi
 	}
 }
 
-func (gs GuestService) AddGuest(statData entityjson.StatData, advReferer entitydb.AdvReferer) (string, error) {
-	newUUID, err := uuid.NewUUID()
-	var guestDb entitydb.Guest
-
-	if err != nil {
-		return "", err
+func (gs GuestService) AddGuest(statData entityjson.StatData, advReferer entitydb.AdvReferer) (entitydb.Guest, error) {
+	guestDb := entitydb.Guest{
+		Uuid:          uuid.New(),
+		FirstDate:     time.Now(),
+		PhpSessionId:  statData.PHPSessionId,
+		FirstUrlFrom:  statData.Referer,
+		FirstUrlTo:    statData.Url,
+		FirstUrlTo404: statData.IsError404,
+		FirstSiteId:   statData.SiteId,
+		FirstAdvUuid:  advReferer.AdvUuid,
+		FirstReferer1: advReferer.Referer1,
+		FirstReferer2: advReferer.Referer2,
+		FirstReferer3: advReferer.Referer3,
+		Sessions:      1,
+		Sign:          1,
+		Version:       1,
 	}
-
-	guestDb.Uuid = newUUID
-	guestDb.FirstDate = time.Now()
-	guestDb.PhpSessionId = statData.PHPSessionId
-	guestDb.FirstUrlFrom = statData.Referer
-	guestDb.FirstUrlTo = statData.Url
-	guestDb.FirstUrlTo404 = statData.IsError404
-	guestDb.FirstSiteId = statData.SiteId
-	guestDb.FirstAdvUuid = advReferer.AdvUuid
-	guestDb.FirstReferer1 = advReferer.Referer1
-	guestDb.FirstReferer2 = advReferer.Referer2
-	guestDb.FirstReferer3 = advReferer.Referer3
-	guestDb.Sessions = 1
-	guestDb.Sign = 1
-	guestDb.Version = 1
-	gs.cacheGuest.Set(newUUID.String(), guestDb)
-	if err = gs.allModels.Guest.Add(guestDb); err != nil {
-		return "", err
+	gs.cacheGuest.Set(guestDb.Uuid.String(), guestDb)
+	if err := gs.allModels.Guest.Add(guestDb); err != nil {
+		return entitydb.Guest{}, err
 	}
-
-	return newUUID.String(), nil
+	return guestDb, nil
 }
 
 func (gs GuestService) Find(filter filters.Filter) ([]entitydb.Guest, error) {
