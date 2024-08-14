@@ -57,7 +57,7 @@ func (gm Guest) Add(guest entitydb.Guest) error {
 		guest.FirstUrlTo, guest.FirstUrlTo404, guest.FirstSiteId, guest.FirstAdvUuid, guest.FirstReferer1, guest.FirstReferer2, guest.FirstReferer3, guest.LastSessionUuid,
 		guest.LastDate, guest.LastUserId, guest.LastUserAuth, guest.LastUrlLast, guest.LastUrlLast404, guest.LastUserAgent, guest.LastIp, guest.LastCookie,
 		guest.LastLanguage, guest.LastAdvUUid, guest.LastAdvBack, guest.LastReferer1, guest.LastReferer2, guest.LastReferer3, guest.LastSiteId, guest.LastCountryId,
-		guest.LastCityId, guest.LastCityInfo, guest.GuestHash, guest.Sign, guest.Version,
+		guest.LastCityId, guest.LastCityInfo, guest.Sign, guest.Version,
 	)
 }
 

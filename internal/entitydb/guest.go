@@ -14,7 +14,7 @@ type Guest struct {
 	Hits             uint32    `ch:"hits"`
 	Repair           uint8     `ch:"repair"`
 	PhpSessionId     string    `ch:"php_session_id"`
-	FirstSessionUuid string    `ch:"session_uuid"`
+	FirstSessionUuid uuid.UUID `ch:"session_uuid"`
 	FirstDate        time.Time `ch:"first_date"`
 	FirstUrlFrom     string    `ch:"first_url_from"`
 	FirstUrlTo       string    `ch:"first_url_to"`
@@ -24,7 +24,7 @@ type Guest struct {
 	FirstReferer1    string    `ch:"first_referer1"`
 	FirstReferer2    string    `ch:"first_referer2"`
 	FirstReferer3    string    `ch:"first_referer3"`
-	LastSessionUuid  string    `ch:"last_session_uuid"`
+	LastSessionUuid  uuid.UUID `ch:"last_session_uuid"`
 	LastDate         time.Time `ch:"last_last_date"`
 	LastUserId       uint32    `ch:"last_user_id"`
 	LastUserAuth     bool      `ch:"last_user_auth"`

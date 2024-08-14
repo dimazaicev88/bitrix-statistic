@@ -16,11 +16,11 @@ type GuestService struct {
 	allModels   *models.Models
 	ctx         context.Context
 	cacheGuest  otter.Cache[string, entitydb.Guest]
-	hitService  HitService
-	advServices AdvServices
+	hitService  *HitService
+	advServices *AdvServices
 }
 
-func NewGuest(ctx context.Context, allModels *models.Models, hitService HitService, advServices AdvServices) *GuestService {
+func NewGuest(ctx context.Context, allModels *models.Models, hitService *HitService, advServices *AdvServices) *GuestService {
 	otterCache, err := otter.MustBuilder[string, entitydb.Guest](15000).
 		CollectStats().
 		WithTTL(time.Minute * 15).
@@ -39,19 +39,20 @@ func NewGuest(ctx context.Context, allModels *models.Models, hitService HitServi
 	}
 }
 
-func (gs GuestService) AddGuest(statData entityjson.UserData, advReferer entitydb.AdvReferer) (entitydb.Guest, error) {
+func (gs GuestService) Add(userData entityjson.UserData, advReferer entitydb.AdvReferer) (entitydb.Guest, error) {
 	guestDb := entitydb.Guest{
 		Uuid:          uuid.New(),
 		FirstDate:     time.Now(),
-		PhpSessionId:  statData.PHPSessionId,
-		FirstUrlFrom:  statData.Referer,
-		FirstUrlTo:    statData.Url,
-		FirstUrlTo404: statData.IsError404,
-		FirstSiteId:   statData.SiteId,
+		PhpSessionId:  userData.PHPSessionId,
+		FirstUrlFrom:  userData.Referer,
+		FirstUrlTo:    userData.Url,
+		FirstUrlTo404: userData.IsError404,
+		FirstSiteId:   userData.SiteId,
 		FirstAdvUuid:  advReferer.AdvUuid,
 		FirstReferer1: advReferer.Referer1,
 		FirstReferer2: advReferer.Referer2,
 		FirstReferer3: advReferer.Referer3,
+		LastIp:        userData.Ip,
 		Sessions:      1,
 		Sign:          1,
 		Version:       1,
