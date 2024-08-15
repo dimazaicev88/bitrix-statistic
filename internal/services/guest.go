@@ -91,34 +91,6 @@ func (gs GuestService) FindByUuid(uuid uuid.UUID) (entitydb.Guest, error) {
 	return gs.allModels.Guest.FindByUuid(uuid)
 }
 
-//func (gs GuestService) ExistsGuestByHash(hash string) (bool, error) {
-//	return gs.allModels.Guest.ExistsByHash(hash)
-//}
-
-func (gs GuestService) UpdateGuest(guestDb entitydb.Guest, statData entityjson.UserData, referer entitydb.AdvReferer) error {
-	var newGuestDbValue entitydb.Guest
-	oldGuestDbValue, err := gs.FindByUuid(guestDb.Uuid)
-	if err != nil {
-		return err
-	}
-
-	//Если это новая сессия увеличиваем счетчик сессий
-	if oldGuestDbValue.PhpSessionId != statData.PHPSessionId {
-		newGuestDbValue.Sessions += oldGuestDbValue.Sessions
-	}
-
-	newGuestDbValue.FirstAdvUuid = referer.AdvUuid
-	newGuestDbValue.LastAdvUUid = referer.AdvUuid
-	newGuestDbValue.LastAdvBack = referer.LastAdvBack
-	newGuestDbValue.FirstReferer1 = referer.Referer1
-	newGuestDbValue.FirstReferer2 = referer.Referer2
-	newGuestDbValue.LastReferer1 = referer.Referer1
-	newGuestDbValue.LastReferer2 = referer.Referer2
-
-	err = gs.allModels.Guest.Update(oldGuestDbValue, newGuestDbValue)
-	if err != nil {
-		return err
-	}
-
-	return nil
+func (gs GuestService) UpdateGuest(oldGuestDb, newGuestDb entitydb.Guest) error {
+	return gs.allModels.Guest.Update(oldGuestDb, newGuestDb)
 }

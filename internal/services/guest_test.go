@@ -124,3 +124,83 @@ func TestGuestService_Add(t *testing.T) {
 	req.Equal(uint32(1), allDbGuests[0].Version)
 	req.Equal(userData.PHPSessionId, allDbGuests[0].PhpSessionId)
 }
+
+func TestGuestService_FindByUuid(t *testing.T) {
+	if err := godotenv.Load(pathToEnvFile); err != nil {
+		logrus.Fatal("Error loading .env file")
+	}
+	chClient, _ := storage.NewClickHouseClient(config.GetServerConfig())
+	defer chClient.Close()
+
+	req := require.New(t)
+	allModels := models.NewModels(context.Background(), chClient)
+	hitService := NewHit(context.Background(), allModels)
+	guestService := NewGuest(context.Background(), allModels, hitService, NewAdv(context.Background(), allModels, hitService))
+	utils.TruncateTable("guest", chClient)
+
+	guestUuid := uuid.New()
+	userData := entityjson.UserData{
+		PHPSessionId:      "php-session-id-v1",
+		GuestUuid:         guestUuid,
+		Url:               "http://localhost",
+		Referer:           "https://www.google.com",
+		Ip:                "127.0.0.1",
+		UserAgent:         "user-agent-firefox",
+		UserId:            10,
+		UserLogin:         "admin",
+		HttpXForwardedFor: "",
+		IsError404:        false,
+		SiteId:            "s1",
+		Event1:            "evt1",
+		Event2:            "ev2",
+		IsUserAuth:        true,
+		Method:            "GET",
+		Cookies:           "cookies-value",
+		IsFavorite:        true,
+	}
+	guest, err := guestService.Add(userData, entitydb.AdvReferer{})
+	guestFind, err := guestService.FindByUuid(userData.GuestUuid)
+
+	req.Nil(err)
+	req.Equal(guest.Uuid.String(), guestFind.Uuid.String())
+}
+
+func TestGuestService_Update(t *testing.T) {
+	if err := godotenv.Load(pathToEnvFile); err != nil {
+		logrus.Fatal("Error loading .env file")
+	}
+	chClient, _ := storage.NewClickHouseClient(config.GetServerConfig())
+	defer chClient.Close()
+
+	req := require.New(t)
+	allModels := models.NewModels(context.Background(), chClient)
+	hitService := NewHit(context.Background(), allModels)
+	guestService := NewGuest(context.Background(), allModels, hitService, NewAdv(context.Background(), allModels, hitService))
+	utils.TruncateTable("guest", chClient)
+
+	guestUuid := uuid.New()
+	userData := entityjson.UserData{
+		PHPSessionId:      "php-session-id-v1",
+		GuestUuid:         guestUuid,
+		Url:               "http://localhost",
+		Referer:           "https://www.google.com",
+		Ip:                "127.0.0.1",
+		UserAgent:         "user-agent-firefox",
+		UserId:            10,
+		UserLogin:         "admin",
+		HttpXForwardedFor: "",
+		IsError404:        false,
+		SiteId:            "s1",
+		Event1:            "evt1",
+		Event2:            "ev2",
+		IsUserAuth:        true,
+		Method:            "GET",
+		Cookies:           "cookies-value",
+		IsFavorite:        true,
+	}
+	guest, err := guestService.Add(userData, entitydb.AdvReferer{})
+	guestFind, err := guestService.UpdateGuest(userData.GuestUuid)
+
+	req.Nil(err)
+	req.Equal(guest.Uuid.String(), guestFind.Uuid.String())
+}
