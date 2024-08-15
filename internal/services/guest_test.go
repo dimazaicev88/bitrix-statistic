@@ -199,8 +199,59 @@ func TestGuestService_Update(t *testing.T) {
 		IsFavorite:        true,
 	}
 	guest, err := guestService.Add(userData, entitydb.AdvReferer{})
-	guestFind, err := guestService.UpdateGuest(userData.GuestUuid)
+	newGuest := guest
+	newGuest.Events = 1
+	newGuest.Favorites = true
+	newGuest.Sessions = 10
+	newGuest.Hits = 2
+	newGuest.Repair = true
+	newGuest.PhpSessionId = "php-session-id-v2"
+	newGuest.FirstSessionUuid = uuid.New()
+	newGuest.FirstUrlFrom = "https://www.ozone.com"
+	newGuest.FirstUrlTo = "https://www.bbb.com"
+	newGuest.FirstUrl404 = true
+	newGuest.FirstUrlTo404 = true
+	newGuest.FirstSiteId = "s2"
+	newGuest.FirstAdvUuid = uuid.New()
+	newGuest.FirstReferer1 = "rrrr1"
+	newGuest.FirstReferer2 = "rrrr2"
+	newGuest.FirstReferer3 = "rrrr3"
+	newGuest.LastSessionUuid = uuid.New()
+	newGuest.LastUserId = 1002
+	newGuest.LastUserAuth = true
+	newGuest.LastUrlLast = "https://www.bbb.com"
+	newGuest.LastUrlLast404 = true
+	newGuest.LastUserAgent = "user-agent-chrome"
+	newGuest.LastIp = "0.0.0.0"
+	newGuest.LastCookie = "cookies-value-v2"
+	newGuest.LastLanguage = "ru"
+	newGuest.LastAdvUUid = uuid.New()
+	newGuest.LastAdvBack
+	bool
+	`ch:"last_adv_back"`
+	newGuest.LastReferer1
+	string
+	`ch:"last_referer1"`
+	newGuest.LastReferer2
+	string
+	`ch:"last_referer2"`
+	newGuest.LastReferer3
+	string
+	`ch:"last_referer3"`
+	newGuest.LastSiteId
+	string
+	`ch:"last_site_id"`
+	newGuest.LastCountryId
+	string
+	`ch:"last_country_id"`
+	newGuest.LastCityId
+	string
+	`ch:"last_city_id"`
+	newGuest.LastCityInfo
+	string
+	`ch:"last_city_info"`
+
+	err = guestService.UpdateGuest(guest, newGuest)
 
 	req.Nil(err)
-	req.Equal(guest.Uuid.String(), guestFind.Uuid.String())
 }
