@@ -60,7 +60,7 @@ func TestHitService_Add(t *testing.T) {
 		Referer1:     "ref1",
 		Referer2:     "ref2",
 		Referer3:     "ref3",
-		StopListUuid: uuid.New().String(),
+		StopListUuid: uuid.New(),
 		CountryId:    "",
 		FirstSiteId:  "",
 		LastSiteId:   "",

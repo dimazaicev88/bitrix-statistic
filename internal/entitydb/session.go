@@ -33,10 +33,10 @@ type Session struct {
 	Referer1     string    `ch:"referer1"`
 	Referer2     string    `ch:"referer2"`
 	Referer3     string    `ch:"referer3"`
-	StopListUuid string    `ch:"stop_list_uuid"`
+	StopListUuid uuid.UUID `ch:"stop_list_uuid"`
 	CountryId    string    `ch:"country_uuid"`
-	FirstSiteId  string    `ch:"first_site_uuid"`
-	LastSiteId   string    `ch:"last_site_uuid"`
+	FirstSiteId  string    `ch:"first_site_id"`
+	LastSiteId   string    `ch:"last_site_id"`
 	CityId       string    `ch:"city_id"`
 	Sign         int8      `ch:"sign"`
 	Version      uint32    `ch:"version"`

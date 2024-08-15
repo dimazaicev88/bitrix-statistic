@@ -6,6 +6,7 @@ import (
 	"bitrix-statistic/internal/filters"
 	"bitrix-statistic/internal/models"
 	"context"
+	"errors"
 	"github.com/google/uuid"
 	"time"
 )
@@ -22,7 +23,17 @@ func NewSession(ctx context.Context, allModels *models.Models) *SessionService {
 	}
 }
 
-func (ss SessionService) Add(guestUuid, hitUuid uuid.UUID, existGuest bool, statData entityjson.UserData, adv entitydb.AdvReferer) (entitydb.Session, error) {
+func (ss SessionService) Add(stopListUuid, guestUuid, hitUuid uuid.UUID, existGuest bool, statData entityjson.UserData, adv entitydb.AdvReferer) (entitydb.Session, error) {
+
+	switch {
+	case guestUuid == uuid.Nil:
+		return entitydb.Session{}, errors.New("guestUuid is empty")
+	case hitUuid == uuid.Nil:
+		return entitydb.Session{}, errors.New("hitUuid is empty")
+	case statData == (entityjson.UserData{}):
+		return entitydb.Session{}, errors.New("statData is empty")
+	}
+
 	var sessionDb entitydb.Session
 	sessionDb.Uuid = uuid.New()
 	sessionDb.GuestUuid = guestUuid
@@ -50,6 +61,7 @@ func (ss SessionService) Add(guestUuid, hitUuid uuid.UUID, existGuest bool, stat
 	sessionDb.Referer3 = adv.Referer3
 	sessionDb.FirstSiteId = statData.SiteId
 	sessionDb.LastSiteId = statData.SiteId
+	sessionDb.StopListUuid = stopListUuid
 
 	err := ss.allModels.Session.Add(sessionDb)
 

@@ -124,7 +124,7 @@ func (stat Statistic) Add(statData entityjson.UserData) error {
 
 		//Если сессия новая, добавляем.
 		if sessionDb == (entitydb.Session{}) {
-			sessionDb, err = stat.sessionService.Add(guestUuid, hitUuid, existsGuest == true, statData, advReferer)
+			sessionDb, err = stat.sessionService.Add(uuid.Nil, guestUuid, hitUuid, existsGuest == true, statData, advReferer)
 			if err != nil {
 				return err
 			}
