@@ -117,7 +117,7 @@ func TestGuestService_Add(t *testing.T) {
 	req.Equal(advReferer.Referer2, allDbGuests[0].LastReferer2)
 	req.Equal(advReferer.Referer3, allDbGuests[0].LastReferer3)
 	req.Equal(userData.SiteId, allDbGuests[0].LastSiteId)
-	req.Equal(int8(1), allDbGuests[0].Sign)
+	req.Equal(int8(-1), allDbGuests[0].Sign)
 	req.Equal(uint32(1), allDbGuests[0].Version)
 	req.Equal(userData.PHPSessionId, allDbGuests[0].PhpSessionId)
 }
@@ -268,6 +268,6 @@ func TestGuestService_Update(t *testing.T) {
 	req.Equal(guestAfterUpdate.LastReferer3, newGuest.LastReferer3)
 	req.Equal(guestAfterUpdate.LastSiteId, newGuest.LastSiteId)
 	req.Equal(guestAfterUpdate.Sign, newGuest.Sign)
-	req.Equal(guestAfterUpdate.Version, newGuest.Version)
+	req.Equal(guestAfterUpdate.Version, newGuest.Version+1)
 	req.Equal(guestAfterUpdate.PhpSessionId, newGuest.PhpSessionId)
 }

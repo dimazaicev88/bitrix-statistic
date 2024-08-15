@@ -727,8 +727,8 @@ create table if not exists guest
     version            UInt32
 )
     engine = VersionedCollapsingMergeTree(sign, version)
-        PARTITION BY toMonth(date_add)
-        ORDER BY date_add;
+        PARTITION BY toMonth(first_date)
+        ORDER BY first_date;
 
 
 ----------------------- Hit ---------------------------

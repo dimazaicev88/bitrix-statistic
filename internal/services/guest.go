@@ -91,6 +91,9 @@ func (gs GuestService) FindByUuid(uuid uuid.UUID) (entitydb.Guest, error) {
 	return gs.allModels.Guest.FindByUuid(uuid)
 }
 
-func (gs GuestService) UpdateGuest(oldGuestDb, newGuestDb entitydb.Guest) error {
-	return gs.allModels.Guest.Update(oldGuestDb, newGuestDb)
+func (gs GuestService) UpdateGuest(oldGuest, newGuestDb entitydb.Guest) error {
+	oldGuest.Sign *= -1
+	newGuestDb.Sign *= 1
+	newGuestDb.Version += 1
+	return gs.allModels.Guest.Update(oldGuest, newGuestDb)
 }

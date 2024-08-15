@@ -68,14 +68,6 @@ func (ss SessionService) IsExistsSession(phpSession string) bool {
 	return count > 0
 }
 
-//func (ss SessionService) UpdateSession(data entityjson.UserData) error {
-//	err := ss.allModels.Session.Update(data)
-//	if err != nil {
-//		return err
-//	}
-//	return nil
-//}
-
 func (ss SessionService) Filter(filter filters.Filter) ([]entitydb.Session, error) {
 	return nil, nil
 }

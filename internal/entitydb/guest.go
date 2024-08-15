@@ -19,7 +19,7 @@ type Guest struct {
 	FirstUrlFrom     string    `ch:"first_url_from"`
 	FirstUrlTo       string    `ch:"first_url_to"`
 	FirstUrl404      bool      `ch:"first_url_404"`
-	FirstUrlTo404    bool      `ch:"first_url_to_404"`
+	FirstUrlTo404    bool      `ch:"first_url_404"`
 	FirstSiteId      string    `ch:"first_site_id"`
 	FirstAdvUuid     uuid.UUID `ch:"first_adv_uuid"`
 	FirstReferer1    string    `ch:"first_referer1"`
