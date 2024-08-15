@@ -6,6 +6,7 @@ import (
 	"bitrix-statistic/internal/filters"
 	"bitrix-statistic/internal/models"
 	"context"
+	"errors"
 	"github.com/google/uuid"
 	"github.com/maypok86/otter"
 	"github.com/sirupsen/logrus"
@@ -40,6 +41,11 @@ func NewGuest(ctx context.Context, allModels *models.Models, hitService *HitServ
 }
 
 func (gs GuestService) Add(userData entityjson.UserData, advReferer entitydb.AdvReferer) (entitydb.Guest, error) {
+
+	if userData == (entityjson.UserData{}) {
+		return entitydb.Guest{}, errors.New("user data is empty")
+	}
+
 	guestDb := entitydb.Guest{
 		Uuid:          uuid.New(),
 		FirstDate:     time.Now(),

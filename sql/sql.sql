@@ -686,7 +686,7 @@ create table if not exists event_list
 
 create table if not exists guest
 (
-    uuid         UUID,
+    uuid               UUID,
     date_add           DateTime32('Europe/Moscow'),
     favorites          boolean default false,
     events             UInt32  default 0,
@@ -694,6 +694,7 @@ create table if not exists guest
     hits               UInt32  default 0,
     repair             boolean default false,
     first_session_uuid UUID,
+    php_session_id     String,
     first_date         DateTime32('Europe/Moscow'),
     first_url_from     String,
     first_url_to       String,

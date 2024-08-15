@@ -28,8 +28,8 @@ func TestGuestService_Add(t *testing.T) {
 	guestService := NewGuest(context.Background(), allModels, hitService, NewAdv(context.Background(), allModels, hitService))
 	utils.TruncateTable("guest", chClient)
 
-	hit, err := guestService.Add(entityjson.UserData{}, entitydb.AdvReferer{})
-	req.Nil(err)
-	req.Equal("session is empty", err.Error())
-	req.Equal(hit, entitydb.Hit{})
+	guest, err := guestService.Add(entityjson.UserData{}, entitydb.AdvReferer{})
+	req.NotNil(err)
+	req.Equal("user data is empty", err.Error())
+	req.Equal(guest, entitydb.Guest{})
 }

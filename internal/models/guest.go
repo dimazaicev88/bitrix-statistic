@@ -112,7 +112,7 @@ func (gm Guest) Update(oldValue entitydb.Guest, newValue entitydb.Guest) error {
 		oldValue.FirstReferer3, oldValue.LastSessionUuid, oldValue.LastDate, oldValue.LastUserId, oldValue.LastUserAuth, oldValue.LastUrlLast, oldValue.LastUrlLast404,
 		oldValue.LastUserAgent, oldValue.LastIp, oldValue.LastCookie, oldValue.LastLanguage, oldValue.LastAdvUUid, oldValue.LastAdvBack, oldValue.LastReferer1,
 		oldValue.LastReferer2, oldValue.LastReferer3, oldValue.LastSiteId, oldValue.LastCountryId, oldValue.LastCityId, oldValue.LastCityInfo,
-		oldValue.GuestHash, oldValue.Sign*-1, oldValue.Version,
+		oldValue.Sign*-1, oldValue.Version,
 	)
 	if err != nil {
 		return err
@@ -130,7 +130,7 @@ func (gm Guest) Update(oldValue entitydb.Guest, newValue entitydb.Guest) error {
 		newValue.FirstUrlTo, newValue.FirstUrlTo404, newValue.FirstSiteId, newValue.FirstAdvUuid, newValue.FirstReferer1, newValue.FirstReferer2, newValue.FirstReferer3,
 		newValue.LastSessionUuid, newValue.LastDate, newValue.LastUserId, newValue.LastUserAuth, newValue.LastUrlLast, newValue.LastUrlLast404, newValue.LastUserAgent,
 		newValue.LastIp, newValue.LastCookie, newValue.LastLanguage, newValue.LastAdvUUid, newValue.LastAdvBack, newValue.LastReferer1, newValue.LastReferer2, newValue.LastReferer3,
-		newValue.LastSiteId, newValue.LastCountryId, newValue.LastCityId, newValue.LastCityInfo, newValue.GuestHash, newValue.Sign, oldValue.Version+1,
+		newValue.LastSiteId, newValue.LastCountryId, newValue.LastCityId, newValue.LastCityInfo, newValue.Sign, oldValue.Version+1,
 	)
 	if err != nil {
 		return err
