@@ -10,20 +10,19 @@ import (
 	"context"
 	"github.com/google/uuid"
 	"github.com/joho/godotenv"
-	"github.com/sirupsen/logrus"
 	"github.com/stretchr/testify/require"
 	"testing"
 )
 
 // Добавление хита, но данные с сессией переданы пустые
 func TestGuestService_Add_EmptyUserData(t *testing.T) {
+	req := require.New(t)
 	if err := godotenv.Load(pathToEnvFile); err != nil {
-		logrus.Fatal("Error loading .env file")
+		req.Fail("Error loading .env file")
 	}
 	chClient, _ := storage.NewClickHouseClient(config.GetServerConfig())
 	defer chClient.Close()
 
-	req := require.New(t)
 	allModels := models.NewModels(context.Background(), chClient)
 	hitService := NewHit(context.Background(), allModels)
 	guestService := NewGuest(context.Background(), allModels, hitService, NewAdv(context.Background(), allModels, hitService))
@@ -37,13 +36,13 @@ func TestGuestService_Add_EmptyUserData(t *testing.T) {
 
 // Добавление хита, но данные с сессией переданы пустые
 func TestGuestService_Add(t *testing.T) {
+	req := require.New(t)
 	if err := godotenv.Load(pathToEnvFile); err != nil {
-		logrus.Fatal("Error loading .env file")
+		req.Fail("Error loading .env file")
 	}
 	chClient, _ := storage.NewClickHouseClient(config.GetServerConfig())
 	defer chClient.Close()
 
-	req := require.New(t)
 	allModels := models.NewModels(context.Background(), chClient)
 	hitService := NewHit(context.Background(), allModels)
 	guestService := NewGuest(context.Background(), allModels, hitService, NewAdv(context.Background(), allModels, hitService))
@@ -86,9 +85,7 @@ func TestGuestService_Add(t *testing.T) {
 	for rows.Next() {
 		var dbGuest entitydb.Guest
 		err = rows.ScanStruct(&dbGuest)
-		if err != nil {
-			req.Fail(err.Error())
-		}
+		req.Nil(err)
 		allDbGuests = append(allDbGuests, dbGuest)
 	}
 	req.Equal(1, len(allDbGuests))
@@ -126,13 +123,13 @@ func TestGuestService_Add(t *testing.T) {
 }
 
 func TestGuestService_FindByUuid(t *testing.T) {
+	req := require.New(t)
 	if err := godotenv.Load(pathToEnvFile); err != nil {
-		logrus.Fatal("Error loading .env file")
+		req.Fail("Error loading .env file")
 	}
 	chClient, _ := storage.NewClickHouseClient(config.GetServerConfig())
 	defer chClient.Close()
 
-	req := require.New(t)
 	allModels := models.NewModels(context.Background(), chClient)
 	hitService := NewHit(context.Background(), allModels)
 	guestService := NewGuest(context.Background(), allModels, hitService, NewAdv(context.Background(), allModels, hitService))
@@ -166,13 +163,13 @@ func TestGuestService_FindByUuid(t *testing.T) {
 }
 
 func TestGuestService_Update(t *testing.T) {
+	req := require.New(t)
 	if err := godotenv.Load(pathToEnvFile); err != nil {
-		logrus.Fatal("Error loading .env file")
+		req.Fail("Error loading .env file")
 	}
 	chClient, _ := storage.NewClickHouseClient(config.GetServerConfig())
 	defer chClient.Close()
 
-	req := require.New(t)
 	allModels := models.NewModels(context.Background(), chClient)
 	hitService := NewHit(context.Background(), allModels)
 	guestService := NewGuest(context.Background(), allModels, hitService, NewAdv(context.Background(), allModels, hitService))
@@ -226,32 +223,51 @@ func TestGuestService_Update(t *testing.T) {
 	newGuest.LastCookie = "cookies-value-v2"
 	newGuest.LastLanguage = "ru"
 	newGuest.LastAdvUUid = uuid.New()
-	newGuest.LastAdvBack
-	bool
-	`ch:"last_adv_back"`
-	newGuest.LastReferer1
-	string
-	`ch:"last_referer1"`
-	newGuest.LastReferer2
-	string
-	`ch:"last_referer2"`
-	newGuest.LastReferer3
-	string
-	`ch:"last_referer3"`
-	newGuest.LastSiteId
-	string
-	`ch:"last_site_id"`
-	newGuest.LastCountryId
-	string
-	`ch:"last_country_id"`
-	newGuest.LastCityId
-	string
-	`ch:"last_city_id"`
-	newGuest.LastCityInfo
-	string
-	`ch:"last_city_info"`
+	newGuest.LastAdvBack = false
+	newGuest.LastReferer1 = "r1"
+	newGuest.LastReferer2 = "r2"
+	newGuest.LastReferer3 = "r3"
+	newGuest.LastSiteId = "s1"
+	newGuest.LastCountryId = "c1"
+	newGuest.LastCityId = "ct1"
+	newGuest.LastCityInfo = "ci1"
 
 	err = guestService.UpdateGuest(guest, newGuest)
-
 	req.Nil(err)
+
+	err = chClient.Exec(context.Background(), "OPTIMIZE TABLE guest DEDUPLICATE;")
+	req.Nil(err)
+
+	guestAfterUpdate, _ := guestService.FindByUuid(guest.Uuid)
+
+	req.Equal(guestAfterUpdate.Uuid.String(), newGuest.Uuid.String())
+	req.Equal(guestAfterUpdate.Favorites, newGuest.Favorites)
+	req.Equal(guestAfterUpdate.Events, newGuest.Events)
+	req.Equal(guestAfterUpdate.Sessions, newGuest.Sessions)
+	req.Equal(guestAfterUpdate.Hits, newGuest.Hits)
+	req.Equal(guestAfterUpdate.Repair, newGuest.Repair)
+	req.Equal(guestAfterUpdate.FirstUrlFrom, newGuest.FirstUrlFrom)
+	req.Equal(guestAfterUpdate.FirstUrlTo, newGuest.FirstUrlTo)
+	req.Equal(guestAfterUpdate.FirstUrlTo404, newGuest.FirstUrlTo404)
+	req.Equal(guestAfterUpdate.FirstSiteId, newGuest.FirstSiteId)
+	req.Equal(guestAfterUpdate.FirstAdvUuid.String(), newGuest.FirstAdvUuid.String())
+	req.Equal(guestAfterUpdate.FirstReferer1, newGuest.FirstReferer1)
+	req.Equal(guestAfterUpdate.FirstReferer2, newGuest.FirstReferer2)
+	req.Equal(guestAfterUpdate.FirstReferer3, newGuest.FirstReferer3)
+	req.Equal(guestAfterUpdate.LastUserId, newGuest.LastUserId)
+	req.Equal(guestAfterUpdate.LastUserAuth, newGuest.LastUserAuth)
+	req.Equal(guestAfterUpdate.LastUrlLast, newGuest.LastUrlLast)
+	req.Equal(guestAfterUpdate.LastUrlLast404, newGuest.LastUrlLast404)
+	req.Equal(guestAfterUpdate.LastUserAgent, newGuest.LastUserAgent)
+	req.Equal(guestAfterUpdate.LastIp, newGuest.LastIp)
+	req.Equal(guestAfterUpdate.LastCookie, newGuest.LastCookie)
+	req.Equal(guestAfterUpdate.LastAdvUUid, newGuest.LastAdvUUid)
+	req.Equal(guestAfterUpdate.LastAdvBack, newGuest.LastAdvBack)
+	req.Equal(guestAfterUpdate.LastReferer1, newGuest.LastReferer1)
+	req.Equal(guestAfterUpdate.LastReferer2, newGuest.LastReferer2)
+	req.Equal(guestAfterUpdate.LastReferer3, newGuest.LastReferer3)
+	req.Equal(guestAfterUpdate.LastSiteId, newGuest.LastSiteId)
+	req.Equal(guestAfterUpdate.Sign, newGuest.Sign)
+	req.Equal(guestAfterUpdate.Version, newGuest.Version)
+	req.Equal(guestAfterUpdate.PhpSessionId, newGuest.PhpSessionId)
 }

@@ -106,7 +106,9 @@ func (stat Statistic) Add(statData entityjson.UserData) error {
 			}
 		} else { //Если гость уже есть
 			existsGuest = true
-			if err = stat.guestService.UpdateGuest(guestDb, statData, advReferer); err != nil {
+			newGuestDb := guestDb
+			newGuestDb.Sessions += 1
+			if err = stat.guestService.UpdateGuest(guestDb, newGuestDb); err != nil {
 				return err
 			}
 		}
