@@ -6,18 +6,19 @@ import (
 )
 
 type Guest struct {
-	Uuid      uuid.UUID `ch:"uuid"`
-	DateAdd   time.Time `ch:"date_add"`
-	Favorites bool      `ch:"favorites"`
-	Events    uint32    `ch:"events"`
-	Sessions  uint32    `ch:"sessions"`
-	Hits      uint32    `ch:"hits"`
-	Repair    bool      `ch:"repair"`
-	//PhpSessionId     string    `ch:"php_session_id"`
-	FirstSessionUuid uuid.UUID `ch:"session_uuid"`
+	Uuid             uuid.UUID `ch:"uuid"`
+	DateAdd          time.Time `ch:"date_add"`
+	Favorites        bool      `ch:"favorites"`
+	Events           uint32    `ch:"events"`
+	Sessions         uint32    `ch:"sessions"`
+	Hits             uint32    `ch:"hits"`
+	Repair           bool      `ch:"repair"`
+	PhpSessionId     string    `ch:"php_session_id"`
+	FirstSessionUuid uuid.UUID `ch:"first_session_uuid"`
 	FirstDate        time.Time `ch:"first_date"`
 	FirstUrlFrom     string    `ch:"first_url_from"`
 	FirstUrlTo       string    `ch:"first_url_to"`
+	FirstUrl404      bool      `ch:"first_url_404"`
 	FirstUrlTo404    bool      `ch:"first_url_to_404"`
 	FirstSiteId      string    `ch:"first_site_id"`
 	FirstAdvUuid     uuid.UUID `ch:"first_adv_uuid"`
@@ -25,7 +26,7 @@ type Guest struct {
 	FirstReferer2    string    `ch:"first_referer2"`
 	FirstReferer3    string    `ch:"first_referer3"`
 	LastSessionUuid  uuid.UUID `ch:"last_session_uuid"`
-	LastDate         time.Time `ch:"last_last_date"`
+	LastDate         time.Time `ch:"last_date"`
 	LastUserId       uint32    `ch:"last_user_id"`
 	LastUserAuth     bool      `ch:"last_user_auth"`
 	LastUrlLast      string    `ch:"last_url_last"`
@@ -45,5 +46,4 @@ type Guest struct {
 	LastCityInfo     string    `ch:"last_city_info"`
 	Sign             int8      `ch:"sign"`
 	Version          uint32    `ch:"version"`
-	PhpSessionId     string    `ch:"php_session_id"`
 }
