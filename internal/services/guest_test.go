@@ -117,7 +117,7 @@ func TestGuestService_Add(t *testing.T) {
 	req.Equal(advReferer.Referer2, allDbGuests[0].LastReferer2)
 	req.Equal(advReferer.Referer3, allDbGuests[0].LastReferer3)
 	req.Equal(userData.SiteId, allDbGuests[0].LastSiteId)
-	req.Equal(int8(-1), allDbGuests[0].Sign)
+	req.Equal(int8(1), allDbGuests[0].Sign)
 	req.Equal(uint32(1), allDbGuests[0].Version)
 	req.Equal(userData.PHPSessionId, allDbGuests[0].PhpSessionId)
 }

@@ -26,7 +26,7 @@ func (s Session) Find(filter filters.Filter) (error, []map[string]interface{}) {
 func (s Session) Add(session entitydb.Session) error {
 	return s.chClient.Exec(s.ctx,
 		`INSERT INTO session (uuid, guest_uuid, new_guest, user_id, user_auth, events, hits, favorites, url_from, url_to, url_to_404, url_last,
-                     url_last_404, user_agent, date_stat, date_first, date_last, ip_first, ip_last, first_hit_uuid, last_hit_uuid, phpsessid, adv_uuid, adv_back, referer1, referer2, referer3, 
+                     url_last_404, user_agent, date_stat, date_first, date_last, ip_first, ip_last, first_hit_uuid, last_hit_uuid, php_session_id, adv_uuid, adv_back, referer1, referer2, referer3, 
                      stop_list_uuid, country_id, first_site_id, last_site_id, city_id, sign, version) 
 					VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,curdate(),?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)`,
 		session.Uuid, session.GuestUuid, session.IsNewGuest, session.UserId, session.IsUserAuth, session.Events, session.Hits, session.Favorites, session.UrlFrom, session.UrlTo, session.UrlTo404, session.UrlLast, session.UrlLast404,
@@ -39,7 +39,7 @@ func (s Session) Update(oldSession entitydb.Session, newSession entitydb.Session
 
 	err := s.chClient.Exec(s.ctx,
 		`INSERT INTO session (uuid, guest_uuid, new_guest, user_id, user_auth, events, hits, favorites, url_from, url_to, url_to_404, url_last,
-                     url_last_404, user_agent, date_stat, date_first, date_last, ip_first, ip_last, first_hit_uuid, last_hit_uuid, phpsessid, adv_uuid, adv_back, referer1, referer2, referer3, 
+                     url_last_404, user_agent, date_stat, date_first, date_last, ip_first, ip_last, first_hit_uuid, last_hit_uuid, php_session_id, adv_uuid, adv_back, referer1, referer2, referer3, 
                      stop_list_uuid, country_id, first_site_id, last_site_id, city_id, sign, version) 
 					VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,curdate(),?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)`,
 		oldSession.Uuid, oldSession.GuestUuid, oldSession.IsNewGuest, oldSession.UserId, oldSession.IsUserAuth, oldSession.Events, oldSession.Hits, oldSession.Favorites, oldSession.UrlFrom, oldSession.UrlTo, oldSession.UrlTo404,
@@ -54,7 +54,7 @@ func (s Session) Update(oldSession entitydb.Session, newSession entitydb.Session
 
 	err = s.chClient.Exec(s.ctx,
 		`INSERT INTO session (uuid, guest_uuid, new_guest, user_id, user_auth, events, hits, favorites, url_from, url_to, url_to_404, url_last,
-                     url_last_404, user_agent, date_stat, date_first, date_last, ip_first, ip_last, first_hit_uuid, last_hit_uuid, phpsessid, adv_uuid, adv_back, referer1, referer2, referer3, 
+                     url_last_404, user_agent, date_stat, date_first, date_last, ip_first, ip_last, first_hit_uuid, last_hit_uuid, php_session_id, adv_uuid, adv_back, referer1, referer2, referer3, 
                      stop_list_uuid, country_id, first_site_id, last_site_id, city_id, sign, version) 
 					VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,curdate(),?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)`,
 		newSession.Uuid, newSession.GuestUuid, newSession.IsNewGuest, newSession.UserId, newSession.IsUserAuth, newSession.Events, newSession.Hits, newSession.Favorites, newSession.UrlFrom, newSession.UrlTo, newSession.UrlTo404,
@@ -134,21 +134,21 @@ func (s Session) GetAttentiveness(dateStat, siteId string) {
 	//return $ar;
 }
 
-func (s Session) ExistsByPhpSession(session string) (int, error) {
-	var count int
-	row := s.chClient.QueryRow(s.ctx, `select count(uuid) as cnt from session where phpsessid=?`, session)
+func (s Session) ExistsByPhpSession(session string) (bool, error) {
+	var count uint8
+	row := s.chClient.QueryRow(s.ctx, `select 1 as cnt from session where php_session_id=?`, session)
 
 	err := row.Scan(&count)
 	if err != nil && errors.Is(err, sql.ErrNoRows) == false {
-		return 0, err
+		return false, err
 	}
-	return count, nil
+	return count > 0, nil
 }
 
 func (s Session) FindByPHPSessionId(phpSessionId string) (entitydb.Session, error) {
 	var sessionDb entitydb.Session
-	err := s.chClient.QueryRow(s.ctx, `select * from session where phpsessid=?`, phpSessionId).ScanStruct(&sessionDb)
-	if err != nil {
+	err := s.chClient.QueryRow(s.ctx, `select * from session where php_session_id=?`, phpSessionId).ScanStruct(&sessionDb)
+	if err != nil && errors.Is(err, sql.ErrNoRows) == false {
 		return entitydb.Session{}, err
 	}
 	return sessionDb, nil

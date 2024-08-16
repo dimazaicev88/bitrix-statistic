@@ -184,34 +184,40 @@ func TestHitService_FindLastHitWithoutSession(t *testing.T) {
 
 	guestUuid := uuid.New()
 
-	chClient.Exec(context.Background(),
+	err := chClient.Exec(context.Background(),
 		`INSERT INTO hit (uuid, session_uuid, adv_uuid, date_hit, php_session_id, guest_uuid, new_guest, user_id, user_auth, url,
 														  url_404, url_from, ip, method, cookies, user_agent, stop_list_uuid, country_id, city_uuid, site_id)
 			   VALUES ('0191509a-eca7-760b-b46f-664cbfb5fb03', generateUUIDv7(), generateUUIDv7(), now(), 'ses1', @guestUuid, true, 1, true,
-														'localhost', false, '', '10.136.254.100', 'get', 'cookie', 'user_ag', generateUUIDv7(), 'ru', generateUUIDv7(),	's1');
-												
-			   INSERT INTO hit (uuid, session_uuid, adv_uuid, date_hit, php_session_id, guest_uuid, new_guest, user_id, user_auth, url,
+														'localhost', false, '', '10.136.254.100', 'get', 'cookie', 'user_ag', generateUUIDv7(), 'ru', generateUUIDv7(),	's1')`, clickhouse.Named("guestUuid", guestUuid))
+
+	req.Nil(err)
+	err = chClient.Exec(context.Background(), `INSERT INTO hit (uuid, session_uuid, adv_uuid, date_hit, php_session_id, guest_uuid, new_guest, user_id, user_auth, url,
 														  url_404, url_from, ip, method, cookies, user_agent, stop_list_uuid, country_id, city_uuid, site_id)
 			   VALUES ('0191508b-3d75-7048-8733-bb3a24cd6ed1', generateUUIDv7(), generateUUIDv7(), now(), 'ses1', @guestUuid, true, 1, true,
-														'localhost', false, '', '10.136.254.100', 'get', 'cookie', 'user_ag', generateUUIDv7(), 'ru', generateUUIDv7(), 's1');
+														'localhost', false, '', '10.136.254.100', 'get', 'cookie', 'user_ag', generateUUIDv7(), 'ru', generateUUIDv7(), 's1')`, clickhouse.Named("guestUuid", guestUuid))
 
-			   INSERT INTO hit (uuid, session_uuid, adv_uuid, date_hit, php_session_id, guest_uuid, new_guest, user_id, user_auth, url,
+	req.Nil(err)
+	err = chClient.Exec(context.Background(), `INSERT INTO hit (uuid, session_uuid, adv_uuid, date_hit, php_session_id, guest_uuid, new_guest, user_id, user_auth, url,
 														  url_404, url_from, ip, method, cookies, user_agent, stop_list_uuid, country_id, city_uuid, site_id)
 			   VALUES ('0191508d-ec3b-7277-a776-69b528e8c327', generateUUIDv7(), generateUUIDv7(), now(), 'ses1', @guestUuid, true, 1, true,
-														'localhost', false, '', '10.136.254.100', 'get', 'cookie', 'user_ag', generateUUIDv7(), 'ru', generateUUIDv7(), 's1');
+														'localhost', false, '', '10.136.254.100', 'get', 'cookie', 'user_ag', generateUUIDv7(), 'ru', generateUUIDv7(), 's1')`, clickhouse.Named("guestUuid", guestUuid))
 
-			   INSERT INTO hit (uuid, session_uuid, adv_uuid, date_hit, php_session_id, guest_uuid, new_guest, user_id, user_auth, url,
+	req.Nil(err)
+	err = chClient.Exec(context.Background(), `INSERT INTO hit (uuid, session_uuid, adv_uuid, date_hit, php_session_id, guest_uuid, new_guest, user_id, user_auth, url,
 														  url_404, url_from, ip, method, cookies, user_agent, stop_list_uuid, country_id, city_uuid, site_id)
 			   VALUES ('0191508f-ef1c-7b30-9009-4241f1e272a8', generateUUIDv7(), generateUUIDv7(), now(), 'ses1', @guestUuid, true, 1, true,
-														'localhost', false, '', '10.136.254.100', 'get', 'cookie', 'user_ag', generateUUIDv7(), 'ru', generateUUIDv7(),	's1');
-												
-			   INSERT INTO hit (uuid, session_uuid, adv_uuid, date_hit, php_session_id, guest_uuid, new_guest, user_id, user_auth, url,
+														'localhost', false, '', '10.136.254.100', 'get', 'cookie', 'user_ag', generateUUIDv7(), 'ru', generateUUIDv7(),	's1')`, clickhouse.Named("guestUuid", guestUuid))
+
+	req.Nil(err)
+	err = chClient.Exec(context.Background(), `INSERT INTO hit (uuid, session_uuid, adv_uuid, date_hit, php_session_id, guest_uuid, new_guest, user_id, user_auth, url,
 														  url_404, url_from, ip, method, cookies, user_agent, stop_list_uuid, country_id, city_uuid, site_id)
 			   VALUES ('0191508e-d648-7369-946e-3248ccddeab9', generateUUIDv7(), generateUUIDv7(), now(), 'ses2', @guestUuid, true, 1, true,
-														'localhost', false, '', '10.136.254.100', 'get', 'cookie', 'user_ag', generateUUIDv7(), 'ru', generateUUIDv7(),'s1');`, clickhouse.Named("guestUuid", guestUuid))
+														'localhost', false, '', '10.136.254.100', 'get', 'cookie', 'user_ag', generateUUIDv7(), 'ru', generateUUIDv7(),'s1')`, clickhouse.Named("guestUuid", guestUuid))
+	req.Nil(err)
+
 	hit, err := hitService.FindLastHitWithoutSession(guestUuid, "ses2")
 	req.Nil(err)
-	req.Equal("0191508f-ef1c-7b30-9009-4241f1e272a8", hit.Uuid)
+	req.Equal("0191508f-ef1c-7b30-9009-4241f1e272a8", hit.Uuid.String())
 
 }
 
@@ -229,11 +235,12 @@ func TestHitService_FindByUuid(t *testing.T) {
 
 	hitUuid := uuid.New()
 
-	chClient.Exec(context.Background(),
+	err := chClient.Exec(context.Background(),
 		`INSERT INTO hit (uuid, session_uuid, adv_uuid, date_hit, php_session_id, guest_uuid, new_guest, user_id, user_auth, url,
 														  url_404, url_from, ip, method, cookies, user_agent, stop_list_uuid, country_id, city_uuid, site_id)
 			   VALUES (@uuid, generateUUIDv7(), generateUUIDv7(), now(), 'ses1', generateUUIDv7(), true, 1, true,
 														'localhost', false, '', '10.136.254.100', 'get', 'cookie', 'user_ag', generateUUIDv7(), 'ru', generateUUIDv7(),	's1');`, clickhouse.Named("uuid", hitUuid))
+	req.Nil(err)
 
 	hit, err := hitService.FindByUuid(hitUuid)
 	req.Nil(err)

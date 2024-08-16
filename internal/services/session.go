@@ -75,12 +75,12 @@ func (ss SessionService) Add(stopListUuid, guestUuid, hitUuid uuid.UUID, existGu
 	return sessionDb, nil
 }
 
-func (ss SessionService) IsExistsSession(phpSession string) bool {
-	count, err := ss.allModels.Session.ExistsByPhpSession(phpSession)
+func (ss SessionService) IsExistsByPhpSession(phpSession string) bool {
+	exists, err := ss.allModels.Session.ExistsByPhpSession(phpSession)
 	if err != nil {
 		return false
 	}
-	return count > 0
+	return exists
 }
 
 func (ss SessionService) Filter(filter filters.Filter) ([]entitydb.Session, error) {
@@ -92,5 +92,8 @@ func (ss SessionService) FindByPHPSessionId(phpSessionId string) (entitydb.Sessi
 }
 
 func (ss SessionService) Update(oldSession entitydb.Session, newSession entitydb.Session) error {
+	oldSession.Sign *= -1
+	newSession.Sign *= 1
+	newSession.Version += 1
 	return ss.allModels.Session.Update(oldSession, newSession)
 }

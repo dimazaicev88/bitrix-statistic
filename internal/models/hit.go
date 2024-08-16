@@ -25,7 +25,7 @@ func (hm Hit) Find(filter filters.Filter) ([]entitydb.Hit, error) {
 
 func (hm Hit) FindByUuid(uuid uuid.UUID) (entitydb.Hit, error) {
 	var hit entitydb.Hit
-	err := hm.chClient.QueryRow(hm.ctx, `select * from hit where uuid=?`, uuid).Scan(&hit)
+	err := hm.chClient.QueryRow(hm.ctx, `select * from hit where uuid=?`, uuid).ScanStruct(&hit)
 	if err != nil && errors.Is(err, sql.ErrNoRows) == false {
 		return hit, err
 	}
