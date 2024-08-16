@@ -23,35 +23,36 @@ func NewSession(ctx context.Context, allModels *models.Models) *SessionService {
 	}
 }
 
-func (ss SessionService) Add(stopListUuid, guestUuid, hitUuid uuid.UUID, existGuest bool, statData entityjson.UserData, adv entitydb.AdvReferer) (entitydb.Session, error) {
+func (ss SessionService) Add(stopListUuid, guestUuid, hitUuid uuid.UUID, existGuest bool, userData entityjson.UserData, adv entitydb.AdvReferer) (entitydb.Session, error) {
 
 	switch {
 	case guestUuid == uuid.Nil:
 		return entitydb.Session{}, errors.New("guestUuid is empty")
 	case hitUuid == uuid.Nil:
 		return entitydb.Session{}, errors.New("hitUuid is empty")
-	case statData == (entityjson.UserData{}):
-		return entitydb.Session{}, errors.New("statData is empty")
+	case userData == (entityjson.UserData{}):
+		return entitydb.Session{}, errors.New("userData is empty")
 	}
 
 	var sessionDb entitydb.Session
 	sessionDb.Uuid = uuid.New()
 	sessionDb.GuestUuid = guestUuid
-	sessionDb.PhpSessionId = statData.PHPSessionId
+	sessionDb.PhpSessionId = userData.PHPSessionId
 	sessionDb.IsNewGuest = existGuest
-	sessionDb.UserId = statData.UserId
-	sessionDb.Favorites = statData.IsFavorite
-	sessionDb.UrlFrom = statData.Referer
-	sessionDb.UrlTo = statData.Url
-	sessionDb.UrlTo404 = statData.IsError404
-	sessionDb.UrlLast = statData.Url
-	sessionDb.UrlLast404 = statData.IsError404
-	sessionDb.UserAgent = statData.UserAgent
+	sessionDb.UserId = userData.UserId
+	sessionDb.Favorites = userData.IsFavorite
+	sessionDb.UrlFrom = userData.Referer
+	sessionDb.UrlTo = userData.Url
+	sessionDb.UrlTo404 = userData.IsError404
+	sessionDb.UrlLast = userData.Url
+	sessionDb.UrlLast404 = userData.IsError404
+	sessionDb.UserAgent = userData.UserAgent
+	sessionDb.IsUserAuth = userData.IsUserAuth
 	sessionDb.DateStat = time.Now()
 	sessionDb.DateFirst = time.Now()
 	sessionDb.DateLast = time.Now()
-	sessionDb.IpFirst = statData.Ip
-	sessionDb.IpLast = statData.Ip
+	sessionDb.IpFirst = userData.Ip
+	sessionDb.IpLast = userData.Ip
 	sessionDb.FirstHitUuid = hitUuid
 	sessionDb.LastHitUuid = hitUuid
 	sessionDb.AdvUuid = adv.AdvUuid
@@ -59,9 +60,11 @@ func (ss SessionService) Add(stopListUuid, guestUuid, hitUuid uuid.UUID, existGu
 	sessionDb.Referer1 = adv.Referer1
 	sessionDb.Referer2 = adv.Referer2
 	sessionDb.Referer3 = adv.Referer3
-	sessionDb.FirstSiteId = statData.SiteId
-	sessionDb.LastSiteId = statData.SiteId
+	sessionDb.FirstSiteId = userData.SiteId
+	sessionDb.LastSiteId = userData.SiteId
 	sessionDb.StopListUuid = stopListUuid
+	sessionDb.Sign = 1
+	sessionDb.Version = 1
 
 	err := ss.allModels.Session.Add(sessionDb)
 

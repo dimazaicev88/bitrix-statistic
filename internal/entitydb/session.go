@@ -34,7 +34,7 @@ type Session struct {
 	Referer2     string    `ch:"referer2"`
 	Referer3     string    `ch:"referer3"`
 	StopListUuid uuid.UUID `ch:"stop_list_uuid"`
-	CountryId    string    `ch:"country_uuid"`
+	CountryId    string    `ch:"country_id"`
 	FirstSiteId  string    `ch:"first_site_id"`
 	LastSiteId   string    `ch:"last_site_id"`
 	CityId       string    `ch:"city_id"`

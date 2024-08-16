@@ -18,13 +18,13 @@ func NewSession(ctx context.Context, chClient driver.Conn) *Session {
 	return &Session{ctx: ctx, chClient: chClient}
 }
 
-func (sm Session) Find(filter filters.Filter) (error, []map[string]interface{}) {
+func (s Session) Find(filter filters.Filter) (error, []map[string]interface{}) {
 
 	return nil, nil
 }
 
-func (sm Session) Add(session entitydb.Session) error {
-	return sm.chClient.Exec(sm.ctx,
+func (s Session) Add(session entitydb.Session) error {
+	return s.chClient.Exec(s.ctx,
 		`INSERT INTO session (uuid, guest_uuid, new_guest, user_id, user_auth, events, hits, favorites, url_from, url_to, url_to_404, url_last,
                      url_last_404, user_agent, date_stat, date_first, date_last, ip_first, ip_last, first_hit_uuid, last_hit_uuid, phpsessid, adv_uuid, adv_back, referer1, referer2, referer3, 
                      stop_list_uuid, country_id, first_site_id, last_site_id, city_id, sign, version) 
@@ -35,28 +35,33 @@ func (sm Session) Add(session entitydb.Session) error {
 	)
 }
 
-// 33
-func (sm Session) Update(oldSession entitydb.Session, newSession entitydb.Session) error {
+func (s Session) Update(oldSession entitydb.Session, newSession entitydb.Session) error {
 
-	err := sm.chClient.Exec(sm.ctx,
-		`INSERT INTO session (uuid, guest_uuid, new_guest, user_id, user_auth, events, hits, favorites, url_from, url_to, url_to_404, url_last, url_last_404, user_agent, date_stat, 
-                     date_first, date_last, ip_first, ip_last, first_hit_uuid, last_hit_uuid, phpsessid, adv_uuid, adv_back, referer1, referer2, referer3, stop_list_uuid, country_id, first_site_id, 
-                     last_site_id, city_id, sign, version)
-								VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)`,
-		oldSession.Uuid, oldSession.GuestUuid, oldSession.IsNewGuest, oldSession.UserId, oldSession.IsUserAuth, oldSession.Events, oldSession.Hits, oldSession.Favorites, oldSession.UrlFrom,
-		oldSession.FirstHitUuid, oldSession.LastHitUuid, oldSession.PhpSessionId, oldSession.AdvUuid, oldSession.AdvBack, oldSession.Referer1, oldSession.Referer2, oldSession.Referer3,
-		oldSession.StopListUuid, oldSession.CountryId, oldSession.FirstSiteId, oldSession.LastSiteId, oldSession.CityId, oldSession.Sign, oldSession.Version)
+	err := s.chClient.Exec(s.ctx,
+		`INSERT INTO session (uuid, guest_uuid, new_guest, user_id, user_auth, events, hits, favorites, url_from, url_to, url_to_404, url_last,
+                     url_last_404, user_agent, date_stat, date_first, date_last, ip_first, ip_last, first_hit_uuid, last_hit_uuid, phpsessid, adv_uuid, adv_back, referer1, referer2, referer3, 
+                     stop_list_uuid, country_id, first_site_id, last_site_id, city_id, sign, version) 
+					VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,curdate(),?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)`,
+		oldSession.Uuid, oldSession.GuestUuid, oldSession.IsNewGuest, oldSession.UserId, oldSession.IsUserAuth, oldSession.Events, oldSession.Hits, oldSession.Favorites, oldSession.UrlFrom, oldSession.UrlTo, oldSession.UrlTo404,
+		oldSession.UrlLast, oldSession.UrlLast404, oldSession.UserAgent, oldSession.DateFirst, oldSession.DateLast, oldSession.IpFirst, oldSession.IpLast, oldSession.FirstHitUuid, oldSession.LastHitUuid, oldSession.PhpSessionId,
+		oldSession.AdvUuid, oldSession.AdvBack, oldSession.Referer1, oldSession.Referer2, oldSession.Referer3, oldSession.StopListUuid, oldSession.CountryId, oldSession.FirstSiteId, oldSession.LastSiteId, oldSession.CityId,
+		oldSession.Sign, oldSession.Version,
+	)
 
 	if err != nil {
 		return err
 	}
 
-	err = sm.chClient.Exec(sm.ctx,
-		`INSERT INTO session (uuid, guest_uuid, new_guest, user_id, user_auth, events, hits, favorites, url_from, url_to, url_to_404, url_last, url_last_404, user_agent, date_stat, date_first, date_last,
-                     ip_first, ip_last, first_hit_uuid, last_hit_uuid, phpsessid, adv_uuid, adv_back, referer1, referer2, referer3, stop_list_uuid, country_id, first_site_id, last_site_id, city_id, sign, version)
-								VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)`, newSession.Uuid, newSession.GuestUuid, newSession.IsNewGuest, newSession.UserId, newSession.IsUserAuth,
-		newSession.Events, newSession.Hits, newSession.Favorites, newSession.UrlFrom, newSession.FirstHitUuid, newSession.LastHitUuid, newSession.PhpSessionId, newSession.AdvUuid,
-		newSession.AdvBack, newSession.Referer1, newSession.Referer2, newSession.Referer3, newSession.StopListUuid, newSession.CountryId, newSession.FirstSiteId, newSession.LastSiteId, newSession.CityId, oldSession.Sign, oldSession.Version)
+	err = s.chClient.Exec(s.ctx,
+		`INSERT INTO session (uuid, guest_uuid, new_guest, user_id, user_auth, events, hits, favorites, url_from, url_to, url_to_404, url_last,
+                     url_last_404, user_agent, date_stat, date_first, date_last, ip_first, ip_last, first_hit_uuid, last_hit_uuid, phpsessid, adv_uuid, adv_back, referer1, referer2, referer3, 
+                     stop_list_uuid, country_id, first_site_id, last_site_id, city_id, sign, version) 
+					VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,curdate(),?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)`,
+		newSession.Uuid, newSession.GuestUuid, newSession.IsNewGuest, newSession.UserId, newSession.IsUserAuth, newSession.Events, newSession.Hits, newSession.Favorites, newSession.UrlFrom, newSession.UrlTo, newSession.UrlTo404,
+		newSession.UrlLast, newSession.UrlLast404, newSession.UserAgent, newSession.DateFirst, newSession.DateLast, newSession.IpFirst, newSession.IpLast, newSession.FirstHitUuid, newSession.LastHitUuid, newSession.PhpSessionId,
+		newSession.AdvUuid, newSession.AdvBack, newSession.Referer1, newSession.Referer2, newSession.Referer3, newSession.StopListUuid, newSession.CountryId, newSession.FirstSiteId, newSession.LastSiteId, newSession.CityId,
+		newSession.Sign, newSession.Version,
+	)
 
 	if err != nil {
 		return err
@@ -65,7 +70,7 @@ func (sm Session) Update(oldSession entitydb.Session, newSession entitydb.Sessio
 	return nil
 }
 
-func (sm Session) GetAttentiveness(dateStat, siteId string) {
+func (s Session) GetAttentiveness(dateStat, siteId string) {
 	//sqlSite := ""
 	//if len(siteId) > 0 {
 	//	sqlSite = " and S.FIRST_SITE_ID = '" + siteId + "' " //TODO переделать
@@ -129,9 +134,9 @@ func (sm Session) GetAttentiveness(dateStat, siteId string) {
 	//return $ar;
 }
 
-func (sm Session) ExistsByPhpSession(session string) (int, error) {
+func (s Session) ExistsByPhpSession(session string) (int, error) {
 	var count int
-	row := sm.chClient.QueryRow(sm.ctx, `select count(uuid) as cnt from session where phpsessid=?`, session)
+	row := s.chClient.QueryRow(s.ctx, `select count(uuid) as cnt from session where phpsessid=?`, session)
 
 	err := row.Scan(&count)
 	if err != nil && errors.Is(err, sql.ErrNoRows) == false {
@@ -140,9 +145,9 @@ func (sm Session) ExistsByPhpSession(session string) (int, error) {
 	return count, nil
 }
 
-func (sm Session) FindByPHPSessionId(phpSessionId string) (entitydb.Session, error) {
+func (s Session) FindByPHPSessionId(phpSessionId string) (entitydb.Session, error) {
 	var sessionDb entitydb.Session
-	err := sm.chClient.QueryRow(sm.ctx, `select * from session where phpsessid=?`, phpSessionId).ScanStruct(&sessionDb)
+	err := s.chClient.QueryRow(s.ctx, `select * from session where phpsessid=?`, phpSessionId).ScanStruct(&sessionDb)
 	if err != nil {
 		return entitydb.Session{}, err
 	}
