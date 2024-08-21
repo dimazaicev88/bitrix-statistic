@@ -35,7 +35,7 @@ func TestGuestSessionService_Add_EmptyUserData(t *testing.T) {
 
 	session, err := sessionService.Add(uuid.Nil, uuid.New(), uuid.New(), false, entityjson.UserData{}, entitydb.AdvReferer{})
 	req.NotNil(err)
-	req.Equal("statData is empty", err.Error())
+	req.Equal("userData is empty", err.Error())
 	req.Equal(session, entitydb.Session{})
 }
 
@@ -207,8 +207,8 @@ func TestGuestSessionService_Update(t *testing.T) {
 
 	oldSession, err := sessionService.Add(stopListUuid, guestUuid, hitUuid, false, userData, advReferer)
 	req.Nil(err)
-
 	newSession := oldSession
+	newSession.Uuid = uuid.New()
 	newSession.IsNewGuest = true
 	newSession.UserId = 100
 	newSession.IsUserAuth = false
@@ -240,6 +240,9 @@ func TestGuestSessionService_Update(t *testing.T) {
 	err = sessionService.Update(oldSession, newSession)
 	req.Nil(err)
 
+	err = chClient.Exec(context.Background(), "OPTIMIZE TABLE session DEDUPLICATE;")
+	req.Nil(err)
+
 	var allDbSessions []entitydb.Session
 	rows, err := chClient.Query(context.Background(), "SELECT * from session")
 	req.Nil(err)
@@ -251,31 +254,76 @@ func TestGuestSessionService_Update(t *testing.T) {
 		allDbSessions = append(allDbSessions, dbSession)
 	}
 
-	req.Equal(newSession.Uuid, allDbSessions[0].Uuid)
-	req.Equal(newSession, allDbSessions[0].GuestUuid)
-	req.Equal(newSession, allDbSessions[0].IsNewGuest)
-	req.Equal(newSession, allDbSessions[0].IsUserAuth)
-	req.Equal(newSession, allDbSessions[0].Favorites)
-	req.Equal(newSession, allDbSessions[0].UrlFrom)
-	req.Equal(newSession, allDbSessions[0].UrlTo404)
-	req.Equal(newSession, allDbSessions[0].UrlLast)
-	req.Equal(newSession, allDbSessions[0].UrlLast404)
-	req.Equal(newSession, allDbSessions[0].UserAgent)
-	req.Equal(newSession, allDbSessions[0].IpFirst)
-	req.Equal(newSession, allDbSessions[0].IpLast)
-	req.Equal(newSession, allDbSessions[0].FirstHitUuid)
-	req.Equal(newSession, allDbSessions[0].LastHitUuid)
-	req.Equal(newSession, allDbSessions[0].PhpSessionId)
+	req.Equal(newSession.Uuid.String(), allDbSessions[0].Uuid.String())
+	req.Equal(newSession.GuestUuid, allDbSessions[0].GuestUuid)
+	req.Equal(newSession.IsNewGuest, allDbSessions[0].IsNewGuest)
+	req.Equal(newSession.IsUserAuth, allDbSessions[0].IsUserAuth)
+	req.Equal(newSession.Favorites, allDbSessions[0].Favorites)
+	req.Equal(newSession.UrlFrom, allDbSessions[0].UrlFrom)
+	req.Equal(newSession.UrlTo404, allDbSessions[0].UrlTo404)
+	req.Equal(newSession.UrlLast, allDbSessions[0].UrlLast)
+	req.Equal(newSession.UrlLast404, allDbSessions[0].UrlLast404)
+	req.Equal(newSession.UserAgent, allDbSessions[0].UserAgent)
+	req.Equal(newSession.IpFirst, allDbSessions[0].IpFirst)
+	req.Equal(newSession.IpLast, allDbSessions[0].IpLast)
+	req.Equal(newSession.FirstHitUuid, allDbSessions[0].FirstHitUuid)
+	req.Equal(newSession.LastHitUuid, allDbSessions[0].LastHitUuid)
+	req.Equal(newSession.PhpSessionId, allDbSessions[0].PhpSessionId)
 	req.Equal(newSession.AdvUuid, allDbSessions[0].AdvUuid)
 	req.Equal(newSession.AdvBack, allDbSessions[0].AdvBack)
 	req.Equal(newSession.Referer1, allDbSessions[0].Referer1)
 	req.Equal(newSession.Referer2, allDbSessions[0].Referer2)
-	req.Equal(advReferer.Referer3, allDbSessions[0].Referer3)
-	req.Equal(newSession, allDbSessions[0].StopListUuid)
-	req.Equal(newSession, strings.Trim("", allDbSessions[0].CountryId))
-	req.Equal(newSession, allDbSessions[0].FirstSiteId)
-	req.Equal(newSession, allDbSessions[0].LastSiteId)
-	req.Equal(newSession, allDbSessions[0].CityId)
+	req.Equal(newSession.Referer3, allDbSessions[0].Referer3)
+	req.Equal(newSession.StopListUuid, allDbSessions[0].StopListUuid)
+	req.Equal(newSession.CountryId, strings.Trim("", allDbSessions[0].CountryId))
+	req.Equal(newSession.FirstSiteId, allDbSessions[0].FirstSiteId)
+	req.Equal(newSession.LastSiteId, allDbSessions[0].LastSiteId)
+	req.Equal(newSession.CityId, allDbSessions[0].CityId)
 	req.Equal(int8(1), allDbSessions[0].Sign)
 	req.Equal(uint32(2), allDbSessions[0].Version)
+}
+
+func TestGuestSessionService_IsExistsSession(t *testing.T) {
+	req := require.New(t)
+	if err := godotenv.Load(pathToEnvFile); err != nil {
+		req.Fail("Error loading .env file")
+	}
+	chClient, _ := storage.NewClickHouseClient(config.GetServerConfig())
+	defer chClient.Close()
+
+	utils.TruncateTable("session", chClient)
+
+	allModels := models.NewModels(context.Background(), chClient)
+	sessionService := NewSession(context.Background(), allModels)
+	phpSessionId := "php-session-v1"
+	sessionUuid := uuid.New()
+	err := chClient.Exec(context.Background(), `INSERT INTO session (uuid, php_session_id) VALUES (?,?)`, sessionUuid, phpSessionId)
+	req.Nil(err)
+
+	req.True(sessionService.IsExistsByPhpSession(phpSessionId))
+	req.False(sessionService.IsExistsByPhpSession("qqqq"))
+}
+
+func TestGuestSessionService_FindByPHPSessionId(t *testing.T) {
+	req := require.New(t)
+	if err := godotenv.Load(pathToEnvFile); err != nil {
+		req.Fail("Error loading .env file")
+	}
+	chClient, _ := storage.NewClickHouseClient(config.GetServerConfig())
+	defer chClient.Close()
+
+	utils.TruncateTable("session", chClient)
+
+	allModels := models.NewModels(context.Background(), chClient)
+	sessionService := NewSession(context.Background(), allModels)
+	phpSessionId := "php-session-v1"
+	sessionUuid := uuid.New()
+	err := chClient.Exec(context.Background(), `INSERT INTO session (uuid, php_session_id) VALUES (?,?)`, sessionUuid, phpSessionId)
+	req.Nil(err)
+
+	session, err := sessionService.FindByPHPSessionId(phpSessionId)
+	req.Nil(err)
+
+	req.Equal(sessionUuid.String(), session.Uuid.String())
+	req.Equal(phpSessionId, session.PhpSessionId)
 }

@@ -981,7 +981,7 @@ create table if not exists session
     ip_last        IPv4,
     first_hit_uuid UUID,
     last_hit_uuid  UUID,
-    phpsessid      String,
+    php_session_id      String,
     adv_uuid       UUID,
     adv_back       boolean,
     referer1       String,
@@ -1003,7 +1003,7 @@ create table if not exists session
 (
     uuid        UUID,
     guest_uuid  UUID,
-    phpsessid   String,
+    php_session_id   String,
     date_create DateTime32('Europe/Moscow')
 ) ENGINE = MergeTree
       PARTITION BY toMonth(date_create)

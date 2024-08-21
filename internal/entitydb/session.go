@@ -27,7 +27,7 @@ type Session struct {
 	IpLast       string    `ch:"ip_last"`
 	FirstHitUuid uuid.UUID `ch:"first_hit_uuid"`
 	LastHitUuid  uuid.UUID `ch:"last_hit_uuid"`
-	PhpSessionId string    `ch:"phpsessid"`
+	PhpSessionId string    `ch:"php_session_id"`
 	AdvUuid      uuid.UUID `ch:"adv_uuid"`
 	AdvBack      bool      `ch:"adv_back"`
 	Referer1     string    `ch:"referer1"`
