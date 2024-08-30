@@ -37,26 +37,26 @@ func (pa PathAdv) FindByPathUuid(pageId int32, dateStat string) (entitydb.PathAd
 	return pathAdv, nil
 }
 
-//func (pa PathAdv) Update(oldValue entitydb.PathAdv, newValue entitydb.PathAdv) error {
-//	err := pa.chClient.Exec(pa.ctx,
-//		`INSERT INTO path_adv (uuid, adv_uuid, path_id, date_stat, counter, counter_back, counter_full_path, counter_full_path_back, steps, sign, version)
-//			VALUES (generateUUIDv7(),?,?,curdate(),?,?,?,?,?,?,?)`,
-//		oldValue.AdvUuid, oldValue.Counter, oldValue.CounterBack, oldValue.CounterFullPath, oldValue.CounterFullPathBack, oldValue.Steps, oldValue.Sign*-1, oldValue.Version,
-//	)
-//	if err != nil {
-//		return err
-//	}
-//
-//	err = pa.chClient.Exec(pa.ctx,
-//		`INSERT INTO path_adv (uuid, adv_uuid, path_id, date_stat, counter, counter_back, counter_full_path, counter_full_path_back, steps, sign, version)
-//			VALUES (generateUUIDv7(),?,?,curdate(),?,?,?,?,?,?,?)`,
-//		newValue.AdvUuid, newValue.Counter, newValue.CounterBack, newValue.CounterFullPath, newValue.CounterFullPathBack, newValue.Steps, 1, newValue.Version+1,
-//	)
-//	if err != nil {
-//		return err
-//	}
-//	return nil
-//}
+func (pa PathAdv) Update(oldValue entitydb.PathAdv, newValue entitydb.PathAdv) error {
+	err := pa.chClient.Exec(pa.ctx,
+		`INSERT INTO path_adv (uuid, adv_uuid, path_id, date_stat, counter, counter_back, counter_full_path, counter_full_path_back, steps, sign, version)
+			VALUES (generateUUIDv7(),?,?,curdate(),?,?,?,?,?,?,?)`,
+		oldValue.AdvUuid, oldValue.Counter, oldValue.CounterBack, oldValue.CounterFullPath, oldValue.CounterFullPathBack, oldValue.Steps, oldValue.Sign*-1, oldValue.Version,
+	)
+	if err != nil {
+		return err
+	}
+
+	err = pa.chClient.Exec(pa.ctx,
+		`INSERT INTO path_adv (uuid, adv_uuid, path_id, date_stat, counter, counter_back, counter_full_path, counter_full_path_back, steps, sign, version)
+			VALUES (generateUUIDv7(),?,?,curdate(),?,?,?,?,?,?,?)`,
+		newValue.AdvUuid, newValue.Counter, newValue.CounterBack, newValue.CounterFullPath, newValue.CounterFullPathBack, newValue.Steps, 1, newValue.Version+1,
+	)
+	if err != nil {
+		return err
+	}
+	return nil
+}
 
 func (pa PathAdv) FindByPageAndAdvUuid(pathId int32, advUuid string) (entitydb.PathAdv, error) {
 	var pathAdv entitydb.PathAdv

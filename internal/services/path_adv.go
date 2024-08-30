@@ -26,9 +26,9 @@ func (pas PathAdvService) FindByPathId(pathId int32, dateStat string) (entitydb.
 	return pas.allModels.PathAdv.FindByPathUuid(pathId, dateStat)
 }
 
-//func (pas PathAdvService) Update(oldValue entitydb.PathAdv, newValue entitydb.PathAdv) error {
-//	return pas.allModels.PathAdv.Update(oldValue, newValue)
-//}
+func (pas PathAdvService) Update(oldValue entitydb.PathAdv, newValue entitydb.PathAdv) error {
+	return pas.allModels.PathAdv.Update(oldValue, newValue)
+}
 
 func (pas PathAdvService) FindByPageAndAdvUuid(pathId int32, advUuid string) (entitydb.PathAdv, error) {
 	return pas.allModels.PathAdv.FindByPageAndAdvUuid(pathId, advUuid)

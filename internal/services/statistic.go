@@ -129,7 +129,13 @@ func (stat Statistic) Add(statData entityjson.UserData) error {
 				return err
 			}
 		} else {
-			err = stat.sessionService.Update(sessionDb, entitydb.Session{})
+			err = stat.sessionService.Update(sessionDb, entitydb.Session{
+				UserId:     statData.UserId,
+				IsUserAuth: statData.IsUserAuth,
+				UserAgent:  statData.UserAgent,
+				IpLast:     statData.Ip,
+				Hits:       sessionDb.Hits + 1,
+			})
 			if err != nil {
 				return err
 			}
