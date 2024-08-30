@@ -13,7 +13,7 @@ require (
 	github.com/huandu/go-sqlbuilder v1.27.3
 	github.com/joho/godotenv v1.5.1
 	github.com/json-iterator/go v1.1.12
-	github.com/maypok86/otter v1.2.1
+	github.com/maypok86/otter v1.2.2
 	github.com/sirupsen/logrus v1.9.3
 	github.com/stretchr/testify v1.9.0
 	github.com/volatiletech/null/v9 v9.0.0
