@@ -5,6 +5,7 @@ import (
 	"bitrix-statistic/internal/models"
 	"bitrix-statistic/internal/utils"
 	"context"
+	"github.com/google/uuid"
 	"time"
 )
 
@@ -15,6 +16,7 @@ type PathService struct {
 	pathAdvService   *PathAdvService
 	optionService    *OptionService
 	pageService      *PageService
+	pageAdvService   *PageAdvService
 }
 
 func NewPath(
@@ -24,6 +26,7 @@ func NewPath(
 	pathAdvService *PathAdvService,
 	optionService *OptionService,
 	pageService *PageService,
+	pageAdvService *PageAdvService,
 ) *PathService {
 	return &PathService{
 		ctx:              ctx,
@@ -32,11 +35,12 @@ func NewPath(
 		pathAdvService:   pathAdvService,
 		optionService:    optionService,
 		pageService:      pageService,
+		pageAdvService:   pageAdvService,
 	}
 }
 
 // SavePath TODO рефакторинг.
-func (ps PathService) SavePath(siteId, sessionUuid, currentUrl, referer string, isError404 bool, advReferer entitydb.AdvReferer) error {
+func (ps PathService) SavePath(sessionUuid uuid.UUID, siteId, currentUrl, referer string, isError404 bool, advReferer entitydb.AdvReferer) error {
 
 	if currentUrl == referer {
 		return nil
@@ -189,13 +193,13 @@ func (ps PathService) SavePath(siteId, sessionUuid, currentUrl, referer string, 
 	var advCounterFullPath uint32
 	var advCounterFullPathBack uint32
 	var advBack bool
-	if len(advReferer.AdvUuid) > 0 && !advReferer.LastAdvBack {
+	if advReferer.AdvUuid != uuid.Nil && !advReferer.LastAdvBack {
 		advCounter = 1
 		advCounterBack = 0
 		advCounterFullPath = 1
 		advCounterFullPathBack = 0
 		advBack = false
-	} else if len(advReferer.AdvUuid) > 0 && advReferer.LastAdvBack {
+	} else if advReferer.AdvUuid != uuid.Nil && advReferer.LastAdvBack {
 		advCounter = 0
 		advCounterBack = 1
 		advCounterFullPath = 0
@@ -234,7 +238,7 @@ func (ps PathService) SavePath(siteId, sessionUuid, currentUrl, referer string, 
 		newPathAdv.CounterFullPath += advCounterFullPath
 		newPathAdv.CounterFullPathBack += advCounterFullPathBack
 
-		if err = ps.pathAdvService.Add(pathAdv, newPathAdv); err != nil {
+		if err = ps.pathAdvService.Update(pathAdv, newPathAdv); err != nil {
 			return err
 		}
 	}
@@ -256,19 +260,24 @@ func (ps PathService) SavePath(siteId, sessionUuid, currentUrl, referer string, 
 	return nil
 }
 
-func (ps PathService) SaveVisits(siteId, sessionNew,
-	currentDir, currentPage, lastDir, lastDirUuid,
-	lastPage, lastPageUuid string, isError404 bool,
-	adv entitydb.AdvReferer,
+func (ps PathService) SaveVisits(
+	siteId, currentDir, currentPage, lastDir, lastPage string, isSessionNew, isError404 bool,
+	adv entitydb.AdvReferer, lastPageUuid, lastDirUuid uuid.UUID,
 ) error {
 
 	if len(currentPage) == 0 && len(currentDir) == 0 {
 		return nil
 	}
-	var currentDirUuid string
-	var currentPageUuid string
-	var exitDirCounter uint32
-	var exitPageCounter uint32
+
+	var enterCounter uint32
+	var currentDirUuid uuid.UUID
+	var currentPageUuid uuid.UUID
+	var exitDirCounter uint32  // счетчик точки выхода для раздела
+	var exitPageCounter uint32 // счетчик точки выхода для страницы
+
+	if isSessionNew {
+		enterCounter = 1
+	}
 
 	if len(lastDir) == 0 || lastDir != currentDir || len(lastPage) == 0 || lastPage != currentPage {
 
@@ -295,7 +304,8 @@ func (ps PathService) SaveVisits(siteId, sessionNew,
 		currentPageUuid = lastPageUuid
 	}
 
-	if len(lastDirUuid) > 0 && exitDirCounter > 0 {
+	// обновляем раздел
+	if lastDirUuid != uuid.Nil && exitDirCounter > 0 {
 		pages, err := ps.pageService.FindByUuid(lastDirUuid)
 		if err != nil {
 			return err
@@ -307,18 +317,51 @@ func (ps PathService) SaveVisits(siteId, sessionNew,
 			return err
 		}
 
-		if len(adv.AdvUuid) > 0 && adv.LastAdvBack {
-			var page entitydb.Page
+		if adv.AdvUuid != uuid.Nil && adv.LastAdvBack {
 			var pageAdv entitydb.PageAdv
 
 			if adv.LastAdvBack {
-				page.ExitCounter = -1
+				pageAdv.ExitCounter -= 1
 			}
-			ps.pageService.Add()
 
-			if err := ps.pathAdvService.Add(pathAdv); err != nil {
+			if err := ps.pageAdvService.Add(pageAdv); err != nil {
 				return err
 			}
 		}
 	}
+	advRowsDir := 0
+
+	if currentDirUuid != uuid.Nil {
+		oldPage, err := ps.pageService.FindByUuid(lastDirUuid)
+
+		if err != nil {
+			return err
+		}
+		newPage := oldPage
+		oldPage.Counter += 1
+		oldPage.ExitCounter += exitDirCounter
+		oldPage.EnterCounter += enterCounter
+
+		if err = ps.pageService.Update(oldPage, newPage); err != nil {
+			return err
+		}
+
+		if adv.AdvUuid != uuid.Nil && adv.LastAdvBack {
+			var pageAdv entitydb.PageAdv
+			pageAdv.PageUuid = currentDirUuid
+			pageAdv.Counter += 1
+			pageAdv.ExitCounter += exitDirCounter
+			pageAdv.EnterCounter += enterCounter
+			pageAdv.CounterBack += 1
+			pageAdv.ExitCounterBack += 1
+			pageAdv.EnterCounterBack += 1
+			if err = ps.pageAdvService.Add(pageAdv); err != nil {
+				return err
+			}
+		}
+
+	} else {
+		ps.pageService.Add()
+	}
+
 }

@@ -13,6 +13,8 @@ import (
 	"syscall"
 )
 
+//TODO для  всех методов добавить по возможности одинаковые ошибки.
+
 func main() {
 	sqlbuilder.DefaultFlavor = sqlbuilder.ClickHouse
 	ctx, stop := signal.NotifyContext(context.Background(), os.Interrupt, syscall.SIGTERM)

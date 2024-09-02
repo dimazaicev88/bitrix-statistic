@@ -1,10 +1,12 @@
 package entitydb
 
-import "time"
+import (
+	"github.com/google/uuid"
+	"time"
+)
 
 type PathAdv struct {
-	Uuid                string    `ch:"uuid"`
-	AdvUuid             string    `ch:"adv_uuid"`
+	AdvUuid             uuid.UUID `ch:"adv_uuid"`
 	PathId              int32     `ch:"path_id"`
 	DateStat            time.Time `ch:"date_stat"`
 	Counter             uint32    `ch:"counter"`
@@ -12,6 +14,6 @@ type PathAdv struct {
 	CounterFullPath     uint32    `ch:"counter_full_path"`
 	CounterFullPathBack uint32    `ch:"counter_full_path_back"`
 	Steps               uint32    `ch:"steps"`
-	Sign                int32     `ch:"sign"`
+	Sign                int8      `ch:"sign"`
 	Version             uint32    `ch:"version"`
 }

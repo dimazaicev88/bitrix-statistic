@@ -1,10 +1,13 @@
 package entitydb
 
-import "time"
+import (
+	"github.com/google/uuid"
+	"time"
+)
 
 type PathCache struct {
 	Uuid                string    `ch:"uuid"`
-	SessionUuid         string    `ch:"session_uuid"`
+	SessionUuid         uuid.UUID `ch:"session_uuid"`
 	DateHit             time.Time `ch:"date_hit"`
 	PathId              int32     `ch:"path_id"`
 	PathPages           string    `ch:"path_pages"`

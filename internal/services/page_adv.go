@@ -18,6 +18,6 @@ func NewPageAdvService(ctx context.Context, models *models.Models) *PageAdvServi
 	}
 }
 
-func (pas PageAdvService) Add(pageAdv entitydb.PageAdv) {
-	pas.allModels.PageAdv.Add(pageAdv)
+func (pas PageAdvService) Add(pageAdv entitydb.PageAdv) error {
+	return pas.allModels.PageAdv.Add(pageAdv)
 }

@@ -4,6 +4,7 @@ import (
 	"bitrix-statistic/internal/entitydb"
 	"bitrix-statistic/internal/models"
 	"context"
+	"errors"
 )
 
 type PathAdvService struct {
@@ -19,6 +20,13 @@ func NewPathAdvService(ctx context.Context, allModels *models.Models) *PathAdvSe
 }
 
 func (pas PathAdvService) Add(pathAdv entitydb.PathAdv) error {
+	if pathAdv == (entitydb.PathAdv{}) {
+		return errors.New("path adv is empty")
+	}
+
+	pathAdv.Sign = 1
+	pathAdv.Version = 1
+
 	return pas.allModels.PathAdv.Add(pathAdv)
 }
 
@@ -27,6 +35,9 @@ func (pas PathAdvService) FindByPathId(pathId int32, dateStat string) (entitydb.
 }
 
 func (pas PathAdvService) Update(oldValue entitydb.PathAdv, newValue entitydb.PathAdv) error {
+	if oldValue == (entitydb.PathAdv{}) {
+		return errors.New("oldValue is empty")
+	}
 	return pas.allModels.PathAdv.Update(oldValue, newValue)
 }
 

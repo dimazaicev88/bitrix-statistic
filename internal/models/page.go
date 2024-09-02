@@ -7,6 +7,7 @@ import (
 	"database/sql"
 	"errors"
 	"github.com/ClickHouse/clickhouse-go/v2/lib/driver"
+	"github.com/google/uuid"
 )
 
 type Page struct {
@@ -50,7 +51,7 @@ func (p *Page) FindByPageAndDir(dir string, page string, stat string) ([]entityd
 	return results, nil
 }
 
-func (p *Page) FindByUuid(uuid string) (entitydb.Page, error) {
+func (p *Page) FindByUuid(uuid uuid.UUID) (entitydb.Page, error) {
 	var pageDb entitydb.Page
 	err := p.chClient.QueryRow(p.ctx, `SELECT * FROM page where uuid = ?`, uuid).ScanStruct(&pageDb)
 	if err != nil {
@@ -74,5 +75,13 @@ func (p *Page) Update(oldValue entitydb.Page, newValue entitydb.Page) error {
 		`INSERT INTO page (uuid, date_stat, dir, url, url_404, url_hash, site_id, counter, enter_counter, exit_counter,sign,version) 
 			   VALUES (generateUUIDv7(),curdate(),?,?,?,?,?,?,?,?,?,?)`,
 		newValue.Dir, newValue.UrlHash, newValue.Url404, newValue.UrlHash, newValue.SiteId, newValue.Counter, newValue.EnterCounter, newValue.ExitCounter, newValue.Sign, newValue.Version+1,
+	)
+}
+
+func (p *Page) Add(page entitydb.Page) error {
+	return p.chClient.Exec(p.ctx,
+		`INSERT INTO page (uuid, date_stat, dir, url, url_404, url_hash, site_id, counter, enter_counter, exit_counter,sign,version) 
+			   VALUES (generateUUIDv7(),curdate(),?,?,?,?,?,?,?,?,?,?)`,
+		page.Dir, page.UrlHash, page.Url404, page.UrlHash, page.SiteId, page.Counter, page.EnterCounter, page.ExitCounter, page.Sign, page.Version,
 	)
 }

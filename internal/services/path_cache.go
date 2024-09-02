@@ -4,6 +4,7 @@ import (
 	"bitrix-statistic/internal/entitydb"
 	"bitrix-statistic/internal/models"
 	"context"
+	"github.com/google/uuid"
 )
 
 type PathCacheService struct {
@@ -18,14 +19,14 @@ func NewPathCacheService(ctx context.Context, allModels *models.Models) *PathCac
 	}
 }
 
-func (pcs PathCacheService) FindLastBySessionUuid(uuid string) (entitydb.PathCache, error) {
+func (pcs PathCacheService) FindLastBySessionUuid(uuid uuid.UUID) (entitydb.PathCache, error) {
 	return pcs.allModels.PathCache.FindLastBySessionUuid(uuid)
 }
 
-func (pcs PathCacheService) FindByReferer(uuid string, referer string) (entitydb.PathCache, error) {
+func (pcs PathCacheService) FindByReferer(uuid uuid.UUID, referer string) (entitydb.PathCache, error) {
 	return pcs.allModels.PathCache.FindByReferer(uuid, referer)
 }
 
-func (pcs PathCacheService) FindBySession(uuid string) (entitydb.PathCache, error) {
+func (pcs PathCacheService) FindBySession(uuid uuid.UUID) (entitydb.PathCache, error) {
 	return pcs.allModels.PathCache.FindBySession(uuid)
 }

@@ -6,6 +6,7 @@ import (
 	"database/sql"
 	"errors"
 	"github.com/ClickHouse/clickhouse-go/v2/lib/driver"
+	"github.com/google/uuid"
 )
 
 type PathCache struct {
@@ -30,7 +31,7 @@ func (pc PathCache) Add(pathCache entitydb.PathCache) error {
 	)
 }
 
-func (pc PathCache) FindLastBySessionUuid(uuid string) (entitydb.PathCache, error) {
+func (pc PathCache) FindLastBySessionUuid(uuid uuid.UUID) (entitydb.PathCache, error) {
 	var pathCache entitydb.PathCache
 	err := pc.chClient.QueryRow(pc.ctx, `SELECT * FROM path_cache WHERE session_uuid = ?`, uuid).ScanStruct(&pathCache)
 	if err != nil && errors.Is(err, sql.ErrNoRows) == false {
@@ -39,7 +40,7 @@ func (pc PathCache) FindLastBySessionUuid(uuid string) (entitydb.PathCache, erro
 	return pathCache, nil
 }
 
-func (pc PathCache) FindByReferer(uuid string, referer string) (entitydb.PathCache, error) {
+func (pc PathCache) FindByReferer(uuid uuid.UUID, referer string) (entitydb.PathCache, error) {
 	var pathCache entitydb.PathCache
 	err := pc.chClient.QueryRow(pc.ctx, `SELECT * FROM path_cache WHERE session_uuid = ? and path_last_page=?`, uuid, referer).ScanStruct(&pathCache)
 	if err != nil && errors.Is(err, sql.ErrNoRows) == false {
@@ -48,7 +49,7 @@ func (pc PathCache) FindByReferer(uuid string, referer string) (entitydb.PathCac
 	return pathCache, nil
 }
 
-func (pc PathCache) FindBySession(uuid string) (entitydb.PathCache, error) {
+func (pc PathCache) FindBySession(uuid uuid.UUID) (entitydb.PathCache, error) {
 	var pathCache entitydb.PathCache
 	err := pc.chClient.QueryRow(pc.ctx, `SELECT * FROM path_cache WHERE session_uuid = ? and length(path_last_page)<0`, uuid).ScanStruct(&pathCache)
 	if err != nil && errors.Is(err, sql.ErrNoRows) == false {

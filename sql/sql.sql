@@ -782,10 +782,10 @@ create table if not exists page
 create table if not exists page_adv
 (
     date_stat          DateTime32('Europe/Moscow'),
-    page_uuid          BOOLEAN default false,
-    adv_uuid           String,
-    enter_counter      UInt32  default 0,
-    exit_counter       UInt32  default 0,
+    page_uuid     UUID,
+    adv_uuid      UUID,
+    enter_counter UInt32,
+    exit_counter  UInt32,
     counter_back       UInt32,
     enter_counter_back UInt32,
     exit_counter_back  UInt32
@@ -831,8 +831,10 @@ create table if not exists path_adv
     counter_back           UInt32 default 0,
     counter_full_path      UInt32 default 0,
     counter_full_path_back UInt32 default 0,
-    steps                  UInt32 default 0
-) engine = SummingMergeTree((adv_uuid, path_id, date_stat))
+    steps   UInt32 default 0,
+    sign    Int8,
+    version UInt32
+) engine = VersionedCollapsingMergeTree(sign, version)
       PARTITION BY toMonth(date_stat)
       ORDER BY date_stat;
 
@@ -981,7 +983,7 @@ create table if not exists session
     ip_last        IPv4,
     first_hit_uuid UUID,
     last_hit_uuid  UUID,
-    php_session_id      String,
+    php_session_id String,
     adv_uuid       UUID,
     adv_back       boolean,
     referer1       String,
@@ -1001,10 +1003,10 @@ create table if not exists session
 
 create table if not exists session
 (
-    uuid        UUID,
-    guest_uuid  UUID,
-    php_session_id   String,
-    date_create DateTime32('Europe/Moscow')
+    uuid           UUID,
+    guest_uuid     UUID,
+    php_session_id String,
+    date_create    DateTime32('Europe/Moscow')
 ) ENGINE = MergeTree
       PARTITION BY toMonth(date_create)
       ORDER BY (date_create);

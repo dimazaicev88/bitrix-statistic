@@ -163,7 +163,11 @@ func (stat Statistic) Add(statData entityjson.UserData) error {
 
 		//------------------------------ Path data -----------------------------
 		if stat.optionService.IsSavePathData(statData.SiteId) {
-			//stat.pathService.SavePath()
+			stat.pathService.SavePath(sessionDb.Uuid, statData.SiteId, statData.Url, statData.Referer, statData.IsError404, advReferer)
+		}
+		//------------------------------ Visits -----------------------------
+		if stat.optionService.IsSaveVisits(statData.SiteId) {
+			stat.pathService.SaveVisits()
 		}
 
 	}

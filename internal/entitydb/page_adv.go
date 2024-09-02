@@ -1,11 +1,14 @@
 package entitydb
 
-import "time"
+import (
+	"github.com/google/uuid"
+	"time"
+)
 
 type PageAdv struct {
 	Uuid             string    `ch:"uuid"`
 	DateStat         time.Time `ch:"date_stat"`
-	PageUuid         string    `ch:"page_uuid"`
+	PageUuid         uuid.UUID `ch:"page_uuid"`
 	AdvUuid          string    `ch:"adv_uuid"`
 	Counter          uint32    `ch:"counter"`
 	EnterCounter     uint32    `ch:"enter_counter"`

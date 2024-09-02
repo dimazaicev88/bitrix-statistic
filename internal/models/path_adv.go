@@ -22,9 +22,10 @@ func NewPathAdv(ctx context.Context, chClient driver.Conn) *PathAdv {
 
 func (pa PathAdv) Add(pathAdv entitydb.PathAdv) error {
 	return pa.chClient.Exec(pa.ctx,
-		`INSERT INTO path_adv (uuid, adv_uuid, path_id, date_stat, counter, counter_back, counter_full_path, counter_full_path_back, steps, sign, version)
-			VALUES (generateUUIDv7(),?,?,curdate(),?,?,?,?,?,?,?)`,
-		pathAdv.AdvUuid, pathAdv.Counter, pathAdv.CounterBack, pathAdv.CounterFullPath, pathAdv.CounterFullPathBack, pathAdv.Steps, pathAdv.Sign, pathAdv.Version,
+		`INSERT INTO path_adv (adv_uuid, path_id, date_stat, counter, counter_back, counter_full_path, counter_full_path_back, steps, sign, version)
+			VALUES (?,?,curdate(),?,?,?,?,?,?,?)`,
+		pathAdv.AdvUuid, pathAdv.PathId, pathAdv.Counter, pathAdv.CounterBack, pathAdv.CounterFullPath, pathAdv.CounterFullPathBack, pathAdv.Steps, pathAdv.Sign,
+		pathAdv.Version,
 	)
 }
 
@@ -39,8 +40,8 @@ func (pa PathAdv) FindByPathUuid(pageId int32, dateStat string) (entitydb.PathAd
 
 func (pa PathAdv) Update(oldValue entitydb.PathAdv, newValue entitydb.PathAdv) error {
 	err := pa.chClient.Exec(pa.ctx,
-		`INSERT INTO path_adv (uuid, adv_uuid, path_id, date_stat, counter, counter_back, counter_full_path, counter_full_path_back, steps, sign, version)
-			VALUES (generateUUIDv7(),?,?,curdate(),?,?,?,?,?,?,?)`,
+		`INSERT INTO path_adv (adv_uuid, path_id, date_stat, counter, counter_back, counter_full_path, counter_full_path_back, steps, sign, version)
+			VALUES (?,?,curdate(),?,?,?,?,?,?,?)`,
 		oldValue.AdvUuid, oldValue.Counter, oldValue.CounterBack, oldValue.CounterFullPath, oldValue.CounterFullPathBack, oldValue.Steps, oldValue.Sign*-1, oldValue.Version,
 	)
 	if err != nil {
@@ -48,8 +49,8 @@ func (pa PathAdv) Update(oldValue entitydb.PathAdv, newValue entitydb.PathAdv) e
 	}
 
 	err = pa.chClient.Exec(pa.ctx,
-		`INSERT INTO path_adv (uuid, adv_uuid, path_id, date_stat, counter, counter_back, counter_full_path, counter_full_path_back, steps, sign, version)
-			VALUES (generateUUIDv7(),?,?,curdate(),?,?,?,?,?,?,?)`,
+		`INSERT INTO path_adv (adv_uuid, path_id, date_stat, counter, counter_back, counter_full_path, counter_full_path_back, steps, sign, version)
+			VALUES (?,?,curdate(),?,?,?,?,?,?,?)`,
 		newValue.AdvUuid, newValue.Counter, newValue.CounterBack, newValue.CounterFullPath, newValue.CounterFullPathBack, newValue.Steps, 1, newValue.Version+1,
 	)
 	if err != nil {
