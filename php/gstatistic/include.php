@@ -1,0 +1,36 @@
+<?php
+
+CModule::AddAutoloadClasses(
+    'gstatistic',
+    [
+        'GKeepStatistics' => 'classes/general/GKeepstatistic.php',
+//        'CAllStatistics' => 'classes/general/statistic.php',
+        'GStatistics' => 'classes/general/statistic.php',
+        'GAdv' => 'classes/general/GAdv.php',
+        'GGuest' => 'classes/general/GGuest.php',
+        'GTraffic' => 'classes/general/traffic.php',
+        'GUserOnline' => 'classes/general/useronline.php',
+        'GStoplist' => 'classes/general/stoplist.php',
+        'GHit' => 'classes/general/hit.php',
+        'GSession' => 'classes/general/session.php',
+        'GReferer' => 'classes/general/referer.php',
+        'GPhrase' => 'classes/general/phrase.php',
+        'GSearcher' => 'classes/general/searcher.php',
+        'GSearcherHit' => 'classes/general/searcherhit.php',
+        'GPage' => 'classes/general/page.php',
+        'GStatEvent' => 'classes/general/statevent.php',
+        'GStatEventType' => 'classes/general/stateventtype.php',
+        'GAutoDetect' => 'classes/general/autodetect.php',
+        'GCountry' => 'classes/general/country.php',
+        'GCity' => 'classes/general/city.php',
+        'GStatRegion' => 'classes/general/city.php',
+        'GPath' => 'classes/general/path.php',
+        'GStat' => 'classes/general/statistic_old.php',
+        'GVisit' => 'classes/general/statistic_old.php',
+        'GStatCountry' => 'classes/general/statistic_old.php',
+        'GAllStatistic' => 'classes/general/statistic_old.php',
+        'GStatistic' => 'classes/general/statistic_old.php',
+        'GStatResult' => 'classes/general/statresult.php',
+        'gstatistic' => 'install/index.php',
+    ]
+);
