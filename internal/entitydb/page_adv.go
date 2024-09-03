@@ -9,7 +9,7 @@ type PageAdv struct {
 	Uuid             string    `ch:"uuid"`
 	DateStat         time.Time `ch:"date_stat"`
 	PageUuid         uuid.UUID `ch:"page_uuid"`
-	AdvUuid          string    `ch:"adv_uuid"`
+	AdvUuid          uuid.UUID `ch:"adv_uuid"`
 	Counter          uint32    `ch:"counter"`
 	EnterCounter     uint32    `ch:"enter_counter"`
 	ExitCounter      uint32    `ch:"exit_counter"`

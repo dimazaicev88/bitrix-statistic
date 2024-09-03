@@ -329,7 +329,6 @@ func (ps PathService) SaveVisits(
 			}
 		}
 	}
-	advRowsDir := 0
 
 	if currentDirUuid != uuid.Nil {
 		oldPage, err := ps.pageService.FindByUuid(lastDirUuid)
@@ -348,6 +347,7 @@ func (ps PathService) SaveVisits(
 
 		if adv.AdvUuid != uuid.Nil && adv.LastAdvBack {
 			var pageAdv entitydb.PageAdv
+			pageAdv.AdvUuid = adv.AdvUuid
 			pageAdv.PageUuid = currentDirUuid
 			pageAdv.Counter += 1
 			pageAdv.ExitCounter += exitDirCounter
@@ -415,6 +415,50 @@ func (ps PathService) SaveVisits(
 		if err = ps.pageService.Update(oldPage, newPage); err != nil {
 			return err
 		}
-	}
 
+		if adv.AdvUuid != uuid.Nil && adv.LastAdvBack {
+			var pageAdv entitydb.PageAdv
+			pageAdv.PageUuid = currentPageUuid
+			pageAdv.CounterBack += 1
+			pageAdv.ExitCounterBack += exitDirCounter
+			pageAdv.EnterCounterBack += enterCounter
+			if err = ps.pageAdvService.Add(pageAdv); err != nil {
+				return err
+			}
+		}
+
+	} else {
+		page := entitydb.Page{
+			Dir:          false,
+			Url:          currentPage,
+			Url404:       isError404,
+			UrlHash:      utils.Crc32(currentDir),
+			SiteId:       "",
+			Counter:      1,
+			EnterCounter: enterCounter,
+			ExitCounter:  1,
+		}
+		if err := ps.pageService.Add(page); err != nil {
+			return err
+		}
+
+		if adv.AdvUuid != uuid.Nil {
+			var pageAdv entitydb.PageAdv
+			pageAdv.AdvUuid = adv.AdvUuid
+			pageAdv.PageUuid = currentPageUuid
+			if adv.LastAdvBack {
+				pageAdv.Counter = 1
+				pageAdv.ExitCounter = 1
+				pageAdv.EnterCounter = enterCounter
+				pageAdv.CounterBack = 1
+				pageAdv.ExitCounterBack = 1
+				pageAdv.EnterCounterBack = 1
+			}
+			if err := ps.pageAdvService.Add(pageAdv); err != nil {
+				return err
+			}
+		}
+
+	}
+	return nil
 }
