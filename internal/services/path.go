@@ -359,9 +359,62 @@ func (ps PathService) SaveVisits(
 				return err
 			}
 		}
-
 	} else {
-		ps.pageService.Add()
+		page := entitydb.Page{
+			Dir:          true,
+			Url:          currentDir,
+			UrlHash:      utils.Crc32(currentDir),
+			SiteId:       siteId,
+			Counter:      1,
+			EnterCounter: enterCounter,
+			ExitCounter:  1,
+		}
+		if err := ps.pageService.Add(page); err != nil {
+			return err
+		}
+	}
+
+	//TODO
+	//if (intval($advRowsDir) <= 0) {
+	//	if ($advId > 0) {
+	//		$arFields = array(
+	//			"DATE_STAT" => $dbNowDate,
+	//			"PAGE_ID" => $currentDirId,
+	//			"ADV_ID" => $advId,
+	//			"COUNTER" => 1,
+	//			"EXIT_COUNTER" => 1,
+	//			"ENTER_COUNTER" => $enterCounter,
+	//			"COUNTER_BACK" => 0,
+	//			"EXIT_COUNTER_BACK" => 0,
+	//			"ENTER_COUNTER_BACK" => 0
+	//		);
+	//		if ($bAdvBack) {
+	//			$arFields["COUNTER"] = 0;
+	//			$arFields["EXIT_COUNTER"] = 0;
+	//			$arFields["ENTER_COUNTER"] = 0;
+	//			$arFields["COUNTER_BACK"] = 1;
+	//			$arFields["EXIT_COUNTER_BACK"] = 1;
+	//			$arFields["ENTER_COUNTER_BACK"] = $enterCounter;
+	//		}
+	//		$DB->Insert("b_stat_page_adv", $arFields, "File: " . __FILE__ . "<br>Line: " . __LINE__);
+	//	}
+	//}
+
+	if currentPageUuid != uuid.Nil {
+		oldPage, err := ps.pageService.FindByUuid(currentPageUuid)
+		if err != nil {
+			return err
+		}
+
+		newPage := oldPage
+		newPage.Counter += 1
+		newPage.ExitCounter += exitPageCounter
+		newPage.EnterCounter += enterCounter
+		newPage.Url404 = isError404
+
+		if err = ps.pageService.Update(oldPage, newPage); err != nil {
+			return err
+		}
 	}
 
 }

@@ -11,7 +11,7 @@ type Page struct {
 	Dir          bool      `ch:"dir"`
 	Url          string    `ch:"url"`
 	Url404       bool      `ch:"url_404"`
-	UrlHash      uint32    `ch:"url_hash"`
+	UrlHash      int32     `ch:"url_hash"`
 	SiteId       string    `ch:"site_id"`
 	Counter      uint32    `ch:"counter"`
 	EnterCounter uint32    `ch:"enter_counter"`
