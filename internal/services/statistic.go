@@ -175,7 +175,16 @@ func (stat Statistic) Add(statData entityjson.UserData) error {
 				return err
 			}
 		}
+		newSession := sessionDb
+		newSession.LastHitUuid = hitUuid
+		newSession.UrlLast = statData.Url
+		newSession.UrlLast404 = statData.IsError404
+		newSession.DateLast = time.Now()
+		newSession.LastSiteId = statData.SiteId
 
+		if err = stat.sessionService.Update(sessionDb, newSession); err != nil {
+			return err
+		}
 	}
 
 	return nil
