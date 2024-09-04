@@ -3,7 +3,7 @@
 class GGuest
 {
 
-    public static function find()
+    static function find()
     {
 
     }
@@ -13,13 +13,7 @@ class GGuest
      * @param string $uuid
      * @return void
      */
-    public static function findByUuid(string $uuid)
-    {
-
-    }
-
-    public static function findLastByUuid(string $uuid)
-    {
+    static  function findByUuid(string $uuid){
 
     }
 }

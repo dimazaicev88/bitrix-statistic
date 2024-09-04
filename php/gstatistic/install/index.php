@@ -67,14 +67,6 @@ class gstatistic extends CModule
 
     function InstallEvents()
     {
-//        global $DB;
-//        $sIn = "'STATISTIC_DAILY_REPORT', 'STATISTIC_ACTIVITY_EXCEEDING'";
-//        $rs = $DB->Query("SELECT count(*) C FROM b_event_type WHERE EVENT_NAME IN (".$sIn.") ");
-//        $ar = $rs->Fetch();
-//        if($ar["C"] <= 0)
-//        {
-//            include($_SERVER["DOCUMENT_ROOT"]."/bitrix/modules/statistic/install/events/set_events.php");
-//        }
         return true;
     }
 
@@ -85,29 +77,18 @@ class gstatistic extends CModule
 
     function InstallFiles()
     {
-        if ($_ENV["COMPUTERNAME"] != 'BX') {
-            CopyDirFiles($_SERVER["DOCUMENT_ROOT"] . "/bitrix/modules/statistic/install/public/bitrix", $_SERVER["DOCUMENT_ROOT"] . "/bitrix", true, true);//all from bitrix
-            CopyDirFiles($_SERVER["DOCUMENT_ROOT"] . "/bitrix/modules/statistic/install/components/bitrix", $_SERVER["DOCUMENT_ROOT"] . "/bitrix/components/bitrix", true, true);
-            CopyDirFiles($_SERVER["DOCUMENT_ROOT"] . "/bitrix/modules/statistic/install/gadgets/bitrix", $_SERVER["DOCUMENT_ROOT"] . "/bitrix/gadgets/bitrix", true, true);
-        }
         return true;
     }
 
     function UnInstallFiles()
     {
-        if ($_ENV["COMPUTERNAME"] != 'BX') {
-            DeleteDirFiles($_SERVER["DOCUMENT_ROOT"] . "/bitrix/modules/statistic/install/public/bitrix/admin", $_SERVER["DOCUMENT_ROOT"] . "/bitrix/admin");
-            DeleteDirFiles($_SERVER["DOCUMENT_ROOT"] . "/bitrix/modules/statistic/install/public/bitrix/themes/.default/", $_SERVER["DOCUMENT_ROOT"] . "/bitrix/themes/.default");//css
-            DeleteDirFilesEx("/bitrix/themes/.default/icons/statistic/");//icons
-            DeleteDirFilesEx("/bitrix/images/statistic/");//images
-        }
         return true;
     }
 
     function DoInstall()
     {
         global $APPLICATION, $step;
-        $STAT_RIGHT = $APPLICATION->GetGroupRight("statistic");
+        $STAT_RIGHT = $APPLICATION->GetGroupRight("gstatistic");
         $step = intval($step);
 
         if ($STAT_RIGHT < "W")
@@ -119,7 +100,7 @@ class gstatistic extends CModule
             $APPLICATION->ThrowException(implode("<br>", $this->errors));
             $APPLICATION->IncludeAdminFile(GetMessage("STAT_INSTALL_TITLE"), $_SERVER["DOCUMENT_ROOT"] . "/bitrix/modules/gstatistic/install/step2.php");
         } elseif ($step < 2) {
-            $APPLICATION->IncludeAdminFile(GetMessage("STAT_INSTALL_TITLE"), $_SERVER["DOCUMENT_ROOT"] . "/bitrix/modules/statistic/install/step1.php");
+            $APPLICATION->IncludeAdminFile(GetMessage("STAT_INSTALL_TITLE"), $_SERVER["DOCUMENT_ROOT"] . "/bitrix/modules/gstatistic/install/step1.php");
         } elseif ($step == 2) {
             $db_install_ok = $this->InstallDB(array(
                 "allow_initial" => $_REQUEST["allow_initial"],
@@ -130,8 +111,6 @@ class gstatistic extends CModule
                 "DATABASE" => $_REQUEST["DATABASE"],
             ));
             if ($db_install_ok) {
-                $this->InstallEvents();
-                $this->InstallFiles();
                 CBXFeatures::SetFeatureEnabled("Analytics", true);
             }
             $GLOBALS["errors"] = $this->errors;

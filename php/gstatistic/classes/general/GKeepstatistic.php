@@ -4,7 +4,7 @@ class GKeepstatistic
 {
 
 
-    public static function Keep()
+    static function Keep()
     {
 
     }
