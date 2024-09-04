@@ -3,7 +3,7 @@
 
 class GSearcherHit
 {
-    static  function find()
+    public static function find()
     {
 
     }

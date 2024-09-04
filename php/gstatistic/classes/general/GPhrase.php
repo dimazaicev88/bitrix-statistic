@@ -3,7 +3,7 @@
 class GPhrase
 {
 
-    static  function find()
+    public static function find()
     {
 
     }

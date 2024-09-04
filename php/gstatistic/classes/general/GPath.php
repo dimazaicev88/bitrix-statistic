@@ -3,7 +3,7 @@
 class GPath
 {
 
-    static function find()
+    public static function find()
     {
 
     }
@@ -12,7 +12,7 @@ class GPath
      * @param string $uuid
      * @return void
      */
-    static function findByUuid(string $uuid)
+    public static function findByUuid(string $uuid)
     {
 
     }

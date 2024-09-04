@@ -10,7 +10,7 @@ class GAdv
      * @param string $uuid
      * @return void
      */
-    static function delete(string $uuid)
+    public static function delete(string $uuid)
     {
 
     }
