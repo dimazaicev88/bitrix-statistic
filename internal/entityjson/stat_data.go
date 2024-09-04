@@ -14,6 +14,7 @@ type UserData struct {
 	HttpXForwardedFor string    `json:"httpXForwardedFor"`
 	IsError404        bool      `json:"isError404"`
 	SiteId            string    `json:"siteId"`
+	Lang              string    `json:"lang"`
 	Event1            string    `json:"event1"`
 	Event2            string    `json:"event2"`
 	IsUserAuth        bool      `json:"isUserAuth"`

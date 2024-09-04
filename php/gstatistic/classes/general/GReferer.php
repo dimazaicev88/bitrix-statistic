@@ -4,7 +4,7 @@
 class GReferer
 {
 
-    static  function find()
+    public static function find()
     {
 
     }

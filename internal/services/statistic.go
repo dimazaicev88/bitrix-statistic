@@ -185,6 +185,138 @@ func (stat Statistic) Add(statData entityjson.UserData) error {
 		if err = stat.sessionService.Update(sessionDb, newSession); err != nil {
 			return err
 		}
+
+		newGuestDb := guestDb
+		newGuestDb.Hits += 1
+		newGuestDb.LastSessionUuid = sessionDb.Uuid
+		newGuestDb.LastDate = time.Now()
+		newGuestDb.LastUserId = statData.UserId
+		newGuestDb.LastUserAuth = statData.IsUserAuth
+		newGuestDb.LastUrlLast = statData.Url
+		newGuestDb.LastUrlLast404 = statData.IsError404
+		newGuestDb.LastUserAgent = statData.UserAgent
+		newGuestDb.LastIp = statData.Ip
+		newGuestDb.LastCookie = statData.Cookies
+		newGuestDb.LastLanguage = statData.Lang
+		newGuestDb.LastSiteId = statData.SiteId
+		newGuestDb.Favorites = statData.IsFavorite
+		if err = stat.guestService.UpdateGuest(guestDb, newGuestDb); err != nil {
+			return err
+		}
+
+		//TODO
+		/**
+		// обновляем прямые рекламные кампании
+						if (intval($_SESSION["SESS_ADV_ID"])>0)
+						{
+							// увеличиваем счетчик хитов на прямом заходе
+							$arFields = Array(
+								"DATE_LAST"	=> $DB_now,
+								"HITS"		=> "HITS+1"
+								);
+							if ($FAVORITES=="Y" && $ALLOW_ADV_FAVORITES=="Y")
+							{
+								// увеличиваем счетчик посетителей добавивших в избранное на прямом заходе
+								$arFields["FAVORITES"] = "FAVORITES + 1";
+								$favorite = 1;
+							}
+							$DB->Update("b_stat_adv",$arFields,"WHERE ID=".intval($_SESSION["SESS_ADV_ID"]), "File: ".__FILE__."<br>Line: ".__LINE__,false,false,false);
+
+							// обновляем счетчик хитов по дням
+							$arFields = Array("HITS" => "HITS+1", "FAVORITES" => "FAVORITES + ".intval($favorite));
+							$rows = $DB->Update("b_stat_adv_day",$arFields,"WHERE ADV_ID=".intval($_SESSION["SESS_ADV_ID"])." and DATE_STAT=".$DB_now_date,"File: ".__FILE__."<br>Line: ".__LINE__,false,false,false);
+							// если его нет то
+							if (intval($rows)<=0)
+							{
+								// добавляем его
+								$arFields = Array(
+									"ADV_ID"		=> intval($_SESSION["SESS_ADV_ID"]),
+									"DATE_STAT"		=> $DB_now_date,
+									"HITS"			=> 1,
+									"FAVORITES"		=> intval($favorite)
+									);
+								$DB->Insert("b_stat_adv_day",$arFields, "File: ".__FILE__."<br>Line: ".__LINE__);
+							}
+						}
+						// обновляем рекламные кампании по возврату
+						elseif (intval($_SESSION["SESS_LAST_ADV_ID"])>0)
+						{
+							// увеличиваем счетчик хитов на возврате
+							$arFields = Array(
+								"DATE_LAST"		=> $DB_now,
+								"HITS_BACK"		=> "HITS_BACK+1"
+								);
+							if ($FAVORITES=="Y" && $ALLOW_ADV_FAVORITES=="Y")
+							{
+								// увеличиваем счетчик посетителей добавивших в избранное на возврате
+								$arFields["FAVORITES_BACK"] = "FAVORITES_BACK + 1";
+								$favorite = 1;
+							}
+							$DB->Update("b_stat_adv",$arFields,"WHERE ID=".intval($_SESSION["SESS_LAST_ADV_ID"]), "File: ".__FILE__."<br>Line: ".__LINE__,false,false,false);
+
+							$arFields = Array("HITS_BACK" => "HITS_BACK+1", "FAVORITES_BACK" => "FAVORITES_BACK + ".intval($favorite));
+							// обновляем счетчик хитов по дням
+							$rows = $DB->Update("b_stat_adv_day",$arFields,"WHERE ADV_ID=".intval($_SESSION["SESS_LAST_ADV_ID"])." and DATE_STAT=".$DB_now_date,"File: ".__FILE__."<br>Line: ".__LINE__,false,false,false);
+							// если его нет то
+							if (intval($rows)<=0)
+							{
+								// добавляем его
+								$arFields = Array(
+									"ADV_ID" => intval($_SESSION["SESS_LAST_ADV_ID"]),
+									"DATE_STAT" => $DB_now_date,
+									"HITS_BACK" => 1,
+									"FAVORITES_BACK" => intval($favorite),
+								);
+								$DB->Insert("b_stat_adv_day",$arFields, "File: ".__FILE__."<br>Line: ".__LINE__);
+							}
+						}
+
+						// обрабатываем событие
+						if (defined("GENERATE_EVENT") && GENERATE_EVENT=="Y")
+						{
+							global $event1, $event2, $event3, $goto, $money, $currency, $site_id;
+							if($site_id == '')
+								$site_id = false;
+							CStatistics::Set_Event($event1, $event2, $event3, $goto, $money, $currency, $site_id);
+						}
+
+						// увеличиваем счетчик хитов у страны
+						if ($_SESSION["SESS_COUNTRY_ID"] <> '')
+						{
+							CStatistics::UpdateCountry($_SESSION["SESS_COUNTRY_ID"], Array("HITS" => 1));
+						}
+
+						if($_SESSION["SESS_CITY_ID"] > 0)
+						{
+							CStatistics::UpdateCity($_SESSION["SESS_CITY_ID"], Array("HITS" => 1));
+						}
+
+						if (
+							isset($_SESSION["SESS_FROM_SEARCHERS"])
+							&& is_array($_SESSION["SESS_FROM_SEARCHERS"])
+							&& !empty($_SESSION["SESS_FROM_SEARCHERS"])
+						)
+						{
+							// обновляем счетчик хитов у поисковых фраз для поисковиков
+							$arFields = Array("PHRASES_HITS" => "PHRASES_HITS+1");
+							$_SESSION["SESS_FROM_SEARCHERS"] = array_unique($_SESSION["SESS_FROM_SEARCHERS"]);
+							if(count($_SESSION["SESS_FROM_SEARCHERS"]) > 0)
+							{
+								$str = "0";
+								foreach($_SESSION["SESS_FROM_SEARCHERS"] as $value)
+									$str .= ", ".intval($value);
+								$DB->Update("b_stat_searcher",$arFields,"WHERE ID in ($str)", "File: ".__FILE__."<br>Line: ".__LINE__,false,false,false);
+							}
+						}
+
+						if (isset($_SESSION["SESS_REFERER_ID"]) && intval($_SESSION["SESS_REFERER_ID"])>0)
+						{
+							// обновляем ссылающиеся
+							$arFields = Array("HITS"=>"HITS+1");
+							$DB->Update("b_stat_referer", $arFields, "WHERE ID=".intval($_SESSION["SESS_REFERER_ID"]), "File: ".__FILE__."<br>Line: ".__LINE__,false,false,false);
+						}
+		*/
+
 	}
 
 	return nil

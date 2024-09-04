@@ -3,17 +3,9 @@
 class GPath
 {
 
-    static function find()
+    public static function find()
     {
 
     }
 
-    /**
-     * @param string $uuid
-     * @return void
-     */
-    static function findByUuid(string $uuid)
-    {
-
-    }
 }
