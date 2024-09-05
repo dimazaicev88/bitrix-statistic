@@ -3,110 +3,189 @@
 
 class StatEventTypeFilter extends BaseFilter
 {
-ID* - ID типа события;
-    public function pathId(Operator $operator, string $date): PathFilter
-    {
-        $this->setFilter($operator, $date, 'date');
-        return $this;
-    }
-EVENT1* - идентификатор event1 типа события;
-    public function pathId(Operator $operator, string $date): PathFilter
-    {
-        $this->setFilter($operator, $date, 'date');
-        return $this;
-    }
-EVENT2* - идентификатор event2 типа события;
-    public function pathId(Operator $operator, string $date): PathFilter
-    {
-        $this->setFilter($operator, $date, 'date');
-        return $this;
-    }
-NAME* - название типа события;
-    public function pathId(Operator $operator, string $date): PathFilter
-    {
-        $this->setFilter($operator, $date, 'date');
-        return $this;
-    }
-DESCRIPTION* - описание типа события;
-    public function pathId(Operator $operator, string $date): PathFilter
-    {
-        $this->setFilter($operator, $date, 'date');
-        return $this;
-    }
-DATE_ENTER_1 - начальное значение интервала для поля "дата первого события данного типа";
-DATE_ENTER_2 - конечное значение интервала для поля "дата первого события данного типа";
-    public function pathId(Operator $operator, string $date): PathFilter
-    {
-        $this->setFilter($operator, $date, 'date');
-        return $this;
-    }
-DATE_LAST_1 - начальное значение интервала для поля "дата последнего события данного типа";
-DATE_LAST_2 - конечное значение интервала для поля "дата последнего события данного типа";
-    public function pathId(Operator $operator, string $date): PathFilter
-    {
-        $this->setFilter($operator, $date, 'date');
-        return $this;
-    }
-DATE1_PERIOD - начальное значение значение для произвольного периода;
-DATE2_PERIOD - конечное значение значение для произвольного периода;
 
-    public function pathId(Operator $operator, string $date): PathFilter
+    /**
+     * UUID типа события
+     *
+     * @param Operator $operator
+     * @param string $value
+     * @return StatEventTypeFilter
+     */
+    public function uuid(Operator $operator, string $value): StatEventTypeFilter
     {
-        $this->setFilter($operator, $date, 'date');
+        $this->setFilter($operator, $value, 'uuid');
         return $this;
     }
-    COUNTER1 - начальное значение интервала для поля "суммарное количество событий данного типа";
-COUNTER2 - конечное значение интервала для поля "суммарное количество событий данного типа";
-    public function pathId(Operator $operator, string $date): PathFilter
+
+    /**
+     * Идентификатор event1 типа события
+     *
+     * @param Operator $operator
+     * @param string $value
+     * @return StatEventTypeFilter
+     */
+    public function event1(Operator $operator, string $value): StatEventTypeFilter
     {
-        $this->setFilter($operator, $date, 'date');
+        $this->setFilter($operator, $value, 'event1');
         return $this;
     }
-ADV_VISIBLE - флаг включать ли статистику по данному типу события в отчет по рекламным кампаниям, возможные значения:
-Y - включать;
-N - не включать.
-    public function pathId(Operator $operator, string $date): PathFilter
+
+    /**
+     * Идентификатор event2 типа события
+     *
+     * @param Operator $operator
+     * @param string $value
+     * @return StatEventTypeFilter
+     */
+    public function event2(Operator $operator, string $value): StatEventTypeFilter
     {
-        $this->setFilter($operator, $date, 'date');
+        $this->setFilter($operator, $value, 'event2');
         return $this;
     }
-DIAGRAM_DEFAULT - флаг включать ли данный тип события в круговую диаграмму и график по умолчанию, возможные значения:
-Y - включать;
-N - не включать.
-    public function pathId(Operator $operator, string $date): PathFilter
+
+    /**
+     * Название типа события
+     *
+     * @param Operator $operator
+     * @param string $value
+     * @return StatEventTypeFilter
+     */
+    public function name(Operator $operator, string $value): StatEventTypeFilter
     {
-        $this->setFilter($operator, $date, 'date');
+        $this->setFilter($operator, $value, 'name');
         return $this;
     }
-KEEP_DAYS1 - начальное значение интервала для поля "количество дней отведенное для хранения событий данного типа";
-KEEP_DAYS2 - конечное значение интервала для поля "количество дней отведенное для хранения событий данного типа";
-    public function pathId(Operator $operator, string $date): PathFilter
+
+    /**
+     * Описание типа события
+     *
+     * @param Operator $operator
+     * @param string $value
+     * @return StatEventTypeFilter
+     */
+    public function description(Operator $operator, string $value): StatEventTypeFilter
     {
-        $this->setFilter($operator, $date, 'date');
+        $this->setFilter($operator, $value, 'description');
         return $this;
     }
-DYNAMIC_KEEP_DAYS1 - начальное значение интервала для поля "количество дней отведенное для хранения статистики по данному типу события в разрезе по дням";
-DYNAMIC_KEEP_DAYS2 - конечное значение интервала для поля "количество дней отведенное для хранения статистики по данному типу события в разрезе по дням";
-    public function pathId(Operator $operator, string $date): PathFilter
+
+    /**
+     * Дата первого события данного типа
+     *
+     * @param Operator $operator
+     * @param string $value
+     * @return StatEventTypeFilter
+     */
+    public function dateEnter(Operator $operator, string $value): StatEventTypeFilter
     {
-        $this->setFilter($operator, $date, 'date');
+        $this->setFilter($operator, $value, 'dateEnter');
         return $this;
     }
-MONEY1 - начальное значение интервала для поля "суммарная денежная сумма для данного типа событий";
-MONEY2 - конечное значение интервала для поля "суммарная денежная сумма для данного типа событий";
-    public function pathId(Operator $operator, string $date): PathFilter
+
+    /**
+     * Дата последнего события данного типа
+     *
+     * @param Operator $operator
+     * @param string $value
+     * @return StatEventTypeFilter
+     */
+    public function dateLast(Operator $operator, string $value): StatEventTypeFilter
     {
-        $this->setFilter($operator, $date, 'date');
+        $this->setFilter($operator, $value, 'date');
         return $this;
     }
-CURRENCY - трехсимвольный идентификатор валюты для денежной суммы;
-    public function pathId(Operator $operator, string $date): PathFilter
+
+    /**
+     * Значение для произвольного периода
+     *
+     * @param Operator $operator
+     * @param string $value
+     * @return StatEventTypeFilter
+     */
+    public function datePeriod(Operator $operator, string $value): StatEventTypeFilter
     {
-        $this->setFilter($operator, $date, 'date');
+        $this->setFilter($operator, $value, 'date');
         return $this;
     }
-    GROUP - группировка результирующего списка, возможные значения:
-event1 - группировка по event1;
-event2 - группировка по event2.
+
+    /**
+     * Суммарное количество событий данного типа
+     *
+     * @param Operator $operator
+     * @param string $value
+     * @return StatEventTypeFilter
+     */
+    public function countEvent(Operator $operator, string $value): StatEventTypeFilter
+    {
+        $this->setFilter($operator, $value, 'countEvent');
+        return $this;
+    }
+
+    /**
+     * Флаг включать ли статистику по данному типу события в отчет по рекламным кампаниям, возможные значения
+     *
+     * @param bool $value
+     * @return StatEventTypeFilter
+     */
+    public function advVisible(bool $value): StatEventTypeFilter
+    {
+        $this->setFilter(Operator::Eq, $value, 'advVisible');
+        return $this;
+    }
+
+    /**
+     * Количество дней отведенное для хранения событий данного типа
+     *
+     * @param Operator $operator
+     * @param int $value
+     * @return StatEventTypeFilter
+     */
+    public function keepDays(Operator $operator, int $value): StatEventTypeFilter
+    {
+        $this->setFilter($operator, $value, 'keepDays');
+        return $this;
+    }
+
+    /**
+     * Количество дней отведенное для хранения статистики по данному типу события в разрезе по дням
+     *
+     * @param Operator $operator
+     * @param int $value
+     * @return StatEventTypeFilter
+     */
+    public function dynamicKeepDays(Operator $operator, int $value): StatEventTypeFilter
+    {
+        $this->setFilter($operator, $value, 'dynamicKeepDays');
+        return $this;
+    }
+
+    /**
+     * Суммарная денежная сумма для данного типа событий
+     *
+     * @param Operator $operator
+     * @param string $value
+     * @return StatEventTypeFilter
+     */
+    public function money(Operator $operator, string $value): StatEventTypeFilter
+    {
+        $this->setFilter($operator, $value, 'money');
+        return $this;
+    }
+
+    /**
+     * Трех символьный идентификатор валюты для денежной суммы
+     *
+     * @param Operator $operator
+     * @param string $value
+     * @return StatEventTypeFilter
+     */
+    public function currency(Operator $operator, string $value): StatEventTypeFilter
+    {
+        $this->setFilter($operator, $value, 'currency');
+        return $this;
+    }
+//GROUP - группировка результирующего списка, возможные значения:
+//event1 - группировка по event1;
+//event2 - группировка по event2.
 
 }
