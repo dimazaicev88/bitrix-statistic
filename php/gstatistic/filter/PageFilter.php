@@ -20,13 +20,12 @@ class PageFilter extends BaseFilter
      * Флаг "показывать только каталоги или только страницы", возможные значения:
      * true - в результирующем списке должны быть только каталоги;
      * false - в результирующем списке должны быть только страницы.
-     * @param Operator $operator
      * @param bool $isDir
-     * @return void
+     * @return PageFilter
      */
-    public function isDir(Operator $operator, bool $isDir): PageFilter
+    public function isDir(bool $isDir): PageFilter
     {
-        $this->setFilter($operator, $isDir, 'isDir');
+        $this->setFilter(Operator::Eq, $isDir, 'isDir');
         return $this;
     }
 
@@ -35,7 +34,7 @@ class PageFilter extends BaseFilter
      *
      * @param Operator $operator
      * @param string $url
-     * @return void
+     * @return PageFilter
      */
     public function url(Operator $operator, string $url): PageFilter
     {
@@ -46,13 +45,12 @@ class PageFilter extends BaseFilter
     /**
      * Была ли 404 ошибка на странице, возможные значения:
      *
-     * @param Operator $operator
      * @param bool $isUrl404
      * @return PageFilter
      */
-    public function isUrl404(Operator $operator, bool $isUrl404): PageFilter
+    public function isUrl404(bool $isUrl404): PageFilter
     {
-        $this->setFilter($operator, $isUrl404, 'isUrl404');
+        $this->setFilter(Operator::Eq, $isUrl404, 'isUrl404');
         return $this;
     }
 

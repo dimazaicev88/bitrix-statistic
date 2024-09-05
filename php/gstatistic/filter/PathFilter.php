@@ -98,13 +98,12 @@ class PathFilter extends BaseFilter
     /**
      * Была ли 404 ошибка на последней странице пути
      *
-     * @param Operator $operator
-     * @param string $isLastPage404
+     * @param bool $isLastPage404
      * @return $this
      */
-    public function isLastPage404(Operator $operator, string $isLastPage404): PathFilter
+    public function isLastPage404(bool $isLastPage404): PathFilter
     {
-        $this->setFilter($operator, $isLastPage404, 'isLastPage404');
+        $this->setFilter(Operator::Eq, $isLastPage404, 'isLastPage404');
         return $this;
     }
 
@@ -137,13 +136,12 @@ class PathFilter extends BaseFilter
     /**
      * Была ли 404 ошибка на произвольной странице пути
      *
-     * @param Operator $operator
-     * @param string $isPage404
+     * @param bool $isPage404
      * @return $this
      */
-    public function isPage404(Operator $operator, string $isPage404): PathFilter
+    public function isPage404(bool $isPage404): PathFilter
     {
-        $this->setFilter($operator, $isPage404, 'isPage404');
+        $this->setFilter(Operator::Eq, $isPage404, 'isPage404');
         return $this;
     }
 

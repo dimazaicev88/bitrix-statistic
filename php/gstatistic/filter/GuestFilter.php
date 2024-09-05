@@ -163,7 +163,7 @@ class GuestFilter extends BaseFilter
      */
     function existsUrl404(bool $value): GuestFilter
     {
-        $this->setFilter('=', intval($value), "url_404");
+        $this->setFilter(Operator::Eq, intval($value), "url_404");
         return $this;
     }
 
@@ -187,7 +187,7 @@ class GuestFilter extends BaseFilter
      */
     function isAdv(bool $value): GuestFilter
     {
-        $this->setFilter('=', intval($value), "adv");
+        $this->setFilter(Operator::Eq, intval($value), "adv");
         return $this;
     }
 
@@ -197,9 +197,9 @@ class GuestFilter extends BaseFilter
      * @param string $value
      * @return $this
      */
-    function advId(Operator $operator, string $value): GuestFilter
+    function advUuid(Operator $operator, string $value): GuestFilter
     {
-        $this->setFilter($operator, $value, "adv_id");
+        $this->setFilter($operator, $value, "advUuid");
         return $this;
     }
 
@@ -211,7 +211,7 @@ class GuestFilter extends BaseFilter
      */
     function referer1(Operator $operator, string $value): GuestFilter
     {
-        $this->setFilter($operator, $value, "referer_1");
+        $this->setFilter($operator, $value, "referer1");
         return $this;
     }
 
@@ -223,7 +223,7 @@ class GuestFilter extends BaseFilter
      */
     function referer2(Operator $operator, string $value): GuestFilter
     {
-        $this->setFilter($operator, $value, "referer_2");
+        $this->setFilter($operator, $value, "referer2");
         return $this;
     }
 
@@ -235,81 +235,47 @@ class GuestFilter extends BaseFilter
      */
     function referer3(Operator $operator, string $value): GuestFilter
     {
-        $this->setFilter($operator, $value, "referer_3");
+        $this->setFilter($operator, $value, "referer3");
         return $this;
     }
 
     /**
-     * Начальное значение для интервала кол - ва событий сгенерированных посетителем
+     * Количество событий сгенерированных посетителем
      * @param Operator $operator
      * @param string $value
      * @return $this
      */
-    function events1(Operator $operator, string $value): GuestFilter
+    function events(Operator $operator, string $value): GuestFilter
     {
-        $this->setFilter($operator, $value, "events_1");
+        $this->setFilter($operator, $value, "events");
         return $this;
     }
 
-    /**
-     * Конечное значение для интервала кол - ва событий сгенерированных посетителем;
-     * @param Operator $operator
-     * * @param string $value
-     * @return $this
-     */
-    function events2(Operator $operator, string $value): GuestFilter
-    {
-        $this->setFilter($operator, $value, "events_2");
-        return $this;
-    }
 
     /**
-     * Начальное значение для интервала кол - ва сессий сгенерированных посетителем
+     * Количество сессий сгенерированных посетителем
      * @param Operator $operator
      * @param string $value
      * @return $this
      */
-    function sess1(Operator $operator, string $value): GuestFilter
+    function sessions(Operator $operator, string $value): GuestFilter
     {
-        $this->setFilter($operator, $value, "sess_1");
+        $this->setFilter($operator, $value, "sessions");
         return $this;
     }
 
     /**
-     * Конечное значение для интервала кол - ва сессий сгенерированных посетителем;
+     * Количество хитов сгенерированных посетителем;
      * @param Operator $operator
      * @param string $value
      * @return $this
      */
-    function sess2(Operator $operator, string $value): GuestFilter
-    {
-        $this->setFilter($operator, $value, "sess_2");
-        return $this;
-    }
-
-    /**
-     * Начальное значение для интервала кол - ва хитов сгенерированных посетителем;
-     * @param Operator $operator
-     * @param string $value
-     * @return $this
-     */
-    function hits1(Operator $operator, string $value): GuestFilter
+    function hits(Operator $operator, string $value): GuestFilter
     {
         $this->setFilter($operator, $value, "hits_1");
         return $this;
     }
 
-    /**
-     *  Конечное значение для интервала кол - ва хитов сгенерированных посетителем;
-     * @param Operator $operator
-     * @param string $value
-     * @return $this
-     */
-    function hits2(Operator $operator, string $value): GuestFilter
-    {
-        $this->setFilter($operator, $value, "hits_2");
-        return $this;
-    }
 
     /**
      * Флаг "добавлял ли посетитель сайт в "Избранное"", возможные значения:
@@ -319,7 +285,7 @@ class GuestFilter extends BaseFilter
      */
     function isAddToFavorites(bool $value): GuestFilter
     {
-        $this->setFilter('=', intval($value), "favorite");
+        $this->setFilter(Operator::Eq, intval($value), "favorite");
         return $this;
     }
 
@@ -355,7 +321,7 @@ class GuestFilter extends BaseFilter
      */
     function countryId(Operator $operator, string $value): GuestFilter
     {
-        $this->setFilter($operator, $value, "country_id");
+        $this->setFilter($operator, $value, "countryId");
         return $this;
     }
 
@@ -391,7 +357,7 @@ class GuestFilter extends BaseFilter
      */
     function userId(Operator $operator, string $value): GuestFilter
     {
-        $this->setFilter($operator, $value, "user_id");
+        $this->setFilter($operator, $value, "userId");
         return $this;
     }
 }

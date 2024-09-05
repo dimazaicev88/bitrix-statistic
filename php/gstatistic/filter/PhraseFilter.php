@@ -112,13 +112,12 @@ class PhraseFilter extends BaseFilter
     /**
      * Была ли 404 ошибка на странице на которую пришли
      *
-     * @param Operator $operator
-     * @param string $date
+     * @param bool $date
      * @return $this
      */
-    public function to404(Operator $operator, string $date): PhraseFilter
+    public function to404(bool $date): PhraseFilter
     {
-        $this->setFilter($operator, $date, 'date');
+        $this->setFilter(Operator::Eq, $date, 'date');
         return $this;
     }
 

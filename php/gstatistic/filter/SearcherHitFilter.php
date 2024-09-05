@@ -3,13 +3,12 @@
 class SearcherHitFilter extends BaseFilter
 {
 
-
     /**
      * UUID хита;
      *
      * @param Operator $operator
-     * @param string $date
-     * @return PathFilter
+     * @param string $hitUuid
+     * @return $this
      */
     public function hitUuid(Operator $operator, string $hitUuid): SearcherHitFilter
     {
@@ -21,39 +20,53 @@ class SearcherHitFilter extends BaseFilter
      * UUID поисковой системы;
      *
      * @param Operator $operator
-     * @param string $date
-     * @return PathFilter
+     * @param string $searcherUuid
+     * @return $this
      */
-    public function pathId(Operator $operator, string $date): SearcherHitFilter
+    public function searcherUuid(Operator $operator, string $searcherUuid): SearcherHitFilter
+    {
+        $this->setFilter($operator, $searcherUuid, 'searcherUuid');
+        return $this;
+    }
+
+
+    /**
+     * URL* - адрес проиндексированной страницы;
+     *
+     * @param Operator $operator
+     * @param string $date
+     * @return $this
+     */
+    public function url(Operator $operator, string $date): SearcherHitFilter
     {
         $this->setFilter($operator, $date, 'date');
         return $this;
     }
 
-    URL* - адрес проиндексированной страницы;
-    public function pathId(Operator $operator, string $date): PathFilter
+    /**
+     * Была ли 404 ошибка на проиндексированной странице
+     *
+     * @param bool $date
+     * @return $this
+     */
+    public function isUrl404(bool $date): SearcherHitFilter
     {
-        $this->setFilter($operator, $date, 'date');
+        $this->setFilter(Operator::Eq, $date, 'date');
         return $this;
     }
 
-    URL_404 - была ли 404 ошибка на проиндексированной странице:
-    Y - была;
-    N - не была.
-    public function pathId(Operator $operator, string $date): PathFilter
+    /**
+     * Название поисковой системы;
+     * @param Operator $operator
+     * @param string $searcher
+     * @return $this
+     */
+    public function searcher(Operator $operator, string $searcher): SearcherHitFilter
     {
-        $this->setFilter($operator, $date, 'date');
+        $this->setFilter($operator, $searcher, 'searcher');
         return $this;
     }
 
-    SEARCHER* - название поисковой системы;
-    public function pathId(Operator $operator, string $date): PathFilter
-    {
-        $this->setFilter($operator, $date, 'date');
-        return $this;
-    }
-
-    SEARCHER_EXACT_MATCH - если значение равно "Y", то при фильтрации по SEARCHER будет искаться точное совпадение;
     /**
      * Значение интервала для поля "дата"
      *
@@ -61,34 +74,46 @@ class SearcherHitFilter extends BaseFilter
      * @param string $date
      * @return $this
      */
-    public function date(Operator $operator, string $date): PhraseFilter
+    public function date(Operator $operator, string $date): SearcherHitFilter
     {
         $this->setFilter($operator, $date, 'date');
         return $this;
     }
 
-    IP* - IP адрес поисковой системы;
-    public function pathId(Operator $operator, string $date): PathFilter
+    /**
+     * IP адрес поисковой системы
+     *
+     * @param Operator $operator
+     * @param string $date
+     * @return $this
+     */
+    public function ip(Operator $operator, string $date): SearcherHitFilter
     {
         $this->setFilter($operator, $date, 'date');
         return $this;
     }
 
-    IP_EXACT_MATCH - если значение равно "Y", то при фильтрации по IP будет искаться точное совпадение;
-    USER_AGENT* - UserAgent поисковой системы;
-    public function pathId(Operator $operator, string $date): PathFilter
+    /**
+     * UserAgent поисковой системы
+     *
+     * @param Operator $operator
+     * @param string $userAgent
+     * @return $this
+     */
+    public function userAgent(Operator $operator, string $userAgent): SearcherHitFilter
     {
-        $this->setFilter($operator, $date, 'date');
+        $this->setFilter($operator, $userAgent, 'userAgent');
         return $this;
     }
 
-    USER_AGENT_EXACT_MATCH - если значение равно "Y", то при фильтрации по USER_AGENT будет искаться точное совпадение;
-    SITE_ID* - ID сайта;
-    public function pathId(Operator $operator, string $date): PathFilter
+    /**
+     * @param Operator $operator
+     * @param string $siteId
+     * @return $this
+     */
+    public function siteId(Operator $operator, string $siteId): SearcherHitFilter
     {
-        $this->setFilter($operator, $date, 'date');
+        $this->setFilter($operator, $siteId, 'siteId');
         return $this;
     }
-    SITE_ID_EXACT_MATCH - если значение равно "N", то при фильтрации по SITE_ID будет искаться вхождение.
-
 }

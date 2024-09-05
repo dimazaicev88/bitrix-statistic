@@ -3,144 +3,278 @@
 
 class StatEventFilter extends BaseFilter
 {
-ID* - ID события;
-    public function pathId(Operator $operator, string $date): PathFilter
+
+    /**
+     * UUID события
+     *
+     * @param Operator $operator
+     * @param string $value
+     * @return StatEventFilter
+     */
+    public function uuid(Operator $operator, string $value): StatEventFilter
     {
-        $this->setFilter($operator, $date, 'date');
+        $this->setFilter($operator, $value, 'uuid');
         return $this;
     }
-ID_EXACT_MATCH - если значение равно "N", то при фильтрации по ID будет искаться вхождение;
-EVENT_ID* - ID типа события;
-    public function pathId(Operator $operator, string $date): PathFilter
+
+    /**
+     * UUID типа события
+     *
+     * @param Operator $operator
+     * @param string $value
+     * @return StatEventFilter
+     */
+    public function eventUuid(Operator $operator, string $value): StatEventFilter
     {
-        $this->setFilter($operator, $date, 'date');
+        $this->setFilter($operator, $value, 'eventUuid');
         return $this;
     }
-EVENT_ID_EXACT_MATCH - если значение равно "N", то при фильтрации по EVENT_ID будет искаться вхождение;
-EVENT_NAME* - название типа события;
-    public function pathId(Operator $operator, string $date): PathFilter
+
+    /**
+     *Название типа события
+     *
+     * @param Operator $operator
+     * @param string $value
+     * @return StatEventFilter
+     */
+    public function eventName(Operator $operator, string $value): StatEventFilter
     {
-        $this->setFilter($operator, $date, 'date');
+        $this->setFilter($operator, $value, 'eventName');
         return $this;
     }
-EVENT_NAME_EXACT_MATCH - если значение равно "Y", то при фильтрации по EVENT_NAME будет искаться точное совпадение;
-EVENT1* - идентификатор event1 типа события;
-    public function pathId(Operator $operator, string $date): PathFilter
+
+
+    /**
+     * Идентификатор event1 типа события
+     *
+     * @param Operator $operator
+     * @param string $value
+     * @return StatEventFilter
+     */
+    public function event1(Operator $operator, string $value): StatEventFilter
     {
-        $this->setFilter($operator, $date, 'date');
+        $this->setFilter($operator, $value, 'event1');
         return $this;
     }
-EVENT1_EXACT_MATCH - если значение равно "Y", то при фильтрации по EVENT1 будет искаться точное совпадение;
-EVENT2* - идентификатор event2 типа события;
-    public function pathId(Operator $operator, string $date): PathFilter
+
+
+    /**
+     * Идентификатор event2 типа события
+     *
+     * @param Operator $operator
+     * @param string $value
+     * @return StatEventFilter
+     */
+    public function event2(Operator $operator, string $value): StatEventFilter
     {
-        $this->setFilter($operator, $date, 'date');
+        $this->setFilter($operator, $value, 'event2');
         return $this;
     }
-EVENT2_EXACT_MATCH - если значение равно "Y", то при фильтрации по EVENT2 будет искаться точное совпадение;
-EVENT3* - дополнительный параметр event3 события;
-    public function pathId(Operator $operator, string $date): PathFilter
+
+    /**
+     * Дополнительный параметр event3 события
+     *
+     * @param Operator $operator
+     * @param string $value
+     * @return StatEventFilter
+     */
+    public function event3(Operator $operator, string $value): StatEventFilter
     {
-        $this->setFilter($operator, $date, 'date');
+        $this->setFilter($operator, $value, 'event3');
         return $this;
     }
-EVENT3_EXACT_MATCH - если значение равно "Y", то при фильтрации по EVENT3 будет искаться точное совпадение;
-DATE - время события (точное совпадение);
-    public function pathId(Operator $operator, string $date): PathFilter
+
+    /**
+     * Время события
+     *
+     * @param Operator $operator
+     * @param string $value
+     * @return StatEventFilter
+     */
+    public function date(Operator $operator, string $value): StatEventFilter
     {
-        $this->setFilter($operator, $date, 'date');
+        $this->setFilter($operator, $value, 'date');
         return $this;
     }
-DATE1 - начальное значение интервала для поля "дата события";
-DATE2 - начальное значение интервала для поля "дата события";
-MONEY - денежная сумма события (точное совпадение);
-    public function pathId(Operator $operator, string $date): PathFilter
+
+    /**
+     * Денежная сумма события
+     *
+     * @param Operator $operator
+     * @param string $value
+     * @return StatEventFilter
+     */
+    public function money(Operator $operator, string $value): StatEventFilter
     {
-        $this->setFilter($operator, $date, 'date');
+        $this->setFilter($operator, $value, 'money');
         return $this;
     }
-MONEY1 - начальное значение интервала для поля "денежная сумма";
-MONEY2 - конечное значение интервала для поля "денежная сумма";
-CURRENCY - трехсимвольный идентификатор валюты для денежной суммы;
-    public function pathId(Operator $operator, string $date): PathFilter
+
+    /**
+     * Трех символьный идентификатор валюты для денежной суммы
+     *
+     * @param Operator $operator
+     * @param string $value
+     * @return StatEventFilter
+     */
+    public function currency(Operator $operator, string $value): StatEventFilter
     {
-        $this->setFilter($operator, $date, 'date');
+        $this->setFilter($operator, $value, 'currency');
         return $this;
     }
-SESSION_ID* - ID сессии;
-    public function pathId(Operator $operator, string $date): PathFilter
+
+    /**
+     * UUID сессии
+     *
+     * @param Operator $operator
+     * @param string $value
+     * @return StatEventFilter
+     */
+    public function sessionUuid(Operator $operator, string $value): StatEventFilter
     {
-        $this->setFilter($operator, $date, 'date');
+        $this->setFilter($operator, $value, 'sessionUuid');
         return $this;
     }
-SESSION_ID_EXACT_MATCH - если значение равно "N", то при фильтрации по SESSION_ID будет искаться вхождение;
-GUEST_ID* - ID посетителя;
-    public function pathId(Operator $operator, string $date): PathFilter
+
+    /**
+     * UUID посетителя
+     *
+     * @param Operator $operator
+     * @param string $value
+     * @return StatEventFilter
+     */
+    public function guestUuid(Operator $operator, string $value): StatEventFilter
     {
-        $this->setFilter($operator, $date, 'date');
+        $this->setFilter($operator, $value, 'guestUuid');
         return $this;
     }
-GUEST_ID_EXACT_MATCH - если значение равно "N", то при фильтрации по GUEST_ID будет искаться вхождение;
-ADV_ID* - ID рекламной кампании;
-    public function pathId(Operator $operator, string $date): PathFilter
+
+    /**
+     * UUID рекламной кампании
+     *
+     * @param Operator $operator
+     * @param string $value
+     * @return StatEventFilter
+     */
+    public function advUuid(Operator $operator, string $value): StatEventFilter
     {
-        $this->setFilter($operator, $date, 'date');
+        $this->setFilter($operator, $value, 'advUuid');
         return $this;
     }
-ADV_BACK - флаг "возврат по рекламной кампании", возможные значения:
-Y - был возврат;
-N - был прямой заход.
-HIT_ID* - ID хита;
-    public function pathId(Operator $operator, string $date): PathFilter
+
+    /**
+     * Флаг "возврат по рекламной кампании", возможные значения
+     *
+     * @param Operator $operator
+     * @param string $value
+     * @return StatEventFilter
+     */
+    public function advBack(Operator $operator, string $value): StatEventFilter
     {
-        $this->setFilter($operator, $date, 'date');
+        $this->setFilter($operator, $value, 'advBack');
         return $this;
     }
-HIT_ID_EXACT_MATCH - если значение равно "N", то при фильтрации по HIT_ID будет искаться вхождение;
-COUNTRY_ID* - ID страны посетителя сгенерировавшего событие;
-    public function pathId(Operator $operator, string $date): PathFilter
+
+    /**
+     * UUID хита
+     *
+     * @param Operator $operator
+     * @param string $value
+     * @return StatEventFilter
+     */
+    public function hitUuid(Operator $operator, string $value): StatEventFilter
     {
-        $this->setFilter($operator, $date, 'date');
+        $this->setFilter($operator, $value, 'hitUuid');
         return $this;
     }
-COUNTRY_ID_EXACT_MATCH - если значение равно "N", то при фильтрации по COUNTRY_ID будет искаться вхождение;
-COUNTRY* - название страны посетителя сгенерировавшего событие;
-    public function pathId(Operator $operator, string $date): PathFilter
+
+    /**
+     * ID страны посетителя сгенерировавшего событие
+     *
+     * @param Operator $operator
+     * @param string $value
+     * @return StatEventFilter
+     */
+    public function countryId(Operator $operator, string $value): StatEventFilter
     {
-        $this->setFilter($operator, $date, 'date');
+        $this->setFilter($operator, $value, 'countryId');
         return $this;
     }
-COUNTRY_EXACT_MATCH - если значение равно "Y", то при фильтрации по COUNTRY будет искаться точное совпадение;
-REFERER_URL* - ссылающаяся страница;
-    public function pathId(Operator $operator, string $date): PathFilter
+
+    /**
+     * Название страны посетителя сгенерировавшего событие
+     *
+     * @param Operator $operator
+     * @param string $value
+     * @return StatEventFilter
+     */
+    public function country(Operator $operator, string $value): StatEventFilter
     {
-        $this->setFilter($operator, $date, 'date');
+        $this->setFilter($operator, $value, 'country');
         return $this;
     }
-REFERER_URL_EXACT_MATCH - если значение равно "Y", то при фильтрации по REFERER_URL будет искаться точное совпадение;
-REFERER_SITE_ID - ID сайта для ссылающейся страницы;
-    public function pathId(Operator $operator, string $date): PathFilter
+
+    /**
+     * Ссылающаяся страница
+     *
+     * @param Operator $operator
+     * @param string $value
+     * @return StatEventFilter
+     */
+    public function refererUrl(Operator $operator, string $value): StatEventFilter
     {
-        $this->setFilter($operator, $date, 'date');
+        $this->setFilter($operator, $value, 'refererUrl');
         return $this;
     }
-URL* - страница на которой было зафиксировано событие;
-    public function pathId(Operator $operator, string $date): PathFilter
+
+    /**
+     * ID сайта для ссылающейся страницы
+     *
+     * @param Operator $operator
+     * @param string $value
+     * @return StatEventFilter
+     */
+    public function refererSiteId(Operator $operator, string $value): StatEventFilter
     {
-        $this->setFilter($operator, $date, 'date');
+        $this->setFilter($operator, $value, 'refererSiteId');
         return $this;
     }
-URL_EXACT_MATCH - если значение равно "Y", то при фильтрации по URL будет искаться точное совпадение;
-SITE_ID - ID сайта для страницы на которой было зафиксировано событие;
-    public function pathId(Operator $operator, string $date): PathFilter
+
+    /**
+     * Страница на которой было зафиксировано событие
+     *
+     * @param Operator $operator
+     * @param string $value
+     * @return StatEventFilter
+     */
+    public function url(Operator $operator, string $value): StatEventFilter
     {
-        $this->setFilter($operator, $date, 'date');
+        $this->setFilter($operator, $value, 'url');
         return $this;
     }
-REDIRECT_URL* - страница куда был перенаправлен посетитель после фиксации события;
-    public function pathId(Operator $operator, string $date): PathFilter
+
+    /**
+     * ID сайта для страницы на которой было зафиксировано событие
+     *
+     * @param Operator $operator
+     * @param string $value
+     * @return StatEventFilter
+     */
+    public function siteId(Operator $operator, string $value): StatEventFilter
     {
-        $this->setFilter($operator, $date, 'date');
+        $this->setFilter($operator, $value, 'siteId');
+        return $this;
+    }
+
+    /**
+     *  Страница куда был перенаправлен посетитель после фиксации события
+     * @param Operator $operator
+     * @param string $value
+     * @return StatEventFilter
+     */
+    public function redirectUrl(Operator $operator, string $value): StatEventFilter
+    {
+        $this->setFilter($operator, $value, 'redirectUrl');
         return $this;
     }
 

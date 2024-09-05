@@ -31,13 +31,12 @@ class HitFilter extends BaseFilter
     /**
      * Флаг "новый посетитель"
      *
-     * @param Operator $operator
      * @param bool $value
      * @return HitFilter
      */
-    function isNewGuest(Operator $operator, bool $value): HitFilter
+    function isNewGuest(bool $value): HitFilter
     {
-        $this->setFilter($operator, $value, 'isNewGuest');
+        $this->setFilter(Operator::Eq, $value, 'isNewGuest');
         return $this;
     }
 
@@ -82,13 +81,12 @@ class HitFilter extends BaseFilter
     /**
      * Была ли 404 ошибка на странице хита
      *
-     * @param Operator $operator
      * @param bool $isUrl404
      * @return HitFilter
      */
-    function isUrl404(Operator $operator, bool $isUrl404): HitFilter
+    function isUrl404(bool $isUrl404): HitFilter
     {
-        $this->setFilter($operator, $isUrl404, 'isUrl404');
+        $this->setFilter(Operator::Eq, $isUrl404, 'isUrl404');
         return $this;
     }
 
@@ -108,13 +106,12 @@ class HitFilter extends BaseFilter
     /**
      * Флаг "был ли авторизован посетитель в момент хита или до этого"
      *
-     * @param Operator $operator
      * @param bool $isRegistered
      * @return HitFilter
      */
-    function isRegistered(Operator $operator, bool $isRegistered): HitFilter
+    function isRegistered(bool $isRegistered): HitFilter
     {
-        $this->setFilter($operator, $isRegistered, 'isRegistered');
+        $this->setFilter(Operator::Eq, $isRegistered, 'isRegistered');
         return $this;
     }
 
@@ -199,13 +196,12 @@ class HitFilter extends BaseFilter
     /**
      * Содержимое Cookie в момент хита
      *
-     * @param Operator $operator
      * @param bool $isStop
      * @return HitFilter
      */
-    function isStop(Operator $operator, bool $isStop): HitFilter
+    function isStop(bool $isStop): HitFilter
     {
-        $this->setFilter($operator, $isStop, 'isStop');
+        $this->setFilter(Operator::Eq, $isStop, 'isStop');
         return $this;
     }
 
