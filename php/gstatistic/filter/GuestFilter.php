@@ -394,16 +394,4 @@ class GuestFilter extends BaseFilter
         $this->setFilter($operator, $value, "user_id");
         return $this;
     }
-
 }
-
-$filterGuest = new GuestFilter();
-
-echo
-$filterGuest
-    ->id(Operator::Gt, 123)
-    ->or()
-    ->id(Operator::Lt, 200)
-    ->and()
-    ->countryId(Operator::Like, "ru%")
-    ->build();
