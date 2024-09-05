@@ -134,7 +134,7 @@ class PhraseFilter extends BaseFilter
         return $this;
     }
 }
-//GROUP - группировка результирующего списка, возможные значения:
+//GROUP - группировка результирующего списка:
 //P - группировка по поисковой фразе;
 //S - группировка по поисковой системе.
 //    public function group(Operator $operator, string $date): PhraseFilter

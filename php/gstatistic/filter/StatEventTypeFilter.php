@@ -122,7 +122,7 @@ class StatEventTypeFilter extends BaseFilter
     }
 
     /**
-     * Флаг включать ли статистику по данному типу события в отчет по рекламным кампаниям, возможные значения
+     * Флаг включать ли статистику по данному типу события в отчет по рекламным кампаниям
      *
      * @param bool $value
      * @return StatEventTypeFilter
@@ -184,7 +184,8 @@ class StatEventTypeFilter extends BaseFilter
         $this->setFilter($operator, $value, 'currency');
         return $this;
     }
-//GROUP - группировка результирующего списка, возможные значения:
+
+//GROUP - группировка результирующего списка:
 //event1 - группировка по event1;
 //event2 - группировка по event2.
 

@@ -31,7 +31,7 @@ class SearcherFilter extends BaseFilter
     }
 
     /**
-     * Флаг "сохранять хиты поисковой системы", возможные значения
+     * Флаг "сохранять хиты поисковой системы"
      *
      * @param Operator $operator
      * @param bool $saveStatistic
