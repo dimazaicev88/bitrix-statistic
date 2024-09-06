@@ -1,6 +1,6 @@
 <?php
 
-class HttpClient
+class GStatHttpClient
 {
     public static function sendPostRequest(string $url, array $data): string
     {
