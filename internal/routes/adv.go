@@ -4,6 +4,7 @@ import (
 	"bitrix-statistic/internal/services"
 	"context"
 	"github.com/gofiber/fiber/v2"
+	"github.com/google/uuid"
 )
 
 type AdvHandlers struct {
@@ -32,10 +33,10 @@ func (ah AdvHandlers) Filter(ctx *fiber.Ctx) error {
 }
 
 func (ah AdvHandlers) DeleteByUuid(ctx *fiber.Ctx) error {
-	uuid := ctx.Params("uuid", "")
-	if len(uuid) > 0 {
-		err := ah.advService.DeleteByUuid(uuid)
-		if err != nil {
+	advUuid := ctx.Params("uuid", "")
+	if len(advUuid) > 0 {
+		bytes, err := uuid.FromBytes([]byte(advUuid))
+		if err = ah.advService.DeleteByUuid(bytes); err != nil {
 			return err
 		}
 	}
@@ -47,9 +48,13 @@ func (ah AdvHandlers) FilterEvent(ctx *fiber.Ctx) error {
 }
 
 func (ah AdvHandlers) FindByUuid(ctx *fiber.Ctx) error {
-	uuid := ctx.Params("uuid", "")
-	if len(uuid) > 0 {
-		adv, err := ah.advService.FindByUuid(uuid)
+	advUuid := ctx.Params("uuid", "")
+	if len(advUuid) > 0 {
+		bytes, err := uuid.FromBytes([]byte(advUuid))
+		if err != nil {
+			return err
+		}
+		adv, err := ah.advService.FindByUuid(bytes)
 		if err != nil {
 			return err
 		}

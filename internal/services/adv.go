@@ -20,12 +20,19 @@ type AdvServices struct {
 	hitService    *HitService
 }
 
-func NewAdv(ctx context.Context, allModels *models.Models, hitService *HitService) *AdvServices {
+func NewAdv(ctx context.Context, allModels *models.Models) *AdvServices {
 	return &AdvServices{
-		ctx:        ctx,
-		allModels:  allModels,
-		hitService: hitService,
+		ctx:       ctx,
+		allModels: allModels,
 	}
+}
+
+func (as AdvServices) SetHitService(hitService *HitService) {
+	as.hitService = hitService
+}
+
+func (as AdvServices) SetOptionService(optionService *OptionService) {
+	as.optionService = optionService
 }
 
 // GetAdv Получить рекламную компанию
@@ -111,8 +118,8 @@ func (as AdvServices) FindByUuid(advUuid uuid.UUID) (entitydb.Adv, error) {
 }
 
 // DeleteByUuid Удаление рекламной компании по uuid
-func (as AdvServices) DeleteByUuid(uuid string) error {
-	return as.allModels.AdvModel.DeleteByUuid(uuid)
+func (as AdvServices) DeleteByUuid(advUuid uuid.UUID) error {
+	return as.allModels.AdvModel.DeleteByUuid(advUuid)
 }
 
 // AutoCreateAdv Автоматическое создание рекламной компании
@@ -152,6 +159,6 @@ func (as AdvServices) AutoCreateAdv(referer1, referer2, siteId string) error {
 	return nil
 }
 
-func (as AdvServices) IsExistsAdv(uuid string) (bool, error) {
-	return as.allModels.AdvModel.IsExistsAdv(uuid)
+func (as AdvServices) IsExistsAdv(advUuid uuid.UUID) (bool, error) {
+	return as.allModels.AdvModel.IsExistsAdv(advUuid)
 }

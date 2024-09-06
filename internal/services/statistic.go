@@ -170,10 +170,10 @@ func (stat Statistic) Add(statData entityjson.UserData) error {
 		}
 		//------------------------------ Visits -----------------------------
 		if stat.optionService.IsSaveVisits(statData.SiteId) {
-			err = stat.pathService.SaveVisits()
-			if err != nil {
-				return err
-			}
+			//err = stat.pathService.SaveVisits()
+			//if err != nil {
+			//	return err
+			//}
 		}
 		newSession := sessionDb
 		newSession.LastHitUuid = hitUuid

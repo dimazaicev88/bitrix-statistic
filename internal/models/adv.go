@@ -109,8 +109,8 @@ func (am Adv) FindByUuid(uuid uuid.UUID) (entitydb.Adv, error) {
 	return adv, nil
 }
 
-func (am Adv) DeleteByUuid(uuid string) error {
-	if err := am.chClient.Exec(am.ctx, `DELETE FROM adv WHERE uuid=?`, uuid); err != nil {
+func (am Adv) DeleteByUuid(advUuid uuid.UUID) error {
+	if err := am.chClient.Exec(am.ctx, `DELETE FROM adv WHERE uuid=?`, advUuid); err != nil {
 		return err
 	}
 	return nil
@@ -126,7 +126,7 @@ func (am Adv) FindRefererByListAdv(listAdv []string) (entitydb.AdvReferer, error
 	return adv, nil
 }
 
-func (am Adv) IsExistsAdv(advUuid string) (bool, error) {
+func (am Adv) IsExistsAdv(advUuid uuid.UUID) (bool, error) {
 	rows, err := am.chClient.Query(am.ctx, `select 1 from adv where uuid=?`, advUuid)
 	if err != nil && errors.Is(err, sql.ErrNoRows) == false {
 		return false, err
