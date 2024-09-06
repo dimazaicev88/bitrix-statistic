@@ -163,7 +163,7 @@ class StatEventFilter extends BaseFilter
     }
 
     /**
-     * Флаг "возврат по рекламной кампании"
+     * Флаг "возврат по рекламной кампании", возможные значения
      *
      * @param Operator $operator
      * @param string $value
