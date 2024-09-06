@@ -8,15 +8,14 @@ class GStatEvent
 
     }
 
-
-    public static function AddCurrent($event1, $event2="", $event3="", $money="", $currency="", $goto="", $chargeback="N", $site_id=false){
-
-    }
-
-    public static function AddByID($EVENT_ID, $EVENT3, $DATE_ENTER, $PARAM, $MONEY="", $CURRENCY="", $CHARGEBACK="N"){
+    public static function addCurrent($event1, $event2="", $event3="", $money="", $currency="", $goto="", $chargeback="N", $site_id=false){
 
     }
 
-    public static function AddByEvents($EVENT1, $EVENT2, $EVENT3, $DATE_ENTER, $PARAM, $MONEY="", $CURRENCY="", $CHARGEBACK="N"){}
+    public static function addByID($eventId, $event3, $date_enter, $param, $money="", $currency="", $chargeback="N"){
+
+    }
+
+    public static function addByEvents($event1, $event2, $event3, $dateEnter, $param, $money="", $currency="", $chargeback="N"){}
 
 }
