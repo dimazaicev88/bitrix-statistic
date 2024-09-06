@@ -3,4 +3,9 @@
 class GStoplist
 {
 
+    function CheckFields()
+    {
+
+        return true;
+    }
 }
