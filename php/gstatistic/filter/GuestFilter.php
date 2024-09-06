@@ -19,9 +19,9 @@ class GuestFilter extends BaseFilter
      * @param int $value
      * @return $this
      */
-    function id(Operator $operator, int $value): GuestFilter
+    function uuid(Operator $operator, int $value): GuestFilter
     {
-        $this->setFilter($operator, $value, "id");
+        $this->setFilter($operator, $value, "uuid");
         return $this;
     }
 
@@ -32,79 +32,43 @@ class GuestFilter extends BaseFilter
      */
     function isRegistered(bool $value): GuestFilter
     {
-        $this->setFilter(Operator::Eq, intval($value), "registered");
+        $this->setFilter(Operator::Eq, intval($value), "isRegistered");
         return $this;
     }
 
     /**
-     * Начальное значение интервала для поля "дата первого захода на сайт"
+     * Значение интервала для поля "дата первого захода на сайт"
      * @param Operator $operator
      * @param string $value
      * @return GuestFilter
      */
     function firstDate1(Operator $operator, string $value): GuestFilter
     {
-        $this->setFilter($operator, $value, "first_date_1");
+        $this->setFilter($operator, $value, "firstDate1");
         return $this;
     }
 
     /**
-     * Конечное значение интервала для поля "дата первого захода на сайт"
+     * Значение интервала для поля "дата последнего захода на сайт"
      * @param Operator $operator
      * @param string $value
      * @return GuestFilter
      */
-    function firstDate2(Operator $operator, string $value): GuestFilter
+    function lastDate(Operator $operator, string $value): GuestFilter
     {
-        $this->setFilter($operator, $value, "first_date_2");
+        $this->setFilter($operator, $value, "lastDate1");
         return $this;
     }
 
     /**
-     * Начальное значение интервала для поля "дата последнего захода на сайт"
-     * @param Operator $operator
-     * @param string $value
-     * @return GuestFilter
-     */
-    function lastDate1(Operator $operator, string $value): GuestFilter
-    {
-        $this->setFilter($operator, $value, "last_date_1");
-        return $this;
-    }
-
-    /**
-     * Конечное значение интервала для поля "дата первого захода на сайт"
-     * @param Operator $operator
-     * @param string $value
-     * @return GuestFilter
-     */
-    function lastDate2(Operator $operator, string $value): GuestFilter
-    {
-        $this->setFilter($operator, $value, "last_date_2");
-        return $this;
-    }
-
-    /**
-     * Начальное значение интервала для даты посещения посетителем сайта
+     * Значение интервала для даты посещения посетителем сайта
      * @param Operator $operator
      * @param string $value
      * @return $this
      */
-    function periodDate1(Operator $operator, string $value): GuestFilter
+    function periodDate(Operator $operator, string $value): GuestFilter
     {
-        $this->setFilter($operator, $value, "period_date_1");
-        return $this;
-    }
-
-    /**
-     * Конечно значение интервала для даты посещения посетителем сайта
-     * @param Operator $operator
-     * @param string $value
-     * @return $this
-     */
-    function periodDate2(Operator $operator, string $value): GuestFilter
-    {
-        $this->setFilter($operator, $value, "period_date_2");
+        $this->setFilter($operator, $value, "periodDate");
         return $this;
     }
 
@@ -116,7 +80,7 @@ class GuestFilter extends BaseFilter
      */
     function siteId(Operator $operator, string $value): GuestFilter
     {
-        $this->setFilter($operator, $value, "site_id");
+        $this->setFilter($operator, $value, "siteId");
         return $this;
     }
 
@@ -128,7 +92,7 @@ class GuestFilter extends BaseFilter
      */
     function firstSiteId(Operator $operator, string $value): GuestFilter
     {
-        $this->setFilter($operator, $value, "first_site_id");
+        $this->setFilter($operator, $value, "firstSiteId");
         return $this;
     }
 
@@ -141,7 +105,7 @@ class GuestFilter extends BaseFilter
      */
     function lastSiteId(Operator $operator, string $value): GuestFilter
     {
-        $this->setFilter($operator, $value, "last_site_id");
+        $this->setFilter($operator, $value, "lastSiteId");
         return $this;
     }
 
@@ -163,7 +127,7 @@ class GuestFilter extends BaseFilter
      */
     function existsUrl404(bool $value): GuestFilter
     {
-        $this->setFilter(Operator::Eq, intval($value), "url_404");
+        $this->setFilter(Operator::Eq, intval($value), "existsUrl404");
         return $this;
     }
 
@@ -175,7 +139,7 @@ class GuestFilter extends BaseFilter
      */
     function userAgent(Operator $operator, string $value): GuestFilter
     {
-        $this->setFilter($operator, $value, "user_agent");
+        $this->setFilter($operator, $value, "userAgent");
         return $this;
     }
 
@@ -187,7 +151,7 @@ class GuestFilter extends BaseFilter
      */
     function isAdv(bool $value): GuestFilter
     {
-        $this->setFilter(Operator::Eq, intval($value), "adv");
+        $this->setFilter(Operator::Eq, intval($value), "isAdv");
         return $this;
     }
 
@@ -272,7 +236,7 @@ class GuestFilter extends BaseFilter
      */
     function hits(Operator $operator, string $value): GuestFilter
     {
-        $this->setFilter($operator, $value, "hits_1");
+        $this->setFilter($operator, $value, "hits");
         return $this;
     }
 
@@ -285,7 +249,7 @@ class GuestFilter extends BaseFilter
      */
     function isAddToFavorites(bool $value): GuestFilter
     {
-        $this->setFilter(Operator::Eq, intval($value), "favorite");
+        $this->setFilter(Operator::Eq, intval($value), "isAddToFavorites");
         return $this;
     }
 

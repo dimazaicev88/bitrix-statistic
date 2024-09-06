@@ -12,7 +12,7 @@ class Session extends BaseFilter
      */
     public function uuid(Operator $operator, string $value): Session
     {
-        $this->setFilter($operator, $value, 'date');
+        $this->setFilter($operator, $value, 'uuid');
         return $this;
     }
 
@@ -25,7 +25,7 @@ class Session extends BaseFilter
      */
     public function guestUuid(Operator $operator, string $value): Session
     {
-        $this->setFilter($operator, $value, 'date');
+        $this->setFilter($operator, $value, 'guestUuid');
         return $this;
     }
 
@@ -50,7 +50,7 @@ class Session extends BaseFilter
      */
     public function userId(Operator $operator, string $value): Session
     {
-        $this->setFilter($operator, $value, '$userId');
+        $this->setFilter($operator, $value, 'userId');
         return $this;
     }
 
@@ -58,12 +58,12 @@ class Session extends BaseFilter
      * Флаг "был ли посетитель авторизован в данной сессии"
      *
      * @param Operator $operator
-     * @param string $value
+     * @param bool $value
      * @return Session
      */
-    public function pathId(Operator $operator, string $value): Session
+    public function isUserAuth(Operator $operator, bool $value): Session
     {
-        $this->setFilter($operator, $value, 'date');
+        $this->setFilter(Operator::Eq, $value, 'isUserAuth');
         return $this;
     }
 
@@ -153,7 +153,7 @@ class Session extends BaseFilter
      */
     public function isAdvBack(Operator $operator, bool $value): Session
     {
-        $this->setFilter($operator, $value, 'date');
+        $this->setFilter($operator, $value, 'isAdvBack');
         return $this;
     }
 

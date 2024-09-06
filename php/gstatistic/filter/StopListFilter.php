@@ -7,191 +7,210 @@ class StopListFilter extends BaseFilter
      * UUID записи стоп-листа
      *
      * @param Operator $operator
-     * @param string $date
-     * @return PathFilter
+     * @param string $value
+     * @return StopListFilter
      */
-    public function uuid(Operator $operator, string $date): PathFilter
+    public function uuid(Operator $operator, string $value): StopListFilter
     {
-        $this->setFilter($operator, $date, 'uuid');
-        return $this;
-    }
-DATE_START_1 - начальное значение интервала для поля "время начала активности записи";
-DATE_START_2 - конечное значение интервала для поля "время начала активности записи";
-    /**
-     * @param Operator $operator
-     * @param string $date
-     * @return PathFilter
-     */
-    public function date_start(Operator $operator, string $date): PathFilter
-    {
-        $this->setFilter($operator, $date, 'date');
-        return $this;
-    }
-DATE_END_1 - начальное значение интервала для поля "время окончания активности записи";
-DATE_END_2 - конечное значение интервала для поля "время окончания активности записи";
-    /**
-     * @param Operator $operator
-     * @param string $date
-     * @return PathFilter
-     */
-    public function date_end(Operator $operator, string $date): PathFilter
-    {
-        $this->setFilter($operator, $date, 'date');
-        return $this;
-    }
-ACTIVE - флаг активности записи, воможные значения:
-Y - запись активна;
-N - запись не активна.
-    /**
-     * @param Operator $operator
-     * @param string $date
-     * @return PathFilter
-     */
-    public function active(Operator $operator, string $date): PathFilter
-    {
-        $this->setFilter($operator, $date, 'date');
-        return $this;
-    }
-SAVE_STATISTIC - флаг необходимости сохранения статистики по посетителю попавшему в стоп-лист, воможные значения:
-Y - статистику сохранять;
-N - статистику не сохранять.
-    /**
-     * @param Operator $operator
-     * @param string $date
-     * @return PathFilter
-     */
-    public function save_statistic(Operator $operator, string $date): PathFilter
-    {
-        $this->setFilter($operator, $date, 'date');
-        return $this;
-    }
-IP_1* - октет 1 IP адреса;
-
-    /**
-     * @param Operator $operator
-     * @param string $date
-     * @return PathFilter
-     */
-    public function ip_1(Operator $operator, string $date): PathFilter
-    {
-        $this->setFilter($operator, $date, 'date');
-        return $this;
-    }
-IP_2* - октет 2 IP адреса;
-    /**
-     * @param Operator $operator
-     * @param string $date
-     * @return PathFilter
-     */
-    public function ip_2(Operator $operator, string $date): PathFilter
-    {
-        $this->setFilter($operator, $date, 'date');
-        return $this;
-    }
-IP_3* - октет 3 IP адреса;
-    /**
-     * @param Operator $operator
-     * @param string $date
-     * @return PathFilter
-     */
-    public function ip_3(Operator $operator, string $date): PathFilter
-    {
-        $this->setFilter($operator, $date, 'date');
-        return $this;
-    }
-IP_4* - октет 4 IP адреса;
-    /**
-     * @param Operator $operator
-     * @param string $date
-     * @return PathFilter
-     */
-    public function ip_4(Operator $operator, string $date): PathFilter
-    {
-        $this->setFilter($operator, $date, 'date');
-        return $this;
-    }
-URL_FROM* - ссылающаяся страница, с которой приходит посетитель;
-    /**
-     * @param Operator $operator
-     * @param string $date
-     * @return PathFilter
-     */
-    public function url_from(Operator $operator, string $date): PathFilter
-    {
-        $this->setFilter($operator, $date, 'date');
+        $this->setFilter($operator, $value, 'uuid');
         return $this;
     }
 
-USER_AGENT* - UserAgent посетителя;
-
     /**
+     * Время начала активности записи
+     *
      * @param Operator $operator
-     * @param string $date
-     * @return PathFilter
+     * @param string $value
+     * @return StopListFilter
      */
-    public function user_agent(Operator $operator, string $date): PathFilter
+    public function dateStart(Operator $operator, string $value): StopListFilter
     {
-        $this->setFilter($operator, $date, 'date');
+        $this->setFilter($operator, $value, 'dateStart');
         return $this;
     }
-MESSAGE* - текст сообщения которое будет выдано посетителю сайта, в случае его попадания под данную запись стоп-листа;
 
     /**
+     * Время окончания активности записи
+     *
      * @param Operator $operator
-     * @param string $date
-     * @return PathFilter
+     * @param string $value
+     * @return StopListFilter
      */
-    public function message(Operator $operator, string $date): PathFilter
+    public function dateEnd(Operator $operator, string $value): StopListFilter
     {
-        $this->setFilter($operator, $date, 'date');
+        $this->setFilter($operator, $value, 'dateEnd');
         return $this;
     }
-COMMENTS* - административный комментарий, используется как правило для указания причин создания данной записи;
+
 
     /**
-     * @param Operator $operator
-     * @param string $date
-     * @return PathFilter
+     * Флаг активности записи
+     *
+     * @param bool $value
+     * @return StopListFilter
      */
-    public function comments(Operator $operator, string $date): PathFilter
+    public function active(bool $value): StopListFilter
     {
-        $this->setFilter($operator, $date, 'date');
+        $this->setFilter(Operator::Eq, $value, 'active');
         return $this;
     }
-URL_TO* - страница (или ее часть) на которую приходит посетитель;
 
     /**
-     * @param Operator $operator
-     * @param string $date
-     * @return PathFilter
+     * Флаг необходимости сохранения статистики по посетителю попавшему в стоп-лист, воможные значения
+     *
+     * @param bool $value
+     * @return StopListFilter
      */
-    public function url_to(Operator $operator, string $date): PathFilter
+    public function saveStatistic(bool $value): StopListFilter
     {
-        $this->setFilter($operator, $date, 'date');
+        $this->setFilter(Operator::Eq, $value, 'saveStatistic');
         return $this;
     }
-URL_REDIRECT* - страница на которую необходимо перенаправить посетителя после его попадания под данную запись стоп-листа;
 
     /**
+     * Октет 1 IP адреса
+     *
      * @param Operator $operator
-     * @param string $date
-     * @return PathFilter
+     * @param string $value
+     * @return StopListFilter
      */
-    public function url_redirect(Operator $operator, string $date): PathFilter
+    public function ip1(Operator $operator, string $value): StopListFilter
     {
-        $this->setFilter($operator, $date, 'date');
+        $this->setFilter($operator, $value, 'ip1');
         return $this;
     }
-SITE_ID* - ID сайта для которого запись будет действительна; если значение не задано, то это означает что запись действительная для всех сайтов;
 
     /**
+     * Октет 2 IP адреса
+     *
      * @param Operator $operator
-     * @param string $date
-     * @return PathFilter
+     * @param string $value
+     * @return StopListFilter
      */
-public function site_id(Operator $operator, string $date): PathFilter
+    public function ip2(Operator $operator, string $value): StopListFilter
     {
-        $this->setFilter($operator, $date, 'date');
+        $this->setFilter($operator, $value, 'ip2');
+        return $this;
+    }
+
+    /**
+     * Октет 3 IP адреса
+     *
+     * @param Operator $operator
+     * @param string $value
+     * @return StopListFilter
+     */
+    public function ip3(Operator $operator, string $value): StopListFilter
+    {
+        $this->setFilter($operator, $value, 'ip3');
+        return $this;
+    }
+
+    /**
+     * Октет 4 IP адреса
+     *
+     * @param Operator $operator
+     * @param string $value
+     * @return StopListFilter
+     */
+    public function ip4(Operator $operator, string $value): StopListFilter
+    {
+        $this->setFilter($operator, $value, 'ip4');
+        return $this;
+    }
+
+    /**
+     * Ссылающаяся страница, с которой приходит посетитель
+     *
+     * @param Operator $operator
+     * @param string $value
+     * @return StopListFilter
+     */
+    public function urlFrom(Operator $operator, string $value): StopListFilter
+    {
+        $this->setFilter($operator, $value, 'urlFrom');
+        return $this;
+    }
+
+
+    /**
+     * UserAgent посетителя
+     *
+     * @param Operator $operator
+     * @param string $value
+     * @return StopListFilter
+     */
+    public function userAgent(Operator $operator, string $value): StopListFilter
+    {
+        $this->setFilter($operator, $value, 'userAgent');
+        return $this;
+    }
+
+
+    /**
+     * Текст сообщения которое будет выдано посетителю сайта, в случае его попадания под данную запись стоп-листа
+     *
+     * @param Operator $operator
+     * @param string $value
+     * @return StopListFilter
+     */
+    public function message(Operator $operator, string $value): StopListFilter
+    {
+        $this->setFilter($operator, $value, 'message');
+        return $this;
+    }
+
+    /**
+     * Административный комментарий, используется как правило для указания причин создания данной записи
+     *
+     * @param Operator $operator
+     * @param string $value
+     * @return StopListFilter
+     */
+    public function comments(Operator $operator, string $value): StopListFilter
+    {
+        $this->setFilter($operator, $value, 'comments');
+        return $this;
+    }
+
+
+    /**
+     * Страница (или ее часть) на которую приходит посетитель
+     *
+     * @param Operator $operator
+     * @param string $value
+     * @return StopListFilter
+     */
+    public function urlTo(Operator $operator, string $value): StopListFilter
+    {
+        $this->setFilter($operator, $value, 'urlTo');
+        return $this;
+    }
+
+
+    /**
+     * Страница на которую необходимо перенаправить посетителя после его попадания под данную запись стоп-листа
+     *
+     * @param Operator $operator
+     * @param string $value
+     * @return StopListFilter
+     */
+    public function urlRedirect(Operator $operator, string $value): StopListFilter
+    {
+        $this->setFilter($operator, $value, 'urlRedirect');
+        return $this;
+    }
+
+    /**
+     * ID сайта для которого запись будет действительна, если значение не задано, то это означает что запись действительная для всех сайтов
+     *
+     * @param Operator $operator
+     * @param string $value
+     * @return StopListFilter
+     */
+    public function siteId(Operator $operator, string $value): StopListFilter
+    {
+        $this->setFilter($operator, $value, 'siteId');
         return $this;
     }
 

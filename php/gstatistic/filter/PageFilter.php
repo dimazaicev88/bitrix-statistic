@@ -7,12 +7,12 @@ class PageFilter extends BaseFilter
      * Значение для интервала даты за которую необходимо получить данные
      *
      * @param Operator $operator
-     * @param string $date
+     * @param string $value
      * @return PageFilter
      */
-    public function date(Operator $operator, string $date): PageFilter
+    public function date(Operator $operator, string $value): PageFilter
     {
-        $this->setFilter($operator, $date, 'date');
+        $this->setFilter($operator, $value, 'date');
         return $this;
     }
 
@@ -20,12 +20,12 @@ class PageFilter extends BaseFilter
      * Флаг "показывать только каталоги или только страницы", возможные значения:
      * true - в результирующем списке должны быть только каталоги;
      * false - в результирующем списке должны быть только страницы.
-     * @param bool $isDir
+     * @param bool $value
      * @return PageFilter
      */
-    public function isDir(bool $isDir): PageFilter
+    public function isDir(bool $value): PageFilter
     {
-        $this->setFilter(Operator::Eq, $isDir, 'isDir');
+        $this->setFilter(Operator::Eq, $value, 'isDir');
         return $this;
     }
 
@@ -33,24 +33,24 @@ class PageFilter extends BaseFilter
      * Полный путь к странице (каталогу) для которой необходимо вывести данные
      *
      * @param Operator $operator
-     * @param string $url
+     * @param string $value
      * @return PageFilter
      */
-    public function url(Operator $operator, string $url): PageFilter
+    public function url(Operator $operator, string $value): PageFilter
     {
-        $this->setFilter($operator, $url, 'url');
+        $this->setFilter($operator, $value, 'url');
         return $this;
     }
 
     /**
      * Была ли 404 ошибка на странице, возможные значения:
      *
-     * @param bool $isUrl404
+     * @param bool $value
      * @return PageFilter
      */
-    public function isUrl404(bool $isUrl404): PageFilter
+    public function isUrl404(bool $value): PageFilter
     {
-        $this->setFilter(Operator::Eq, $isUrl404, 'isUrl404');
+        $this->setFilter(Operator::Eq, $value, 'isUrl404');
         return $this;
     }
 
@@ -59,12 +59,12 @@ class PageFilter extends BaseFilter
      * только посетителями по данной РК и соответственно получить данные по посещаемости страницы (каталога) url только этих посетителей;
      *
      * @param Operator $operator
-     * @param bool $advUuid
+     * @param bool $value
      * @return PageFilter
      */
-    public function advUuid(Operator $operator, bool $advUuid): PageFilter
+    public function advUuid(Operator $operator, bool $value): PageFilter
     {
-        $this->setFilter($operator, $advUuid, 'advUuid');
+        $this->setFilter($operator, $value, 'advUuid');
         return $this;
     }
 
@@ -76,12 +76,12 @@ class PageFilter extends BaseFilter
      * S - сумма по прямым заходам и возвратам.
      *
      * @param Operator $operator
-     * @param AdvDataType $advDataType
+     * @param AdvDataType $value
      * @return PageFilter
      */
-    public function advDataType(Operator $operator, AdvDataType $advDataType): PageFilter
+    public function advDataType(Operator $operator, AdvDataType $value): PageFilter
     {
-        $this->setFilter($operator, $advDataType->value, 'advDataType');
+        $this->setFilter($operator, $value->value, 'advDataType');
         return $this;
     }
 
@@ -89,12 +89,12 @@ class PageFilter extends BaseFilter
      * ID сайта
      *
      * @param Operator $operator
-     * @param bool $siteId
+     * @param bool $value
      * @return PageFilter
      */
-    public function siteId(Operator $operator, bool $siteId): PageFilter
+    public function siteId(Operator $operator, bool $value): PageFilter
     {
-        $this->setFilter($operator, $siteId, 'siteId');
+        $this->setFilter($operator, $value, 'siteId');
         return $this;
     }
 }

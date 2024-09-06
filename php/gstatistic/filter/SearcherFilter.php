@@ -8,12 +8,12 @@ class SearcherFilter extends BaseFilter
      * UUID поисковой системы;
      *
      * @param Operator $operator
-     * @param string $date
+     * @param string $value
      * @return SearcherFilter
      */
-    public function uuid(Operator $operator, string $date): SearcherFilter
+    public function uuid(Operator $operator, string $value): SearcherFilter
     {
-        $this->setFilter($operator, $date, 'date');
+        $this->setFilter($operator, $value, 'uuid');
         return $this;
     }
 
@@ -21,12 +21,12 @@ class SearcherFilter extends BaseFilter
      * Флаг активности:
      *
      * @param Operator $operator
-     * @param bool $active
+     * @param bool $value
      * @return $this
      */
-    public function active(Operator $operator, bool $active): SearcherFilter
+    public function active(Operator $operator, bool $value): SearcherFilter
     {
-        $this->setFilter($operator, $active, 'active');
+        $this->setFilter($operator, $value, 'active');
         return $this;
     }
 
@@ -34,12 +34,12 @@ class SearcherFilter extends BaseFilter
      * Флаг "сохранять хиты поисковой системы", возможные значения
      *
      * @param Operator $operator
-     * @param bool $saveStatistic
+     * @param bool $value
      * @return SearcherFilter
      */
-    public function saveStatistic(Operator $operator, bool $saveStatistic): SearcherFilter
+    public function saveStatistic(Operator $operator, bool $value): SearcherFilter
     {
-        $this->setFilter($operator, $saveStatistic, 'saveStatistic');
+        $this->setFilter($operator, $value, 'saveStatistic');
         return $this;
     }
 
@@ -47,12 +47,12 @@ class SearcherFilter extends BaseFilter
      * Количество хитов;
      *
      * @param Operator $operator
-     * @param string $date
+     * @param string $value
      * @return $this
      */
-    public function hits(Operator $operator, string $date): SearcherFilter
+    public function hits(Operator $operator, string $value): SearcherFilter
     {
-        $this->setFilter($operator, $date, 'date');
+        $this->setFilter($operator, $value, 'hits');
         return $this;
     }
 
@@ -61,12 +61,12 @@ class SearcherFilter extends BaseFilter
      * Начальное значение для произвольного периода
      *
      * @param Operator $operator
-     * @param string $period
+     * @param string $value
      * @return $this
      */
-    public function period(Operator $operator, string $period): SearcherFilter
+    public function period(Operator $operator, string $value): SearcherFilter
     {
-        $this->setFilter($operator, $period, 'period');
+        $this->setFilter($operator, $value, 'period');
         return $this;
     }
 
@@ -74,12 +74,12 @@ class SearcherFilter extends BaseFilter
      * Наименование поисковой системы;
      *
      * @param Operator $operator
-     * @param string $date
+     * @param string $value
      * @return $this
      */
-    public function pathId(Operator $operator, string $date): SearcherFilter
+    public function name(Operator $operator, string $value): SearcherFilter
     {
-        $this->setFilter($operator, $date, 'date');
+        $this->setFilter($operator, $value, 'name');
         return $this;
     }
 
@@ -87,12 +87,12 @@ class SearcherFilter extends BaseFilter
      * UserAgent поисковой системы;
      *
      * @param Operator $operator
-     * @param string $userAgent
+     * @param string $value
      * @return $this
      */
-    public function userAgent(Operator $operator, string $userAgent): SearcherFilter
+    public function userAgent(Operator $operator, string $value): SearcherFilter
     {
-        $this->setFilter($operator, $userAgent, 'userAgent');
+        $this->setFilter($operator, $value, 'userAgent');
         return $this;
     }
 

@@ -7,12 +7,12 @@ class SearcherHitFilter extends BaseFilter
      * UUID хита;
      *
      * @param Operator $operator
-     * @param string $hitUuid
+     * @param string $value
      * @return $this
      */
-    public function hitUuid(Operator $operator, string $hitUuid): SearcherHitFilter
+    public function hitUuid(Operator $operator, string $value): SearcherHitFilter
     {
-        $this->setFilter($operator, $hitUuid, 'hitUuid');
+        $this->setFilter($operator, $value, 'hitUuid');
         return $this;
     }
 
@@ -20,12 +20,12 @@ class SearcherHitFilter extends BaseFilter
      * UUID поисковой системы;
      *
      * @param Operator $operator
-     * @param string $searcherUuid
+     * @param string $value
      * @return $this
      */
-    public function searcherUuid(Operator $operator, string $searcherUuid): SearcherHitFilter
+    public function searcherUuid(Operator $operator, string $value): SearcherHitFilter
     {
-        $this->setFilter($operator, $searcherUuid, 'searcherUuid');
+        $this->setFilter($operator, $value, 'searcherUuid');
         return $this;
     }
 
@@ -34,12 +34,12 @@ class SearcherHitFilter extends BaseFilter
      * URL* - адрес проиндексированной страницы;
      *
      * @param Operator $operator
-     * @param string $date
+     * @param string $value
      * @return $this
      */
-    public function url(Operator $operator, string $date): SearcherHitFilter
+    public function url(Operator $operator, string $value): SearcherHitFilter
     {
-        $this->setFilter($operator, $date, 'date');
+        $this->setFilter($operator, $value, 'date');
         return $this;
     }
 
@@ -58,12 +58,12 @@ class SearcherHitFilter extends BaseFilter
     /**
      * Название поисковой системы;
      * @param Operator $operator
-     * @param string $searcher
+     * @param string $value
      * @return $this
      */
-    public function searcher(Operator $operator, string $searcher): SearcherHitFilter
+    public function searcher(Operator $operator, string $value): SearcherHitFilter
     {
-        $this->setFilter($operator, $searcher, 'searcher');
+        $this->setFilter($operator, $value, 'searcher');
         return $this;
     }
 
@@ -71,12 +71,12 @@ class SearcherHitFilter extends BaseFilter
      * Значение интервала для поля "дата"
      *
      * @param Operator $operator
-     * @param string $date
+     * @param string $value
      * @return $this
      */
-    public function date(Operator $operator, string $date): SearcherHitFilter
+    public function date(Operator $operator, string $value): SearcherHitFilter
     {
-        $this->setFilter($operator, $date, 'date');
+        $this->setFilter($operator, $value, 'date');
         return $this;
     }
 
@@ -84,12 +84,12 @@ class SearcherHitFilter extends BaseFilter
      * IP адрес поисковой системы
      *
      * @param Operator $operator
-     * @param string $date
+     * @param string $value
      * @return $this
      */
-    public function ip(Operator $operator, string $date): SearcherHitFilter
+    public function ip(Operator $operator, string $value): SearcherHitFilter
     {
-        $this->setFilter($operator, $date, 'date');
+        $this->setFilter($operator, $value, 'date');
         return $this;
     }
 
@@ -97,23 +97,23 @@ class SearcherHitFilter extends BaseFilter
      * UserAgent поисковой системы
      *
      * @param Operator $operator
-     * @param string $userAgent
+     * @param string $value
      * @return $this
      */
-    public function userAgent(Operator $operator, string $userAgent): SearcherHitFilter
+    public function userAgent(Operator $operator, string $value): SearcherHitFilter
     {
-        $this->setFilter($operator, $userAgent, 'userAgent');
+        $this->setFilter($operator, $value, 'userAgent');
         return $this;
     }
 
     /**
      * @param Operator $operator
-     * @param string $siteId
+     * @param string $value
      * @return $this
      */
-    public function siteId(Operator $operator, string $siteId): SearcherHitFilter
+    public function siteId(Operator $operator, string $value): SearcherHitFilter
     {
-        $this->setFilter($operator, $siteId, 'siteId');
+        $this->setFilter($operator, $value, 'siteId');
         return $this;
     }
 }

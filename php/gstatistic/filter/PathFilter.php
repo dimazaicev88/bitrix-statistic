@@ -7,12 +7,12 @@ class PathFilter extends BaseFilter
      * ID отрезка пути;
      *
      * @param Operator $operator
-     * @param string $date
+     * @param string $value
      * @return PathFilter
      */
-    public function pathId(Operator $operator, string $date): PathFilter
+    public function pathId(Operator $operator, string $value): PathFilter
     {
-        $this->setFilter($operator, $date, 'date');
+        $this->setFilter($operator, $value, 'pathId');
         return $this;
     }
 
@@ -20,12 +20,12 @@ class PathFilter extends BaseFilter
      * Значение для интервала даты
      *
      * @param Operator $operator
-     * @param string $date
+     * @param string $value
      * @return PathFilter
      */
-    public function date(Operator $operator, string $date): PathFilter
+    public function date(Operator $operator, string $value): PathFilter
     {
-        $this->setFilter($operator, $date, 'date');
+        $this->setFilter($operator, $value, 'date');
         return $this;
     }
 
@@ -33,12 +33,12 @@ class PathFilter extends BaseFilter
      * Первая страница пути;
      *
      * @param Operator $operator
-     * @param string $firstPage
+     * @param string $value
      * @return $this
      */
-    public function firstPage(Operator $operator, string $firstPage): PathFilter
+    public function firstPage(Operator $operator, string $value): PathFilter
     {
-        $this->setFilter($operator, $firstPage, 'firstPage');
+        $this->setFilter($operator, $value, 'firstPage');
         return $this;
     }
 
@@ -46,12 +46,12 @@ class PathFilter extends BaseFilter
      * ID сайта первой страницы пути;
      *
      * @param Operator $operator
-     * @param string $firstPageSiteId
+     * @param string $value
      * @return $this
      */
-    public function firstPageSiteId(Operator $operator, string $firstPageSiteId): PathFilter
+    public function firstPageSiteId(Operator $operator, string $value): PathFilter
     {
-        $this->setFilter($operator, $firstPageSiteId, 'firstPageSiteId');
+        $this->setFilter($operator, $value, 'firstPageSiteId');
         return $this;
     }
 
@@ -59,12 +59,12 @@ class PathFilter extends BaseFilter
      * Была ли 404 ошибка на первой странице пути
      *
      * @param Operator $operator
-     * @param bool $isFirstPage404
+     * @param bool $value
      * @return $this
      */
-    public function isFirstPage404(Operator $operator, bool $isFirstPage404): PathFilter
+    public function isFirstPage404(Operator $operator, bool $value): PathFilter
     {
-        $this->setFilter($operator, $isFirstPage404, 'isFirstPage404');
+        $this->setFilter($operator, $value, 'isFirstPage404');
         return $this;
     }
 
@@ -73,12 +73,12 @@ class PathFilter extends BaseFilter
      * Последняя страница пути;
      *
      * @param Operator $operator
-     * @param string $lastPage
+     * @param string $value
      * @return $this
      */
-    public function lastPage(Operator $operator, string $lastPage): PathFilter
+    public function lastPage(Operator $operator, string $value): PathFilter
     {
-        $this->setFilter($operator, $lastPage, 'lastPage');
+        $this->setFilter($operator, $value, 'lastPage');
         return $this;
     }
 
@@ -86,12 +86,12 @@ class PathFilter extends BaseFilter
      * ID сайта последней страницы пути;
      *
      * @param Operator $operator
-     * @param string $lastPageSiteId
+     * @param string $value
      * @return $this
      */
-    public function lastPageSiteId(Operator $operator, string $lastPageSiteId): PathFilter
+    public function lastPageSiteId(Operator $operator, string $value): PathFilter
     {
-        $this->setFilter($operator, $lastPageSiteId, 'lastPageSiteId');
+        $this->setFilter($operator, $value, 'lastPageSiteId');
         return $this;
     }
 
@@ -111,12 +111,12 @@ class PathFilter extends BaseFilter
      * Произвольная страница пути
      *
      * @param Operator $operator
-     * @param string $page
+     * @param string $value
      * @return $this
      */
-    public function page(Operator $operator, string $page): PathFilter
+    public function page(Operator $operator, string $value): PathFilter
     {
-        $this->setFilter($operator, $page, 'page');
+        $this->setFilter($operator, $value, 'page');
         return $this;
     }
 
@@ -124,24 +124,24 @@ class PathFilter extends BaseFilter
      * ID сайта произвольной страницы пути
      *
      * @param Operator $operator
-     * @param string $pageSiteId
+     * @param string $value
      * @return $this
      */
-    public function pageSiteId(Operator $operator, string $pageSiteId): PathFilter
+    public function pageSiteId(Operator $operator, string $value): PathFilter
     {
-        $this->setFilter($operator, $pageSiteId, 'pageSiteId');
+        $this->setFilter($operator, $value, 'pageSiteId');
         return $this;
     }
 
     /**
      * Была ли 404 ошибка на произвольной странице пути
      *
-     * @param bool $isPage404
+     * @param bool $value
      * @return $this
      */
-    public function isPage404(bool $isPage404): PathFilter
+    public function isPage404(bool $value): PathFilter
     {
-        $this->setFilter(Operator::Eq, $isPage404, 'isPage404');
+        $this->setFilter(Operator::Eq, $value, 'isPage404');
         return $this;
     }
 
@@ -149,12 +149,12 @@ class PathFilter extends BaseFilter
      * UUID рекламной кампании, по посетителям которой надо получить данные;
      *
      * @param Operator $operator
-     * @param string $advUuid
+     * @param string $value
      * @return $this
      */
-    public function advUuid(Operator $operator, string $advUuid): PathFilter
+    public function advUuid(Operator $operator, string $value): PathFilter
     {
-        $this->setFilter($operator, $advUuid, 'advUuid');
+        $this->setFilter($operator, $value, 'advUuid');
         return $this;
     }
 
@@ -166,12 +166,12 @@ class PathFilter extends BaseFilter
      * S - сумма по прямым заходам и возвратам.
      *
      * @param Operator $operator
-     * @param AdvDataType $advDataType
+     * @param AdvDataType $value
      * @return $this
      */
-    public function advDataType(Operator $operator, AdvDataType $advDataType): PathFilter
+    public function advDataType(Operator $operator, AdvDataType $value): PathFilter
     {
-        $this->setFilter($operator, $advDataType->value, 'advDataType');
+        $this->setFilter($operator, $value->value, 'advDataType');
         return $this;
     }
 
@@ -179,12 +179,12 @@ class PathFilter extends BaseFilter
      * Значение интервала для поля "количество страниц в пути";
      *
      * @param Operator $operator
-     * @param string $steps
+     * @param string $value
      * @return $this
      */
-    public function steps(Operator $operator, string $steps): PathFilter
+    public function steps(Operator $operator, string $value): PathFilter
     {
-        $this->setFilter($operator, $steps, 'steps');
+        $this->setFilter($operator, $value, 'steps');
         return $this;
     }
 }

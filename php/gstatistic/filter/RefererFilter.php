@@ -7,24 +7,24 @@ class RefererFilter extends BaseFilter
      * ID записи;
      *
      * @param Operator $operator
-     * @param string $date
+     * @param string $value
      * @return $this
      */
-    public function pathId(Operator $operator, string $date): RefererFilter
+    public function uuid(Operator $operator, string $value): RefererFilter
     {
-        $this->setFilter($operator, $date, 'date');
+        $this->setFilter($operator, $value, 'uuid');
         return $this;
     }
 
     /**
      * UUID сессии;
      * @param Operator $operator
-     * @param string $sessionUuid
+     * @param string $value
      * @return $this
      */
-    public function sessionUuid(Operator $operator, string $sessionUuid): RefererFilter
+    public function sessionUuid(Operator $operator, string $value): RefererFilter
     {
-        $this->setFilter($operator, $sessionUuid, 'sessionUuid');
+        $this->setFilter($operator, $value, 'sessionUuid');
         return $this;
     }
 
@@ -32,24 +32,24 @@ class RefererFilter extends BaseFilter
      * Значение интервала для поля "дата"
      *
      * @param Operator $operator
-     * @param string $date
+     * @param string $value
      * @return $this
      */
-    public function date(Operator $operator, string $date): RefererFilter
+    public function date(Operator $operator, string $value): RefererFilter
     {
-        $this->setFilter($operator, $date, 'date');
+        $this->setFilter($operator, $value, 'date');
         return $this;
     }
 
     /**
      * Протокол ссылающейся страницы;
      * @param Operator $operator
-     * @param string $fromProtocol
+     * @param string $value
      * @return $this
      */
-    public function fromProtocol(Operator $operator, string $fromProtocol): RefererFilter
+    public function fromProtocol(Operator $operator, string $value): RefererFilter
     {
-        $this->setFilter($operator, $fromProtocol, 'fromProtocol');
+        $this->setFilter($operator, $value, 'fromProtocol');
         return $this;
     }
 
@@ -57,12 +57,12 @@ class RefererFilter extends BaseFilter
      * Домен ссылающейся страницы;
      *
      * @param Operator $operator
-     * @param string $fromDomain
+     * @param string $value
      * @return $this
      */
-    public function fromDomain(Operator $operator, string $fromDomain): RefererFilter
+    public function fromDomain(Operator $operator, string $value): RefererFilter
     {
-        $this->setFilter($operator, $fromDomain, 'fromDomain');
+        $this->setFilter($operator, $value, 'fromDomain');
         return $this;
     }
 
@@ -70,12 +70,12 @@ class RefererFilter extends BaseFilter
      * Ссылающаяся страница;
      *
      * @param Operator $operator
-     * @param string $fromPage
+     * @param string $value
      * @return $this
      */
-    public function fromPage(Operator $operator, string $fromPage): RefererFilter
+    public function fromPage(Operator $operator, string $value): RefererFilter
     {
-        $this->setFilter($operator, $fromPage, 'fromPage');
+        $this->setFilter($operator, $value, 'fromPage');
         return $this;
     }
 
@@ -83,12 +83,12 @@ class RefererFilter extends BaseFilter
      * Протокол + домен + ссылающаяся страница;
      *
      * @param Operator $operator
-     * @param string $from
+     * @param string $value
      * @return $this
      */
-    public function from(Operator $operator, string $from): RefererFilter
+    public function from(Operator $operator, string $value): RefererFilter
     {
-        $this->setFilter($operator, $from, 'from');
+        $this->setFilter($operator, $value, 'from');
         return $this;
     }
 
@@ -96,24 +96,24 @@ class RefererFilter extends BaseFilter
      *Страница на которую пришли
      *
      * @param Operator $operator
-     * @param string $to
+     * @param string $value
      * @return $this
      */
-    public function to(Operator $operator, string $to): RefererFilter
+    public function to(Operator $operator, string $value): RefererFilter
     {
-        $this->setFilter($operator, $to, 'to');
+        $this->setFilter($operator, $value, 'to');
         return $this;
     }
 
     /**
      * Была ли 404 ошибка на странице, на которую пришли
      *
-     * @param bool $to404
+     * @param bool $value
      * @return $this
      */
-    public function to404(bool $to404): RefererFilter
+    public function to404(bool $value): RefererFilter
     {
-        $this->setFilter(Operator::Eq, $to404, 'to404');
+        $this->setFilter(Operator::Eq, $value, 'to404');
         return $this;
     }
 
@@ -122,12 +122,12 @@ class RefererFilter extends BaseFilter
      * ID сайта на который пришли
      *
      * @param Operator $operator
-     * @param string $siteId
+     * @param string $value
      * @return $this
      */
-    public function siteId(Operator $operator, string $siteId): RefererFilter
+    public function siteId(Operator $operator, string $value): RefererFilter
     {
-        $this->setFilter($operator, $siteId, 'siteId');
+        $this->setFilter($operator, $value, 'siteId');
         return $this;
     }
 

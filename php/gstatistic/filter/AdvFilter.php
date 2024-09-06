@@ -52,7 +52,7 @@ class AdvFilter extends BaseFilter
      */
     function guestsBack(Operator $operator, int $value): AdvFilter
     {
-        $this->setFilter($operator, $value, "guests_back");
+        $this->setFilter($operator, $value, "guestsBack");
         return $this;
     }
 
@@ -65,7 +65,7 @@ class AdvFilter extends BaseFilter
      */
     function newGuests(Operator $operator, int $value): AdvFilter
     {
-        $this->setFilter($operator, $value, "new_guests");
+        $this->setFilter($operator, $value, "newGuests");
         return $this;
     }
 
@@ -91,7 +91,7 @@ class AdvFilter extends BaseFilter
      */
     function favoritesBack(Operator $operator, int $value): AdvFilter
     {
-        $this->setFilter($operator, $value, "favorites_back");
+        $this->setFilter($operator, $value, "favoritesBack");
         return $this;
     }
 
@@ -117,7 +117,7 @@ class AdvFilter extends BaseFilter
      */
     function hostsBack(Operator $operator, int $value): AdvFilter
     {
-        $this->setFilter($operator, $value, "hosts_back");
+        $this->setFilter($operator, $value, "hostsBack");
         return $this;
     }
 
@@ -143,7 +143,7 @@ class AdvFilter extends BaseFilter
      */
     function sessionsBack(Operator $operator, int $value): AdvFilter
     {
-        $this->setFilter($operator, $value, "sessions_back");
+        $this->setFilter($operator, $value, "sessionsBack");
         return $this;
     }
 
@@ -169,7 +169,7 @@ class AdvFilter extends BaseFilter
      */
     function hitsBack(Operator $operator, int $value): AdvFilter
     {
-        $this->setFilter($operator, $value, "hits_back");
+        $this->setFilter($operator, $value, "hitsBack");
         return $this;
     }
 

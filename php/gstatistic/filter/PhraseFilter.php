@@ -9,12 +9,12 @@ class PhraseFilter extends BaseFilter
      * UUID записи;
      *
      * @param Operator $operator
-     * @param string $uuid
+     * @param string $value
      * @return PhraseFilter
      */
-    public function uuid(Operator $operator, string $uuid): PhraseFilter
+    public function uuid(Operator $operator, string $value): PhraseFilter
     {
-        $this->setFilter($operator, $uuid, 'uuid');
+        $this->setFilter($operator, $value, 'uuid');
         return $this;
     }
 
@@ -22,12 +22,12 @@ class PhraseFilter extends BaseFilter
      * UUID сессии;
      *
      * @param Operator $operator
-     * @param string $sessionUuid
+     * @param string $value
      * @return PhraseFilter
      */
-    public function sessionUuid(Operator $operator, string $sessionUuid): PhraseFilter
+    public function sessionUuid(Operator $operator, string $value): PhraseFilter
     {
-        $this->setFilter($operator, $sessionUuid, 'sessionUuid');
+        $this->setFilter($operator, $value, 'sessionUuid');
         return $this;
     }
 
@@ -35,12 +35,12 @@ class PhraseFilter extends BaseFilter
      * UUID поисковой системы;
      *
      * @param Operator $operator
-     * @param string $searcherUuid
+     * @param string $value
      * @return PhraseFilter
      */
-    public function searcherUuid(Operator $operator, string $searcherUuid): PhraseFilter
+    public function searcherUuid(Operator $operator, string $value): PhraseFilter
     {
-        $this->setFilter($operator, $searcherUuid, 'searcherUuid');
+        $this->setFilter($operator, $value, 'searcherUuid');
         return $this;
     }
 
@@ -48,12 +48,12 @@ class PhraseFilter extends BaseFilter
      * UUID записи из таблицы ссылающихся сайтов (страниц);
      *
      * @param Operator $operator
-     * @param string $refererUuid
+     * @param string $value
      * @return PhraseFilter
      */
-    public function refererUuid(Operator $operator, string $refererUuid): PhraseFilter
+    public function refererUuid(Operator $operator, string $value): PhraseFilter
     {
-        $this->setFilter($operator, $refererUuid, 'refererUuid');
+        $this->setFilter($operator, $value, 'refererUuid');
         return $this;
     }
 
@@ -61,12 +61,12 @@ class PhraseFilter extends BaseFilter
      * Название поисковой системы;
      *
      * @param Operator $operator
-     * @param string $date
+     * @param string $value
      * @return $this
      */
-    public function searcher(Operator $operator, string $date): PhraseFilter
+    public function searcher(Operator $operator, string $value): PhraseFilter
     {
-        $this->setFilter($operator, $date, 'date');
+        $this->setFilter($operator, $value, 'searcher');
         return $this;
     }
 
@@ -74,12 +74,12 @@ class PhraseFilter extends BaseFilter
      * Значение интервала для поля "дата"
      *
      * @param Operator $operator
-     * @param string $date
+     * @param string $value
      * @return $this
      */
-    public function date(Operator $operator, string $date): PhraseFilter
+    public function date(Operator $operator, string $value): PhraseFilter
     {
-        $this->setFilter($operator, $date, 'date');
+        $this->setFilter($operator, $value, 'date');
         return $this;
     }
 
@@ -87,12 +87,12 @@ class PhraseFilter extends BaseFilter
      * Поисковая фраза;
      *
      * @param Operator $operator
-     * @param string $date
+     * @param string $value
      * @return $this
      */
-    public function phrase(Operator $operator, string $date): PhraseFilter
+    public function phrase(Operator $operator, string $value): PhraseFilter
     {
-        $this->setFilter($operator, $date, 'date');
+        $this->setFilter($operator, $value, 'phrase');
         return $this;
     }
 
@@ -100,24 +100,24 @@ class PhraseFilter extends BaseFilter
      * Страница на которую пришли;
      *
      * @param Operator $operator
-     * @param string $date
+     * @param string $value
      * @return $this
      */
-    public function to(Operator $operator, string $date): PhraseFilter
+    public function to(Operator $operator, string $value): PhraseFilter
     {
-        $this->setFilter($operator, $date, 'date');
+        $this->setFilter($operator, $value, 'to');
         return $this;
     }
 
     /**
      * Была ли 404 ошибка на странице на которую пришли
      *
-     * @param bool $date
+     * @param bool $value
      * @return $this
      */
-    public function to404(bool $date): PhraseFilter
+    public function to404(bool $value): PhraseFilter
     {
-        $this->setFilter(Operator::Eq, $date, 'date');
+        $this->setFilter(Operator::Eq, $value, 'to404');
         return $this;
     }
 
@@ -125,12 +125,12 @@ class PhraseFilter extends BaseFilter
      * ID сайта, на который пришли;
      *
      * @param Operator $operator
-     * @param string $date
+     * @param string $value
      * @return $this
      */
-    public function siteId(Operator $operator, string $date): PhraseFilter
+    public function siteId(Operator $operator, string $value): PhraseFilter
     {
-        $this->setFilter($operator, $date, 'date');
+        $this->setFilter($operator, $value, 'siteId');
         return $this;
     }
 }
