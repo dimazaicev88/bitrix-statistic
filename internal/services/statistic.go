@@ -11,7 +11,7 @@ import (
 	"time"
 )
 
-type Statistic struct {
+type StatisticService struct {
 	advServices     *AdvServices
 	guestService    *GuestService
 	sessionService  *SessionService
@@ -21,20 +21,10 @@ type Statistic struct {
 	hitService      *HitService
 	refererService  *RefererService
 	pathService     *PathService
-	sessionCache    otter.Cache[string, entitydb.Session]
+	otterCache      otter.Cache[string, entitydb.Session]
 }
 
-func NewStatistic(
-	hitService *HitService,
-	advServices *AdvServices,
-	guestService *GuestService,
-	pathService *PathService,
-	sessionService *SessionService,
-	statDayService *StatDayService,
-	searcherService *SearcherService,
-	optionService *OptionService,
-	refererService *RefererService,
-) *Statistic {
+func NewStatistic() *StatisticService {
 	otterCache, err := otter.MustBuilder[string, entitydb.Session](15000).
 		CollectStats().
 		WithTTL(time.Minute * 15).
@@ -44,21 +34,48 @@ func NewStatistic(
 		logrus.Fatal(err)
 	}
 
-	return &Statistic{
-		guestService:    guestService,
-		advServices:     advServices,
-		sessionService:  sessionService,
-		statDayService:  statDayService,
-		searcherService: searcherService,
-		hitService:      hitService,
-		optionService:   optionService,
-		refererService:  refererService,
-		sessionCache:    otterCache,
-		pathService:     pathService,
+	return &StatisticService{
+		otterCache: otterCache,
 	}
 }
 
-func (stat Statistic) Add(statData entityjson.UserData) error {
+func (stat StatisticService) SetHitService(hitService *HitService) {
+	stat.hitService = hitService
+}
+
+func (stat StatisticService) SetAdvServices(advServices *AdvServices) {
+	stat.advServices = advServices
+}
+
+func (stat StatisticService) SetGuestService(guestService *GuestService) {
+	stat.guestService = guestService
+}
+
+func (stat StatisticService) SetPathService(pathService *PathService) {
+	stat.pathService = pathService
+}
+
+func (stat StatisticService) SetSessionService(sessionService *SessionService) {
+	stat.sessionService = sessionService
+}
+
+func (stat StatisticService) SetStatDayService(statDayService *StatDayService) {
+	stat.statDayService = statDayService
+}
+
+func (stat StatisticService) SetSearcherService(searcherService *SearcherService) {
+	stat.searcherService = searcherService
+}
+
+func (stat StatisticService) SetOptionService(optionService *OptionService) {
+	stat.optionService = optionService
+}
+
+func (stat StatisticService) SetRefererService(refererService *RefererService) {
+	stat.refererService = refererService
+}
+
+func (stat StatisticService) Add(statData entityjson.UserData) error {
 	//var stopListUuid string
 
 	//var advBack string
@@ -320,4 +337,8 @@ func (stat Statistic) Add(statData entityjson.UserData) error {
 	}
 
 	return nil
+}
+
+func (stat StatisticService) ClearCache() {
+	stat.otterCache.Close()
 }

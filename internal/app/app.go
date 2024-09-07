@@ -1,7 +1,6 @@
 package app
 
 import (
-	"bitrix-statistic/internal/cache"
 	"bitrix-statistic/internal/config"
 	"bitrix-statistic/internal/models"
 	"bitrix-statistic/internal/routes"
@@ -40,26 +39,23 @@ func (app *App) Start() {
 
 	allModels := models.NewModels(app.ctx, chClient)
 
-	searcherService := services.NewSearcher(app.ctx, allModels)
-	hitService := services.NewHit(app.ctx, allModels)
-	advService := services.NewAdv(app.ctx, allModels, hitService)
-	guestService := services.NewGuest(app.ctx, allModels, hitService, advService)
+	allService := services.NewAllServices(app.ctx, allModels)
 	routes.NewMain(fb).AddHandlers()
-	routes.NewAdv(app.ctx, fb, services.NewAdv(app.ctx, allModels, hitService)).AddHandlers()
-	routes.NewCountry(app.ctx, fb, services.NewCountry(app.ctx, allModels)).AddHandlers()
-	routes.NewGuest(app.ctx, fb, services.NewGuest(app.ctx, allModels, hitService, advService)).AddHandlers()
-	routes.NewHit(app.ctx, fb, services.NewHit(app.ctx, allModels)).AddHandlers()
-	routes.NewPage(app.ctx, fb, services.NewPage(app.ctx, allModels)).AddHandlers()
-	routes.NewPath(app.ctx, fb, services.NewPath(app.ctx, allModels)).AddHandlers()
-	routes.NewReferer(app.ctx, fb, services.NewReferer(app.ctx, allModels)).AddHandlers()
-	routes.NewSearcher(app.ctx, fb, searcherService).AddHandlers()
-	routes.NewSearcherHit(app.ctx, fb, searcherService).AddHandlers()
-	routes.NewSession(app.ctx, fb, services.NewSession(app.ctx, allModels)).AddHandlers()
-	routes.NewStatEvent(app.ctx, fb, services.NewEvent(app.ctx, allModels)).AddHandlers()
-	routes.NewStatistic(app.ctx, fb, services.NewStatistic(app.ctx, allModels)).AddHandlers()
-	routes.NewStopList(app.ctx, fb, services.NewStopList(app.ctx, allModels)).AddHandlers()
-	routes.NewTraffic(app.ctx, fb, services.NewTraffic(app.ctx, allModels)).AddHandlers()
-	routes.NewUserOnline(app.ctx, fb, services.NewUserOnline(app.ctx, allModels)).AddHandlers()
+	routes.NewAdv(app.ctx, fb, allService).AddHandlers()
+	routes.NewCountry(app.ctx, fb, allService).AddHandlers()
+	routes.NewGuest(app.ctx, fb, allService).AddHandlers()
+	routes.NewHit(app.ctx, fb, allService).AddHandlers()
+	routes.NewPage(app.ctx, fb, allService).AddHandlers()
+	routes.NewPath(app.ctx, fb, allService).AddHandlers()
+	routes.NewReferer(app.ctx, fb, allService).AddHandlers()
+	routes.NewSearcher(app.ctx, fb, allService).AddHandlers()
+	routes.NewSearcherHit(app.ctx, fb, allService).AddHandlers()
+	routes.NewSession(app.ctx, fb, allService).AddHandlers()
+	routes.NewStatEvent(app.ctx, fb, allService).AddHandlers()
+	routes.NewStatistic(app.ctx, fb, allService).AddHandlers()
+	routes.NewStopList(app.ctx, fb, allService).AddHandlers()
+	routes.NewTraffic(app.ctx, fb, allService).AddHandlers()
+	routes.NewUserOnline(app.ctx, fb, allService).AddHandlers()
 
 	//start fiber
 	go func() {
@@ -83,8 +79,9 @@ func (app *App) Start() {
 
 	select {
 	case <-app.ctx.Done():
+		allService.Guest.ClearCache()
+		allService.Statistic.ClearCache()
 		serverQueue.Shutdown()
-		cache.Close()
 		return
 	case err := <-errStartServer:
 		log.Fatal(err)

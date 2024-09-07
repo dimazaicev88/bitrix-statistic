@@ -10,16 +10,16 @@ import (
 
 // GuestRoutes Получения данных по посетителям сайта.
 type GuestRoutes struct {
-	fbApp        *fiber.App
-	guestService *services.GuestService
-	ctx          context.Context
+	fbApp      *fiber.App
+	allService *services.AllService
+	ctx        context.Context
 }
 
-func NewGuest(ctx context.Context, fbApp *fiber.App, guestService *services.GuestService) GuestRoutes {
+func NewGuest(ctx context.Context, fbApp *fiber.App, allService *services.AllService) GuestRoutes {
 	return GuestRoutes{
-		fbApp:        fbApp,
-		guestService: guestService,
-		ctx:          ctx,
+		fbApp:      fbApp,
+		allService: allService,
+		ctx:        ctx,
 	}
 }
 
@@ -36,7 +36,7 @@ func (hh GuestRoutes) filter(ctx *fiber.Ctx) error {
 		ctx.Status(502)
 		return err
 	}
-	result, err := hh.guestService.Find(filter)
+	result, err := hh.allService.Guest.Find(filter)
 	if err != nil {
 		ctx.Status(502)
 		return err

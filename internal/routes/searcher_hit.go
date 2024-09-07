@@ -8,16 +8,16 @@ import (
 
 // SearcherHit Для получения данных о хитах поисковых систем (про индексированных страниц).
 type SearcherHit struct {
-	fbApp           *fiber.App
-	ctx             context.Context
-	searcherService *services.SearcherService
+	fbApp      *fiber.App
+	ctx        context.Context
+	allService *services.AllService
 }
 
-func NewSearcherHit(ctx context.Context, fbApp *fiber.App, searcherService *services.SearcherService) *SearcherHit {
+func NewSearcherHit(ctx context.Context, fbApp *fiber.App, allService *services.AllService) *SearcherHit {
 	return &SearcherHit{
-		fbApp:           fbApp,
-		ctx:             ctx,
-		searcherService: searcherService,
+		fbApp:      fbApp,
+		ctx:        ctx,
+		allService: allService,
 	}
 }
 

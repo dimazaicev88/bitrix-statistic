@@ -7,16 +7,16 @@ import (
 )
 
 type Referer struct {
-	fbApp          *fiber.App
-	ctx            context.Context
-	refererService *services.RefererService
+	fbApp      *fiber.App
+	ctx        context.Context
+	allService *services.AllService
 }
 
-func NewReferer(ctx context.Context, fbApp *fiber.App, refererService *services.RefererService) *Referer {
+func NewReferer(ctx context.Context, fbApp *fiber.App, allService *services.AllService) *Referer {
 	return &Referer{
-		fbApp:          fbApp,
-		ctx:            ctx,
-		refererService: refererService,
+		fbApp:      fbApp,
+		ctx:        ctx,
+		allService: allService,
 	}
 }
 

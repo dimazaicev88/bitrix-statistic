@@ -8,16 +8,16 @@ import (
 
 // Traffic для получения общих данных по посещаемости сайта.
 type Traffic struct {
-	fbApp          *fiber.App
-	ctx            context.Context
-	trafficService *services.TrafficService
+	fbApp      *fiber.App
+	ctx        context.Context
+	allService *services.AllService
 }
 
-func NewTraffic(ctx context.Context, fbApp *fiber.App, trafficService *services.TrafficService) *Traffic {
+func NewTraffic(ctx context.Context, fbApp *fiber.App, allService *services.AllService) *Traffic {
 	return &Traffic{
-		fbApp:          fbApp,
-		ctx:            ctx,
-		trafficService: trafficService,
+		fbApp:      fbApp,
+		ctx:        ctx,
+		allService: allService,
 	}
 }
 

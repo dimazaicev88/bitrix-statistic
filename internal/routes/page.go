@@ -8,16 +8,16 @@ import (
 
 // Page Получения данных о посещенных страницах сайта.
 type Page struct {
-	fbApp       *fiber.App
-	ctx         context.Context
-	pageService *services.PageService
+	fbApp      *fiber.App
+	ctx        context.Context
+	allService *services.AllService
 }
 
-func NewPage(ctx context.Context, app *fiber.App, pageService *services.PageService) *Page {
+func NewPage(ctx context.Context, app *fiber.App, allService *services.AllService) *Page {
 	return &Page{
-		fbApp:       app,
-		ctx:         ctx,
-		pageService: pageService,
+		fbApp:      app,
+		ctx:        ctx,
+		allService: allService,
 	}
 }
 

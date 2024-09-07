@@ -7,16 +7,16 @@ import (
 )
 
 type UserOnline struct {
-	fbApp             *fiber.App
-	ctx               context.Context
-	userOnlineService *services.UserOnlineService
+	fbApp      *fiber.App
+	ctx        context.Context
+	allService *services.AllService
 }
 
-func NewUserOnline(ctx context.Context, fbApp *fiber.App, userOnlineService *services.UserOnlineService) *UserOnline {
+func NewUserOnline(ctx context.Context, fbApp *fiber.App, allService *services.AllService) *UserOnline {
 	return &UserOnline{
-		fbApp:             fbApp,
-		ctx:               ctx,
-		userOnlineService: userOnlineService,
+		fbApp:      fbApp,
+		ctx:        ctx,
+		allService: allService,
 	}
 }
 

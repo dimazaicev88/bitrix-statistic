@@ -10,20 +10,20 @@ import (
 )
 
 type Statistic struct {
-	fbApp            *fiber.App
-	ctx              context.Context
-	statisticService *services.Statistic
+	fbApp      *fiber.App
+	ctx        context.Context
+	allService *services.AllService
 }
 
 type Answer struct {
 	Msg string `json:"msg"`
 }
 
-func NewStatistic(ctx context.Context, fbApp *fiber.App, statisticService *services.Statistic) *Statistic {
+func NewStatistic(ctx context.Context, fbApp *fiber.App, allService *services.AllService) *Statistic {
 	return &Statistic{
-		fbApp:            fbApp,
-		ctx:              ctx,
-		statisticService: statisticService,
+		fbApp:      fbApp,
+		ctx:        ctx,
+		allService: allService,
 	}
 }
 

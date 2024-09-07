@@ -8,16 +8,16 @@ import (
 )
 
 type AdvHandlers struct {
-	fbApp      *fiber.App
-	ctx        context.Context
-	advService *services.AdvServices
+	fbApp       *fiber.App
+	ctx         context.Context
+	allServices *services.AllService
 }
 
-func NewAdv(ctx context.Context, fbApp *fiber.App, advService *services.AdvServices) *AdvHandlers {
+func NewAdv(ctx context.Context, fbApp *fiber.App, allServices *services.AllService) *AdvHandlers {
 	return &AdvHandlers{
-		fbApp:      fbApp,
-		ctx:        ctx,
-		advService: advService,
+		fbApp:       fbApp,
+		ctx:         ctx,
+		allServices: allServices,
 	}
 }
 
@@ -36,7 +36,7 @@ func (ah AdvHandlers) DeleteByUuid(ctx *fiber.Ctx) error {
 	advUuid := ctx.Params("uuid", "")
 	if len(advUuid) > 0 {
 		bytes, err := uuid.FromBytes([]byte(advUuid))
-		if err = ah.advService.DeleteByUuid(bytes); err != nil {
+		if err = ah.allServices.Adv.DeleteByUuid(bytes); err != nil {
 			return err
 		}
 	}
@@ -54,7 +54,7 @@ func (ah AdvHandlers) FindByUuid(ctx *fiber.Ctx) error {
 		if err != nil {
 			return err
 		}
-		adv, err := ah.advService.FindByUuid(bytes)
+		adv, err := ah.allServices.Adv.FindByUuid(bytes)
 		if err != nil {
 			return err
 		}

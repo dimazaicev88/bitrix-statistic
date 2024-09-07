@@ -8,16 +8,16 @@ import (
 
 // StopList Для работы со стоп-листом.
 type StopList struct {
-	fbApp           *fiber.App
-	ctx             context.Context
-	stopListService *services.StopListService
+	fbApp      *fiber.App
+	ctx        context.Context
+	allService *services.AllService
 }
 
-func NewStopList(ctx context.Context, app *fiber.App, stopListService *services.StopListService) *StopList {
+func NewStopList(ctx context.Context, app *fiber.App, allService *services.AllService) *StopList {
 	return &StopList{
-		ctx:             ctx,
-		fbApp:           app,
-		stopListService: stopListService,
+		ctx:        ctx,
+		fbApp:      app,
+		allService: allService,
 	}
 }
 

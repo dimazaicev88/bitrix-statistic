@@ -9,16 +9,16 @@ import (
 )
 
 type CountryHandlers struct {
-	fbApp          *fiber.App
-	countryService *services.CountryServices
-	ctx            context.Context
+	fbApp       *fiber.App
+	allServices *services.AllService
+	ctx         context.Context
 }
 
-func NewCountry(ctx context.Context, fbApp *fiber.App, countryService *services.CountryServices) *CountryHandlers {
+func NewCountry(ctx context.Context, fbApp *fiber.App, allServices *services.AllService) *CountryHandlers {
 	return &CountryHandlers{
-		fbApp:          fbApp,
-		countryService: countryService,
-		ctx:            ctx,
+		fbApp:       fbApp,
+		allServices: allServices,
+		ctx:         ctx,
 	}
 }
 
@@ -36,7 +36,7 @@ func (ch CountryHandlers) Filter(ctx *fiber.Ctx) error {
 		ctx.Status(502)
 		return err
 	}
-	result, err := ch.countryService.Find(filter)
+	result, err := ch.allServices.Country.Find(filter)
 	if err != nil {
 		ctx.Status(502)
 		return err

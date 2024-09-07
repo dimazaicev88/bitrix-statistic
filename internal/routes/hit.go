@@ -11,14 +11,14 @@ import (
 // HitHandlers Получения данных по хитами посетителей.
 type HitHandlers struct {
 	fbApp      *fiber.App
-	hitService *services.HitService
+	allService *services.AllService
 	ctx        context.Context
 }
 
-func NewHit(ctx context.Context, fbApp *fiber.App, hitService *services.HitService) HitHandlers {
+func NewHit(ctx context.Context, fbApp *fiber.App, allService *services.AllService) HitHandlers {
 	return HitHandlers{
 		fbApp:      fbApp,
-		hitService: hitService,
+		allService: allService,
 		ctx:        ctx,
 	}
 }
@@ -36,7 +36,7 @@ func (hh HitHandlers) filter(ctx *fiber.Ctx) error {
 		ctx.Status(502)
 		return err
 	}
-	result, err := hh.hitService.Find(filter)
+	result, err := hh.allService.Hit.Find(filter)
 	if err != nil {
 		ctx.Status(502)
 		return err

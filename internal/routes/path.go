@@ -8,16 +8,16 @@ import (
 
 // Path Для получения данных о путях по сайту.
 type Path struct {
-	fbApp       *fiber.App
-	ctx         context.Context
-	pathService *services.PathService
+	fbApp      *fiber.App
+	ctx        context.Context
+	allService *services.AllService
 }
 
-func NewPath(ctx context.Context, app *fiber.App, pathService *services.PathService) *Path {
+func NewPath(ctx context.Context, app *fiber.App, allService *services.AllService) *Path {
 	return &Path{
-		fbApp:       app,
-		ctx:         ctx,
-		pathService: pathService,
+		fbApp:      app,
+		ctx:        ctx,
+		allService: allService,
 	}
 }
 

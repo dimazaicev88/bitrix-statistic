@@ -8,16 +8,16 @@ import (
 
 // Searcher Для работы с поисковыми системами.
 type Searcher struct {
-	fbApp           *fiber.App
-	ctx             context.Context
-	searcherService *services.SearcherService
+	fbApp      *fiber.App
+	ctx        context.Context
+	allService *services.AllService
 }
 
-func NewSearcher(ctx context.Context, app *fiber.App, searcherService *services.SearcherService) *Searcher {
+func NewSearcher(ctx context.Context, app *fiber.App, allService *services.AllService) *Searcher {
 	return &Searcher{
-		fbApp:           app,
-		ctx:             ctx,
-		searcherService: searcherService,
+		fbApp:      app,
+		ctx:        ctx,
+		allService: allService,
 	}
 }
 

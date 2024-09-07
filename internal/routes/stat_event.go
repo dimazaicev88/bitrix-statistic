@@ -8,16 +8,16 @@ import (
 
 // StatEvent Возвращает список хитов поисковых систем.
 type StatEvent struct {
-	fbApp        *fiber.App
-	ctx          context.Context
-	eventService *services.EventService
+	fbApp      *fiber.App
+	ctx        context.Context
+	allService *services.AllService
 }
 
-func NewStatEvent(ctx context.Context, fbApp *fiber.App, eventService *services.EventService) *StatEvent {
+func NewStatEvent(ctx context.Context, fbApp *fiber.App, allService *services.AllService) *StatEvent {
 	return &StatEvent{
-		fbApp:        fbApp,
-		ctx:          ctx,
-		eventService: eventService,
+		fbApp:      fbApp,
+		ctx:        ctx,
+		allService: allService,
 	}
 }
 

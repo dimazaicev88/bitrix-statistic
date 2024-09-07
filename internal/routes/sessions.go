@@ -10,16 +10,16 @@ import (
 
 // SessionHandlers Для получения данных о сессиях посетителей.
 type SessionHandlers struct {
-	app            *fiber.App
-	sessionService *services.SessionService
-	ctx            context.Context
+	app        *fiber.App
+	allService *services.AllService
+	ctx        context.Context
 }
 
-func NewSession(ctx context.Context, app *fiber.App, sessionService *services.SessionService) SessionHandlers {
+func NewSession(ctx context.Context, app *fiber.App, allService *services.AllService) SessionHandlers {
 	return SessionHandlers{
-		app:            app,
-		sessionService: sessionService,
-		ctx:            ctx,
+		app:        app,
+		allService: allService,
+		ctx:        ctx,
 	}
 }
 
@@ -36,7 +36,7 @@ func (sh SessionHandlers) Filter(ctx *fiber.Ctx) error {
 		ctx.Status(502)
 		return err
 	}
-	result, err := sh.sessionService.Filter(filter)
+	result, err := sh.allService.Session.Filter(filter)
 	if err != nil {
 		ctx.Status(502)
 		return err

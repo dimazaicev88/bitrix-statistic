@@ -22,21 +22,31 @@ type PathService struct {
 func NewPath(
 	ctx context.Context,
 	allModels *models.Models,
-	pathCacheService *PathCacheService,
-	pathAdvService *PathAdvService,
-	optionService *OptionService,
-	pageService *PageService,
-	pageAdvService *PageAdvService,
 ) *PathService {
 	return &PathService{
-		ctx:              ctx,
-		allModels:        allModels,
-		pathCacheService: pathCacheService,
-		pathAdvService:   pathAdvService,
-		optionService:    optionService,
-		pageService:      pageService,
-		pageAdvService:   pageAdvService,
+		ctx:       ctx,
+		allModels: allModels,
 	}
+}
+
+func (ps PathService) SetPathCacheService(pathCacheService *PathCacheService) {
+	ps.pathCacheService = pathCacheService
+}
+
+func (ps PathService) SetPathAdvService(pathAdvService *PathAdvService) {
+	ps.pathAdvService = pathAdvService
+}
+
+func (ps PathService) SetOptionService(optionService *OptionService) {
+	ps.optionService = optionService
+}
+
+func (ps PathService) SetPageService(pageService *PageService) {
+	ps.pageService = pageService
+}
+
+func (ps PathService) SetPageAdvService(pageAdvService *PageAdvService) {
+	ps.pageAdvService = pageAdvService
 }
 
 // SavePath TODO рефакторинг.

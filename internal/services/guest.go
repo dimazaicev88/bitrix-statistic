@@ -21,7 +21,7 @@ type GuestService struct {
 	advServices *AdvServices
 }
 
-func NewGuest(ctx context.Context, allModels *models.Models, hitService *HitService, advServices *AdvServices) *GuestService {
+func NewGuest(ctx context.Context, allModels *models.Models) *GuestService {
 	otterCache, err := otter.MustBuilder[string, entitydb.Guest](15000).
 		CollectStats().
 		WithTTL(time.Minute * 15).
@@ -30,14 +30,19 @@ func NewGuest(ctx context.Context, allModels *models.Models, hitService *HitServ
 	if err != nil {
 		logrus.Fatal(err)
 	}
-
 	return &GuestService{
-		ctx:         ctx,
-		allModels:   allModels,
-		cacheGuest:  otterCache,
-		hitService:  hitService,
-		advServices: advServices,
+		ctx:        ctx,
+		allModels:  allModels,
+		cacheGuest: otterCache,
 	}
+}
+
+func (gs GuestService) SetHitService(hitService *HitService) {
+	gs.hitService = hitService
+}
+
+func (gs GuestService) SetAdvService(advServices *AdvServices) {
+	gs.advServices = advServices
 }
 
 func (gs GuestService) Add(userData entityjson.UserData, advReferer entitydb.AdvReferer) (entitydb.Guest, error) {
@@ -96,4 +101,8 @@ func (gs GuestService) UpdateGuest(oldGuest, newGuestDb entitydb.Guest) error {
 	newGuestDb.Sign *= 1
 	newGuestDb.Version += 1
 	return gs.allModels.Guest.Update(oldGuest, newGuestDb)
+}
+
+func (gs GuestService) ClearCache() {
+	gs.cacheGuest.Close()
 }
