@@ -3,19 +3,18 @@ package builders
 import (
 	"bitrix-statistic/internal/filters"
 	"fmt"
-	"github.com/huandu/go-sqlbuilder"
+	sq "github.com/Masterminds/squirrel"
 	"slices"
 )
 
 type HitSqlBuilder struct {
 	filter     filters.Filter
-	sqlBuilder *sqlbuilder.SelectBuilder
+	sqlBuilder sq.SelectBuilder
 }
 
 func NewHitSQLBuilder(filter filters.Filter) HitSqlBuilder {
 	return HitSqlBuilder{
-		filter:     filter,
-		sqlBuilder: sqlbuilder.NewSelectBuilder(),
+		filter: filter,
 	}
 }
 
@@ -49,27 +48,31 @@ var hitFilterFields = []string{
 
 func (hs HitSqlBuilder) buildSelect() (HitSqlBuilder, error) {
 	if len(hs.filter.Fields) == 0 {
-		hs.sqlBuilder.Select("*")
+		hs.sqlBuilder = sq.Select("*")
 	} else {
 		for _, value := range hs.filter.Fields {
 			if slices.Contains(hitSQLFields, value) == false {
 				return HitSqlBuilder{}, fmt.Errorf("unknown field: %s", value)
 			}
 		}
-		hs.sqlBuilder.Select(hs.filter.Fields...)
+		hs.sqlBuilder = sq.Select(hs.filter.Fields...)
 	}
 
 	return hs, nil
 }
 
-//
-//func (hs HitSqlBuilder) orderByBuild() SQLBuild {
-//	return NewOrderByBuilder(hs.sqlData).BuildDefault()
-//}
-//
-//func (hs HitSqlBuilder) whereBuild() OrderByBuilder {
-//	return NewWhereBuilder(hs.sqlData).BuildDefault()
-//}
+//	func (hs HitSqlBuilder) orderByBuild() SQLBuild {
+//		return NewOrderByBuilder(hs.sqlData).BuildDefault()
+//	}
+func (hs HitSqlBuilder) whereBuild() HitSqlBuilder {
+
+	for _, value := range hs.filter.Operators {
+		hs.whereBuilder.AddWhereClause()
+	}
+
+	return hs
+}
+
 //
 //func (hs HitSqlBuilder) BuildSQL() (SQL, error) {
 //	return NewSQLBuild(hs.sqlData).DefaultBuild(hs.buildSelect)
