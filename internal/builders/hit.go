@@ -2,7 +2,6 @@ package builders
 
 import (
 	"bitrix-statistic/internal/filters"
-	"bitrix-statistic/internal/utils"
 	"fmt"
 	"github.com/Masterminds/squirrel"
 	"slices"
@@ -20,7 +19,7 @@ func NewHitSQLBuilder(filter filters.Filter) HitSqlBuilder {
 }
 
 var hitSelectFields = []string{
-	"uuid", "session_uuid", "advUuid", "dateHit", "phpSessionId", "guestUuid", "newGuest", "userId",
+	"uuid", "sessionUuid", "advUuid", "dateHit", "phpSessionId", "guestUuid", "newGuest", "userId",
 	"userAuth", "url", "url404", "urlFrom", "ip", "method", "cookies", "userAgent", "stopListUuid", "countryId",
 	"cityUuid", "siteId",
 }
@@ -30,7 +29,7 @@ var hitFilterFields = []string{
 	"isRegistered", "date", "ip", "userAgent", "countryId", "country", "cookie", "isStop", "siteId",
 }
 
-func (hs HitSqlBuilder) buildSelect() error {
+func (hs *HitSqlBuilder) buildSelect() error {
 	for _, field := range hs.filter.Fields {
 		if !slices.Contains(hitSelectFields, field) {
 			return fmt.Errorf("unknown field: %s", field)
@@ -45,7 +44,7 @@ func (hs HitSqlBuilder) buildSelect() error {
 	return nil
 }
 
-func (hs HitSqlBuilder) buildWhere() {
+func (hs *HitSqlBuilder) buildWhere() {
 	if len(hs.filter.Operators) == 0 {
 		hs.sb = hs.sb.Where("")
 	} else {
@@ -63,32 +62,53 @@ func (hs HitSqlBuilder) buildWhere() {
 				hs.sb = hs.sb.Where(squirrel.Eq{op.Field: op.Value})
 			} else if op.Operator == "!=" {
 				hs.sb = hs.sb.Where(squirrel.NotEq{op.Field: op.Value})
+			} else if op.Operator == ">" {
+				hs.sb = hs.sb.Where(squirrel.Gt{op.Field: op.Value})
+			} else if op.Operator == ">=" {
+				hs.sb = hs.sb.Where(squirrel.GtOrEq{op.Field: op.Value})
+			} else if op.Operator == "<" {
+				hs.sb = hs.sb.Where(squirrel.Lt{op.Field: op.Value})
+			} else if op.Operator == "<=" {
+				hs.sb = hs.sb.Where(squirrel.LtOrEq{op.Field: op.Value})
+			} else if op.Operator == "like" {
+				hs.sb = hs.sb.Where(squirrel.Like{op.Field: op.Value})
+			} else if op.Operator == "not like" {
+				hs.sb = hs.sb.Where(squirrel.NotLike{op.Field: op.Value})
+			} else if op.Operator == "or" {
+				hs.sb = hs.sb.Where(squirrel.Or{})
 			}
-
 		}
 	}
 }
 
-func (hs HitSqlBuilder) Build() (string, []interface{}, error) {
+func (hs *HitSqlBuilder) buildSkipAndLimit() {
+	if hs.filter.Skip < 0 {
+		hs.sb = hs.sb.Offset(0)
+	} else if hs.filter.Skip > 0 {
+		hs.sb = hs.sb.Offset(uint64(hs.filter.Skip))
+	}
+
+	if hs.filter.Limit < 0 {
+		hs.sb = hs.sb.Limit(0)
+	} else if hs.filter.Limit > 1000 {
+		hs.sb = hs.sb.Limit(1000)
+	}
+
+}
+
+func (hs *HitSqlBuilder) Build() (string, []interface{}, error) {
 	for _, value := range hs.filter.Fields {
 		if slices.Contains(hitSelectFields, value) == false {
 			return "", nil, fmt.Errorf("unknown field: %s", value)
 		}
 	}
 
-	var allArgs []interface{}
-	sqlSelect, err := BuildSelect(hs.filter.Fields, "hit")
-	if err != nil {
+	if err := hs.buildSelect(); err != nil {
 		return "", nil, err
 	}
 
-	sqlWhere, whereArgs, err := BuildWhereSQL(hs.filter)
-	if err != nil {
-		return "", nil, err
-	}
-	allArgs = append(allArgs, whereArgs)
+	hs.buildWhere()
+	hs.buildSkipAndLimit()
 
-	limitSql, limitArgs := BuildLimit(hs.filter)
-	allArgs = append(allArgs, limitArgs)
-	return utils.StringConcat(sqlSelect, sqlWhere, limitSql), allArgs, nil
+	return hs.sb.ToSql()
 }
