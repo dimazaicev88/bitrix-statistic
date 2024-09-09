@@ -30,7 +30,7 @@ var pathFields = map[string]string{
 //			sqlData.selectBuilder.WriteString(" * ")
 //		} else {
 //			for _, selectField := range sqlData.filter.Select {
-//				if value, ok := hitFields[selectField]; ok {
+//				if value, ok := hitSQLFields[selectField]; ok {
 //					selectBuffer = append(selectBuffer, value)
 //				} else {
 //					return WhereBuilder{}, errors.New("unknown field " + selectField)

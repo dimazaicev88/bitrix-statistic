@@ -14,10 +14,10 @@ func NewMain(fbApp *fiber.App) MainPage {
 	}
 }
 
-func (mph MainPage) index(c *fiber.Ctx) error {
+func (mp MainPage) index(c *fiber.Ctx) error {
 	return c.SendString("Statistics server running")
 }
 
-func (mph MainPage) AddHandlers() {
-	mph.fbApp.Get("/", mph.index)
+func (mp MainPage) AddHandlers() {
+	mp.fbApp.Get("/", mp.index)
 }

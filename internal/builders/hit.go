@@ -1,68 +1,67 @@
 package builders
 
-//type HitSqlBuilder struct {
-//	sqlData SQLDataForBuild
-//}
+import (
+	"bitrix-statistic/internal/filters"
+	"fmt"
+	"github.com/huandu/go-sqlbuilder"
+	"slices"
+)
 
-//func NewHitSQLBuilder(filter filters.Filter) HitSqlBuilder {
-//	return HitSqlBuilder{NewSQLBuilder(filter)}
-//}
-
-var hitFields = map[string]string{
-	"ID":                 " t1.ID",
-	"SessionId":          " t1.SessionId ",
-	"GuestId":            " t1.GuestId ",
-	"IsNewGuest":         " t1.IsNewGuest ",
-	"USER_ID":            " t1.USER_ID ",
-	"USER_AUTH":          " t1.USER_AUTH ",
-	"Url":                " t1.Url ",
-	"Url404":             " t1.Url404 ",
-	"URL_FROM":           " t1.URL_FROM ",
-	"Ip":                 " t1.Ip ",
-	"METHOD":             " t1.METHOD ",
-	"COOKIES":            " t1.COOKIES ",
-	"UserAgent":          " t1.UserAgent ",
-	"StopListUuid":       " t1.StopListUuid ",
-	"CountryId":          " t1.CountryId ",
-	"CityUuid":           " t1.CityUuid ",
-	"Region REGION_NAME": " t3.Region ",
-	"USER":               " t2.LOGIN, t2.NAME ",
-	"NAME CITY_NAME":     " t3.CITY_NAME ",
-	"SiteId":             " t1.SiteId ",
+type HitSqlBuilder struct {
+	filter     filters.Filter
+	sqlBuilder *sqlbuilder.SelectBuilder
 }
 
-//func (hs HitSqlBuilder) buildSelect() (WhereBuilder, error) {
-//	return NewSelectBuild(hs.sqlData).build(func(sqlData SQLDataForBuild) (WhereBuilder, error) {
-//		var selectBuffer []string
-//		sqlData.selectBuilder.WriteString("SELECT ")
-//		if len(sqlData.filter.Select) == 0 {
-//			sqlData.selectBuilder.WriteString("* ")
-//		} else {
-//			set := utils.NewSet[string]()
-//			slices.Sort(set.SliceAsSet(sqlData.filter.Select).Items())
-//			sqlData.filter.Select = set.SliceAsSet(sqlData.filter.Select).Items()
-//			slices.Sort(sqlData.filter.Select)
-//			for _, selectField := range sqlData.filter.Select {
-//				if value, ok := hitFields[selectField]; ok {
-//					selectBuffer = append(selectBuffer, value)
-//				} else {
-//					return WhereBuilder{}, errors.New("unknown field " + selectField)
-//				}
-//				if selectField == "USER" {
-//					sqlData.selectBuilder.WriteString("")
-//					sqlData.joinBuilder.WriteString(" LEFT JOIN b_user t2 ON (t2.ID = t1.USER_ID)")
-//				}
-//				if selectField == "CountryId" {
-//					sqlData.joinBuilder.WriteString(" INNER JOIN b_stat_country t3 ON (t3.ID = t1.CountryId)")
-//				}
-//			}
-//		}
-//		sqlData.selectBuilder.WriteString(strings.Join(selectBuffer, ","))
-//		sqlData.selectBuilder.WriteString(" FROM b_stat_hit t1 ")
-//		sqlData.selectBuilder.WriteString(sqlData.joinBuilder.String())
-//		return NewWhereBuilder(sqlData), nil
-//	})
-//}
+func NewHitSQLBuilder(filter filters.Filter) HitSqlBuilder {
+	return HitSqlBuilder{
+		filter:     filter,
+		sqlBuilder: sqlbuilder.NewSelectBuilder(),
+	}
+}
+
+var hitSQLFields = []string{
+	"uuid",
+	"session_uuid",
+	"advUuid",
+	"dateHit",
+	"phpSessionId",
+	"guestUuid",
+	"newGuest",
+	"userId",
+	"userAuth",
+	"url",
+	"url404",
+	"urlFrom",
+	"ip",
+	"method",
+	"cookies",
+	"userAgent",
+	"stopListUuid",
+	"countryId",
+	"cityUuid",
+	"siteId",
+}
+
+var hitFilterFields = []string{
+	"uuid", "guestUuid", "isNewGuest", "sessionUuid", "stopListUuid", "url", "isUrl404", "userId",
+	"isRegistered", "date", "ip", "userAgent", "countryId", "country", "cookie", "isStop", "siteId",
+}
+
+func (hs HitSqlBuilder) buildSelect() (HitSqlBuilder, error) {
+	if len(hs.filter.Fields) == 0 {
+		hs.sqlBuilder.Select("*")
+	} else {
+		for _, value := range hs.filter.Fields {
+			if slices.Contains(hitSQLFields, value) == false {
+				return HitSqlBuilder{}, fmt.Errorf("unknown field: %s", value)
+			}
+		}
+		hs.sqlBuilder.Select(hs.filter.Fields...)
+	}
+
+	return hs, nil
+}
+
 //
 //func (hs HitSqlBuilder) orderByBuild() SQLBuild {
 //	return NewOrderByBuilder(hs.sqlData).BuildDefault()

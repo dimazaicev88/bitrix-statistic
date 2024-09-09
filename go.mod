@@ -6,6 +6,7 @@ require (
 	github.com/ClickHouse/clickhouse-go/v2 v2.26.0
 	github.com/caarlos0/env/v6 v6.10.1
 	github.com/go-sql-driver/mysql v1.6.0
+	github.com/goccy/go-json v0.10.3
 	github.com/gofiber/fiber/v2 v2.52.5
 	github.com/gofiber/template v1.6.30
 	github.com/google/uuid v1.6.0

@@ -64,7 +64,7 @@ func (gs GuestService) Add(userData entityjson.UserData, advReferer entitydb.Adv
 		FirstReferer2:  advReferer.Referer2,
 		FirstReferer3:  advReferer.Referer3,
 		LastIp:         userData.Ip,
-		LastUserId:     userData.UserId,
+		LastUserId:     uint32(userData.UserId),
 		LastUserAuth:   userData.UserId > 0,
 		LastUrlLast:    userData.Url,
 		LastUrlLast404: userData.IsError404,

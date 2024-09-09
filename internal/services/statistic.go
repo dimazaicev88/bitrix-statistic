@@ -147,7 +147,7 @@ func (stat StatisticService) Add(statData entityjson.UserData) error {
 			}
 		} else {
 			err = stat.sessionService.Update(sessionDb, entitydb.Session{
-				UserId:     statData.UserId,
+				UserId:     uint32(statData.UserId),
 				IsUserAuth: statData.IsUserAuth,
 				UserAgent:  statData.UserAgent,
 				IpLast:     statData.Ip,
@@ -207,7 +207,7 @@ func (stat StatisticService) Add(statData entityjson.UserData) error {
 		newGuestDb.Hits += 1
 		newGuestDb.LastSessionUuid = sessionDb.Uuid
 		newGuestDb.LastDate = time.Now()
-		newGuestDb.LastUserId = statData.UserId
+		newGuestDb.LastUserId = uint32(statData.UserId)
 		newGuestDb.LastUserAuth = statData.IsUserAuth
 		newGuestDb.LastUrlLast = statData.Url
 		newGuestDb.LastUrlLast404 = statData.IsError404

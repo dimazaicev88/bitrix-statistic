@@ -1,10 +1,13 @@
 package routes
 
 import (
+	"bitrix-statistic/internal/entityjson"
 	"bitrix-statistic/internal/services"
 	"bitrix-statistic/internal/tasks"
 	"context"
+	"github.com/goccy/go-json"
 	"github.com/gofiber/fiber/v2"
+	"github.com/google/uuid"
 	"github.com/hibiken/asynq"
 	"log"
 )
@@ -31,12 +34,32 @@ func (sh *Statistic) AddHandlers() {
 	sh.fbApp.Post("/statistic/add", sh.Add)
 }
 
+// Add TODO добавить отправку json с текстом ошибки.
 func (sh *Statistic) Add(ctx *fiber.Ctx) error {
-	//asynq.Timeout(time.Second*8)
-	task := asynq.NewTask(tasks.TaskStatisticAdd, ctx.Body(), asynq.MaxRetry(0))
-	_, err := tasks.GetClient().EnqueueContext(ctx.Context(), task)
+	var userData entityjson.UserData
+	err := json.Unmarshal(ctx.Body(), &userData)
 	if err != nil {
-		log.Panic(err)
+		log.Println(err)
+		return ctx.SendStatus(fiber.StatusBadRequest)
 	}
-	return ctx.SendStatus(200)
+
+	if userData.GuestUuid == uuid.Nil {
+		userData.GuestUuid = uuid.New()
+	}
+
+	task := asynq.NewTask(tasks.TaskStatisticAdd, ctx.Body(), asynq.MaxRetry(0))
+	_, err = tasks.GetClient().EnqueueContext(ctx.Context(), task)
+	if err != nil {
+		return ctx.SendStatus(fiber.StatusInternalServerError)
+	}
+
+	answer, err := json.Marshal(map[string]string{
+		"guestUuid": userData.GuestUuid.String(),
+	})
+
+	if err != nil {
+		return ctx.SendStatus(fiber.StatusInternalServerError)
+	}
+
+	return ctx.Send(answer)
 }
