@@ -3,7 +3,6 @@ package builders
 import (
 	"bitrix-statistic/internal/filters"
 	"github.com/stretchr/testify/require"
-	_ "github.com/stretchr/testify/require"
 	"testing"
 )
 
@@ -12,7 +11,7 @@ var testFilter = filters.Filter{
 	Skip:      0,
 	Limit:     0,
 	OrderBy:   "",
-	Order:     "",
+	Order:     []string{""},
 	Operators: nil,
 }
 
@@ -20,16 +19,14 @@ var testFilter = filters.Filter{
 
 func TestBuildWhereSQLCase1(t *testing.T) {
 	req := require.New(t)
-	testFilter.Operators = []filters.FilterOperator{
+	testFilter.Operators = []filters.Operators{
 		{
 			Operator: "=",
 			Value:    1,
 			Field:    "id",
 		},
 	}
-	sql, args, err := BuildWhereSQL(testFilter, func(field string) bool {
-		return true
-	})
+	sql, args, err := BuildWhereSQL(testFilter)
 	req.NoError(err)
 	req.Equal(sql, "where id = ?")
 	req.Equal(args, []interface{}{1})
@@ -38,7 +35,7 @@ func TestBuildWhereSQLCase1(t *testing.T) {
 
 func TestBuildWhereSQLCase2(t *testing.T) {
 	req := require.New(t)
-	testFilter.Operators = []filters.FilterOperator{
+	testFilter.Operators = []filters.Operators{
 		{
 			Operator: "=",
 			Value:    1,
@@ -56,9 +53,7 @@ func TestBuildWhereSQLCase2(t *testing.T) {
 		},
 	}
 
-	sql, args, err := BuildWhereSQL(testFilter, func(field string) bool {
-		return true
-	})
+	sql, args, err := BuildWhereSQL(testFilter)
 	req.NoError(err)
 	req.Equal(sql, "where id = ? or id = ?")
 	req.Equal(args, []interface{}{1, 10})
@@ -66,7 +61,7 @@ func TestBuildWhereSQLCase2(t *testing.T) {
 
 func TestBuildWhereSQLCase3(t *testing.T) {
 	req := require.New(t)
-	testFilter.Operators = []filters.FilterOperator{
+	testFilter.Operators = []filters.Operators{
 		{
 			Operator: ">",
 			Value:    1,
@@ -84,9 +79,7 @@ func TestBuildWhereSQLCase3(t *testing.T) {
 		},
 	}
 
-	sql, args, err := BuildWhereSQL(testFilter, func(field string) bool {
-		return true
-	})
+	sql, args, err := BuildWhereSQL(testFilter)
 	req.NoError(err)
 	req.Equal(sql, "where id > ? and id < ?")
 	req.Equal(args, []interface{}{1, 10})
@@ -94,7 +87,7 @@ func TestBuildWhereSQLCase3(t *testing.T) {
 
 func TestBuildWhereSQLCase4(t *testing.T) {
 	req := require.New(t)
-	testFilter.Operators = []filters.FilterOperator{
+	testFilter.Operators = []filters.Operators{
 		{
 			Operator: ">",
 			Value:    1,
@@ -122,9 +115,7 @@ func TestBuildWhereSQLCase4(t *testing.T) {
 		},
 	}
 
-	sql, args, err := BuildWhereSQL(testFilter, func(field string) bool {
-		return true
-	})
+	sql, args, err := BuildWhereSQL(testFilter)
 	req.NoError(err)
 	req.Equal(sql, "where id > ? and id < ? or id > ?")
 	req.Equal(args, []interface{}{1, 10, 100})
@@ -132,7 +123,7 @@ func TestBuildWhereSQLCase4(t *testing.T) {
 
 func TestBuildWhereSQLCase5(t *testing.T) {
 	req := require.New(t)
-	testFilter.Operators = []filters.FilterOperator{
+	testFilter.Operators = []filters.Operators{
 		{
 			Operator: "like",
 			Value:    "ru",
@@ -140,9 +131,7 @@ func TestBuildWhereSQLCase5(t *testing.T) {
 		},
 	}
 
-	sql, args, err := BuildWhereSQL(testFilter, func(field string) bool {
-		return true
-	})
+	sql, args, err := BuildWhereSQL(testFilter)
 	req.NoError(err)
 	req.Equal(sql, "where city like ?")
 	req.Equal(args, []interface{}{"ru"})
@@ -150,7 +139,7 @@ func TestBuildWhereSQLCase5(t *testing.T) {
 
 func TestBuildWhereSQLCase6(t *testing.T) {
 	req := require.New(t)
-	testFilter.Operators = []filters.FilterOperator{
+	testFilter.Operators = []filters.Operators{
 		{
 			Operator: "not like",
 			Value:    "ru",
@@ -158,9 +147,7 @@ func TestBuildWhereSQLCase6(t *testing.T) {
 		},
 	}
 
-	sql, args, err := BuildWhereSQL(testFilter, func(field string) bool {
-		return true
-	})
+	sql, args, err := BuildWhereSQL(testFilter)
 	req.NoError(err)
 	req.Equal(sql, "where city not like ?")
 	req.Equal(args, []interface{}{"ru"})
@@ -173,7 +160,7 @@ func TestBuildLimitSQLCase1(t *testing.T) {
 		Skip:      0,
 		Limit:     0,
 		OrderBy:   "",
-		Order:     "",
+		Order:     []string{""},
 		Operators: nil,
 	}
 
@@ -189,7 +176,7 @@ func TestBuildLimitSQLCase2(t *testing.T) {
 		Skip:      0,
 		Limit:     0,
 		OrderBy:   "",
-		Order:     "",
+		Order:     []string{""},
 		Operators: nil,
 	}
 	testFilter.Skip = 10
@@ -205,7 +192,7 @@ func TestBuildLimitSQLCase3(t *testing.T) {
 		Skip:      0,
 		Limit:     0,
 		OrderBy:   "",
-		Order:     "",
+		Order:     []string{""},
 		Operators: nil,
 	}
 	testFilter.Limit = 10
@@ -221,7 +208,7 @@ func TestBuildLimitSQLCase4(t *testing.T) {
 		Skip:      0,
 		Limit:     0,
 		OrderBy:   "",
-		Order:     "",
+		Order:     []string{""},
 		Operators: nil,
 	}
 	testFilter.Limit = 10000

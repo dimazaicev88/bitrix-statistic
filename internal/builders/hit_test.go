@@ -1,24 +1,22 @@
 package builders
 
 import (
+	"bitrix-statistic/internal/filters"
+	"github.com/stretchr/testify/require"
 	"testing"
 )
 
-func TestHitCase1(t *testing.T) {
-
-}
-
-func TestHitCase2(t *testing.T) {
-
-}
-
-func TestHitCase3(t *testing.T) {
-
-}
-
-func TestHitCase4(t *testing.T) {
-}
-
-func BenchmarkBuildHit(b *testing.B) {
-
+func TestNewHitSQLBuilder(t *testing.T) {
+	req := require.New(t)
+	testFilter.Operators = []filters.Operators{
+		{
+			Operator: "=",
+			Value:    1,
+			Field:    "id",
+		},
+	}
+	sql, args, err := BuildWhereSQL(testFilter)
+	req.NoError(err)
+	req.Equal(sql, "where id = ?")
+	req.Equal(args, []interface{}{1})
 }

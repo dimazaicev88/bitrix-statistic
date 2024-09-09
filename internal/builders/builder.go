@@ -3,23 +3,32 @@ package builders
 import (
 	"bitrix-statistic/internal/filters"
 	"errors"
+	sq "github.com/Masterminds/squirrel"
 	"slices"
 	"strings"
 )
 
 var allOperator = []string{"=", ">=", "=<", ">", "<", "!=", "<>", "like", "not like", "and", "or"}
 
-func BuildWhereSQL(filter filters.Filter, validWhereField func(field string) bool) (string, []interface{}, error) {
+func BuildSelect(fields []string, tableName string) (string, error) {
+	var sqlBuilder sq.SelectBuilder
+	if len(fields) == 0 {
+		sqlBuilder = sq.Select("*")
+	} else {
+		sqlBuilder = sq.Select(fields...)
+	}
+	sqlBuilder = sqlBuilder.From(tableName)
+	result, _, err := sqlBuilder.ToSql()
+	return result, err
+}
+
+func BuildWhereSQL(filter filters.Filter) (string, []interface{}, error) {
 	var strBuilder strings.Builder
 	var args []interface{}
 	strBuilder.WriteString("where ")
 	for _, value := range filter.Operators {
 		if slices.Contains(allOperator, value.Operator) == false {
 			return "", nil, errors.New("unknown operator: " + value.Operator)
-		}
-
-		if !validWhereField(value.Field) {
-			return "", nil, errors.New("unknown field: " + value.Field)
 		}
 
 		if len(strBuilder.String()) == 0 && (value.Operator == "and" || value.Operator == "or" || value.Operator == "like" || value.Operator == "not like") {

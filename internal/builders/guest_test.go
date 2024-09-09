@@ -13,7 +13,7 @@ func TestGuestSQLBuilder_ToString(t *testing.T) {
 		Skip:      0,
 		Limit:     0,
 		OrderBy:   "",
-		Order:     "",
+		Order:     []string{""},
 		Operators: nil,
 	}
 	b := NewGuestBuilder(tf)
