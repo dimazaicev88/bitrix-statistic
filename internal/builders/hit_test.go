@@ -43,6 +43,6 @@ func TestNewHitSQLBuilder(t *testing.T) {
 		return
 	}
 	req.NoError(err)
-	req.Equal(sql, "SELECT uuid, sessionUuid, advUuid, dateHit, phpSessionId FROM hit WHERE uuid = ?")
-	req.Equal(args, []interface{}{1})
+	req.Equal(sql, "SELECT uuid, sessionUuid, advUuid, dateHit, phpSessionId FROM hit WHERE uuid=? AND userId>0  OR isNewUser=? LIMIT ? ?")
+	req.Equal(args, []interface{}{1, true, 0, 1000})
 }

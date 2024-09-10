@@ -2,19 +2,21 @@ package builders
 
 import (
 	"bitrix-statistic/internal/filters"
+	"bitrix-statistic/internal/utils"
 	"fmt"
-	"github.com/Masterminds/squirrel"
 	"slices"
+	"strings"
 )
 
 type HitSqlBuilder struct {
-	filter filters.Filter
-	sb     squirrel.SelectBuilder
+	filter     filters.Filter
+	sqlBuilder *SqlBuilder
 }
 
 func NewHitSQLBuilder(filter filters.Filter) HitSqlBuilder {
 	return HitSqlBuilder{
-		filter: filter,
+		filter:     filter,
+		sqlBuilder: NewSqlBuilder(),
 	}
 }
 
@@ -36,70 +38,62 @@ func (hs *HitSqlBuilder) buildSelect() error {
 		}
 	}
 	if len(hs.filter.Fields) == 0 {
-		hs.sb = squirrel.Select("*")
+		hs.sqlBuilder.Add("SELECT * FROM hit ")
 	} else {
-		hs.sb = squirrel.Select(hs.filter.Fields...)
+		hs.sqlBuilder.Add(fmt.Sprintf("SELECT %s FROM hit ", strings.Join(hs.filter.Fields, ", ")))
 	}
-	hs.sb = hs.sb.From("hit")
 	return nil
 }
 
 func (hs *HitSqlBuilder) buildWhere() {
-	if len(hs.filter.Operators) == 0 {
-		hs.sb = hs.sb.Where("")
-	} else {
-		for _, op := range hs.filter.Operators {
+	if len(hs.filter.Operators) != 0 {
+		hs.sqlBuilder.Add("WHERE ")
+		for i := 0; i < len(hs.filter.Operators); i++ {
+			op := hs.filter.Operators[i]
 			if op.Field == "isRegistered" {
 				if op.Value == true {
-					hs.sb = hs.sb.Where(squirrel.Gt{"userId": 0})
+					hs.sqlBuilder.Add("userId>0 ")
 				} else {
-					hs.sb = hs.sb.Where(squirrel.Eq{"userId": 0})
+					hs.sqlBuilder.Add(" userId=0 ")
 				}
 				continue
 			}
 
-			if op.Operator == "=" {
-				hs.sb = hs.sb.Where(squirrel.Eq{op.Field: op.Value})
-			} else if op.Operator == "!=" {
-				hs.sb = hs.sb.Where(squirrel.NotEq{op.Field: op.Value})
-			} else if op.Operator == ">" {
-				hs.sb = hs.sb.Where(squirrel.Gt{op.Field: op.Value})
-			} else if op.Operator == ">=" {
-				hs.sb = hs.sb.Where(squirrel.GtOrEq{op.Field: op.Value})
-			} else if op.Operator == "<" {
-				hs.sb = hs.sb.Where(squirrel.Lt{op.Field: op.Value})
-			} else if op.Operator == "<=" {
-				hs.sb = hs.sb.Where(squirrel.LtOrEq{op.Field: op.Value})
-			} else if op.Operator == "like" {
-				hs.sb = hs.sb.Where(squirrel.Like{op.Field: op.Value})
-			} else if op.Operator == "not like" {
-				hs.sb = hs.sb.Where(squirrel.NotLike{op.Field: op.Value})
-			} else if op.Operator == "or" {
-				hs.sb = hs.sb.Where(squirrel.Or{})
+			if op.Operator == "or" {
+				hs.sqlBuilder.Add(" OR ")
+			} else {
+				val := utils.StringConcat(op.Field, op.Operator, "?")
+				hs.sqlBuilder.Add(val, op.Value)
+			}
+
+			if i+1 < len(hs.filter.Operators)-1 {
+				if hs.filter.Operators[i+1].Operator != "or" || (i-1 > 0 && hs.filter.Operators[i-1].Operator != "or") {
+					hs.sqlBuilder.Add(" AND ")
+				}
 			}
 		}
 	}
 }
 
 func (hs *HitSqlBuilder) buildSkipAndLimit() {
-	if hs.filter.Skip < 0 {
-		hs.sb = hs.sb.Offset(0)
-	} else if hs.filter.Skip > 0 {
-		hs.sb = hs.sb.Offset(uint64(hs.filter.Skip))
+	hs.sqlBuilder.Add(" LIMIT ")
+	if hs.filter.Skip != 0 {
+		hs.sqlBuilder.Add("? ", hs.filter.Skip)
+	} else {
+		hs.sqlBuilder.Add("? ", 0)
 	}
 
-	if hs.filter.Limit < 0 {
-		hs.sb = hs.sb.Limit(0)
-	} else if hs.filter.Limit > 1000 {
-		hs.sb = hs.sb.Limit(1000)
+	if hs.filter.Limit != 0 {
+		hs.sqlBuilder.Add("?", 0)
+	} else if hs.filter.Limit > 1000 || hs.filter.Limit < 0 || hs.filter.Limit == 0 {
+		hs.sqlBuilder.Add("?", 1000)
 	}
-
 }
 
 func (hs *HitSqlBuilder) Build() (string, []interface{}, error) {
 	for _, value := range hs.filter.Fields {
 		if slices.Contains(hitSelectFields, value) == false {
-			return "", nil, fmt.Errorf("unknown field: %s", value)
+			return "", nil, nil
 		}
 	}
 
@@ -110,5 +104,6 @@ func (hs *HitSqlBuilder) Build() (string, []interface{}, error) {
 	hs.buildWhere()
 	hs.buildSkipAndLimit()
 
-	return hs.sb.ToSql()
+	resultSql, args := hs.sqlBuilder.Build()
+	return resultSql, args, nil
 }

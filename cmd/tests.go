@@ -1,14 +1,7 @@
 package main
 
-import (
-	"fmt"
-	sq "github.com/Masterminds/squirrel"
-)
-
 func main() {
-	users := sq.Select("*").From("users")
-	users = users.Where(sq.Or{sq.Eq{"b": 1}, sq.Eq{"b": 2}}).Where(sq.Eq{"c": 3})
-	fmt.Println(users.ToSql())
+
 	//sb.AddWhereClause()
 	//conn, err := clickhouse.Open(&clickhouse.Options{
 	//	Addr: []string{"127.0.0.1:9000"},
