@@ -1,6 +1,7 @@
 package models
 
 import (
+	"bitrix-statistic/internal/builders"
 	"bitrix-statistic/internal/entitydb"
 	"bitrix-statistic/internal/filters"
 	"context"
@@ -20,7 +21,26 @@ func NewHit(ctx context.Context, chClient driver.Conn) *Hit {
 }
 
 func (hm Hit) Find(filter filters.Filter) ([]entitydb.Hit, error) {
-	return nil, nil
+	builder := builders.NewHitSQLBuilder(filter)
+	resultSql, args, err := builder.Build()
+	if err != nil {
+		return nil, err
+	}
+
+	rows, err := hm.chClient.Query(hm.ctx, resultSql, args)
+
+	if err != nil {
+		return nil, err
+	}
+
+	var allDbHits []entitydb.Hit
+	for rows.Next() {
+		var hit entitydb.Hit
+		err = rows.ScanStruct(&hit)
+		allDbHits = append(allDbHits, hit)
+	}
+
+	return allDbHits, nil
 }
 
 func (hm Hit) FindByUuid(uuid uuid.UUID) (entitydb.Hit, error) {
