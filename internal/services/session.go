@@ -23,10 +23,10 @@ func NewSession(ctx context.Context, allModels *models.Models) *SessionService {
 	}
 }
 
-func (ss *SessionService) Add(stopListUuid, guestUuid, hitUuid uuid.UUID, existGuest bool, userData entityjson.UserData, adv entitydb.AdvCompany) (entitydb.Session, error) {
+func (ss *SessionService) Add(stopListUuid, hitUuid uuid.UUID, existGuest bool, userData entityjson.UserData, adv entitydb.AdvCompany) (entitydb.Session, error) {
 
 	switch {
-	case guestUuid == uuid.Nil:
+	case userData.GuestUuid == uuid.Nil:
 		return entitydb.Session{}, errors.New("guestUuid is empty")
 	case hitUuid == uuid.Nil:
 		return entitydb.Session{}, errors.New("hitUuid is empty")
@@ -36,7 +36,7 @@ func (ss *SessionService) Add(stopListUuid, guestUuid, hitUuid uuid.UUID, existG
 
 	var sessionDb entitydb.Session
 	sessionDb.Uuid = uuid.New()
-	sessionDb.GuestUuid = guestUuid
+	sessionDb.GuestUuid = userData.GuestUuid
 	sessionDb.PhpSessionId = userData.PHPSessionId
 	sessionDb.IsNewGuest = existGuest
 	sessionDb.UserId = userData.UserId

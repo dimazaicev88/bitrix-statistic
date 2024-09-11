@@ -84,7 +84,6 @@ func (stat *Statistic) Add(statData entityjson.UserData) error {
 	var guestDb entitydb.Guest
 	var hitDb entitydb.Hit
 	existsGuest := false
-	var guestUuid uuid.UUID
 	var hitUuid uuid.UUID
 
 	isSearcher, err := stat.searcherService.IsSearcher(statData.UserAgent)
@@ -135,7 +134,7 @@ func (stat *Statistic) Add(statData entityjson.UserData) error {
 
 		//Если сессия новая, добавляем.
 		if sessionDb == (entitydb.Session{}) {
-			sessionDb, err = stat.sessionService.Add(uuid.Nil, guestUuid, hitUuid, existsGuest == true, statData, advReferer)
+			sessionDb, err = stat.sessionService.Add(uuid.Nil, hitUuid, existsGuest == true, statData, advReferer)
 			if err != nil {
 				return err
 			}

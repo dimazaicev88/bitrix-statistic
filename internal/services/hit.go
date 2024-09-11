@@ -52,7 +52,7 @@ func (hs *HitService) Add(
 		AdvUuid:      advReferer.AdvUuid,
 		GuestUuid:    sessionDb.GuestUuid,
 		IsNewGuest:   existsGuest == false,
-		UserId:       uint32(statData.UserId),
+		UserId:       statData.UserId,
 		IsUserAuth:   statData.UserId > 0,
 		Url:          statData.Url,
 		Url404:       statData.IsError404,
