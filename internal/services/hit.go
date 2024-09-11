@@ -32,13 +32,14 @@ func (hs *HitService) FindByUuid(uuid uuid.UUID) (entitydb.Hit, error) {
 
 func (hs *HitService) Add(
 	existsGuest bool,
-	sessionDb entitydb.Session,
+	sessionUuid uuid.UUID,
+	guestUuid uuid.UUID,
 	advReferer entitydb.AdvCompany,
 	statData entityjson.UserData,
 ) (entitydb.Hit, error) {
 
-	if sessionDb == (entitydb.Session{}) {
-		return entitydb.Hit{}, errors.New("session is empty")
+	if sessionUuid == uuid.Nil {
+		return entitydb.Hit{}, errors.New("sessionUuid is empty")
 	}
 
 	if statData == (entityjson.UserData{}) {
@@ -48,9 +49,9 @@ func (hs *HitService) Add(
 	hit := entitydb.Hit{
 		Uuid:         uuid.New(),
 		PhpSessionId: statData.PHPSessionId,
-		SessionUuid:  sessionDb.Uuid,
+		SessionUuid:  sessionUuid,
 		AdvUuid:      advReferer.AdvUuid,
-		GuestUuid:    sessionDb.GuestUuid,
+		GuestUuid:    guestUuid,
 		IsNewGuest:   existsGuest == false,
 		UserId:       statData.UserId,
 		IsUserAuth:   statData.UserId > 0,
