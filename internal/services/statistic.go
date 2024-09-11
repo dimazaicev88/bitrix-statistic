@@ -76,15 +76,13 @@ func (stat *Statistic) SetRefererService(refererService *RefererService) {
 }
 
 func (stat *Statistic) Add(statData entityjson.UserData) error {
-	//var stopListUuid string
-
-	//var advBack string
 	var advReferer entitydb.AdvCompany
 	var sessionDb entitydb.Session
 	var guestDb entitydb.Guest
 	var hitDb entitydb.Hit
 	existsGuest := false
 	var hitUuid uuid.UUID
+	var sessionUuid = uuid.New()
 
 	isSearcher, err := stat.searcherService.IsSearcher(statData.UserAgent)
 	if err != nil {
@@ -153,7 +151,7 @@ func (stat *Statistic) Add(statData entityjson.UserData) error {
 
 		//------------------------------- Hits ---------------------------------
 		if stat.optionService.IsSaveHits(statData.SiteId) {
-			if hitDb, err = stat.hitService.Add(existsGuest, sessionDb, advReferer, statData); err != nil {
+			if hitDb, err = stat.hitService.Add(existsGuest, sessionUuid, advReferer, statData); err != nil {
 				return err
 			}
 			hitUuid = hitDb.Uuid
