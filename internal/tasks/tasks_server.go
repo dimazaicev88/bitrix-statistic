@@ -1,8 +1,10 @@
 package tasks
 
 import (
+	"bitrix-statistic/internal/app"
+	"bitrix-statistic/internal/entityjson"
 	"context"
-	"fmt"
+	"github.com/goccy/go-json"
 	"github.com/hibiken/asynq"
 	"log"
 )
@@ -22,7 +24,15 @@ func NewTaskServer(redisAddr string, cfg asynq.Config) (*asynq.Server, *asynq.Se
 }
 
 func HandleTask(ctx context.Context, t *asynq.Task) error {
-	fmt.Println(string(t.Payload()))
+	var userData entityjson.UserData
+
+	if err := json.Unmarshal(t.Payload(), &userData); err != nil {
+		return err
+	}
+
+	if err := app.Server().Get().AllServices.Statistic.Add(userData); err != nil {
+		return err
+	}
 
 	return nil
 }

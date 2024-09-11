@@ -15,14 +15,14 @@ import (
 type Statistic struct {
 	fbApp      *fiber.App
 	ctx        context.Context
-	allService *services.AllService
+	allService *services.AllServices
 }
 
 type Answer struct {
 	Msg string `json:"msg"`
 }
 
-func NewStatistic(ctx context.Context, fbApp *fiber.App, allService *services.AllService) *Statistic {
+func NewStatistic(ctx context.Context, fbApp *fiber.App, allService *services.AllServices) *Statistic {
 	return &Statistic{
 		fbApp:      fbApp,
 		ctx:        ctx,
@@ -47,7 +47,9 @@ func (sh *Statistic) Add(ctx *fiber.Ctx) error {
 		userData.GuestUuid = uuid.New()
 	}
 
-	task := asynq.NewTask(tasks.TaskStatisticAdd, ctx.Body(), asynq.MaxRetry(0))
+	resultJson, _ := json.Marshal(userData)
+
+	task := asynq.NewTask(tasks.TaskStatisticAdd, resultJson, asynq.MaxRetry(0))
 	_, err = tasks.GetClient().EnqueueContext(ctx.Context(), task)
 	if err != nil {
 		return ctx.SendStatus(fiber.StatusInternalServerError)

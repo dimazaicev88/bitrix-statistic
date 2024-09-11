@@ -2,7 +2,6 @@ package main
 
 import (
 	"bitrix-statistic/internal/app"
-	"bitrix-statistic/internal/config"
 	"context"
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/huandu/go-sqlbuilder"
@@ -25,5 +24,7 @@ func main() {
 		logrus.Fatal("Error loading .env file", err.Error())
 	}
 
-	app.New(ctx, config.GetServerConfig()).Start()
+	server := app.New(ctx)
+	app.Server().Set(server)
+	server.Start()
 }

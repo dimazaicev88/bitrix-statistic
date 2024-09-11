@@ -4,18 +4,18 @@ import (
 	"bitrix-statistic/internal/filters"
 	"bitrix-statistic/internal/services"
 	"context"
+	"github.com/goccy/go-json"
 	"github.com/gofiber/fiber/v2"
-	jsoniter "github.com/json-iterator/go"
 )
 
 // GuestRoutes Получения данных по посетителям сайта.
 type GuestRoutes struct {
 	fbApp      *fiber.App
-	allService *services.AllService
+	allService *services.AllServices
 	ctx        context.Context
 }
 
-func NewGuest(ctx context.Context, fbApp *fiber.App, allService *services.AllService) GuestRoutes {
+func NewGuest(ctx context.Context, fbApp *fiber.App, allService *services.AllServices) GuestRoutes {
 	return GuestRoutes{
 		fbApp:      fbApp,
 		allService: allService,
@@ -31,7 +31,7 @@ func (hh GuestRoutes) AddHandlers() {
 func (hh GuestRoutes) filter(ctx *fiber.Ctx) error {
 	var filter filters.Filter
 	body := ctx.Body()
-	err := jsoniter.Unmarshal(body, &filter)
+	err := json.Unmarshal(body, &filter)
 	if err != nil {
 		ctx.Status(502)
 		return err
@@ -42,12 +42,12 @@ func (hh GuestRoutes) filter(ctx *fiber.Ctx) error {
 		return err
 	}
 
-	json, err := jsoniter.MarshalToString(result)
+	resultJson, err := json.Marshal(result)
 	if err != nil {
 		ctx.Status(502)
 		return err
 	}
-	return ctx.SendString(json)
+	return ctx.SendString(string(resultJson))
 }
 
 func (hh GuestRoutes) DeleteById(ctx *fiber.Ctx) error {

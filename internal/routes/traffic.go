@@ -10,10 +10,10 @@ import (
 type Traffic struct {
 	fbApp      *fiber.App
 	ctx        context.Context
-	allService *services.AllService
+	allService *services.AllServices
 }
 
-func NewTraffic(ctx context.Context, fbApp *fiber.App, allService *services.AllService) *Traffic {
+func NewTraffic(ctx context.Context, fbApp *fiber.App, allService *services.AllServices) *Traffic {
 	return &Traffic{
 		fbApp:      fbApp,
 		ctx:        ctx,

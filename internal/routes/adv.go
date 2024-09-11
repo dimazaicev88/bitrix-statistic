@@ -10,10 +10,10 @@ import (
 type AdvHandlers struct {
 	fbApp       *fiber.App
 	ctx         context.Context
-	allServices *services.AllService
+	allServices *services.AllServices
 }
 
-func NewAdv(ctx context.Context, fbApp *fiber.App, allServices *services.AllService) *AdvHandlers {
+func NewAdv(ctx context.Context, fbApp *fiber.App, allServices *services.AllServices) *AdvHandlers {
 	return &AdvHandlers{
 		fbApp:       fbApp,
 		ctx:         ctx,

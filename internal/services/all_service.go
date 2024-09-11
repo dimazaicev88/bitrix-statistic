@@ -5,7 +5,7 @@ import (
 	"context"
 )
 
-type AllService struct {
+type AllServices struct {
 	Adv        *AdvServices
 	Country    *CountryServices
 	Event      *EventService
@@ -26,7 +26,7 @@ type AllService struct {
 	UserOnline *UserOnlineService
 }
 
-func NewAllServices(ctx context.Context, allModels *models.Models) *AllService {
+func NewAllServices(ctx context.Context, allModels *models.Models) *AllServices {
 
 	adv := NewAdv(ctx, allModels)
 	hit := NewHit(ctx, allModels)
@@ -67,7 +67,7 @@ func NewAllServices(ctx context.Context, allModels *models.Models) *AllService {
 	statistic.SetOptionService(option)
 	statistic.SetRefererService(referer)
 
-	return &AllService{
+	return &AllServices{
 		Adv:        adv,
 		Country:    nil,
 		Event:      event,

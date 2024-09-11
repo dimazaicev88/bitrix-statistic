@@ -10,10 +10,10 @@ import (
 type StopList struct {
 	fbApp      *fiber.App
 	ctx        context.Context
-	allService *services.AllService
+	allService *services.AllServices
 }
 
-func NewStopList(ctx context.Context, app *fiber.App, allService *services.AllService) *StopList {
+func NewStopList(ctx context.Context, app *fiber.App, allService *services.AllServices) *StopList {
 	return &StopList{
 		ctx:        ctx,
 		fbApp:      app,

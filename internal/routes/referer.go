@@ -9,10 +9,10 @@ import (
 type Referer struct {
 	fbApp      *fiber.App
 	ctx        context.Context
-	allService *services.AllService
+	allService *services.AllServices
 }
 
-func NewReferer(ctx context.Context, fbApp *fiber.App, allService *services.AllService) *Referer {
+func NewReferer(ctx context.Context, fbApp *fiber.App, allService *services.AllServices) *Referer {
 	return &Referer{
 		fbApp:      fbApp,
 		ctx:        ctx,

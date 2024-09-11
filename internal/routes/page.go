@@ -10,10 +10,10 @@ import (
 type Page struct {
 	fbApp      *fiber.App
 	ctx        context.Context
-	allService *services.AllService
+	allService *services.AllServices
 }
 
-func NewPage(ctx context.Context, app *fiber.App, allService *services.AllService) *Page {
+func NewPage(ctx context.Context, app *fiber.App, allService *services.AllServices) *Page {
 	return &Page{
 		fbApp:      app,
 		ctx:        ctx,

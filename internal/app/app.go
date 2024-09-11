@@ -16,14 +16,14 @@ import (
 )
 
 type App struct {
-	ctx context.Context
-	cfg config.ServerEnvConfig
+	ctx         context.Context
+	cfg         config.ServerEnvConfig
+	AllServices *services.AllServices
 }
 
-func New(ctx context.Context, cfg config.ServerEnvConfig) *App {
+func New(ctx context.Context) *App {
 	return &App{
 		ctx: ctx,
-		cfg: cfg,
 	}
 }
 

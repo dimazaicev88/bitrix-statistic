@@ -10,10 +10,10 @@ import (
 type StatEvent struct {
 	fbApp      *fiber.App
 	ctx        context.Context
-	allService *services.AllService
+	allService *services.AllServices
 }
 
-func NewStatEvent(ctx context.Context, fbApp *fiber.App, allService *services.AllService) *StatEvent {
+func NewStatEvent(ctx context.Context, fbApp *fiber.App, allService *services.AllServices) *StatEvent {
 	return &StatEvent{
 		fbApp:      fbApp,
 		ctx:        ctx,

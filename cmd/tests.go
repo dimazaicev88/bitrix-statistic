@@ -1,7 +1,6 @@
 package main
 
 func main() {
-
 	//sb.AddWhereClause()
 	//conn, err := clickhouse.Open(&clickhouse.Options{
 	//	Addr: []string{"127.0.0.1:9000"},

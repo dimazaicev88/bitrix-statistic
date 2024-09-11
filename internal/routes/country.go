@@ -4,17 +4,17 @@ import (
 	"bitrix-statistic/internal/filters"
 	"bitrix-statistic/internal/services"
 	"context"
+	"github.com/goccy/go-json"
 	"github.com/gofiber/fiber/v2"
-	jsoniter "github.com/json-iterator/go"
 )
 
 type CountryHandlers struct {
 	fbApp       *fiber.App
-	allServices *services.AllService
+	allServices *services.AllServices
 	ctx         context.Context
 }
 
-func NewCountry(ctx context.Context, fbApp *fiber.App, allServices *services.AllService) *CountryHandlers {
+func NewCountry(ctx context.Context, fbApp *fiber.App, allServices *services.AllServices) *CountryHandlers {
 	return &CountryHandlers{
 		fbApp:       fbApp,
 		allServices: allServices,
@@ -31,7 +31,7 @@ func (ch CountryHandlers) AddHandlers() {
 func (ch CountryHandlers) Filter(ctx *fiber.Ctx) error {
 	var filter filters.Filter
 	body := ctx.Body()
-	err := jsoniter.Unmarshal(body, &filter)
+	err := json.Unmarshal(body, &filter)
 	if err != nil {
 		ctx.Status(502)
 		return err
@@ -42,12 +42,12 @@ func (ch CountryHandlers) Filter(ctx *fiber.Ctx) error {
 		return err
 	}
 
-	json, err := jsoniter.MarshalToString(result)
+	resultJson, err := json.Marshal(result)
 	if err != nil {
 		ctx.Status(502)
 		return err
 	}
-	return ctx.SendString(json)
+	return ctx.SendString(string(resultJson))
 }
 
 func (ch CountryHandlers) DeleteById(ctx *fiber.Ctx) error {

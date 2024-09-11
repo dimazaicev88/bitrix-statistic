@@ -10,10 +10,10 @@ import (
 type Searcher struct {
 	fbApp      *fiber.App
 	ctx        context.Context
-	allService *services.AllService
+	allService *services.AllServices
 }
 
-func NewSearcher(ctx context.Context, app *fiber.App, allService *services.AllService) *Searcher {
+func NewSearcher(ctx context.Context, app *fiber.App, allService *services.AllServices) *Searcher {
 	return &Searcher{
 		fbApp:      app,
 		ctx:        ctx,

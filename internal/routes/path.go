@@ -10,10 +10,10 @@ import (
 type Path struct {
 	fbApp      *fiber.App
 	ctx        context.Context
-	allService *services.AllService
+	allService *services.AllServices
 }
 
-func NewPath(ctx context.Context, app *fiber.App, allService *services.AllService) *Path {
+func NewPath(ctx context.Context, app *fiber.App, allService *services.AllServices) *Path {
 	return &Path{
 		fbApp:      app,
 		ctx:        ctx,
