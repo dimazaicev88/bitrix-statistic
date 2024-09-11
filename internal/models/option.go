@@ -19,11 +19,11 @@ func NewOption(ctx context.Context, chClient driver.Conn) *Option {
 
 func (o Option) Find(name, siteId string) (entitydb.Option, error) {
 	var optionRow entitydb.Option
-	err := o.chClient.QueryRow(o.ctx, `select * from options where name=? and  siteId=?`, name, siteId).Scan(&optionRow)
+
+	err := o.chClient.QueryRow(o.ctx, `select * from options where name=? and  siteId=?`, name, siteId).ScanStruct(&optionRow)
 	if err != nil {
 		return entitydb.Option{}, err
 	}
-
 	return optionRow, nil
 }
 

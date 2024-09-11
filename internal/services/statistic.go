@@ -82,6 +82,7 @@ func (stat *Statistic) Add(statData entityjson.UserData) error {
 	var advReferer entitydb.AdvCompany
 	var sessionDb entitydb.Session
 	var guestDb entitydb.Guest
+	var hitDb entitydb.Hit
 	existsGuest := false
 	var guestUuid uuid.UUID
 	var hitUuid uuid.UUID
@@ -130,13 +131,6 @@ func (stat *Statistic) Add(statData entityjson.UserData) error {
 			}
 		}
 
-		//------------------------------- Hits ---------------------------------
-		if stat.optionService.IsSaveHits(statData.SiteId) {
-			//if hitUuid, err = stat.hitService.Add(existsGuest, sessionDb, advReferer, statData); err != nil {
-			//	return err
-			//}
-		}
-
 		//--------------------------- Sessions ------------------------------------
 
 		//Если сессия новая, добавляем.
@@ -147,7 +141,7 @@ func (stat *Statistic) Add(statData entityjson.UserData) error {
 			}
 		} else {
 			err = stat.sessionService.Update(sessionDb, entitydb.Session{
-				UserId:     uint32(statData.UserId),
+				UserId:     statData.UserId,
 				IsUserAuth: statData.IsUserAuth,
 				UserAgent:  statData.UserAgent,
 				IpLast:     statData.Ip,
@@ -156,6 +150,14 @@ func (stat *Statistic) Add(statData entityjson.UserData) error {
 			if err != nil {
 				return err
 			}
+		}
+
+		//------------------------------- Hits ---------------------------------
+		if stat.optionService.IsSaveHits(statData.SiteId) {
+			if hitDb, err = stat.hitService.Add(existsGuest, sessionDb, advReferer, statData); err != nil {
+				return err
+			}
+			hitUuid = hitDb.Uuid
 		}
 
 		//------------------------- Referring -------------------------
