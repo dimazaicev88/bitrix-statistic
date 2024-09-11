@@ -17,6 +17,6 @@ func NewStatDay(ctx context.Context, allModels *models.Models) *StatDayService {
 	}
 }
 
-func (sds StatDayService) Add() {
+func (sds *StatDayService) Add() {
 	sds.allModels.Day.Add()
 }

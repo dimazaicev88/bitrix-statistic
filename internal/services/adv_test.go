@@ -2,6 +2,7 @@ package services
 
 import (
 	"bitrix-statistic/internal/config"
+	"bitrix-statistic/internal/entitydb"
 	"bitrix-statistic/internal/entityjson"
 	"bitrix-statistic/internal/models"
 	"bitrix-statistic/internal/storage"
@@ -29,8 +30,9 @@ func TestAdvServices_GetAdv(t *testing.T) {
 	defer chClient.Close()
 	req := require.New(t)
 	allModels := models.NewModels(context.Background(), chClient)
-	hitService := NewHit(context.Background(), allModels)
-	advServices := NewAdv(context.Background(), allModels, hitService)
+	advServices := NewAdv(context.Background(), allModels)
+	advServices.SetHitService(NewHit(context.Background(), allModels))
+	advServices.SetOptionService(NewOption(context.Background(), allModels))
 
 	t.Run("Указано 'Куда пришли'", func(t *testing.T) {
 		utils.TruncateAllTables(chClient)
@@ -64,38 +66,15 @@ func TestAdvServices_GetAdv(t *testing.T) {
 		req.Equal(referer.Referer2, "rt_2")
 	})
 
-	//t.Run("AddSearcherHit user agent exists", func(t *testing.T) {
-	//	utils.TruncateTable("searcher_hit", chClient)
-	//	err := advServices.AddHitSearcher(entityjson.UserData{
-	//		PHPSessionId:      "",
-	//		GuestUuid:         "",
-	//		Url:               "https://test.local.com",
-	//		Referer:           "",
-	//		Ip:                "192.168.1.98",
-	//		UserAgent:         "Abilon",
-	//		UserId:            0,
-	//		UserLogin:         "",
-	//		HttpXForwardedFor: "",
-	//		IsError404:        false,
-	//		SiteId:            "mg",
-	//		Event1:            "",
-	//		Event2:            "",
-	//		IsUserAuth:        false,
-	//	},
-	//	)
-	//	req.NoError(err)
-	//
-	//	var searcher []entitydb.SearcherHitDb
-	//	resultSql := `select uuid, date_hit, searcher_uuid, url, url_404, ip, user_agent, site_id from searcher_hit`
-	//	err = chClient.Select(context.Background(), &searcher, resultSql)
-	//	req.NoError(err)
-	//
-	//	req.Equal(1, len(searcher))
-	//	req.Equal(searcher[0].Url, "https://test.local.com")
-	//	req.Equal(searcher[0].Ip, "192.168.1.98")
-	//	req.Equal(searcher[0].UserAgent, "Abilon")
-	//	req.Equal(searcher[0].SearcherId, "0190d4cb-825b-7512-8008-efd0c75f0fbc")
-	//	req.Equal(searcher[0].SiteId, "mg")
-	//})
+	t.Run("GetAdv. Find adv", func(t *testing.T) {
+		utils.TruncateTable("searcher_hit", chClient)
+		advReferer, err := advServices.GetAdv(entityjson.UserData{
+			PHPSessionId: "dqweqasdadasd",
+			GuestUuid:    uuid.New(),
+		},
+		)
+		req.NoError(err)
+		req.NotEqual(advReferer, entitydb.AdvCompany{})
+	})
 
 }

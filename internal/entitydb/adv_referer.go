@@ -2,7 +2,7 @@ package entitydb
 
 import "github.com/google/uuid"
 
-type AdvReferer struct {
+type AdvCompany struct {
 	AdvUuid     uuid.UUID `ch:"adv_uuid"`
 	Referer1    string    `ch:"referer1"`
 	Referer2    string    `ch:"referer2"`

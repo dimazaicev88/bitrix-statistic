@@ -33,7 +33,7 @@ func TestGuestSessionService_Add_EmptyUserData(t *testing.T) {
 	allModels := models.NewModels(context.Background(), chClient)
 	sessionService := NewSession(context.Background(), allModels)
 
-	session, err := sessionService.Add(uuid.Nil, uuid.New(), uuid.New(), false, entityjson.UserData{}, entitydb.AdvReferer{})
+	session, err := sessionService.Add(uuid.Nil, uuid.New(), uuid.New(), false, entityjson.UserData{}, entitydb.AdvCompany{})
 	req.NotNil(err)
 	req.Equal("userData is empty", err.Error())
 	req.Equal(session, entitydb.Session{})
@@ -52,7 +52,7 @@ func TestGuestSessionService_Add_EmptyGuestUuid(t *testing.T) {
 	allModels := models.NewModels(context.Background(), chClient)
 	sessionService := NewSession(context.Background(), allModels)
 	hitUuid := uuid.New()
-	session, err := sessionService.Add(uuid.Nil, uuid.UUID{}, hitUuid, false, entityjson.UserData{}, entitydb.AdvReferer{})
+	session, err := sessionService.Add(uuid.Nil, uuid.UUID{}, hitUuid, false, entityjson.UserData{}, entitydb.AdvCompany{})
 	req.NotNil(err)
 	req.Equal("guestUuid is empty", err.Error())
 	req.Equal(session, entitydb.Session{})
@@ -70,7 +70,7 @@ func TestGuestSessionService_Add_EmptyHitUuid(t *testing.T) {
 
 	allModels := models.NewModels(context.Background(), chClient)
 	sessionService := NewSession(context.Background(), allModels)
-	session, err := sessionService.Add(uuid.Nil, uuid.New(), uuid.UUID{}, false, entityjson.UserData{}, entitydb.AdvReferer{})
+	session, err := sessionService.Add(uuid.Nil, uuid.New(), uuid.UUID{}, false, entityjson.UserData{}, entitydb.AdvCompany{})
 	req.NotNil(err)
 	req.Equal("hitUuid is empty", err.Error())
 	req.Equal(session, entitydb.Session{})
@@ -111,7 +111,7 @@ func TestGuestSessionService_Add(t *testing.T) {
 		Cookies:           "cookie-value",
 		IsFavorite:        true,
 	}
-	advReferer := entitydb.AdvReferer{
+	advReferer := entitydb.AdvCompany{
 		AdvUuid:     uuid.New(),
 		Referer1:    "r1",
 		Referer2:    "r2",
@@ -197,7 +197,7 @@ func TestGuestSessionService_Update(t *testing.T) {
 		Cookies:           "cookie-value",
 		IsFavorite:        true,
 	}
-	advReferer := entitydb.AdvReferer{
+	advReferer := entitydb.AdvCompany{
 		AdvUuid:     uuid.New(),
 		Referer1:    "r1",
 		Referer2:    "r2",

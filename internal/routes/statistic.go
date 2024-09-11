@@ -50,7 +50,7 @@ func (sh *Statistic) Add(ctx *fiber.Ctx) error {
 	resultJson, _ := json.Marshal(userData)
 
 	task := asynq.NewTask(tasks.TaskStatisticAdd, resultJson, asynq.MaxRetry(0))
-	_, err = tasks.GetClient().EnqueueContext(ctx.Context(), task)
+	_, err = tasks.GetClient().EnqueueContext(sh.ctx, task)
 	if err != nil {
 		return ctx.SendStatus(fiber.StatusInternalServerError)
 	}

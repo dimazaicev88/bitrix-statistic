@@ -69,7 +69,7 @@ func TestHitService_Add(t *testing.T) {
 		Version:      1,
 	}
 
-	advReferer := entitydb.AdvReferer{
+	advReferer := entitydb.AdvCompany{
 		AdvUuid:     uuid.New(),
 		Referer1:    "ref1",
 		Referer2:    "ref2",
@@ -142,7 +142,7 @@ func TestHitService_Add_EmptySessRefererAndStatData(t *testing.T) {
 	hitService := NewHit(context.Background(), allModels)
 	utils.TruncateTable("hit", chClient)
 
-	hit, err := hitService.Add(true, entitydb.Session{}, entitydb.AdvReferer{}, entityjson.UserData{})
+	hit, err := hitService.Add(true, entitydb.Session{}, entitydb.AdvCompany{}, entityjson.UserData{})
 	req.NotNil(err)
 	req.Equal("session is empty", err.Error())
 	req.Equal(hit, entitydb.Hit{})
@@ -164,7 +164,7 @@ func TestHitService_Add_EmptyStatData(t *testing.T) {
 		GuestUuid: uuid.New(),
 	}
 
-	hit, err := hitService.Add(true, sessionDb, entitydb.AdvReferer{}, entityjson.UserData{})
+	hit, err := hitService.Add(true, sessionDb, entitydb.AdvCompany{}, entityjson.UserData{})
 	req.NotNil(err)
 	req.Equal("stat data is empty", err.Error())
 	req.Equal(hit, entitydb.Hit{})

@@ -1,38 +1,48 @@
 package tasks
 
 import (
-	"bitrix-statistic/internal/app"
 	"bitrix-statistic/internal/entityjson"
+	"bitrix-statistic/internal/services"
 	"context"
 	"github.com/goccy/go-json"
 	"github.com/hibiken/asynq"
-	"log"
+	"github.com/sirupsen/logrus"
 )
 
 const TaskStatisticAdd = "statistic:add"
 const TaskGroup = "default"
 
-func NewTaskServer(redisAddr string, cfg asynq.Config) (*asynq.Server, *asynq.ServeMux) {
-	log.Println("init tasks server.")
+type TaskServer struct {
+	statisticService *services.Statistic
+	AsynqServer      *asynq.Server
+	AsynqServeMux    *asynq.ServeMux
+}
+
+func NewTaskServer(statisticService *services.Statistic, redisAddr string, cfg asynq.Config) *TaskServer {
+	logrus.Infoln("init tasks server.")
 	srv := asynq.NewServer(
 		asynq.RedisClientOpt{Addr: redisAddr},
 		cfg,
 	)
 	mux := asynq.NewServeMux()
-	mux.HandleFunc(TaskStatisticAdd, HandleTask)
-	return srv, mux
+	ts := &TaskServer{
+		statisticService: statisticService,
+		AsynqServer:      srv,
+		AsynqServeMux:    mux,
+	}
+	mux.HandleFunc(TaskStatisticAdd, ts.HandleTask)
+	return ts
 }
 
-func HandleTask(ctx context.Context, t *asynq.Task) error {
+func (ts TaskServer) HandleTask(ctx context.Context, t *asynq.Task) error {
 	var userData entityjson.UserData
 
 	if err := json.Unmarshal(t.Payload(), &userData); err != nil {
 		return err
 	}
 
-	if err := app.Server().Get().AllServices.Statistic.Add(userData); err != nil {
+	if err := ts.statisticService.Add(userData); err != nil {
 		return err
 	}
-
 	return nil
 }

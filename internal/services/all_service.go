@@ -20,7 +20,7 @@ type AllServices struct {
 	Searcher   *SearcherService
 	Session    *SessionService
 	StatDay    *StatDayService
-	Statistic  *StatisticService
+	Statistic  *Statistic
 	StopList   *StopListService
 	Traffic    *TrafficService
 	UserOnline *UserOnlineService

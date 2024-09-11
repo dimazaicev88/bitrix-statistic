@@ -20,7 +20,7 @@ func NewSearcher(ctx context.Context, allModels *models.Models) *SearcherService
 }
 
 // IsSearcher Проверка по user agent является ли guest поисковиком
-func (ss SearcherService) IsSearcher(userAgent string) (bool, error) {
+func (ss *SearcherService) IsSearcher(userAgent string) (bool, error) {
 	if len(userAgent) == 0 {
 		return false, nil
 	}
@@ -31,7 +31,7 @@ func (ss SearcherService) IsSearcher(userAgent string) (bool, error) {
 	return searcher != entitydb.Searcher{}, nil
 }
 
-func (ss SearcherService) AddHitSearcher(data entityjson.UserData) error {
+func (ss *SearcherService) AddHitSearcher(data entityjson.UserData) error {
 	searcher, err := ss.allModels.Searcher.FindSearcherByUserAgent(data.UserAgent)
 	if err != nil {
 		return err

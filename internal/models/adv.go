@@ -101,7 +101,7 @@ func (am Adv) AddAdv(referer1 string, referer2 string) error {
 
 func (am Adv) FindByUuid(uuid uuid.UUID) (entitydb.Adv, error) {
 	var adv entitydb.Adv
-	resultSql := `SELECT 	* FROM adv WHERE  uuid=?`
+	resultSql := `SELECT * FROM adv WHERE  uuid=?`
 	err := am.chClient.QueryRow(am.ctx, resultSql, uuid).ScanStruct(&adv)
 	if err != nil && errors.Is(err, sql.ErrNoRows) == false {
 		return entitydb.Adv{}, err
@@ -116,12 +116,12 @@ func (am Adv) DeleteByUuid(advUuid uuid.UUID) error {
 	return nil
 }
 
-func (am Adv) FindRefererByListAdv(listAdv []string) (entitydb.AdvReferer, error) {
-	var adv entitydb.AdvReferer
+func (am Adv) FindRefererByListAdv(listAdv []string) (entitydb.AdvCompany, error) {
+	var adv entitydb.AdvCompany
 	resultSql := `SELECT 	uuid as adv_uuid, referer1,referer2 FROM adv WHERE  uuid IN (?) ORDER BY priority,date_create DESC LIMIT 1`
 	err := am.chClient.QueryRow(am.ctx, resultSql, listAdv).ScanStruct(&adv)
 	if err != nil && errors.Is(err, sql.ErrNoRows) == false {
-		return entitydb.AdvReferer{}, err
+		return entitydb.AdvCompany{}, err
 	}
 	return adv, nil
 }

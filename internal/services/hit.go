@@ -30,7 +30,7 @@ func (hs *HitService) FindByUuid(uuid uuid.UUID) (entitydb.Hit, error) {
 	return hs.allModels.Hit.FindByUuid(uuid)
 }
 
-func (hs *HitService) Add(existsGuest bool, sessionDb entitydb.Session, advReferer entitydb.AdvReferer, statData entityjson.UserData) (entitydb.Hit, error) {
+func (hs *HitService) Add(existsGuest bool, sessionDb entitydb.Session, advReferer entitydb.AdvCompany, statData entityjson.UserData) (entitydb.Hit, error) {
 
 	if sessionDb == (entitydb.Session{}) {
 		return entitydb.Hit{}, errors.New("session is empty")

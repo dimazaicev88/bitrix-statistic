@@ -29,28 +29,28 @@ func NewPath(
 	}
 }
 
-func (ps PathService) SetPathCacheService(pathCacheService *PathCacheService) {
+func (ps *PathService) SetPathCacheService(pathCacheService *PathCacheService) {
 	ps.pathCacheService = pathCacheService
 }
 
-func (ps PathService) SetPathAdvService(pathAdvService *PathAdvService) {
+func (ps *PathService) SetPathAdvService(pathAdvService *PathAdvService) {
 	ps.pathAdvService = pathAdvService
 }
 
-func (ps PathService) SetOptionService(optionService *OptionService) {
+func (ps *PathService) SetOptionService(optionService *OptionService) {
 	ps.optionService = optionService
 }
 
-func (ps PathService) SetPageService(pageService *PageService) {
+func (ps *PathService) SetPageService(pageService *PageService) {
 	ps.pageService = pageService
 }
 
-func (ps PathService) SetPageAdvService(pageAdvService *PageAdvService) {
+func (ps *PathService) SetPageAdvService(pageAdvService *PageAdvService) {
 	ps.pageAdvService = pageAdvService
 }
 
 // SavePath TODO рефакторинг.
-func (ps PathService) SavePath(sessionUuid uuid.UUID, siteId, currentUrl, referer string, isError404 bool, advReferer entitydb.AdvReferer) error {
+func (ps *PathService) SavePath(sessionUuid uuid.UUID, siteId, currentUrl, referer string, isError404 bool, advReferer entitydb.AdvCompany) error {
 
 	if currentUrl == referer {
 		return nil
@@ -270,9 +270,9 @@ func (ps PathService) SavePath(sessionUuid uuid.UUID, siteId, currentUrl, refere
 	return nil
 }
 
-func (ps PathService) SaveVisits(
+func (ps *PathService) SaveVisits(
 	siteId, currentDir, currentPage, lastDir, lastPage string, isSessionNew, isError404 bool,
-	adv entitydb.AdvReferer, lastPageUuid, lastDirUuid uuid.UUID,
+	adv entitydb.AdvCompany, lastPageUuid, lastDirUuid uuid.UUID,
 ) error {
 
 	if len(currentPage) == 0 && len(currentDir) == 0 {

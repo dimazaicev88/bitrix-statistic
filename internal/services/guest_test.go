@@ -24,11 +24,12 @@ func TestGuestService_Add_EmptyUserData(t *testing.T) {
 	defer chClient.Close()
 
 	allModels := models.NewModels(context.Background(), chClient)
-	hitService := NewHit(context.Background(), allModels)
-	guestService := NewGuest(context.Background(), allModels, hitService, NewAdv(context.Background(), allModels, hitService))
+	guestService := NewGuest(context.Background(), allModels)
+	guestService.SetHitService(NewHit(context.Background(), allModels))
+	guestService.SetAdvService(NewAdv(context.Background(), allModels))
 	utils.TruncateTable("guest", chClient)
 
-	guest, err := guestService.Add(entityjson.UserData{}, entitydb.AdvReferer{})
+	guest, err := guestService.Add(entityjson.UserData{}, entitydb.AdvCompany{})
 	req.NotNil(err)
 	req.Equal("user data is empty", err.Error())
 	req.Equal(guest, entitydb.Guest{})
@@ -44,8 +45,9 @@ func TestGuestService_Add(t *testing.T) {
 	defer chClient.Close()
 
 	allModels := models.NewModels(context.Background(), chClient)
-	hitService := NewHit(context.Background(), allModels)
-	guestService := NewGuest(context.Background(), allModels, hitService, NewAdv(context.Background(), allModels, hitService))
+	guestService := NewGuest(context.Background(), allModels)
+	guestService.SetHitService(NewHit(context.Background(), allModels))
+	guestService.SetAdvService(NewAdv(context.Background(), allModels))
 	utils.TruncateTable("guest", chClient)
 
 	guestUuid := uuid.New()
@@ -69,7 +71,7 @@ func TestGuestService_Add(t *testing.T) {
 		Cookies:           "cookies-value",
 		IsFavorite:        true,
 	}
-	advReferer := entitydb.AdvReferer{
+	advReferer := entitydb.AdvCompany{
 		AdvUuid:     advUuid,
 		Referer1:    "ref1",
 		Referer2:    "ref2",
@@ -131,8 +133,9 @@ func TestGuestService_FindByUuid(t *testing.T) {
 	defer chClient.Close()
 
 	allModels := models.NewModels(context.Background(), chClient)
-	hitService := NewHit(context.Background(), allModels)
-	guestService := NewGuest(context.Background(), allModels, hitService, NewAdv(context.Background(), allModels, hitService))
+	guestService := NewGuest(context.Background(), allModels)
+	guestService.SetHitService(NewHit(context.Background(), allModels))
+	guestService.SetAdvService(NewAdv(context.Background(), allModels))
 	utils.TruncateTable("guest", chClient)
 
 	guestUuid := uuid.New()
@@ -155,7 +158,7 @@ func TestGuestService_FindByUuid(t *testing.T) {
 		Cookies:           "cookies-value",
 		IsFavorite:        true,
 	}
-	guest, err := guestService.Add(userData, entitydb.AdvReferer{})
+	guest, err := guestService.Add(userData, entitydb.AdvCompany{})
 	guestFind, err := guestService.FindByUuid(userData.GuestUuid)
 
 	req.Nil(err)
@@ -171,8 +174,9 @@ func TestGuestService_Update(t *testing.T) {
 	defer chClient.Close()
 
 	allModels := models.NewModels(context.Background(), chClient)
-	hitService := NewHit(context.Background(), allModels)
-	guestService := NewGuest(context.Background(), allModels, hitService, NewAdv(context.Background(), allModels, hitService))
+	guestService := NewGuest(context.Background(), allModels)
+	guestService.SetHitService(NewHit(context.Background(), allModels))
+	guestService.SetAdvService(NewAdv(context.Background(), allModels))
 	utils.TruncateTable("guest", chClient)
 
 	guestUuid := uuid.New()
@@ -195,7 +199,7 @@ func TestGuestService_Update(t *testing.T) {
 		Cookies:           "cookies-value",
 		IsFavorite:        true,
 	}
-	guest, err := guestService.Add(userData, entitydb.AdvReferer{})
+	guest, err := guestService.Add(userData, entitydb.AdvCompany{})
 	newGuest := guest
 	newGuest.Events = 1
 	newGuest.Favorites = true

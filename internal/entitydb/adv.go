@@ -10,11 +10,11 @@ type Adv struct {
 	Referer1    string    `ch:"referer1"`
 	Referer2    string    `ch:"referer2"`
 	Cost        float64   `ch:"cost"`
-	DateCreated time.Time `ch:"date_created"`
+	DateCreated time.Time `ch:"date_create"`
 	EventsView  string    `ch:"events_view"`
 	Description string    `ch:"description"`
 	Priority    uint32    `ch:"priority"`
-	Referer3    string    `ch:"referer3"`
+	//Referer3    string    `ch:"referer3"`
 }
 
 type AdvStat struct {

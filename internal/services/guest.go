@@ -37,15 +37,15 @@ func NewGuest(ctx context.Context, allModels *models.Models) *GuestService {
 	}
 }
 
-func (gs GuestService) SetHitService(hitService *HitService) {
+func (gs *GuestService) SetHitService(hitService *HitService) {
 	gs.hitService = hitService
 }
 
-func (gs GuestService) SetAdvService(advServices *AdvServices) {
+func (gs *GuestService) SetAdvService(advServices *AdvServices) {
 	gs.advServices = advServices
 }
 
-func (gs GuestService) Add(userData entityjson.UserData, advReferer entitydb.AdvReferer) (entitydb.Guest, error) {
+func (gs *GuestService) Add(userData entityjson.UserData, advReferer entitydb.AdvCompany) (entitydb.Guest, error) {
 
 	if userData == (entityjson.UserData{}) {
 		return entitydb.Guest{}, errors.New("user data is empty")
@@ -88,21 +88,21 @@ func (gs GuestService) Add(userData entityjson.UserData, advReferer entitydb.Adv
 	return guestDb, nil
 }
 
-func (gs GuestService) Find(filter filters.Filter) ([]entitydb.Guest, error) {
+func (gs *GuestService) Find(filter filters.Filter) ([]entitydb.Guest, error) {
 	return gs.allModels.Guest.Find(filter)
 }
 
-func (gs GuestService) FindByUuid(uuid uuid.UUID) (entitydb.Guest, error) {
+func (gs *GuestService) FindByUuid(uuid uuid.UUID) (entitydb.Guest, error) {
 	return gs.allModels.Guest.FindByUuid(uuid)
 }
 
-func (gs GuestService) UpdateGuest(oldGuest, newGuestDb entitydb.Guest) error {
+func (gs *GuestService) UpdateGuest(oldGuest, newGuestDb entitydb.Guest) error {
 	oldGuest.Sign *= -1
 	newGuestDb.Sign *= 1
 	newGuestDb.Version += 1
 	return gs.allModels.Guest.Update(oldGuest, newGuestDb)
 }
 
-func (gs GuestService) ClearCache() {
+func (gs *GuestService) ClearCache() {
 	gs.cacheGuest.Close()
 }

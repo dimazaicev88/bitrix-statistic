@@ -23,7 +23,7 @@ func NewSession(ctx context.Context, allModels *models.Models) *SessionService {
 	}
 }
 
-func (ss SessionService) Add(stopListUuid, guestUuid, hitUuid uuid.UUID, existGuest bool, userData entityjson.UserData, adv entitydb.AdvReferer) (entitydb.Session, error) {
+func (ss *SessionService) Add(stopListUuid, guestUuid, hitUuid uuid.UUID, existGuest bool, userData entityjson.UserData, adv entitydb.AdvCompany) (entitydb.Session, error) {
 
 	switch {
 	case guestUuid == uuid.Nil:
@@ -75,7 +75,7 @@ func (ss SessionService) Add(stopListUuid, guestUuid, hitUuid uuid.UUID, existGu
 	return sessionDb, nil
 }
 
-func (ss SessionService) IsExistsByPhpSession(phpSession string) bool {
+func (ss *SessionService) IsExistsByPhpSession(phpSession string) bool {
 	exists, err := ss.allModels.Session.ExistsByPhpSession(phpSession)
 	if err != nil {
 		return false
@@ -83,15 +83,15 @@ func (ss SessionService) IsExistsByPhpSession(phpSession string) bool {
 	return exists
 }
 
-func (ss SessionService) Filter(filter filters.Filter) ([]entitydb.Session, error) {
+func (ss *SessionService) Filter(filter filters.Filter) ([]entitydb.Session, error) {
 	return nil, nil
 }
 
-func (ss SessionService) FindByPHPSessionId(phpSessionId string) (entitydb.Session, error) {
+func (ss *SessionService) FindByPHPSessionId(phpSessionId string) (entitydb.Session, error) {
 	return ss.allModels.Session.FindByPHPSessionId(phpSessionId)
 }
 
-func (ss SessionService) Update(oldSession entitydb.Session, newSession entitydb.Session) error {
+func (ss *SessionService) Update(oldSession entitydb.Session, newSession entitydb.Session) error {
 	oldSession.Sign *= -1
 	newSession.Sign *= 1
 	newSession.Version += 1

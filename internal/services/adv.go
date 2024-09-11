@@ -27,77 +27,78 @@ func NewAdv(ctx context.Context, allModels *models.Models) *AdvServices {
 	}
 }
 
-func (as AdvServices) SetHitService(hitService *HitService) {
+func (as *AdvServices) SetHitService(hitService *HitService) {
 	as.hitService = hitService
 }
 
-func (as AdvServices) SetOptionService(optionService *OptionService) {
+func (as *AdvServices) SetOptionService(optionService *OptionService) {
 	as.optionService = optionService
 }
 
 // GetAdv Получить рекламную компанию
-func (as AdvServices) GetAdv(statData entityjson.UserData) (entitydb.AdvReferer, error) {
+func (as *AdvServices) GetAdv(statData entityjson.UserData) (entitydb.AdvCompany, error) {
 	var totalListUuidAdv []string
 
 	previewHit, err := as.hitService.FindLastHitWithoutSession(statData.GuestUuid, statData.PHPSessionId)
 	if err != nil {
-		return entitydb.AdvReferer{}, err
+		return entitydb.AdvCompany{}, err
 	}
 
 	adv, err := as.FindByUuid(previewHit.AdvUuid)
 	if err != nil {
-		return entitydb.AdvReferer{}, err
+		return entitydb.AdvCompany{}, err
 	}
+
 	if adv != (entitydb.Adv{}) {
-		return entitydb.AdvReferer{
-			AdvUuid:     adv.Uuid,
-			Referer1:    adv.Referer1,
-			Referer2:    adv.Referer2,
-			Referer3:    adv.Referer3,
+		return entitydb.AdvCompany{
+			AdvUuid:  adv.Uuid,
+			Referer1: adv.Referer1,
+			Referer2: adv.Referer2,
+			//Referer3:    adv.Referer3,
 			LastAdvBack: true,
 		}, nil
 	}
 
 	urlValues, err := url.Parse(statData.Url)
 	if err != nil {
-		return entitydb.AdvReferer{}, err
+		return entitydb.AdvCompany{}, err
 	}
 
 	urlWithoutScheme, err := url.JoinPath(urlValues.Host, urlValues.Path)
 	if err != nil {
-		return entitydb.AdvReferer{}, err
+		return entitydb.AdvCompany{}, err
 	}
 
 	advUuidsPageTo, err := as.allModels.AdvModel.FindAdvUuidByByPage(urlWithoutScheme, "TO") //Поиск рекламных компаний по условию Куда пришли [%_]:	(полные адреса страниц вашего сайта	разделенные новой строкой)
 	if err != nil {
-		return entitydb.AdvReferer{}, err
+		return entitydb.AdvCompany{}, err
 	}
 
 	totalListUuidAdv = append(totalListUuidAdv, advUuidsPageTo...)
 
 	advUuidsSearcher, err := as.allModels.AdvModel.FindByByDomainSearcher(utils.StringConcat(urlValues.Scheme, urlValues.Host))
 	if err != nil {
-		return entitydb.AdvReferer{}, err
+		return entitydb.AdvCompany{}, err
 	}
 
 	totalListUuidAdv = append(totalListUuidAdv, advUuidsSearcher...)
 
 	advUuidsPageFrom, err := as.allModels.AdvModel.FindAdvUuidByByPage("FROM", statData.Url) //Откуда пришли [%_]: (ссылающиеся страницы,	разделенные новой строкой)
 	if err != nil {
-		return entitydb.AdvReferer{}, err
+		return entitydb.AdvCompany{}, err
 	}
 	totalListUuidAdv = append(totalListUuidAdv, advUuidsPageFrom...)
 
 	byReferer, err := as.allModels.AdvModel.FindByReferer(urlValues.Query().Get("referer1"), urlValues.Query().Get("referer2")) //Поиск по referrer
 	if err != nil {
-		return entitydb.AdvReferer{}, err
+		return entitydb.AdvCompany{}, err
 	}
 
 	totalListUuidAdv = append(totalListUuidAdv, byReferer...)
 
 	referer, err := as.allModels.AdvModel.FindRefererByListAdv(totalListUuidAdv)
 	if err != nil {
-		return entitydb.AdvReferer{}, err
+		return entitydb.AdvCompany{}, err
 	}
 
 	//	if am.optionModel.Find("ADV_NA") == "Y" {
@@ -113,17 +114,17 @@ func (as AdvServices) GetAdv(statData entityjson.UserData) (entitydb.AdvReferer,
 	return referer, nil
 }
 
-func (as AdvServices) FindByUuid(advUuid uuid.UUID) (entitydb.Adv, error) {
+func (as *AdvServices) FindByUuid(advUuid uuid.UUID) (entitydb.Adv, error) {
 	return as.allModels.AdvModel.FindByUuid(advUuid)
 }
 
 // DeleteByUuid Удаление рекламной компании по uuid
-func (as AdvServices) DeleteByUuid(advUuid uuid.UUID) error {
+func (as *AdvServices) DeleteByUuid(advUuid uuid.UUID) error {
 	return as.allModels.AdvModel.DeleteByUuid(advUuid)
 }
 
 // AutoCreateAdv Автоматическое создание рекламной компании
-func (as AdvServices) AutoCreateAdv(referer1, referer2, siteId string) error {
+func (as *AdvServices) AutoCreateAdv(referer1, referer2, siteId string) error {
 
 	referrers, err := as.allModels.AdvModel.FindByReferer(referer1, referer2)
 	if err != nil {
@@ -159,6 +160,6 @@ func (as AdvServices) AutoCreateAdv(referer1, referer2, siteId string) error {
 	return nil
 }
 
-func (as AdvServices) IsExistsAdv(advUuid uuid.UUID) (bool, error) {
+func (as *AdvServices) IsExistsAdv(advUuid uuid.UUID) (bool, error) {
 	return as.allModels.AdvModel.IsExistsAdv(advUuid)
 }

@@ -19,6 +19,6 @@ func NewCountry(ctx context.Context, allModels *models.Models) *CountryServices 
 	}
 }
 
-func (cs CountryServices) Find(filter filters.Filter) ([]entitydb.Country, error) {
+func (cs *CountryServices) Find(filter filters.Filter) ([]entitydb.Country, error) {
 	return cs.allModels.Country.Find(filter)
 }
