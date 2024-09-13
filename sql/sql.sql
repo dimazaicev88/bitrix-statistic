@@ -734,30 +734,30 @@ create table if not exists guest
 ----------------------- Hit ---------------------------
 create table if not exists hit
 (
-    uuid           UUID,
-    session_uuid   UUID,
-    adv_uuid       UUID,
-    date_hit       DateTime32('Europe/Moscow'),
-    php_session_id String,
-    guest_uuid     UUID,
-    isNewGuest      BOOLEAN default false,
-    userId        UInt32,
-    userAuth      BOOLEAN default false,
-    url            String,
-    url_404        BOOLEAN default false,
-    url_from       String,
-    ip             IPv4,
-    method         String,
-    cookies        String,
-    user_agent     String,
-    stop_list_uuid UUID,
-    country_id     FixedString(2),
-    city_uuid      UUID,
-    site_id        FixedString(2)
+    uuid         UUID,
+    sessionUuid  UUID,
+    advUuid      UUID,
+    dateHit      DateTime32('Europe/Moscow'),
+    phpSessionId String,
+    guestUuid    UUID,
+    isNewGuest   BOOLEAN default false,
+    userId       UInt32,
+    userAuth     BOOLEAN default false,
+    url          String,
+    url404       BOOLEAN default false,
+    urlFrom      String,
+    ip           IPv4,
+    method       String,
+    cookies      String,
+    userAgent    String,
+    stopListUuid UUID,
+    countryId    FixedString(2),
+    cityUuid     UUID,
+    siteId       FixedString(2)
 )
     engine = MergeTree
-        PARTITION BY toMonth(date_hit)
-        ORDER BY date_hit;
+        PARTITION BY toMonth(dateHit)
+        ORDER BY dateHit;
 
 ------------------ Page ----------------------
 

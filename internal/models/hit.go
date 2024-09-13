@@ -27,13 +27,13 @@ func (hm Hit) Find(filter filters.Filter) ([]entitydb.Hit, error) {
 		return nil, err
 	}
 
-	rows, err := hm.chClient.Query(hm.ctx, resultSql, args)
+	rows, err := hm.chClient.Query(hm.ctx, resultSql, args...)
 
 	if err != nil {
 		return nil, err
 	}
 
-	var allDbHits []entitydb.Hit
+	var allDbHits = make([]entitydb.Hit, 0)
 	for rows.Next() {
 		var hit entitydb.Hit
 		err = rows.ScanStruct(&hit)
@@ -54,8 +54,8 @@ func (hm Hit) FindByUuid(uuid uuid.UUID) (entitydb.Hit, error) {
 
 func (hm Hit) AddHit(hit entitydb.Hit) error {
 	return hm.chClient.Exec(hm.ctx,
-		`INSERT INTO hit (uuid, session_uuid, adv_uuid, date_hit, php_session_id, guest_uuid, new_guest, user_id, user_auth, url, url_404, url_from,
-	            ip, method, cookies, user_agent, stop_list_uuid, country_id, city_uuid, site_id)
+		`INSERT INTO hit (uuid, sessionUuid, advUuid, dateHit, phpSessionId, guestUuid, isNewGuest, userId, userAuth, url, url404, urlFrom,
+	            ip, method, cookies, userAgent, stopListUuid, countryId, cityUuid, siteId)
 		       VALUES (?,  ?, ?, now(), ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?,?,?,?,?,?)`,
 		hit.Uuid, hit.SessionUuid, hit.AdvUuid, hit.PhpSessionId, hit.GuestUuid, hit.IsNewGuest, hit.UserId, hit.IsUserAuth, hit.Url, hit.Url404, hit.UrlFrom, hit.Ip,
 		hit.Method, hit.Cookies, hit.UserAgent, hit.StopListUuid, hit.CountryId, hit.CityUuid, hit.SiteId)
@@ -63,7 +63,7 @@ func (hm Hit) AddHit(hit entitydb.Hit) error {
 
 func (hm Hit) FindLastHitWithoutSession(guestUuid uuid.UUID, sessionId string) (entitydb.Hit, error) {
 	var hit entitydb.Hit
-	err := hm.chClient.QueryRow(hm.ctx, `select * from hit where guest_uuid=? and php_session_id!=? order by date_hit desc limit 1`, guestUuid, sessionId).ScanStruct(&hit)
+	err := hm.chClient.QueryRow(hm.ctx, `select * from hit where guestUuid=? and phpSessionId!=? order by dateHit desc limit 1`, guestUuid, sessionId).ScanStruct(&hit)
 	if err != nil && errors.Is(err, sql.ErrNoRows) == false {
 		return hit, err
 	}

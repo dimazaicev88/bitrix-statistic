@@ -79,9 +79,8 @@ func (stat *Statistic) Add(statData entityjson.UserData) error {
 	var advReferer entitydb.AdvCompany
 	var sessionDb entitydb.Session
 	var guestDb entitydb.Guest
-	var hitDb entitydb.Hit
 	existsGuest := false
-	var hitUuid uuid.UUID
+	var hitUuid = uuid.New()
 	var sessionUuid = uuid.New()
 
 	isSearcher, err := stat.searcherService.IsSearcher(statData.UserAgent)
@@ -94,13 +93,9 @@ func (stat *Statistic) Add(statData entityjson.UserData) error {
 			return err
 		}
 	} else {
-		guestDb, err = stat.guestService.FindByUuid(statData.GuestUuid)
-		if err != nil {
-			return err
-		}
 
 		//--------------------------- Guest ------------------------------------
-		sessionDb, err = stat.sessionService.FindByPHPSessionId(statData.PHPSessionId)
+		guestDb, err = stat.guestService.FindByUuid(statData.GuestUuid)
 		if err != nil {
 			return err
 		}
@@ -130,9 +125,14 @@ func (stat *Statistic) Add(statData entityjson.UserData) error {
 
 		//--------------------------- Sessions ------------------------------------
 
+		sessionDb, err = stat.sessionService.FindByPHPSessionId(statData.PHPSessionId)
+		if err != nil {
+			return err
+		}
+
 		//Если сессия новая, добавляем.
 		if sessionDb == (entitydb.Session{}) {
-			sessionDb, err = stat.sessionService.Add(uuid.Nil, hitUuid, existsGuest == true, statData, advReferer)
+			sessionDb, err = stat.sessionService.Add(sessionUuid, uuid.Nil, hitUuid, existsGuest == true, statData, advReferer)
 			if err != nil {
 				return err
 			}
@@ -151,10 +151,9 @@ func (stat *Statistic) Add(statData entityjson.UserData) error {
 
 		//------------------------------- Hits ---------------------------------
 		if stat.optionService.IsSaveHits(statData.SiteId) {
-			if hitDb, err = stat.hitService.Add(existsGuest, sessionUuid, advReferer, statData); err != nil {
+			if _, err = stat.hitService.Add(hitUuid, existsGuest, sessionUuid, advReferer, statData); err != nil {
 				return err
 			}
-			hitUuid = hitDb.Uuid
 		}
 
 		//------------------------- Referring -------------------------

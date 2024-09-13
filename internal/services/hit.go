@@ -31,6 +31,7 @@ func (hs *HitService) FindByUuid(uuid uuid.UUID) (entitydb.Hit, error) {
 }
 
 func (hs *HitService) Add(
+	hitUuid uuid.UUID,
 	existsGuest bool,
 	sessionUuid uuid.UUID,
 	advReferer entitydb.AdvCompany,
@@ -46,7 +47,7 @@ func (hs *HitService) Add(
 	}
 
 	hit := entitydb.Hit{
-		Uuid:         uuid.New(),
+		Uuid:         hitUuid,
 		PhpSessionId: statData.PHPSessionId,
 		SessionUuid:  sessionUuid,
 		AdvUuid:      advReferer.AdvUuid,
