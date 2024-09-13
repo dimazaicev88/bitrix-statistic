@@ -7,23 +7,23 @@ import (
 
 type Hit struct {
 	Uuid         uuid.UUID `ch:"uuid"`
-	SessionUuid  uuid.UUID `ch:"session_uuid"`
-	AdvUuid      uuid.UUID `ch:"adv_uuid"`
-	PhpSessionId string    `ch:"php_session_id"`
-	DateHit      time.Time `ch:"date_hit"`
-	GuestUuid    uuid.UUID `ch:"guest_uuid"`
-	IsNewGuest   bool      `ch:"new_guest"`
-	UserId       uint32    `ch:"user_id"`
-	IsUserAuth   bool      `ch:"user_auth"`
+	SessionUuid  uuid.UUID `ch:"sessionUuid"`
+	AdvUuid      uuid.UUID `ch:"advUuid"`
+	PhpSessionId string    `ch:"phpSessionId"`
+	DateHit      time.Time `ch:"dateHit"`
+	GuestUuid    uuid.UUID `ch:"guestUuid"`
+	IsNewGuest   bool      `ch:"isNewGuest"`
+	UserId       uint32    `ch:"userId"`
+	IsUserAuth   bool      `ch:"userAuth"`
 	Url          string    `ch:"url"`
-	Url404       bool      `ch:"url_404"`
-	UrlFrom      string    `ch:"url_from"`
+	Url404       bool      `ch:"url404"`
+	UrlFrom      string    `ch:"urlFrom"`
 	Ip           string    `ch:"ip"`
 	Method       string    `ch:"method"`
 	Cookies      string    `ch:"cookies"`
-	UserAgent    string    `ch:"user_agent"`
-	StopListUuid uuid.UUID `ch:"stop_list_uuid"`
-	CountryId    string    `ch:"country_id"`
-	CityUuid     uuid.UUID `ch:"city_uuid"`
-	SiteId       string    `ch:"site_id"`
+	UserAgent    string    `ch:"userAgent"`
+	StopListUuid uuid.UUID `ch:"stopListUuid"`
+	CountryId    string    `ch:"countryId"`
+	CityUuid     uuid.UUID `ch:"cityUuid"`
+	SiteId       string    `ch:"siteId"`
 }

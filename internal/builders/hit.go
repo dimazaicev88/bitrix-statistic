@@ -34,7 +34,10 @@ var hitFilterFields = []string{
 func (hs *HitSqlBuilder) buildSelect() error {
 	countFields := 0
 	for _, field := range hs.filter.Fields {
-		if field != "" && !slices.Contains(hitSelectFields, field) {
+		if field == "" {
+			continue
+		}
+		if !slices.Contains(hitSelectFields, field) {
 			return fmt.Errorf("unknown field: %s", field)
 		}
 		countFields++
@@ -80,9 +83,9 @@ func (hs *HitSqlBuilder) buildWhere() {
 func (hs *HitSqlBuilder) buildSkipAndLimit() {
 	hs.sqlBuilder.Add(" LIMIT ")
 	if hs.filter.Skip != 0 {
-		hs.sqlBuilder.Add("? ", hs.filter.Skip)
+		hs.sqlBuilder.Add("?, ", hs.filter.Skip)
 	} else {
-		hs.sqlBuilder.Add("? ", 0)
+		hs.sqlBuilder.Add("?, ", 0)
 	}
 
 	if hs.filter.Limit != 0 {
@@ -93,12 +96,6 @@ func (hs *HitSqlBuilder) buildSkipAndLimit() {
 }
 
 func (hs *HitSqlBuilder) Build() (string, []interface{}, error) {
-	for _, value := range hs.filter.Fields {
-		if slices.Contains(hitSelectFields, value) == false {
-			return "", nil, nil
-		}
-	}
-
 	if err := hs.buildSelect(); err != nil {
 		return "", nil, err
 	}
