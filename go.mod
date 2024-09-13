@@ -12,7 +12,6 @@ require (
 	github.com/google/uuid v1.6.0
 	github.com/hibiken/asynq v0.24.1
 	github.com/huandu/go-sqlbuilder v1.27.3
-	github.com/jmoiron/sqlx v1.4.0
 	github.com/joho/godotenv v1.5.1
 	github.com/maypok86/otter v1.2.2
 	github.com/sirupsen/logrus v1.9.3

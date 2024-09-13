@@ -81,7 +81,7 @@ func (stat *Statistic) Add(statData entityjson.UserData) error {
 	var guestDb entitydb.Guest
 	var hitDb entitydb.Hit
 	existsGuest := false
-	var hitUuid uuid.UUID
+	var hitUuid = uuid.New()
 	var sessionUuid = uuid.New()
 
 	isSearcher, err := stat.searcherService.IsSearcher(statData.UserAgent)
@@ -206,7 +206,7 @@ func (stat *Statistic) Add(statData entityjson.UserData) error {
 		newGuestDb.Hits += 1
 		newGuestDb.LastSessionUuid = sessionDb.Uuid
 		newGuestDb.LastDate = time.Now()
-		newGuestDb.LastUserId = uint32(statData.UserId)
+		newGuestDb.LastUserId = statData.UserId
 		newGuestDb.LastUserAuth = statData.IsUserAuth
 		newGuestDb.LastUrlLast = statData.Url
 		newGuestDb.LastUrlLast404 = statData.IsError404

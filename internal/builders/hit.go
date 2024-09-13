@@ -32,12 +32,14 @@ var hitFilterFields = []string{
 }
 
 func (hs *HitSqlBuilder) buildSelect() error {
+	countFields := 0
 	for _, field := range hs.filter.Fields {
-		if !slices.Contains(hitSelectFields, field) {
+		if field != "" && !slices.Contains(hitSelectFields, field) {
 			return fmt.Errorf("unknown field: %s", field)
 		}
+		countFields++
 	}
-	if len(hs.filter.Fields) == 0 {
+	if len(hs.filter.Fields) == 0 || countFields == 0 {
 		hs.sqlBuilder.Add("SELECT * FROM hit ")
 	} else {
 		hs.sqlBuilder.Add(fmt.Sprintf("SELECT %s FROM hit ", strings.Join(hs.filter.Fields, ", ")))
