@@ -27,13 +27,13 @@ func (hm Hit) Find(filter filters.Filter) ([]entitydb.Hit, error) {
 		return nil, err
 	}
 
-	rows, err := hm.chClient.Query(hm.ctx, resultSql, args)
+	rows, err := hm.chClient.Query(hm.ctx, resultSql, args...)
 
 	if err != nil {
 		return nil, err
 	}
 
-	var allDbHits []entitydb.Hit
+	var allDbHits = make([]entitydb.Hit, 0)
 	for rows.Next() {
 		var hit entitydb.Hit
 		err = rows.ScanStruct(&hit)

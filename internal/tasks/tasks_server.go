@@ -10,7 +10,6 @@ import (
 )
 
 const TaskStatisticAdd = "statistic:add"
-const TaskGroup = "default"
 
 type TaskServer struct {
 	statisticService *services.Statistic
