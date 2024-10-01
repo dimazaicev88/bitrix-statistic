@@ -153,3 +153,24 @@ func (s Session) FindByPHPSessionId(phpSessionId string) (entitydb.Session, erro
 	}
 	return sessionDb, nil
 }
+
+func (s Session) FindAll(skip uint32, limit uint32) ([]entitydb.Session, error) {
+	if limit > 1000 || limit < 1 {
+		limit = 1000
+	}
+	resultSql := `select * from session limit ?, ?`
+	rows, err := s.chClient.Query(s.ctx, resultSql, skip, limit)
+
+	if err != nil {
+		return nil, err
+	}
+
+	var allDbSessions []entitydb.Session
+	for rows.Next() {
+		var hit entitydb.Session
+		err = rows.ScanStruct(&hit)
+		allDbSessions = append(allDbSessions, hit)
+	}
+
+	return allDbSessions, nil
+}
