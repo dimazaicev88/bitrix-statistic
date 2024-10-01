@@ -30,7 +30,7 @@ type Session struct {
 	LastHitUuid  string    `json:"lastHitId,omitempty"`   // ID последнего хита
 	LastSiteId   string    `json:"lastSiteId,omitempty"`  // ID сайта для последнего хита сессии
 	IpLast       string    `json:"ipLast,omitempty"`      // IP адрес посетителя на последнем хите сессии (в виде: XXX.XXX.XXX.XXX)
-	AdvUuid      string    `json:"advId,omitempty"`       // ID рекламной кампании
+	AdvUuid      string    `json:"advUuid,omitempty"`     // ID рекламной кампании
 	AdvBack      bool      `json:"advBack,omitempty"`     // Флаг прямого захода (N) или возврата (Y) по рекламной кампании
 	Referer1     string    `json:"referer1,omitempty"`    // Идентификатор referer1 рекламной кампании
 	Referer2     string    `json:"referer2,omitempty"`    // Идентификатор referer2 рекламной кампании
