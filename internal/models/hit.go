@@ -54,7 +54,7 @@ func (hm Hit) FindByUuid(uuid uuid.UUID) (entitydb.Hit, error) {
 
 func (hm Hit) AddHit(hit entitydb.Hit) error {
 	return hm.chClient.Exec(hm.ctx,
-		`INSERT INTO hit (uuid, session_uuid, adv_uuid, date_hit, php_session_id, guest_uuid, new_guest, user_id, user_auth, url, url_404, url_from,
+		`INSERT INTO hit (uuid, session_uuid, adv_uuid, date_hit, php_session_id, guest_uuid, is_new_guest, user_id, user_auth, url, url_404, url_from,
 	            ip, method, cookies, user_agent, stop_list_uuid, country_id, city_uuid, site_id)
 		       VALUES (?,  ?, ?, now(), ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?,?,?,?,?,?)`,
 		hit.Uuid, hit.SessionUuid, hit.AdvUuid, hit.PhpSessionId, hit.GuestUuid, hit.IsNewGuest, hit.UserId, hit.IsUserAuth, hit.Url, hit.Url404, hit.UrlFrom, hit.Ip,
@@ -68,4 +68,25 @@ func (hm Hit) FindLastHitWithoutSession(guestUuid uuid.UUID, sessionId string) (
 		return hit, err
 	}
 	return hit, nil
+}
+
+func (hm Hit) FindAll(skip uint32, limit uint32) ([]entitydb.Hit, error) {
+	if limit > 1000 || limit < 1 {
+		limit = 1000
+	}
+	resultSql := `select * from hit limit ?, ?`
+	rows, err := hm.chClient.Query(hm.ctx, resultSql, skip, limit)
+
+	if err != nil {
+		return nil, err
+	}
+
+	var allDbHits []entitydb.Hit
+	for rows.Next() {
+		var hit entitydb.Hit
+		err = rows.ScanStruct(&hit)
+		allDbHits = append(allDbHits, hit)
+	}
+
+	return allDbHits, nil
 }

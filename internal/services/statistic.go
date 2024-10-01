@@ -81,7 +81,7 @@ func (stat *Statistic) Add(statData entityjson.UserData) error {
 	var guestDb entitydb.Guest
 	var hitDb entitydb.Hit
 	existsGuest := false
-	var hitUuid uuid.UUID
+	var hitUuid = uuid.New()
 	var sessionUuid = uuid.New()
 
 	isSearcher, err := stat.searcherService.IsSearcher(statData.UserAgent)
@@ -137,11 +137,13 @@ func (stat *Statistic) Add(statData entityjson.UserData) error {
 				return err
 			}
 		} else {
+			//TODO исправить баг с ip адресами  сессии
 			err = stat.sessionService.Update(sessionDb, entitydb.Session{
 				UserId:     statData.UserId,
 				IsUserAuth: statData.IsUserAuth,
 				UserAgent:  statData.UserAgent,
 				IpLast:     statData.Ip,
+				IpFirst:    statData.Ip,
 				Hits:       sessionDb.Hits + 1,
 			})
 			if err != nil {

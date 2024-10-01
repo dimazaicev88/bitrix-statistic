@@ -12,7 +12,7 @@ type Hit struct {
 	PhpSessionId string    `ch:"php_session_id"`
 	DateHit      time.Time `ch:"date_hit"`
 	GuestUuid    uuid.UUID `ch:"guest_uuid"`
-	IsNewGuest   bool      `ch:"new_guest"`
+	IsNewGuest   bool      `ch:"is_new_guest"`
 	UserId       uint32    `ch:"user_id"`
 	IsUserAuth   bool      `ch:"user_auth"`
 	Url          string    `ch:"url"`

@@ -64,6 +64,7 @@ github.com/goccy/go-json/internal/runtime
 github.com/gofiber/fiber/v2
 github.com/gofiber/fiber/v2/internal/schema
 github.com/gofiber/fiber/v2/log
+github.com/gofiber/fiber/v2/middleware/cors
 github.com/gofiber/fiber/v2/utils
 # github.com/gofiber/template v1.6.30
 ## explicit; go 1.16
@@ -95,10 +96,6 @@ github.com/huandu/go-sqlbuilder
 # github.com/huandu/xstrings v1.4.0
 ## explicit; go 1.12
 github.com/huandu/xstrings
-# github.com/jmoiron/sqlx v1.4.0
-## explicit; go 1.10
-github.com/jmoiron/sqlx
-github.com/jmoiron/sqlx/reflectx
 # github.com/joho/godotenv v1.5.1
 ## explicit; go 1.12
 github.com/joho/godotenv

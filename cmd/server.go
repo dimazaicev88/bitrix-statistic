@@ -10,6 +10,7 @@ import (
 	"context"
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/gofiber/fiber/v2"
+	"github.com/gofiber/fiber/v2/middleware/cors"
 	"github.com/hibiken/asynq"
 	"github.com/huandu/go-sqlbuilder"
 	"github.com/joho/godotenv"
@@ -33,6 +34,12 @@ func main() {
 	cfg := config.GetServerConfig()
 
 	fb := fiber.New()
+	fb.Use(cors.New(cors.Config{
+		AllowOrigins: "*",                                           // Allow all origins
+		AllowMethods: "GET,POST,HEAD,PUT,DELETE,PATCH,OPTIONS",      // Allowed methods
+		AllowHeaders: "Origin, Content-Type, Accept, Authorization", // Allowed headers
+	}))
+
 	chClient, err := storage.NewClickHouseClient(config.GetServerConfig())
 	if err != nil {
 		logrus.Fatal(err)
