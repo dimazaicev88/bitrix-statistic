@@ -84,7 +84,7 @@ func (sh SessionHandlers) findAll(ctx *fiber.Ctx) error {
 		})
 	}
 	return ctx.JSON(entityjson.Response{
-		Result: sh.allService.Session.ConvertToJSONListSessions(allSessions),
+		Result: sh.allService.Session.ConvertToJSONListSession(allSessions),
 		Total:  1,
 	})
 }

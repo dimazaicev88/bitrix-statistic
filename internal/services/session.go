@@ -23,7 +23,7 @@ func NewSession(ctx context.Context, allModels *models.Models) *SessionService {
 	}
 }
 
-func (ss *SessionService) Add(sessionUuid uuid.UUID, stopListUuid, hitUuid uuid.UUID, existGuest bool, userData entityjson.UserData, adv entitydb.AdvCompany) (entitydb.Session, error) {
+func (ss SessionService) Add(sessionUuid uuid.UUID, stopListUuid, hitUuid uuid.UUID, existGuest bool, userData entityjson.UserData, adv entitydb.AdvCompany) (entitydb.Session, error) {
 
 	switch {
 	case userData.GuestUuid == uuid.Nil:
@@ -75,7 +75,7 @@ func (ss *SessionService) Add(sessionUuid uuid.UUID, stopListUuid, hitUuid uuid.
 	return sessionDb, nil
 }
 
-func (ss *SessionService) IsExistsByPhpSession(phpSession string) bool {
+func (ss SessionService) IsExistsByPhpSession(phpSession string) bool {
 	exists, err := ss.allModels.Session.ExistsByPhpSession(phpSession)
 	if err != nil {
 		return false
@@ -83,26 +83,26 @@ func (ss *SessionService) IsExistsByPhpSession(phpSession string) bool {
 	return exists
 }
 
-func (ss *SessionService) Filter(filter filters.Filter) ([]entitydb.Session, error) {
+func (ss SessionService) Filter(filter filters.Filter) ([]entitydb.Session, error) {
 	return nil, nil
 }
 
-func (ss *SessionService) FindByPHPSessionId(phpSessionId string) (entitydb.Session, error) {
+func (ss SessionService) FindByPHPSessionId(phpSessionId string) (entitydb.Session, error) {
 	return ss.allModels.Session.FindByPHPSessionId(phpSessionId)
 }
 
-func (ss *SessionService) Update(oldSession entitydb.Session, newSession entitydb.Session) error {
+func (ss SessionService) Update(oldSession entitydb.Session, newSession entitydb.Session) error {
 	oldSession.Sign *= -1
 	newSession.Sign *= 1
 	newSession.Version += 1
 	return ss.allModels.Session.Update(oldSession, newSession)
 }
 
-func (ss *SessionService) FindAll(skip uint32, limit uint32) ([]entitydb.Session, error) {
+func (ss SessionService) FindAll(skip uint32, limit uint32) ([]entitydb.Session, error) {
 	return ss.allModels.Session.FindAll(skip, limit)
 }
 
-func ConvertToJSONSession(dbSession entitydb.Session) entityjson.Session {
+func (ss SessionService) ConvertToJSONSession(dbSession entitydb.Session) entityjson.Session {
 	return entityjson.Session{
 		Uuid:         dbSession.Uuid,
 		GuestUuid:    dbSession.GuestUuid,
@@ -137,4 +137,13 @@ func ConvertToJSONSession(dbSession entitydb.Session) entityjson.Session {
 		UrlLast:      dbSession.UrlLast,
 		UrlLast404:   dbSession.UrlLast404,
 	}
+}
+
+func (ss SessionService) ConvertToJSONListSession(dbSessions []entitydb.Session) []entityjson.Session {
+	var sessions []entityjson.Session
+
+	for _, dbHit := range dbSessions {
+		sessions = append(sessions, ss.ConvertToJSONSession(dbHit))
+	}
+	return sessions
 }
