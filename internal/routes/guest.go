@@ -24,8 +24,8 @@ func NewGuest(ctx context.Context, fbApp *fiber.App, allService *services.AllSer
 }
 
 func (hh GuestRoutes) AddHandlers() {
-	hh.fbApp.Post("/v1/guest/filter", hh.filter)
-	hh.fbApp.Get("/v1/guest/:uuid", hh.findById)
+	hh.fbApp.Post("/api/v1/guest/filter", hh.filter)
+	hh.fbApp.Get("/api/v1/guest/:uuid", hh.findById)
 }
 
 func (hh GuestRoutes) filter(ctx *fiber.Ctx) error {

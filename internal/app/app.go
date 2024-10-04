@@ -54,6 +54,7 @@ func (app *App) Start() {
 	routes.NewStopList(app.ctx, app.fb, app.AllServices).AddHandlers()
 	routes.NewTraffic(app.ctx, app.fb, app.AllServices).AddHandlers()
 	routes.NewUserOnline(app.ctx, app.fb, app.AllServices).AddHandlers()
+	routes.NewOption(app.ctx, app.fb, app.AllServices).AddHandlers()
 
 	//start fiber
 	go func() {

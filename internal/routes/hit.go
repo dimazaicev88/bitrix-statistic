@@ -26,9 +26,9 @@ func NewHit(ctx context.Context, fbApp *fiber.App, allService *services.AllServi
 }
 
 func (hh HitHandlers) AddHandlers() {
-	hh.fbApp.Get("/v1/hit/findAll", hh.findAll)
-	hh.fbApp.Post("/v1/hit/filter", hh.filter)
-	hh.fbApp.Delete("/v1/hit/:uuid/", hh.findById)
+	hh.fbApp.Get("/api/v1/hit/findAll", hh.findAll)
+	hh.fbApp.Post("/api/v1/hit/filter", hh.filter)
+	hh.fbApp.Delete("/api/v1/hit/:uuid/", hh.findById)
 }
 
 func (hh HitHandlers) filter(ctx *fiber.Ctx) error {
@@ -36,19 +36,16 @@ func (hh HitHandlers) filter(ctx *fiber.Ctx) error {
 	body := ctx.Body()
 	err := json.Unmarshal(body, &filter)
 	if err != nil {
-		ctx.Status(502)
-		return err
+		return ctx.SendStatus(fiber.StatusBadRequest)
 	}
 	result, err := hh.allService.Hit.Find(filter)
 	if err != nil {
-		ctx.Status(502)
-		return err
+		return ctx.SendStatus(fiber.StatusBadRequest)
 	}
 
 	resultJson, err := json.Marshal(result)
 	if err != nil {
-		ctx.Status(502)
-		return err
+		return ctx.SendStatus(fiber.StatusBadRequest)
 	}
 	return ctx.SendString(string(resultJson))
 }

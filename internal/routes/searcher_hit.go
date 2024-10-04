@@ -22,7 +22,7 @@ func NewSearcherHit(ctx context.Context, fbApp *fiber.App, allService *services.
 }
 
 func (p SearcherHit) AddHandlers() {
-	p.fbApp.Post("/v1/searcherHit/filter", p.filter)
+	p.fbApp.Post("/api/v1/searcherHit/filter", p.filter)
 }
 
 func (p SearcherHit) filter(ctx *fiber.Ctx) error {

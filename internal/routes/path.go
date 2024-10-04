@@ -22,8 +22,8 @@ func NewPath(ctx context.Context, app *fiber.App, allService *services.AllServic
 }
 
 func (p Path) AddHandlers() {
-	p.fbApp.Post("/v1/path/filter", p.filter)
-	p.fbApp.Get("/v1/path/:uuid", p.findBydUuid)
+	p.fbApp.Post("/api/v1/path/filter", p.filter)
+	p.fbApp.Get("/api/v1/path/:uuid", p.findBydUuid)
 }
 
 func (p Path) filter(ctx *fiber.Ctx) error {

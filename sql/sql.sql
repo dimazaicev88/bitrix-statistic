@@ -741,8 +741,8 @@ create table if not exists hit
     php_session_id String,
     guest_uuid     UUID,
     is_new_guest   BOOLEAN default false,
-    user_id         UInt32,
-    user_auth       BOOLEAN default false,
+    user_id   UInt32,
+    user_auth BOOLEAN default false,
     url            String,
     url_404        BOOLEAN default false,
     url_from       String,
@@ -1016,12 +1016,9 @@ create table if not exists session
 
 create table if not exists options
 (
-    name        String,
-    value       String,
-    description String,
-    siteId      FixedString(2)
+    name  String,
+    value String
 ) ENGINE = MergeTree
-      PARTITION BY siteId
       ORDER BY (name);
 
 create table if not exists raw_request

@@ -26,9 +26,9 @@ func NewSession(ctx context.Context, app *fiber.App, allService *services.AllSer
 }
 
 func (sh SessionHandlers) AddHandlers() {
-	sh.app.Post("/session/filter", sh.findAll)
-	sh.app.Post("/session/filter", sh.filter)
-	sh.app.Get("/session/:uuid", sh.findByUuid)
+	sh.app.Post("/api/v1/session/filter", sh.findAll)
+	sh.app.Post("/api/v1/session/filter", sh.filter)
+	sh.app.Get("/api/v1/session/:uuid", sh.findByUuid)
 }
 
 func (sh SessionHandlers) filter(ctx *fiber.Ctx) error {

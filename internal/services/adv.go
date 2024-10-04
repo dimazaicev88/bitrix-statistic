@@ -124,7 +124,7 @@ func (as *AdvServices) DeleteByUuid(advUuid uuid.UUID) error {
 }
 
 // AutoCreateAdv Автоматическое создание рекламной компании
-func (as *AdvServices) AutoCreateAdv(referer1, referer2, siteId string) error {
+func (as *AdvServices) AutoCreateAdv(referer1, referer2 string) error {
 
 	referrers, err := as.allModels.AdvModel.FindByReferer(referer1, referer2)
 	if err != nil {
@@ -132,9 +132,9 @@ func (as *AdvServices) AutoCreateAdv(referer1, referer2, siteId string) error {
 	}
 
 	if len(referrers) == 0 {
-		if as.optionService.IsAdvAutoCreate(siteId) {
+		if as.optionService.AdvAutoCreate() {
 			var refererValid bool
-			if as.optionService.IsRefererCheck(siteId) {
+			if as.optionService.RefererCheck() {
 				refererValid, err = regexp.MatchString("/^([0-9A-Za-z_:;.,-])*$/", referer1)
 				if err != nil {
 					return err

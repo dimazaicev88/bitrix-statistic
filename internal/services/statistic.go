@@ -152,14 +152,14 @@ func (stat *Statistic) Add(statData entityjson.UserData) error {
 		}
 
 		//------------------------------- Hits ---------------------------------
-		if stat.optionService.IsSaveHits(statData.SiteId) {
+		if stat.optionService.IsSaveHits() {
 			if _, err = stat.hitService.Add(hitUuid, existsGuest, sessionUuid, advReferer, statData); err != nil {
 				return err
 			}
 		}
 
 		//------------------------- Referring -------------------------
-		if stat.optionService.IsSaveReferrers(statData.SiteId) {
+		if stat.optionService.IsSaveReferrers() {
 			parse, err := url.Parse(statData.Referer)
 			if err != nil {
 				return err
@@ -179,14 +179,14 @@ func (stat *Statistic) Add(statData entityjson.UserData) error {
 		}
 
 		//------------------------------ Path data -----------------------------
-		if stat.optionService.IsSavePathData(statData.SiteId) {
+		if stat.optionService.IsSavePathData() {
 			err = stat.pathService.SavePath(sessionDb.Uuid, statData.SiteId, statData.Url, statData.Referer, statData.IsError404, advReferer)
 			if err != nil {
 				return err
 			}
 		}
 		//------------------------------ Visits -----------------------------
-		if stat.optionService.IsSaveVisits(statData.SiteId) {
+		if stat.optionService.IsSaveVisits() {
 			//err = stat.pathService.SaveVisits()
 			//if err != nil {
 			//	return err

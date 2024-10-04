@@ -23,9 +23,9 @@ func NewCountry(ctx context.Context, fbApp *fiber.App, allServices *services.All
 }
 
 func (ch CountryHandlers) AddHandlers() {
-	ch.fbApp.Post("/v1/country/filter", ch.Filter)
-	ch.fbApp.Post("/v1/country/graph", ch.Filter) //Возвращает данные необходимые для построения графика и круговой диаграммы посещаемости в разрезе по странам.
-	ch.fbApp.Delete("/v1/country/:uuid/", ch.DeleteById)
+	ch.fbApp.Post("/api/v1/country/filter", ch.Filter)
+	ch.fbApp.Post("/api/v1/country/graph", ch.Filter) //Возвращает данные необходимые для построения графика и круговой диаграммы посещаемости в разрезе по странам.
+	ch.fbApp.Delete("/api/v1/country/:uuid/", ch.DeleteById)
 }
 
 func (ch CountryHandlers) Filter(ctx *fiber.Ctx) error {

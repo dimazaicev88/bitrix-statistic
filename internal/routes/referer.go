@@ -21,7 +21,7 @@ func NewReferer(ctx context.Context, fbApp *fiber.App, allService *services.AllS
 }
 
 func (p Referer) AddHandlers() {
-	p.fbApp.Post("/v1/referer/filter", p.filter)
+	p.fbApp.Post("/api/v1/referer/filter", p.filter)
 }
 
 func (p Referer) filter(ctx *fiber.Ctx) error {

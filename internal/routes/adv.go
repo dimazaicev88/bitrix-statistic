@@ -22,10 +22,10 @@ func NewAdv(ctx context.Context, fbApp *fiber.App, allServices *services.AllServ
 }
 
 func (ah AdvHandlers) AddHandlers() {
-	ah.fbApp.Post("/v1/adv/filter", ah.Filter)
-	ah.fbApp.Get("/v1/adv/:uuid/", ah.FindByUuid)
-	ah.fbApp.Post("/v1/adv/event/filter", ah.FilterEvent)
-	ah.fbApp.Delete("/v1/adv/delete/:uuid/", ah.DeleteByUuid)
+	ah.fbApp.Post("/api/v1/adv/filter", ah.Filter)
+	ah.fbApp.Get("/api/v1/adv/:uuid/", ah.FindByUuid)
+	ah.fbApp.Post("/api/v1/adv/event/filter", ah.FilterEvent)
+	ah.fbApp.Delete("/api/v1/adv/delete/:uuid/", ah.DeleteByUuid)
 }
 
 func (ah AdvHandlers) Filter(ctx *fiber.Ctx) error {

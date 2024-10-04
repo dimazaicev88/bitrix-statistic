@@ -22,10 +22,10 @@ func NewSearcher(ctx context.Context, app *fiber.App, allService *services.AllSe
 }
 
 func (p Searcher) AddHandlers() {
-	p.fbApp.Post("/v1/searcher/filter", p.filter)
-	p.fbApp.Post("/v1/searcher/:uuid", p.findById)
-	p.fbApp.Get("/v1/searcher/filterDomainList", p.findDomainList)
-	p.fbApp.Get("/v1/searcher/filterDynamicList", p.findDynamicList)
+	p.fbApp.Post("/api/v1/searcher/filter", p.filter)
+	p.fbApp.Post("/api/v1/searcher/:uuid", p.findById)
+	p.fbApp.Get("/api/v1/searcher/filterDomainList", p.findDomainList)
+	p.fbApp.Get("/api/v1/searcher/filterDynamicList", p.findDynamicList)
 }
 
 func (p Searcher) filter(ctx *fiber.Ctx) error {

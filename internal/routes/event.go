@@ -20,9 +20,9 @@ func NewEvent(ctx context.Context, app *fiber.App) *Event {
 
 // TODO добавить методы AddByEvents AddCurrent DecodeGID GetGID GetListByGuest
 func (e Event) AddHandlers() {
-	e.fbApp.Post("/v1/event/filter", e.Filter)
-	e.fbApp.Delete("/v1/event/:uuid/", e.DeleteById)
-	e.fbApp.Post("/v1/event/add/", e.Add)
+	e.fbApp.Post("/api/v1/event/filter", e.Filter)
+	e.fbApp.Delete("/api/v1/event/:uuid/", e.DeleteById)
+	e.fbApp.Post("/api/v1/event/set/", e.Add)
 }
 
 func (e Event) Filter(ctx *fiber.Ctx) error {

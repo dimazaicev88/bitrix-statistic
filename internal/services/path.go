@@ -224,7 +224,7 @@ func (ps *PathService) SavePath(sessionUuid uuid.UUID, siteId, currentUrl, refer
 		return err
 	}
 	if pathAdv == (entitydb.PathAdv{}) {
-		if currentPathSteps <= ps.optionService.MaxPathSteps(siteId) {
+		if currentPathSteps <= ps.optionService.MaxPathSteps() {
 			err = ps.pathAdvService.Add(entitydb.PathAdv{
 				AdvUuid:             advReferer.AdvUuid,
 				PathId:              currentPathId,

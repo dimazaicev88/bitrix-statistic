@@ -20,9 +20,9 @@ func NewEventType(fbApp *fiber.App, ctx context.Context) *EventType {
 
 // TODO добавит остальные методы
 func (et EventType) AddHandlers() {
-	et.fbApp.Post("/v1/eventType/filter", et.Filter)
-	et.fbApp.Delete("/v1/eventType/:uuid/", et.DeleteByUuid)
-	et.fbApp.Post("/v1/eventType/add/", et.Add)
+	et.fbApp.Post("/api/v1/eventType/filter", et.Filter)
+	et.fbApp.Delete("/api/v1/eventType/:uuid/", et.DeleteByUuid)
+	et.fbApp.Post("/api/v1/eventType/set/", et.Add)
 }
 
 func (et EventType) Filter(ctx *fiber.Ctx) error {

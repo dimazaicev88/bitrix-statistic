@@ -2,8 +2,8 @@ package services
 
 import (
 	"bitrix-statistic/internal/entitydb"
+	"bitrix-statistic/internal/entityjson"
 	"bitrix-statistic/internal/models"
-	"bitrix-statistic/internal/utils"
 	"context"
 	"github.com/maypok86/otter"
 	"github.com/sirupsen/logrus"
@@ -41,95 +41,79 @@ func (o *OptionService) Set(option entitydb.Option) error {
 	if err := o.allModels.Option.Set(option); err != nil {
 		return err
 	}
-	o.optionCache.Set(utils.StringConcat(option.Name, ":", option.SiteId), option.Value)
+	o.optionCache.Set(option.Name, option.Value)
 	return nil
 }
 
-func (o *OptionService) IsSaveVisits(siteId string) bool {
-	val, _ := o.get("save_visits", siteId, "true")
+func (o *OptionService) IsSaveVisits() bool {
+	val, _ := o.get("saveVisits", "true")
 	return val == "true"
 }
 
-func (o *OptionService) IsSaveReferrers(siteId string) bool {
-	val, _ := o.get("save_referrers", siteId, "true")
+func (o *OptionService) IsSaveReferrers() bool {
+	val, _ := o.get("saveReferrers", "true")
 	return val == "true"
 }
 
-func (o *OptionService) IsSaveHits(siteId string) bool {
-	val, _ := o.get("save_hits", siteId, "true")
+func (o *OptionService) IsSaveHits() bool {
+	val, _ := o.get("saveHits", "true")
 	return val == "true"
 }
 
-func (o *OptionService) IsSaveAdditional(siteId string) bool {
-	val, _ := o.get("save_additional", siteId, "true")
+func (o *OptionService) IsSaveAdditional() bool {
+	val, _ := o.get("saveAdditional", "true")
 	return val == "true"
 
 }
 
-func (o *OptionService) IsSavePathData(siteId string) bool {
-	val, _ := o.get("save_path_data", siteId, "true")
+func (o *OptionService) IsSavePathData() bool {
+	val, _ := o.get("savePathData", "true")
 	return val == "true"
 }
 
-func (o *OptionService) IsAdvNa(siteId string) bool {
-	val, _ := o.get("adv_na", siteId, "true")
+func (o *OptionService) AdvNa() bool {
+	val, _ := o.get("advNa", "true")
 	return val == "true"
 }
 
-func (o *OptionService) AvdNaReferer1(siteId string) string {
-	val, _ := o.get("avd_na_referer1", siteId, "NA")
+func (o *OptionService) AvdNaReferer1() string {
+	val, _ := o.get("avdNaReferer1", "NA")
 	return val
 }
 
-func (o *OptionService) AvdNaReferer2(siteId string) string {
-	val, _ := o.get("avd_na_referer2", siteId, "NA")
+func (o *OptionService) AvdNaReferer2() string {
+	val, _ := o.get("avdNaReferer2", "NA")
 	return val
 }
 
-func (o *OptionService) Referer1Syn(siteId string) string {
-	val, _ := o.get("referer1_syn", siteId, "r1")
+func (o *OptionService) Referer1Syn() string {
+	val, _ := o.get("referer1Syn", "r1")
 	return val
 }
 
-func (o *OptionService) Referer2Syn(siteId string) string {
-	val, _ := o.get("referer2_syn", siteId, "r2")
+func (o *OptionService) Referer2Syn() string {
+	val, _ := o.get("referer2Syn", "r2")
 	return val
 }
 
-func (o *OptionService) Referer3Syn(siteId string) string {
-	val, _ := o.get("referer3_syn", siteId, "r3")
+func (o *OptionService) Referer3Syn() string {
+	val, _ := o.get("referer3Syn", "r3")
 	return val
 }
 
-func (o *OptionService) IsRefererCheck(siteId string) bool {
-	val, _ := o.get("referer_check", siteId, "false")
+func (o *OptionService) RefererCheck() bool {
+	val, _ := o.get("refererCheck", "false")
 	return val == "true"
 
 }
 
-func (o *OptionService) OpenStatActive(siteId string) bool {
-	val, _ := o.get("open_stat_active", siteId, "false")
+func (o *OptionService) AdvAutoCreate() bool {
+	val, _ := o.get("advAutoCreate", "true")
 	return val == "true"
 }
 
-func (o *OptionService) OpenStatR1Template(siteId string) string {
-	val, _ := o.get("open_stat_r1_template", siteId, "#service-name#_#campaign-id#")
-	return val
-}
-
-func (o *OptionService) OpenStatR2Template(siteId string) string {
-
-	val, _ := o.get("open_stat_r2_template", siteId, "#ad-id#_#source-id#")
-	return val
-}
-
-func (o *OptionService) IsAdvAutoCreate(siteId string) bool {
-	val, _ := o.get("adv_auto_create", siteId, "true")
-	return val == "true"
-}
-
-func (o *OptionService) AdvGuestDays(siteId string) uint64 {
-	val, _ := o.get("adv_guestDays", siteId, "3")
+func (o *OptionService) AdvGuestDays() uint64 {
+	val, _ := o.get("advGuestDays", "3")
 	parseUint, err := strconv.ParseUint(val, 0, 64)
 	if err != nil {
 		return 0
@@ -137,8 +121,8 @@ func (o *OptionService) AdvGuestDays(siteId string) uint64 {
 	return parseUint
 }
 
-func (o *OptionService) AdvDays(siteId string) uint64 {
-	val, _ := o.get("adv_days", siteId, "365")
+func (o *OptionService) AdvDays() uint64 {
+	val, _ := o.get("advDays", "365")
 	parseUint, err := strconv.ParseUint(val, 0, 64)
 	if err != nil {
 		return 0
@@ -146,8 +130,8 @@ func (o *OptionService) AdvDays(siteId string) uint64 {
 	return parseUint
 }
 
-func (o *OptionService) SearcherHitDays(siteId string) uint64 {
-	val, _ := o.get("searcher_hit_days", siteId, "3")
+func (o *OptionService) SearcherHitDays() uint64 {
+	val, _ := o.get("searcherHitDays", "3")
 	parseUint, err := strconv.ParseUint(val, 0, 64)
 	if err != nil {
 		return 0
@@ -155,8 +139,8 @@ func (o *OptionService) SearcherHitDays(siteId string) uint64 {
 	return parseUint
 }
 
-func (o *OptionService) SearcherDays(siteId string) uint64 {
-	val, _ := o.get("searcher_days", siteId, "360")
+func (o *OptionService) SearcherDays() uint64 {
+	val, _ := o.get("searcherDays", "360")
 	parseUint, err := strconv.ParseUint(val, 0, 64)
 	if err != nil {
 		return 0
@@ -164,8 +148,8 @@ func (o *OptionService) SearcherDays(siteId string) uint64 {
 	return parseUint
 }
 
-func (o *OptionService) EventsDays(siteId string) uint64 {
-	val, _ := o.get("events_days", siteId, "3")
+func (o *OptionService) EventsDays() uint64 {
+	val, _ := o.get("eventsDays", "3")
 	parseUint, err := strconv.ParseUint(val, 0, 64)
 	if err != nil {
 		return 0
@@ -173,8 +157,8 @@ func (o *OptionService) EventsDays(siteId string) uint64 {
 	return parseUint
 }
 
-func (o *OptionService) EventDynamicDays(siteId string) uint64 {
-	val, _ := o.get("event_dynamic_days", siteId, "360")
+func (o *OptionService) EventDynamicDays() uint64 {
+	val, _ := o.get("eventDynamicDays", "360")
 	parseUint, err := strconv.ParseUint(val, 0, 64)
 	if err != nil {
 		return 0
@@ -182,8 +166,8 @@ func (o *OptionService) EventDynamicDays(siteId string) uint64 {
 	return parseUint
 }
 
-func (o *OptionService) VisitDays(siteId string) uint64 {
-	val, _ := o.get("visit_days", siteId, "10")
+func (o *OptionService) VisitDays() uint64 {
+	val, _ := o.get("visitDays", "10")
 	parseUint, err := strconv.ParseUint(val, 0, 64)
 	if err != nil {
 		return 0
@@ -191,8 +175,8 @@ func (o *OptionService) VisitDays(siteId string) uint64 {
 	return parseUint
 }
 
-func (o *OptionService) CityDays(siteId string) uint64 {
-	val, _ := o.get("city_days", siteId, "360")
+func (o *OptionService) CityDays() uint64 {
+	val, _ := o.get("cityDays", "360")
 	parseUint, err := strconv.ParseUint(val, 0, 64)
 	if err != nil {
 		return 0
@@ -200,8 +184,8 @@ func (o *OptionService) CityDays(siteId string) uint64 {
 	return parseUint
 }
 
-func (o *OptionService) CountryDays(siteId string) uint64 {
-	val, _ := o.get("country_days", siteId, "360")
+func (o *OptionService) CountryDays() uint64 {
+	val, _ := o.get("countryDays", "360")
 	parseUint, err := strconv.ParseUint(val, 0, 64)
 	if err != nil {
 		return 0
@@ -209,8 +193,8 @@ func (o *OptionService) CountryDays(siteId string) uint64 {
 	return parseUint
 }
 
-func (o *OptionService) PathDays(siteId string) uint64 {
-	val, _ := o.get("path_days", siteId, "10")
+func (o *OptionService) PathDays() uint64 {
+	val, _ := o.get("pathDays", "10")
 	parseUint, err := strconv.ParseUint(val, 0, 64)
 	if err != nil {
 		return 0
@@ -218,8 +202,8 @@ func (o *OptionService) PathDays(siteId string) uint64 {
 	return parseUint
 }
 
-func (o *OptionService) GuestDays(siteId string) uint64 {
-	val, _ := o.get("guest_days", siteId, "3")
+func (o *OptionService) GuestDays() uint64 {
+	val, _ := o.get("guestDays", "3")
 	parseUint, err := strconv.ParseUint(val, 0, 64)
 	if err != nil {
 		return 0
@@ -227,8 +211,8 @@ func (o *OptionService) GuestDays(siteId string) uint64 {
 	return parseUint
 }
 
-func (o *OptionService) SessionDays(siteId string) uint64 {
-	val, _ := o.get("session_days", siteId, "3")
+func (o *OptionService) SessionDays() uint64 {
+	val, _ := o.get("sessionDays", "3")
 	parseUint, err := strconv.ParseUint(val, 0, 64)
 	if err != nil {
 		return 0
@@ -236,8 +220,8 @@ func (o *OptionService) SessionDays(siteId string) uint64 {
 	return parseUint
 }
 
-func (o *OptionService) HitDays(siteId string) uint64 {
-	val, _ := o.get("hit_days", siteId, "3")
+func (o *OptionService) HitDays() uint64 {
+	val, _ := o.get("hitDays", "3")
 	parseUint, err := strconv.ParseUint(val, 0, 64)
 	if err != nil {
 		return 0
@@ -245,8 +229,8 @@ func (o *OptionService) HitDays(siteId string) uint64 {
 	return parseUint
 }
 
-func (o *OptionService) PhrasesDays(siteId string) uint64 {
-	val, _ := o.get("phrases_days", siteId, "10")
+func (o *OptionService) PhrasesDays() uint64 {
+	val, _ := o.get("phrasesDays", "10")
 	parseUint, err := strconv.ParseUint(val, 0, 64)
 	if err != nil {
 		return 0
@@ -254,8 +238,8 @@ func (o *OptionService) PhrasesDays(siteId string) uint64 {
 	return parseUint
 }
 
-func (o *OptionService) RefererListDays(siteId string) uint64 {
-	val, _ := o.get("referer_list_days", siteId, "10")
+func (o *OptionService) RefererListDays() uint64 {
+	val, _ := o.get("refererListDays", "10")
 	parseUint, err := strconv.ParseUint(val, 0, 64)
 	if err != nil {
 		return 0
@@ -263,8 +247,8 @@ func (o *OptionService) RefererListDays(siteId string) uint64 {
 	return parseUint
 }
 
-func (o *OptionService) RefererDays(siteId string) uint64 {
-	val, _ := o.get("referer_days", siteId, "360")
+func (o *OptionService) RefererDays() uint64 {
+	val, _ := o.get("refererDays", "360")
 	parseUint, err := strconv.ParseUint(val, 0, 64)
 	if err != nil {
 		return 0
@@ -272,8 +256,8 @@ func (o *OptionService) RefererDays(siteId string) uint64 {
 	return parseUint
 }
 
-func (o *OptionService) RefererTop(siteId string) uint64 {
-	val, _ := o.get("referer_top", siteId, "500")
+func (o *OptionService) RefererTop() uint64 {
+	val, _ := o.get("refererTop", "500")
 	parseUint, err := strconv.ParseUint(val, 0, 64)
 	if err != nil {
 		return 0
@@ -281,8 +265,8 @@ func (o *OptionService) RefererTop(siteId string) uint64 {
 	return parseUint
 }
 
-func (o *OptionService) MaxPathSteps(siteId string) uint32 {
-	val, _ := o.get("max_path_steps", siteId, "3")
+func (o *OptionService) MaxPathSteps() uint32 {
+	val, _ := o.get("maxPathSteps", "3")
 	parseUint, err := strconv.ParseUint(val, 0, 64)
 	if err != nil {
 		return 0
@@ -290,8 +274,8 @@ func (o *OptionService) MaxPathSteps(siteId string) uint32 {
 	return uint32(parseUint)
 }
 
-func (o *OptionService) OnlineInterval(siteId string) uint64 {
-	val, _ := o.get("online_interval", siteId, "180")
+func (o *OptionService) OnlineInterval() uint64 {
+	val, _ := o.get("onlineInterval", "180")
 	parseUint, err := strconv.ParseUint(val, 0, 64)
 	if err != nil {
 		return 0
@@ -299,8 +283,8 @@ func (o *OptionService) OnlineInterval(siteId string) uint64 {
 	return parseUint
 }
 
-func (o *OptionService) RecordsLimit(siteId string) uint64 {
-	val, _ := o.get("records_limit", siteId, "500")
+func (o *OptionService) RecordsLimit() uint64 {
+	val, _ := o.get("recordsLimit", "500")
 	parseUint, err := strconv.ParseUint(val, 0, 64)
 	if err != nil {
 		return 0
@@ -308,33 +292,33 @@ func (o *OptionService) RecordsLimit(siteId string) uint64 {
 	return parseUint
 }
 
-func (o *OptionService) EventGidBase64Encode(siteId string) bool {
-	val, _ := o.get("event_gid_base64_encode", siteId, "true")
+func (o *OptionService) EventGidBase64Encode() bool {
+	val, _ := o.get("eventGidBase64Encode", "true")
 	return val == "true"
 }
 
-func (o *OptionService) AdvEventsDefault(siteId string) string {
-	val, _ := o.get("adv_events_default", siteId, "list")
+func (o *OptionService) AdvEventsDefault() string {
+	val, _ := o.get("advEventsDefault", "list")
 	return val
 }
 
-func (o *OptionService) UseAutoOptimize(siteId string) bool {
-	val, _ := o.get("use_auto_optimize", siteId, "false")
+func (o *OptionService) UseAutoOptimize() bool {
+	val, _ := o.get("useAutoOptimize", "false")
 	return val == "true"
 }
 
-func (o *OptionService) BaseCurrency(siteId string) string {
-	val, _ := o.get("base_currency", siteId, "xxx")
+func (o *OptionService) BaseCurrency() string {
+	val, _ := o.get("baseCurrency", "xxx")
 	return val
 }
 
-func (o *OptionService) IsDefenceOn(siteId string) bool {
-	val, _ := o.get("defence_on", siteId, "true")
+func (o *OptionService) DefenceOn() bool {
+	val, _ := o.get("defenceOn", "true")
 	return val == "true"
 }
 
-func (o *OptionService) DefenceStackTime(siteId string) uint64 {
-	val, _ := o.get("defence_stack_time", siteId, "10")
+func (o *OptionService) DefenceStackTime() uint64 {
+	val, _ := o.get("defenceStackTime", "10")
 	parseUint, err := strconv.ParseUint(val, 0, 64)
 	if err != nil {
 		return 0
@@ -342,8 +326,8 @@ func (o *OptionService) DefenceStackTime(siteId string) uint64 {
 	return parseUint
 }
 
-func (o *OptionService) DefenceMaxStackHits(siteId string) uint64 {
-	val, _ := o.get("defence_max_stack_hits", siteId, "15")
+func (o *OptionService) DefenceMaxStackHits() uint64 {
+	val, _ := o.get("defenceMaxStackHits", "15")
 	parseUint, err := strconv.ParseUint(val, 0, 64)
 	if err != nil {
 		return 0
@@ -351,8 +335,8 @@ func (o *OptionService) DefenceMaxStackHits(siteId string) uint64 {
 	return parseUint
 }
 
-func (o *OptionService) DefenceDelay(siteId string) uint64 {
-	val, _ := o.get("defence_delay", siteId, "300")
+func (o *OptionService) DefenceDelay() uint64 {
+	val, _ := o.get("defenceDelay", "300")
 	parseUint, err := strconv.ParseUint(val, 0, 64)
 	if err != nil {
 		return 0
@@ -360,46 +344,46 @@ func (o *OptionService) DefenceDelay(siteId string) uint64 {
 	return parseUint
 }
 
-func (o *OptionService) IsDefenceLog(siteId string) bool {
-	val, _ := o.get("defence_log", siteId, "false")
+func (o *OptionService) DefenceLog() bool {
+	val, _ := o.get("defenceLog", "false")
 	return val == "true"
 }
 
-func (o *OptionService) ImportantPageParams(siteId string) string {
-	val, _ := o.get("important_page_params", siteId, "ID, IBLOCK_ID, SECTION_ID, PARENT_ELEMENT_ID, FID, TID, MID, UID, VOTE_ID, print, goto")
+func (o *OptionService) ImportantPageParams() string {
+	val, _ := o.get("importantPageParams", "ID, IBLOCK_ID, SECTION_ID, PARENT_ELEMENT_ID, FID, TID, MID, UID, VOTE_ID, print, goto")
 	return val
 }
 
-func (o *OptionService) SkipStatisticWhat(siteId string) string {
-	val, _ := o.get("skip_statistic_what", siteId, "none")
+func (o *OptionService) SkipStatisticWhat() string {
+	val, _ := o.get("skipStatisticWhat", "none")
 	return val
 }
 
-func (o *OptionService) SkipStatisticGroups(siteId string) string {
-	val, _ := o.get("skip_statistic_groups", siteId, "")
+func (o *OptionService) SkipStatisticGroups() string {
+	val, _ := o.get("skipStatisticGroups", "")
 	return val
 }
 
-func (o *OptionService) SkipStatisticIpRanges(siteId string) string {
-	val, _ := o.get("skip_statistic_ip_ranges", siteId, "")
+func (o *OptionService) SkipStatisticIpRanges() string {
+	val, _ := o.get("skipStatisticIpRanges", "")
 	return val
 }
 
-func (o *OptionService) DirectoryIndex(siteId string) string {
-	val, _ := o.get("directory_index", siteId, "")
+func (o *OptionService) DirectoryIndex() string {
+	val, _ := o.get("directoryIndex", "")
 	return val
 }
 
-// IsSearcherEvents Учитывать события рекламных кампаний для поисковиков
-func (o *OptionService) IsSearcherEvents(siteId string) bool {
-	val, _ := o.get("searcher_events", siteId, "true")
+// SearcherEvents Учитывать события рекламных кампаний для поисковиков
+func (o *OptionService) SearcherEvents() bool {
+	val, _ := o.get("searcherEvents", "true")
 	return val == "true"
 }
 
-func (o *OptionService) get(name, site string, defValue string) (string, error) {
-	val, ok := o.optionCache.Get(utils.StringConcat(name, ":", site))
+func (o *OptionService) get(name, defValue string) (string, error) {
+	val, ok := o.optionCache.Get(name)
 	if !ok {
-		dbVal, err := o.allModels.Option.Find(name, site)
+		dbVal, err := o.allModels.Option.Find(name)
 		if err != nil {
 			return "", err
 		}
@@ -407,7 +391,180 @@ func (o *OptionService) get(name, site string, defValue string) (string, error) 
 			return defValue, nil
 		}
 		val = dbVal.Value
-		o.optionCache.Set(utils.StringConcat(name, ":", site), dbVal.Value)
+		o.optionCache.Set(name, dbVal.Value)
 	}
 	return val, nil
+}
+
+func (o *OptionService) SetDefenceOn(value string) error {
+	if err := o.Set(entitydb.Option{Name: "defenceOn", Value: value}); err != nil {
+		return err
+	}
+	return nil
+}
+
+func (o *OptionService) SetDefenceDelay(value string) error {
+	if err := o.Set(entitydb.Option{Name: "defenceDelay", Value: value}); err != nil {
+		return err
+	}
+	return nil
+}
+
+func (o *OptionService) SetDefenceStackTime(value string) error {
+	if err := o.Set(entitydb.Option{Name: "defenceStackTime", Value: value}); err != nil {
+		return err
+	}
+	return nil
+}
+
+func (o *OptionService) SetDefenceMaxStackHits(value string) error {
+	if err := o.Set(entitydb.Option{Name: "defenceMaxStackHits", Value: value}); err != nil {
+		return err
+	}
+	return nil
+}
+
+func (o *OptionService) SetDefenceLog(value string) error {
+	if err := o.Set(entitydb.Option{Name: "defenceLog", Value: value}); err != nil {
+		return err
+	}
+	return nil
+}
+
+func (o *OptionService) SetLimitActivity(activity *entityjson.LimitActivity) error {
+	//Блокировка выключена
+	if activity.DefenceOn == false {
+		if err := o.SetDefenceOn("false"); err != nil {
+			return err
+		}
+	} else { //Блокировка включена сохраняем параметры
+		if err := o.SetDefenceOn("true"); err != nil {
+			return err
+		}
+
+		if err := o.SetDefenceDelay(
+			strconv.FormatUint(activity.DefenceDelay, 10),
+		); err != nil {
+			return err
+		}
+
+		if err := o.SetDefenceStackTime(
+			strconv.FormatUint(activity.DefenceStackTime, 10),
+		); err != nil {
+			return err
+		}
+
+		if err := o.SetDefenceMaxStackHits(
+			strconv.FormatUint(activity.DefenceMaxStackHits, 10),
+		); err != nil {
+			return err
+		}
+
+		if err := o.SetDefenceLog(strconv.FormatBool(activity.DefenceLog)); err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
+func (o *OptionService) GetOptions() entityjson.Options {
+	return entityjson.Options{
+		LimitActivity: &entityjson.LimitActivity{
+			DefenceDelay:        o.DefenceDelay(),
+			DefenceStackTime:    o.DefenceStackTime(),
+			DefenceMaxStackHits: o.DefenceMaxStackHits(),
+			DefenceLog:          o.DefenceLog(),
+			DefenceOn:           o.DefenceOn(),
+		},
+		AdvCompany: &entityjson.AdvCompany{
+			AdvNa:          o.AdvNa(),
+			AdvAutoCreate:  o.AdvAutoCreate(),
+			RefererCheck:   o.RefererCheck(),
+			SearcherEvents: o.SearcherEvents(),
+			Referer1Syn:    o.Referer1Syn(),
+			Referer2Syn:    o.Referer2Syn(),
+			Referer3Syn:    o.Referer3Syn(),
+		},
+	}
+}
+
+func (o *OptionService) SetAdvCompany(company *entityjson.AdvCompany) error {
+	if err := o.SetAdvNa(strconv.FormatBool(company.AdvNa)); err != nil {
+		return err
+	}
+
+	if err := o.SetAdvAutoCreate(strconv.FormatBool(company.AdvAutoCreate)); err != nil {
+		return err
+	}
+
+	if err := o.SetRefererCheck(strconv.FormatBool(company.RefererCheck)); err != nil {
+		return err
+	}
+
+	if err := o.SetSearcherEvents(strconv.FormatBool(company.SearcherEvents)); err != nil {
+		return err
+	}
+
+	if err := o.SetReferer1Syn(company.Referer1Syn); err != nil {
+		return err
+	}
+
+	if err := o.SetReferer2Syn(company.Referer2Syn); err != nil {
+		return err
+	}
+
+	if err := o.SetReferer3Syn(company.Referer3Syn); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (o *OptionService) SetAdvNa(value string) error {
+	if err := o.Set(entitydb.Option{Name: "advNa", Value: value}); err != nil {
+		return err
+	}
+	return nil
+}
+
+func (o *OptionService) SetAdvAutoCreate(value string) error {
+	if err := o.Set(entitydb.Option{Name: "advAutoCreate", Value: value}); err != nil {
+		return err
+	}
+	return nil
+}
+
+func (o *OptionService) SetRefererCheck(value string) error {
+	if err := o.Set(entitydb.Option{Name: "refererCheck", Value: value}); err != nil {
+		return err
+	}
+	return nil
+}
+
+func (o *OptionService) SetSearcherEvents(value string) error {
+	if err := o.Set(entitydb.Option{Name: "searcherEvents", Value: value}); err != nil {
+		return err
+	}
+	return nil
+}
+
+func (o *OptionService) SetReferer1Syn(value string) error {
+	if err := o.Set(entitydb.Option{Name: "referer1Syn", Value: value}); err != nil {
+		return err
+	}
+	return nil
+}
+
+func (o *OptionService) SetReferer2Syn(value string) error {
+	if err := o.Set(entitydb.Option{Name: "referer2Syn", Value: value}); err != nil {
+		return err
+	}
+	return nil
+}
+
+func (o *OptionService) SetReferer3Syn(value string) error {
+	if err := o.Set(entitydb.Option{Name: "referer3Syn", Value: value}); err != nil {
+		return err
+	}
+	return nil
 }

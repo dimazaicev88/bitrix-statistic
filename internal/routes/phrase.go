@@ -19,7 +19,7 @@ func NewPhrase(ctx context.Context, app *fiber.App) *Phrase {
 }
 
 func (p Phrase) AddHandlers() {
-	p.fbApp.Post("/v1/phrase/filter", p.filter)
+	p.fbApp.Post("/api/v1/phrase/filter", p.filter)
 }
 
 func (p Phrase) filter(ctx *fiber.Ctx) error {

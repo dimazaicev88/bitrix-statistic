@@ -22,7 +22,7 @@ func NewPage(ctx context.Context, app *fiber.App, allService *services.AllServic
 }
 
 func (oh Page) AddHandlers() {
-	oh.fbApp.Post("/v1/page/filter", oh.filter)
+	oh.fbApp.Post("/api/v1/page/filter", oh.filter)
 }
 
 func (oh Page) filter(ctx *fiber.Ctx) error {

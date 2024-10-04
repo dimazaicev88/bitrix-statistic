@@ -31,7 +31,7 @@ func NewStatistic(ctx context.Context, fbApp *fiber.App, allService *services.Al
 }
 
 func (sh *Statistic) AddHandlers() {
-	sh.fbApp.Post("/statistic/add", sh.Add)
+	sh.fbApp.Post("/api/v1/statistic/add", sh.Add)
 }
 
 // Add TODO добавить отправку json с текстом ошибки.

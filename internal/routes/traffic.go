@@ -22,12 +22,12 @@ func NewTraffic(ctx context.Context, fbApp *fiber.App, allService *services.AllS
 }
 
 func (tr Traffic) AddHandlers() {
-	tr.fbApp.Post("/v1/traffic/filter", tr.filter)
-	tr.fbApp.Get("/v1/traffic/commonValues", tr.commonValues)
-	tr.fbApp.Get("/v1/traffic/dailyList", tr.dailyList)
-	tr.fbApp.Get("/v1/traffic/phraseList", tr.phraseList)
-	tr.fbApp.Get("/v1/traffic/refererList", tr.refererList)
-	tr.fbApp.Get("/v1/traffic/sumList", tr.sumList)
+	tr.fbApp.Post("/api/v1/traffic/filter", tr.filter)
+	tr.fbApp.Get("/api/v1/traffic/commonValues", tr.commonValues)
+	tr.fbApp.Get("/api/v1/traffic/dailyList", tr.dailyList)
+	tr.fbApp.Get("/api/v1/traffic/phraseList", tr.phraseList)
+	tr.fbApp.Get("/api/v1/traffic/refererList", tr.refererList)
+	tr.fbApp.Get("/api/v1/traffic/sumList", tr.sumList)
 }
 
 func (tr Traffic) filter(ctx *fiber.Ctx) error {
