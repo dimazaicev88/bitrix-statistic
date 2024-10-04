@@ -18,7 +18,20 @@ type AdvCompany struct {
 	Referer3Syn    string `json:"referer3Syn"`    //- Синонимы referer3:
 }
 
+type SettingsData struct {
+	SaveVisits          bool   `json:"saveVisits"`          //Сохранять статистику посещений разделов и файлов?
+	SavePathData        bool   `json:"savePathData"`        //Собирать данные для отчета "Пути по сайту"?
+	MaxPathSteps        uint32 `json:"maxPathSteps"`        //Максимальная длина путей по сайту для хранения:
+	ImportantPageParams string `json:"importantPageParams"` //Важные параметры страницы:
+	DirectoryIndex      string `json:"directoryIndex"`      //Индексные страницы разделов:
+	Browsers            string `json:"browsers"`            //Маски для UserAgent браузеров: (используется для автодетекта поисковиков в качестве исключений)
+	SaveReferrers       bool   `json:"saveReferrers"`       //Сохранять статистику ссылающихся сайтов и поисковых фраз?
+	RefererTop          uint32 `json:"refererTop"`          //Не очищать из ссылающихся доменов первые (TOP):
+	SaveHits            bool   `json:"saveHits"`            //Сохранять хиты?
+}
+
 type Options struct {
 	LimitActivity *LimitActivity `json:"limitActivity"`
 	AdvCompany    *AdvCompany    `json:"advCompany"`
+	SettingsData  *SettingsData  `json:"settingsData"`
 }
