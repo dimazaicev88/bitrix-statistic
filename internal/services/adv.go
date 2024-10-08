@@ -163,3 +163,9 @@ func (as *AdvServices) AutoCreateAdv(referer1, referer2 string) error {
 func (as *AdvServices) IsExistsAdv(advUuid uuid.UUID) (bool, error) {
 	return as.allModels.AdvModel.IsExistsAdv(advUuid)
 }
+
+func (as *AdvServices) IsValidReferrers(referer1 string, referer2 string) bool {
+	pattern := `^([0-9A-Za-z_:;.,-])*`
+	re := regexp.MustCompile(pattern)
+	return re.MatchString(referer1) && re.MatchString(referer2)
+}
