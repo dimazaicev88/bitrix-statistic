@@ -33,7 +33,7 @@ func TestGuestSessionService_Add_EmptyUserData(t *testing.T) {
 	allModels := models.NewModels(context.Background(), chClient)
 	sessionService := NewSession(context.Background(), allModels)
 
-	session, err := sessionService.Add(uuid.Nil, uuid.New(), uuid.New(), false, entityjson.UserData{}, entitydb.AdvCompany{})
+	session, err := sessionService.Add(uuid.Nil, uuid.New(), entityjson.UserData{})
 	req.NotNil(err)
 	req.Equal("userData is empty", err.Error())
 	req.Equal(session, entitydb.Session{})
@@ -52,7 +52,7 @@ func TestGuestSessionService_Add_EmptyGuestUuid(t *testing.T) {
 	allModels := models.NewModels(context.Background(), chClient)
 	sessionService := NewSession(context.Background(), allModels)
 	hitUuid := uuid.New()
-	session, err := sessionService.Add(uuid.Nil, uuid.UUID{}, hitUuid, false, entityjson.UserData{}, entitydb.AdvCompany{})
+	session, err := sessionService.Add(uuid.Nil, hitUuid, entityjson.UserData{})
 	req.NotNil(err)
 	req.Equal("guestUuid is empty", err.Error())
 	req.Equal(session, entitydb.Session{})
@@ -70,7 +70,7 @@ func TestGuestSessionService_Add_EmptyHitUuid(t *testing.T) {
 
 	allModels := models.NewModels(context.Background(), chClient)
 	sessionService := NewSession(context.Background(), allModels)
-	session, err := sessionService.Add(uuid.Nil, uuid.New(), uuid.UUID{}, false, entityjson.UserData{}, entitydb.AdvCompany{})
+	session, err := sessionService.Add(uuid.Nil, uuid.UUID{}, entityjson.UserData{})
 	req.NotNil(err)
 	req.Equal("hitUuid is empty", err.Error())
 	req.Equal(session, entitydb.Session{})
@@ -118,7 +118,7 @@ func TestGuestSessionService_Add(t *testing.T) {
 		Referer3:    "r3",
 		LastAdvBack: true,
 	}
-	session, err := sessionService.Add(stopListUuid, guestUuid, hitUuid, false, userData, advReferer)
+	session, err := sessionService.Add(stopListUuid, hitUuid, userData)
 	req.Nil(err)
 
 	var allDbSessions []entitydb.Session
@@ -205,7 +205,7 @@ func TestGuestSessionService_Update(t *testing.T) {
 		LastAdvBack: true,
 	}
 
-	oldSession, err := sessionService.Add(stopListUuid, guestUuid, hitUuid, false, userData, advReferer)
+	oldSession, err := sessionService.Add(stopListUuid, hitUuid, userData)
 	req.Nil(err)
 	newSession := oldSession
 	newSession.Uuid = uuid.New()

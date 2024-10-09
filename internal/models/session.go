@@ -24,50 +24,7 @@ func (s Session) Find(filter filters.Filter) (error, []map[string]interface{}) {
 }
 
 func (s Session) Add(session entitydb.Session) error {
-	return s.chClient.Exec(s.ctx,
-		`INSERT INTO session (uuid, guest_uuid, new_guest, user_id, user_auth, events, hits, favorites, url_from, url_to, url_to_404, url_last,
-                     url_last_404, user_agent, date_stat, date_first, date_last, ip_first, ip_last, first_hit_uuid, last_hit_uuid, php_session_id, adv_uuid, adv_back, referer1, referer2, referer3, 
-                     stop_list_uuid, country_id, first_site_id, last_site_id, city_id, sign, version) 
-					VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,curdate(),?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)`,
-		session.Uuid, session.GuestUuid, session.IsNewGuest, session.UserId, session.IsUserAuth, session.Events, session.Hits, session.Favorites, session.UrlFrom, session.UrlTo, session.UrlTo404, session.UrlLast, session.UrlLast404,
-		session.UserAgent, session.DateFirst, session.DateLast, session.IpFirst, session.IpLast, session.FirstHitUuid, session.LastHitUuid, session.PhpSessionId, session.AdvUuid, session.AdvBack, session.Referer1, session.Referer2,
-		session.Referer3, session.StopListUuid, session.CountryId, session.FirstSiteId, session.LastSiteId, session.CityId, session.Sign, session.Version,
-	)
-}
-
-func (s Session) Update(oldSession entitydb.Session, newSession entitydb.Session) error {
-
-	err := s.chClient.Exec(s.ctx,
-		`INSERT INTO session (uuid, guest_uuid, new_guest, user_id, user_auth, events, hits, favorites, url_from, url_to, url_to_404, url_last,
-                     url_last_404, user_agent, date_stat, date_first, date_last, ip_first, ip_last, first_hit_uuid, last_hit_uuid, php_session_id, adv_uuid, adv_back, referer1, referer2, referer3, 
-                     stop_list_uuid, country_id, first_site_id, last_site_id, city_id, sign, version) 
-					VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,curdate(),?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)`,
-		oldSession.Uuid, oldSession.GuestUuid, oldSession.IsNewGuest, oldSession.UserId, oldSession.IsUserAuth, oldSession.Events, oldSession.Hits, oldSession.Favorites, oldSession.UrlFrom, oldSession.UrlTo, oldSession.UrlTo404,
-		oldSession.UrlLast, oldSession.UrlLast404, oldSession.UserAgent, oldSession.DateFirst, oldSession.DateLast, oldSession.IpFirst, oldSession.IpLast, oldSession.FirstHitUuid, oldSession.LastHitUuid, oldSession.PhpSessionId,
-		oldSession.AdvUuid, oldSession.AdvBack, oldSession.Referer1, oldSession.Referer2, oldSession.Referer3, oldSession.StopListUuid, oldSession.CountryId, oldSession.FirstSiteId, oldSession.LastSiteId, oldSession.CityId,
-		oldSession.Sign, oldSession.Version,
-	)
-
-	if err != nil {
-		return err
-	}
-
-	err = s.chClient.Exec(s.ctx,
-		`INSERT INTO session (uuid, guest_uuid, new_guest, user_id, user_auth, events, hits, favorites, url_from, url_to, url_to_404, url_last,
-                     url_last_404, user_agent, date_stat, date_first, date_last, ip_first, ip_last, first_hit_uuid, last_hit_uuid, php_session_id, adv_uuid, adv_back, referer1, referer2, referer3, 
-                     stop_list_uuid, country_id, first_site_id, last_site_id, city_id, sign, version) 
-					VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,curdate(),?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)`,
-		newSession.Uuid, newSession.GuestUuid, newSession.IsNewGuest, newSession.UserId, newSession.IsUserAuth, newSession.Events, newSession.Hits, newSession.Favorites, newSession.UrlFrom, newSession.UrlTo, newSession.UrlTo404,
-		newSession.UrlLast, newSession.UrlLast404, newSession.UserAgent, newSession.DateFirst, newSession.DateLast, newSession.IpFirst, newSession.IpLast, newSession.FirstHitUuid, newSession.LastHitUuid, newSession.PhpSessionId,
-		newSession.AdvUuid, newSession.AdvBack, newSession.Referer1, newSession.Referer2, newSession.Referer3, newSession.StopListUuid, newSession.CountryId, newSession.FirstSiteId, newSession.LastSiteId, newSession.CityId,
-		newSession.Sign, newSession.Version,
-	)
-
-	if err != nil {
-		return err
-	}
-
-	return nil
+	return s.chClient.Exec(s.ctx, `INSERT INTO session (uuid, guest_uuid, date_add, php_session_id) VALUES (?,?,?,?)`, session.Uuid, session.GuestUuid, session.PhpSessionId)
 }
 
 func (s Session) GetAttentiveness(dateStat, siteId string) {

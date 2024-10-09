@@ -94,6 +94,30 @@ func (stat *Statistic) Add(statData entityjson.UserData) error {
 		}
 	} else {
 
+		//--------------------------- Adv --------------------------------------
+		advReferer, err = stat.advServices.GetAdv(statData) //Получаем рекламную компанию
+		if err != nil {
+			return err
+		}
+
+		if advReferer == (entitydb.AdvCompany{}) { //Автоматическое создание рекламной компании
+			parsedURL, err := url.Parse(statData.Url)
+			if err != nil {
+				return err
+			}
+			queryParams := parsedURL.Query()
+			advDb, err := stat.advServices.AutoCreateAdv(queryParams.Get("referrer1"), queryParams.Get("referrer2"))
+			if err != nil {
+				return err
+			}
+
+			if advDb != (entitydb.Adv{}) {
+				advReferer.AdvUuid = advDb.Uuid
+				advReferer.Referer1 = advDb.Referer1
+				advReferer.Referer2 = advDb.Referer2
+			}
+		}
+
 		//--------------------------- Guest ------------------------------------
 		guestDb, err = stat.guestService.FindByUuid(statData.GuestUuid)
 		if err != nil {
@@ -102,29 +126,6 @@ func (stat *Statistic) Add(statData entityjson.UserData) error {
 
 		//Гость не найден, добавляем гостя
 		if guestDb == (entitydb.Guest{}) {
-			advReferer, err = stat.advServices.GetAdv(statData) //Получаем рекламную компанию
-			if err != nil {
-				return err
-			}
-
-			if advReferer == (entitydb.AdvCompany{}) { //Автоматическое создание рекламной компании
-				parsedURL, err := url.Parse(statData.Url)
-				if err != nil {
-					return err
-				}
-				queryParams := parsedURL.Query()
-				advDb, err := stat.advServices.AutoCreateAdv(queryParams.Get("referrer1"), queryParams.Get("referrer2"))
-				if err != nil {
-					return err
-				}
-
-				if advDb != (entitydb.Adv{}) {
-					advReferer.AdvUuid = advDb.Uuid
-					advReferer.Referer1 = advDb.Referer1
-					advReferer.Referer2 = advDb.Referer2
-				}
-			}
-
 			guestDb, err = stat.guestService.Add(statData)
 			if err != nil {
 				return err
@@ -134,7 +135,6 @@ func (stat *Statistic) Add(statData entityjson.UserData) error {
 		}
 
 		//--------------------------- Sessions ------------------------------------
-
 		sessionDb, err = stat.sessionService.FindByPHPSessionId(statData.PHPSessionId)
 		if err != nil {
 			return err
@@ -142,20 +142,7 @@ func (stat *Statistic) Add(statData entityjson.UserData) error {
 
 		//Если сессия новая, добавляем.
 		if sessionDb == (entitydb.Session{}) {
-			sessionDb, err = stat.sessionService.Add(sessionUuid, uuid.Nil, hitUuid, existsGuest == true, statData, advReferer)
-			if err != nil {
-				return err
-			}
-		} else {
-			//TODO исправить баг с ip адресами  сессии
-			err = stat.sessionService.Update(sessionDb, entitydb.Session{
-				UserId:     statData.UserId,
-				IsUserAuth: statData.IsUserAuth,
-				UserAgent:  statData.UserAgent,
-				IpLast:     statData.Ip,
-				IpFirst:    statData.Ip,
-				Hits:       sessionDb.Hits + 1,
-			})
+			sessionDb, err = stat.sessionService.Add(sessionUuid, guestDb.Uuid, hitUuid, statData.PHPSessionId)
 			if err != nil {
 				return err
 			}
@@ -201,16 +188,6 @@ func (stat *Statistic) Add(statData entityjson.UserData) error {
 			//if err != nil {
 			//	return err
 			//}
-		}
-		newSession := sessionDb
-		newSession.LastHitUuid = hitUuid
-		newSession.UrlLast = statData.Url
-		newSession.UrlLast404 = statData.IsError404
-		newSession.DateLast = time.Now()
-		newSession.LastSiteId = statData.SiteId
-
-		if err = stat.sessionService.Update(sessionDb, newSession); err != nil {
-			return err
 		}
 
 		//TODO
