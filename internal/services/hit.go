@@ -49,6 +49,7 @@ func (hs HitService) Add(
 
 	hit := entitydb.Hit{
 		Uuid:         hitUuid,
+		Favorites:    statData.IsFavorite,
 		PhpSessionId: statData.PHPSessionId,
 		SessionUuid:  sessionUuid,
 		AdvUuid:      advReferer.AdvUuid,

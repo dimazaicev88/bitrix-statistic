@@ -51,10 +51,9 @@ func (as *AdvServices) GetAdv(statData entityjson.UserData) (entitydb.AdvCompany
 
 	if adv != (entitydb.Adv{}) {
 		return entitydb.AdvCompany{
-			AdvUuid:  adv.Uuid,
-			Referer1: adv.Referer1,
-			Referer2: adv.Referer2,
-			//Referer3:    adv.Referer3,
+			AdvUuid:     adv.Uuid,
+			Referer1:    adv.Referer1,
+			Referer2:    adv.Referer2,
 			LastAdvBack: true,
 		}, nil
 	}
@@ -101,16 +100,6 @@ func (as *AdvServices) GetAdv(statData entityjson.UserData) (entitydb.AdvCompany
 		return entitydb.AdvCompany{}, err
 	}
 
-	//	if am.optionModel.Find("ADV_NA") == "Y" {
-	//		Na1 := am.optionModel.Find("AVD_NA_REFERER1")
-	//		Na2 := am.optionModel.Find("AVD_NA_REFERER2")
-	//		if (Na1 != "" || Na2 != "") && referer1 == Na1 && referer2 == Na2 {
-	//			na = "Y"
-	//		}
-	//
-	//	}
-	//
-
 	return referer, nil
 }
 
@@ -124,48 +113,42 @@ func (as *AdvServices) DeleteByUuid(advUuid uuid.UUID) error {
 }
 
 // AutoCreateAdv Автоматическое создание рекламной компании
-func (as *AdvServices) AutoCreateAdv(referer1, referer2 string) error {
-
+func (as *AdvServices) AutoCreateAdv(referer1, referer2 string) (entitydb.Adv, error) {
 	referrers, err := as.allModels.AdvModel.FindByReferer(referer1, referer2)
 	if err != nil {
-		return err
+		return entitydb.Adv{}, err
 	}
 
+	var advDb entitydb.Adv
 	if len(referrers) == 0 {
-		if as.optionService.AdvAutoCreate() {
-			var refererValid bool
-			if as.optionService.RefererCheck() {
-				refererValid, err = regexp.MatchString("/^([0-9A-Za-z_:;.,-])*$/", referer1)
-				if err != nil {
-					return err
+		if as.optionService.IsAdvAutoCreate() {
+			if as.optionService.IsRefererCheck() {
+				pattern := `^([0-9A-Za-z_:;.,-])*`
+				re := regexp.MustCompile(pattern)
+				if re.MatchString(referer1) && re.MatchString(referer2) {
+					advDb, err = as.allModels.AdvModel.AddAdv(referer1, referer2)
+					if err != nil {
+						return entitydb.Adv{}, err
+					}
 				}
-				if refererValid {
-					refererValid, err = regexp.MatchString("/^([0-9A-Za-z_:;.,-])*$/", referer2)
-				}
+			} else if referer1 != "" && referer2 != "" {
+				advDb, err = as.allModels.AdvModel.AddAdv(referer1, referer2)
 				if err != nil {
-					return err
-				}
-			} else {
-				refererValid = true
-			}
-
-			if refererValid {
-				err := as.allModels.AdvModel.AddAdv(referer1, referer2)
-				if err != nil {
-					return nil
+					return entitydb.Adv{}, err
 				}
 			}
 		}
+
+		if as.optionService.IsAdvNa() {
+			advDb, err = as.allModels.AdvModel.AddAdv("NA", "NA")
+			if err != nil {
+				return entitydb.Adv{}, err
+			}
+		}
 	}
-	return nil
+	return advDb, nil
 }
 
 func (as *AdvServices) IsExistsAdv(advUuid uuid.UUID) (bool, error) {
 	return as.allModels.AdvModel.IsExistsAdv(advUuid)
-}
-
-func (as *AdvServices) IsValidReferrers(referer1 string, referer2 string) bool {
-	pattern := `^([0-9A-Za-z_:;.,-])*`
-	re := regexp.MustCompile(pattern)
-	return re.MatchString(referer1) && re.MatchString(referer2)
 }

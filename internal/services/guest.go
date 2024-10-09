@@ -45,46 +45,23 @@ func (gs *GuestService) SetAdvService(advServices *AdvServices) {
 	gs.advServices = advServices
 }
 
-func (gs *GuestService) Add(userData entityjson.UserData, advReferer entitydb.AdvCompany) (entitydb.Guest, error) {
+func (gs *GuestService) Add(userData entityjson.UserData) (entitydb.Guest, error) {
 
 	if userData == (entityjson.UserData{}) {
 		return entitydb.Guest{}, errors.New("user data is empty")
 	}
 
 	guestDb := entitydb.Guest{
-		Uuid:           userData.GuestUuid,
-		FirstDate:      time.Now(),
-		PhpSessionId:   userData.PHPSessionId,
-		FirstUrlFrom:   userData.Referer,
-		FirstUrlTo:     userData.Url,
-		FirstUrlTo404:  userData.IsError404,
-		FirstSiteId:    userData.SiteId,
-		FirstAdvUuid:   advReferer.AdvUuid,
-		FirstReferer1:  advReferer.Referer1,
-		FirstReferer2:  advReferer.Referer2,
-		FirstReferer3:  advReferer.Referer3,
-		LastIp:         userData.Ip,
-		LastUserId:     uint32(userData.UserId),
-		LastUserAuth:   userData.UserId > 0,
-		LastUrlLast:    userData.Url,
-		LastUrlLast404: userData.IsError404,
-		LastUserAgent:  userData.UserAgent,
-		LastCookie:     userData.Cookies,
-		LastAdvUUid:    advReferer.AdvUuid,
-		LastAdvBack:    advReferer.LastAdvBack,
-		LastReferer1:   advReferer.Referer1,
-		LastReferer2:   advReferer.Referer2,
-		LastReferer3:   advReferer.Referer3,
-		LastSiteId:     userData.SiteId,
-		Hits:           1,
-		Sessions:       1,
-		Sign:           1,
-		Version:        1,
+		Uuid:      userData.GuestUuid,
+		DateAdd:   time.Now(),
+		Favorites: userData.IsFavorite,
+		//TODO добавить repair
 	}
-	gs.cacheGuest.Set(guestDb.Uuid.String(), guestDb)
 	if err := gs.allModels.Guest.Add(guestDb); err != nil {
 		return entitydb.Guest{}, err
 	}
+
+	gs.cacheGuest.Set(guestDb.Uuid.String(), guestDb)
 	return guestDb, nil
 }
 
@@ -94,13 +71,6 @@ func (gs *GuestService) Find(filter filters.Filter) ([]entitydb.Guest, error) {
 
 func (gs *GuestService) FindByUuid(uuid uuid.UUID) (entitydb.Guest, error) {
 	return gs.allModels.Guest.FindByUuid(uuid)
-}
-
-func (gs *GuestService) UpdateGuest(oldGuest, newGuestDb entitydb.Guest) error {
-	oldGuest.Sign *= -1
-	newGuestDb.Sign *= 1
-	newGuestDb.Version += 1
-	return gs.allModels.Guest.Update(oldGuest, newGuestDb)
 }
 
 func (gs *GuestService) ClearCache() {

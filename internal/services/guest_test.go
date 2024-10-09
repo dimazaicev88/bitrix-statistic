@@ -29,7 +29,7 @@ func TestGuestService_Add_EmptyUserData(t *testing.T) {
 	guestService.SetAdvService(NewAdv(context.Background(), allModels))
 	utils.TruncateTable("guest", chClient)
 
-	guest, err := guestService.Add(entityjson.UserData{}, entitydb.AdvCompany{})
+	guest, err := guestService.Add(entityjson.UserData{})
 	req.NotNil(err)
 	req.Equal("user data is empty", err.Error())
 	req.Equal(guest, entitydb.Guest{})
@@ -78,7 +78,7 @@ func TestGuestService_Add(t *testing.T) {
 		Referer3:    "ref3",
 		LastAdvBack: true,
 	}
-	guest, err := guestService.Add(userData, advReferer)
+	guest, err := guestService.Add(userData)
 	req.Nil(err)
 
 	var allDbGuests []entitydb.Guest
@@ -158,7 +158,7 @@ func TestGuestService_FindByUuid(t *testing.T) {
 		Cookies:           "cookies-value",
 		IsFavorite:        true,
 	}
-	guest, err := guestService.Add(userData, entitydb.AdvCompany{})
+	guest, err := guestService.Add(userData)
 	guestFind, err := guestService.FindByUuid(userData.GuestUuid)
 
 	req.Nil(err)
@@ -199,7 +199,7 @@ func TestGuestService_Update(t *testing.T) {
 		Cookies:           "cookies-value",
 		IsFavorite:        true,
 	}
-	guest, err := guestService.Add(userData, entitydb.AdvCompany{})
+	guest, err := guestService.Add(userData)
 	newGuest := guest
 	newGuest.Events = 1
 	newGuest.Favorites = true

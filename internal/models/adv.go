@@ -8,6 +8,7 @@ import (
 	"errors"
 	"github.com/ClickHouse/clickhouse-go/v2/lib/driver"
 	"github.com/google/uuid"
+	"time"
 )
 
 type Adv struct {
@@ -94,9 +95,20 @@ func (am Adv) FindByReferer(referer1, referer2 string) ([]string, error) {
 	return listUuid, nil
 }
 
-func (am Adv) AddAdv(referer1 string, referer2 string) error {
-	return am.chClient.Exec(am.ctx, `INSERT INTO adv (uuid, referer1, referer2, date_create, cost, events_view, description, priority)
-		VALUES (generateUUIDv7(), ?, ?, now(),0.0,'','',1)`, referer1, referer2)
+func (am Adv) AddAdv(referer1 string, referer2 string) (entitydb.Adv, error) {
+	uuidAdv := uuid.New()
+	timeAdd := time.Now()
+	err := am.chClient.Exec(am.ctx, `INSERT INTO adv (uuid, referer1, referer2, date_create, cost, events_view, description, priority)
+	 		VALUES (?, ?, ?, ?,0.0,'','',1)`, uuidAdv, referer1, referer2, timeAdd)
+	if err != nil {
+		return entitydb.Adv{}, err
+	}
+	return entitydb.Adv{
+		Uuid:        uuidAdv,
+		Referer1:    referer1,
+		Referer2:    referer2,
+		DateCreated: timeAdd,
+	}, nil
 }
 
 func (am Adv) FindByUuid(uuid uuid.UUID) (entitydb.Adv, error) {

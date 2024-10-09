@@ -103,24 +103,34 @@ func (stat *Statistic) Add(statData entityjson.UserData) error {
 		//Гость не найден, добавляем гостя
 		if guestDb == (entitydb.Guest{}) {
 			advReferer, err = stat.advServices.GetAdv(statData) //Получаем рекламную компанию
-			//TODO добавить установку дефолтной рекламной компании, в случае если  не установлена рекламная компания
-			//TODO добавить авто создание рекламной компании
-
 			if err != nil {
 				return err
 			}
 
-			guestDb, err = stat.guestService.Add(statData, advReferer)
+			if advReferer == (entitydb.AdvCompany{}) { //Автоматическое создание рекламной компании
+				parsedURL, err := url.Parse(statData.Url)
+				if err != nil {
+					return err
+				}
+				queryParams := parsedURL.Query()
+				advDb, err := stat.advServices.AutoCreateAdv(queryParams.Get("referrer1"), queryParams.Get("referrer2"))
+				if err != nil {
+					return err
+				}
+
+				if advDb != (entitydb.Adv{}) {
+					advReferer.AdvUuid = advDb.Uuid
+					advReferer.Referer1 = advDb.Referer1
+					advReferer.Referer2 = advDb.Referer2
+				}
+			}
+
+			guestDb, err = stat.guestService.Add(statData)
 			if err != nil {
 				return err
 			}
-		} else { //Если гость уже есть
+		} else {
 			existsGuest = true
-			newGuestDb := guestDb
-			newGuestDb.Sessions += 1
-			if err = stat.guestService.UpdateGuest(guestDb, newGuestDb); err != nil {
-				return err
-			}
 		}
 
 		//--------------------------- Sessions ------------------------------------
@@ -200,24 +210,6 @@ func (stat *Statistic) Add(statData entityjson.UserData) error {
 		newSession.LastSiteId = statData.SiteId
 
 		if err = stat.sessionService.Update(sessionDb, newSession); err != nil {
-			return err
-		}
-
-		newGuestDb := guestDb
-		newGuestDb.Hits += 1
-		newGuestDb.LastSessionUuid = sessionDb.Uuid
-		newGuestDb.LastDate = time.Now()
-		newGuestDb.LastUserId = statData.UserId
-		newGuestDb.LastUserAuth = statData.IsUserAuth
-		newGuestDb.LastUrlLast = statData.Url
-		newGuestDb.LastUrlLast404 = statData.IsError404
-		newGuestDb.LastUserAgent = statData.UserAgent
-		newGuestDb.LastIp = statData.Ip
-		newGuestDb.LastCookie = statData.Cookies
-		newGuestDb.LastLanguage = statData.Lang
-		newGuestDb.LastSiteId = statData.SiteId
-		newGuestDb.Favorites = statData.IsFavorite
-		if err = stat.guestService.UpdateGuest(guestDb, newGuestDb); err != nil {
 			return err
 		}
 

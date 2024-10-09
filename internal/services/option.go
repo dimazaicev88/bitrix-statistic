@@ -71,7 +71,7 @@ func (o *OptionService) IsSavePathData() bool {
 	return val == "true"
 }
 
-func (o *OptionService) AdvNa() bool {
+func (o *OptionService) IsAdvNa() bool {
 	val, _ := o.get("advNa", "true")
 	return val == "true"
 }
@@ -101,13 +101,13 @@ func (o *OptionService) Referer3Syn() string {
 	return val
 }
 
-func (o *OptionService) RefererCheck() bool {
+func (o *OptionService) IsRefererCheck() bool {
 	val, _ := o.get("refererCheck", "false")
 	return val == "true"
 
 }
 
-func (o *OptionService) AdvAutoCreate() bool {
+func (o *OptionService) IsAdvAutoCreate() bool {
 	val, _ := o.get("advAutoCreate", "true")
 	return val == "true"
 }
@@ -477,9 +477,9 @@ func (o *OptionService) GetOptions() entityjson.Options {
 			DefenceOn:           o.DefenceOn(),
 		},
 		AdvCompany: &entityjson.AdvCompany{
-			AdvNa:          o.AdvNa(),
-			AdvAutoCreate:  o.AdvAutoCreate(),
-			RefererCheck:   o.RefererCheck(),
+			AdvNa:          o.IsAdvNa(),
+			AdvAutoCreate:  o.IsAdvAutoCreate(),
+			RefererCheck:   o.IsRefererCheck(),
 			SearcherEvents: o.SearcherEvents(),
 			Referer1Syn:    o.Referer1Syn(),
 			Referer2Syn:    o.Referer2Syn(),

@@ -686,49 +686,13 @@ create table if not exists event_list
 
 create table if not exists guest
 (
-    uuid               UUID,
-    date_add           DateTime32('Europe/Moscow'),
-    favorites          boolean default false,
-    events             UInt32  default 0,
-    sessions           UInt32  default 0,
-    hits               UInt32  default 0,
-    repair             boolean default false,
-    first_session_uuid UUID,
-    php_session_id     String,
-    first_date         DateTime32('Europe/Moscow'),
-    first_url_from     String,
-    first_url_to       String,
-    first_url_404      boolean default false,
-    first_site_id      String,
-    first_adv_uuid     UUID,
-    first_referer1     String,
-    first_referer2     String,
-    first_referer3     String,
-    last_session_uuid  UUID,
-    last_date          DateTime32('Europe/Moscow'),
-    last_user_id       UInt32,
-    last_user_auth     boolean,
-    last_url_last      String,
-    last_url_last_404  bool,
-    last_user_agent    String,
-    last_ip            IPv4,
-    last_cookie        String,
-    last_language      String,
-    last_adv_uuid      UUID,
-    last_adv_back      bool    default favorites,
-    last_referer1      String,
-    last_referer2      String,
-    last_referer3      String,
-    last_site_id       String,
-    last_country_id    FixedString(2),
-    last_city_id       String,
-    last_city_info     String,
-    sign               Int8,
-    version            UInt32
+    uuid     UUID,
+    date_add DateTime32('Europe/Moscow'),
+    repair   boolean default false
 )
-    engine = VersionedCollapsingMergeTree(sign, version)
-        PARTITION BY toMonth(first_date)
-        ORDER BY first_date;
+    engine = MergeTree()
+        PARTITION BY toMonth(date_add)
+        ORDER BY date_add;
 
 
 ----------------------- Hit ---------------------------
@@ -740,9 +704,10 @@ create table if not exists hit
     date_hit       DateTime32('Europe/Moscow'),
     php_session_id String,
     guest_uuid     UUID,
+    language       String,
     is_new_guest   BOOLEAN default false,
-    user_id   UInt32,
-    user_auth BOOLEAN default false,
+    user_id        UInt32,
+    user_auth      BOOLEAN default false,
     url            String,
     url_404        BOOLEAN default false,
     url_from       String,
@@ -753,7 +718,8 @@ create table if not exists hit
     stop_list_uuid UUID,
     country_id     FixedString(2),
     city_uuid      UUID,
-    site_id        FixedString(2)
+    site_id        FixedString(2),
+    favorites      boolean default false
 )
     engine = MergeTree
         PARTITION BY toMonth(date_hit)

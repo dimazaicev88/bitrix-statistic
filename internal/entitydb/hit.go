@@ -22,6 +22,7 @@ type Hit struct {
 	Method       string    `ch:"method"`
 	Cookies      string    `ch:"cookies"`
 	UserAgent    string    `ch:"user_agent"`
+	Favorites    bool      `ch:"favorites"`
 	StopListUuid uuid.UUID `ch:"stop_list_uuid"`
 	CountryId    string    `ch:"country_id"`
 	CityUuid     uuid.UUID `ch:"city_uuid"`
