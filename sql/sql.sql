@@ -12,15 +12,13 @@ create table if not exists adv
     date_create DateTime32('Europe/Moscow'),
     cost        decimal(18, 4) default 0.0000,
     events_view String,
-    description String,
-    priority    UInt32         default 1
+    description String
 ) ENGINE = MergeTree
       ORDER BY (referer1);
 
 create table if not exists adv_stat
 (
     adv_uuid       UUID,
-    revenue        decimal(18, 4) default 0.0000,
     guests         UInt32         default 0,
     new_guests     UInt32         default 0,
     favorites      UInt32         default 0,
@@ -32,7 +30,7 @@ create table if not exists adv_stat
     hosts_back     UInt32         default 0,
     sessions_back  UInt32         default 0,
     hits_back      UInt32         default 0
-) engine = SummingMergeTree((revenue,
+) engine = SummingMergeTree((
                              guests,
                              new_guests,
                              favorites,

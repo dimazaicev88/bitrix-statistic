@@ -19,15 +19,12 @@ type Adv struct {
 
 type AdvStat struct {
 	AdvUuid       uuid.UUID `ch:"adv_uuid"`
-	Revenue       float64   `ch:"revenue"`
 	Guests        uint32    `ch:"guests"`
 	NewGuests     uint32    `ch:"new_guests"`
 	Favorites     uint32    `ch:"favorites"`
 	Hosts         uint32    `ch:"hosts"`
 	Sessions      uint32    `ch:"sessions"`
 	Hits          uint32    `ch:"hits"`
-	DateFirst     time.Time `ch:"date_first"`
-	DateLast      time.Time `ch:"date_last"`
 	GuestsBack    uint32    `ch:"guests_back"`
 	FavoritesBack uint32    `ch:"favorites_back"`
 	HostsBack     uint32    `ch:"hosts_back"`

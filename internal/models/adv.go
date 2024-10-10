@@ -75,9 +75,7 @@ func (am Adv) FindByByDomainSearcher(host string) ([]string, error) {
 }
 
 func (am Adv) FindByReferer(referer1, referer2 string) ([]string, error) {
-	resultSql := `SELECT 	uuid
-			FROM adv
-			WHERE  referer1=? and referer2=?`
+	resultSql := `SELECT uuid FROM adv WHERE  referer1=? and referer2=?`
 
 	var listUuid []string
 	rows, err := am.chClient.Query(am.ctx, resultSql, referer1, referer2)
@@ -98,8 +96,8 @@ func (am Adv) FindByReferer(referer1, referer2 string) ([]string, error) {
 func (am Adv) AddAdv(referer1 string, referer2 string) (entitydb.Adv, error) {
 	uuidAdv := uuid.New()
 	timeAdd := time.Now()
-	err := am.chClient.Exec(am.ctx, `INSERT INTO adv (uuid, referer1, referer2, date_create, cost, events_view, description, priority)
-	 		VALUES (?, ?, ?, ?,0.0,'','',1)`, uuidAdv, referer1, referer2, timeAdd)
+	err := am.chClient.Exec(am.ctx, `INSERT INTO adv (uuid, referer1, referer2, date_create, cost, events_view, description)
+	 		VALUES (?, ?, ?, ?,0.0,'','')`, uuidAdv, referer1, referer2, timeAdd)
 	if err != nil {
 		return entitydb.Adv{}, err
 	}
@@ -109,6 +107,13 @@ func (am Adv) AddAdv(referer1 string, referer2 string) (entitydb.Adv, error) {
 		Referer2:    referer2,
 		DateCreated: timeAdd,
 	}, nil
+}
+
+func (am Adv) AddAdvStat(advStat entitydb.AdvStat) error {
+	return am.chClient.Exec(am.ctx, `INSERT INTO adv_stat (adv_uuid, guests, new_guests, favorites, hosts, sessions, hits, guests_back, favorites_back, hosts_back, sessions_back, hits_back)
+	 		VALUES (?,?,?,?,?,?,?,?,?,?,?,?)`, advStat.AdvUuid, advStat.Guests, advStat.NewGuests,
+		advStat.Favorites, advStat.Hosts, advStat.Sessions, advStat.Hits, advStat.GuestsBack,
+		advStat.FavoritesBack, advStat.HostsBack, advStat.SessionsBack, advStat.Hits, advStat.GuestsBack, advStat.HitsBack)
 }
 
 func (am Adv) FindByUuid(uuid uuid.UUID) (entitydb.Adv, error) {
