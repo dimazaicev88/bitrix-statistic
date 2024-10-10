@@ -33,7 +33,7 @@ func (hs HitService) FindByUuid(uuid uuid.UUID) (entitydb.Hit, error) {
 
 func (hs HitService) Add(
 	hitUuid uuid.UUID,
-	existsGuest bool,
+	isNewGuest bool,
 	sessionUuid uuid.UUID,
 	advReferer entitydb.AdvCompany,
 	statData entityjson.UserData,
@@ -54,7 +54,7 @@ func (hs HitService) Add(
 		SessionUuid:  sessionUuid,
 		AdvUuid:      advReferer.AdvUuid,
 		GuestUuid:    statData.GuestUuid,
-		IsNewGuest:   existsGuest == false,
+		IsNewGuest:   isNewGuest,
 		UserId:       statData.UserId,
 		IsUserAuth:   statData.UserId > 0,
 		Url:          statData.Url,

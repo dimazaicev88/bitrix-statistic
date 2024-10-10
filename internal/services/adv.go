@@ -152,3 +152,7 @@ func (as *AdvServices) AutoCreateAdv(referer1, referer2 string) (entitydb.Adv, e
 func (as *AdvServices) IsExistsAdv(advUuid uuid.UUID) (bool, error) {
 	return as.allModels.AdvModel.IsExistsAdv(advUuid)
 }
+
+func (as *AdvServices) AddAdvStat(advStat entitydb.AdvStat) error {
+	return as.allModels.AdvModel.AddAdvStat(advStat)
+}

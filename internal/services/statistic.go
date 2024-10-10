@@ -79,9 +79,14 @@ func (stat *Statistic) Add(statData entityjson.UserData) error {
 	var advReferer entitydb.AdvCompany
 	var sessionDb entitydb.Session
 	var guestDb entitydb.Guest
-	existsGuest := false
+	isNewGuest := true
 	var hitUuid = uuid.New()
 	var sessionUuid = uuid.New()
+	favoriteDbValue := 0
+
+	if statData.IsFavorite {
+		favoriteDbValue = 1
+	}
 
 	isSearcher, err := stat.searcherService.IsSearcher(statData.UserAgent)
 	if err != nil {
@@ -131,7 +136,7 @@ func (stat *Statistic) Add(statData entityjson.UserData) error {
 				return err
 			}
 		} else {
-			existsGuest = true
+			isNewGuest = false
 		}
 
 		//--------------------------- Sessions ------------------------------------
@@ -150,9 +155,32 @@ func (stat *Statistic) Add(statData entityjson.UserData) error {
 
 		//------------------------------- Hits ---------------------------------
 		if stat.optionService.IsSaveHits() {
-			if _, err = stat.hitService.Add(hitUuid, existsGuest, sessionUuid, advReferer, statData); err != nil {
+			if _, err = stat.hitService.Add(hitUuid, isNewGuest, sessionUuid, advReferer, statData); err != nil {
 				return err
 			}
+		}
+
+		//----------------------- ADV stat ----------------------------
+		countNewGuests := 0
+		if isNewGuest {
+			countNewGuests = 1
+		}
+		err = stat.advServices.AddAdvStat(entitydb.AdvStat{
+			AdvUuid:       advReferer.AdvUuid,
+			Guests:        1,
+			NewGuests:     uint32(countNewGuests),
+			Favorites:     uint32(favoriteDbValue),
+			Hosts:         0, // Это уникальный ip //TODO проверить что это уникальный ip
+			Sessions:      1,
+			Hits:          1,
+			GuestsBack:    0,
+			FavoritesBack: 0,
+			HostsBack:     0,
+			SessionsBack:  0,
+			HitsBack:      0,
+		})
+		if err != nil {
+			return err
 		}
 
 		//------------------------- Referring -------------------------
