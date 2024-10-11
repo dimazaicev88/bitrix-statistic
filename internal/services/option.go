@@ -396,86 +396,8 @@ func (o *OptionService) get(name, defValue string) (string, error) {
 	return val, nil
 }
 
-func (o *OptionService) SetDefenceOn(value string) error {
-	if err := o.Set(entitydb.Option{Name: "defenceOn", Value: value}); err != nil {
-		return err
-	}
-	return nil
-}
-
-func (o *OptionService) SetDefenceDelay(value string) error {
-	if err := o.Set(entitydb.Option{Name: "defenceDelay", Value: value}); err != nil {
-		return err
-	}
-	return nil
-}
-
-func (o *OptionService) SetDefenceStackTime(value string) error {
-	if err := o.Set(entitydb.Option{Name: "defenceStackTime", Value: value}); err != nil {
-		return err
-	}
-	return nil
-}
-
-func (o *OptionService) SetDefenceMaxStackHits(value string) error {
-	if err := o.Set(entitydb.Option{Name: "defenceMaxStackHits", Value: value}); err != nil {
-		return err
-	}
-	return nil
-}
-
-func (o *OptionService) SetDefenceLog(value string) error {
-	if err := o.Set(entitydb.Option{Name: "defenceLog", Value: value}); err != nil {
-		return err
-	}
-	return nil
-}
-
-func (o *OptionService) SetLimitActivity(activity *entityjson.LimitActivity) error {
-	//Блокировка выключена
-	if activity.DefenceOn == false {
-		if err := o.SetDefenceOn("false"); err != nil {
-			return err
-		}
-	} else { //Блокировка включена сохраняем параметры
-		if err := o.SetDefenceOn("true"); err != nil {
-			return err
-		}
-
-		if err := o.SetDefenceDelay(
-			strconv.FormatUint(activity.DefenceDelay, 10),
-		); err != nil {
-			return err
-		}
-
-		if err := o.SetDefenceStackTime(
-			strconv.FormatUint(activity.DefenceStackTime, 10),
-		); err != nil {
-			return err
-		}
-
-		if err := o.SetDefenceMaxStackHits(
-			strconv.FormatUint(activity.DefenceMaxStackHits, 10),
-		); err != nil {
-			return err
-		}
-
-		if err := o.SetDefenceLog(strconv.FormatBool(activity.DefenceLog)); err != nil {
-			return err
-		}
-	}
-	return nil
-}
-
 func (o *OptionService) GetOptions() entityjson.Options {
 	return entityjson.Options{
-		LimitActivity: &entityjson.LimitActivity{
-			DefenceDelay:        o.DefenceDelay(),
-			DefenceStackTime:    o.DefenceStackTime(),
-			DefenceMaxStackHits: o.DefenceMaxStackHits(),
-			DefenceLog:          o.DefenceLog(),
-			DefenceOn:           o.DefenceOn(),
-		},
 		AdvCompany: &entityjson.AdvCompany{
 			AdvNa:          o.IsAdvNa(),
 			AdvAutoCreate:  o.IsAdvAutoCreate(),

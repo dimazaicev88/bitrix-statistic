@@ -27,7 +27,7 @@ func NewSearcher(ctx context.Context, chClient driver.Conn) *Searcher {
 func (s Searcher) FindSearcherByUserAgent(httpUserAgent string) (entitydb.Searcher, error) {
 	var searcher entitydb.Searcher
 	resultSql := `SELECT	uuid, date_cleanup, total_hits, save_statistic,
-    				active, name, user_agent, diagram_default, hit_keep_days, dynamic_keep_days, phrases, phrases_hits, check_activity    
+    				active, name, user_agent, diagram_default, hit_keep_days, dynamic_keep_days,check_activity    
 			FROM searcher
 			WHERE active = 'Y' and LENGTH(user_agent)>0	and user_agent like ? 
 			ORDER BY LENGTH(user_agent) desc 
@@ -53,22 +53,48 @@ func (s Searcher) ExistByIdAndCurrentDate(id int) ([]entitydb.SearcherDayHits, e
 }
 
 func (s Searcher) AddHitSearcher(searcherUuid uuid.UUID, statData entityjson.UserData) error {
-	err := s.chClient.Exec(s.ctx,
+	return s.chClient.Exec(s.ctx,
 		`INSERT INTO searcher_hit (uuid,date_hit,searcher_uuid,url,url_404,ip,user_agent,site_id)
 			   VALUES(generateUUIDv7(),NOW(),?,?,?,?,?,?)`, searcherUuid, statData.Url, statData.IsError404, statData.Ip,
 		statData.UserAgent, statData.SiteId)
-	if err != nil {
-		return err
-	}
-	return nil
 }
 
 func (s Searcher) AddSearcherDayHits(searcherUuid uuid.UUID) error {
-	err := s.chClient.Exec(s.ctx,
+	return s.chClient.Exec(s.ctx,
 		`insert into searcher_day_hits (hit_day, searcher_uuid, total_hits)
 				VALUES (curdate(), ?, 1)`, searcherUuid)
+}
+
+func (s Searcher) FindSearcherParamsByHost(host string) (entitydb.SearcherParams, error) {
+	var searcherParams entitydb.SearcherParams
+	resultSql := `SELECT t_searcher_params.*
+			FROM searcher t_searcher
+					 JOIN searcher_params t_searcher_params ON t_searcher.uuid = t_searcher_params.searcher_uuid
+			WHERE t_searcher.active = 'Y'
+			  and ? like t_searcher_params.domain`
+	rows, err := s.chClient.Query(s.ctx, resultSql, host)
+
 	if err != nil {
-		return err
+		return entitydb.SearcherParams{}, err
 	}
-	return nil
+
+	if rows.Next() {
+		if err := rows.ScanStruct(&searcherParams); err != nil {
+			return entitydb.SearcherParams{}, err
+		}
+	}
+	return searcherParams, nil
+}
+
+func (s Searcher) AddPhraseList(list entitydb.PhraseList) error {
+	return s.chClient.Exec(s.ctx,
+		`INSERT INTO phrase_list (uuid, date_hit, searcher_uuid, referer_uuid, phrase, url_from, url_to, session_uuid, site_id)
+			   VALUES(?,?,?,?,?,?,?,?,?)`, list.Uuid, list.DateHit, list.SearcherUuid, list.RefererUuid,
+		list.Phrase, list.UrlFrom, list.UrlTo, list.SessionUuid, list.SiteId)
+}
+
+func (s Searcher) AddSearcherPhraseStat(searcherPhraseStat entitydb.SearcherPhraseStat) error {
+	return s.chClient.Exec(s.ctx,
+		`INSERT INTO searcher_phrase_stat (searcher_uuid, phrases, phrases_hits)
+			   VALUES(?,?,?)`, searcherPhraseStat.SearcherUuid, searcherPhraseStat.Phrases, searcherPhraseStat.PhrasesHits)
 }

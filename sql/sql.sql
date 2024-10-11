@@ -19,17 +19,17 @@ create table if not exists adv
 create table if not exists adv_stat
 (
     adv_uuid       UUID,
-    guests         UInt32         default 0,
-    new_guests     UInt32         default 0,
-    favorites      UInt32         default 0,
-    hosts          UInt32         default 0,
-    sessions       UInt32         default 0,
-    hits           UInt32         default 0,
-    guests_back    UInt32         default 0,
-    favorites_back UInt32         default 0,
-    hosts_back     UInt32         default 0,
-    sessions_back  UInt32         default 0,
-    hits_back      UInt32         default 0
+    guests         UInt32 default 0,
+    new_guests     UInt32 default 0,
+    favorites      UInt32 default 0,
+    hosts          UInt32 default 0,
+    sessions       UInt32 default 0,
+    hits           UInt32 default 0,
+    guests_back    UInt32 default 0,
+    favorites_back UInt32 default 0,
+    hosts_back     UInt32 default 0,
+    sessions_back  UInt32 default 0,
+    hits_back      UInt32 default 0
 ) engine = SummingMergeTree((
                              guests,
                              new_guests,
@@ -723,6 +723,46 @@ create table if not exists hit
         PARTITION BY toMonth(date_hit)
         ORDER BY date_hit;
 
+create table hit_full
+(
+    adv_back           Bool DEFAULT false,
+    adv_referer_1      String,
+    adv_referer_2      String,
+    adv_referer_3      String,
+    adv_uuid           UUID,
+    date_hit           DateTime('Europe/Moscow'),
+    cookies            String,
+    country_id         FixedString(2),
+    city               String,
+    event1             String,
+    event2             String,
+    event_type_uuid    String,
+    guest_uuid         UUID,
+    is_new_guest       Bool DEFAULT false,
+    ip                 IPv4,
+    method             String,
+    php_session_id     String,
+    referrer_site_name String,
+    referrer_url_from  String,
+    searcher_name      String,
+    searcher_phrase    String,
+    searcher_uuid      String,
+    session_uuid       UUID,
+    site_id            FixedString(2),
+    url                String,
+    url_404            Bool DEFAULT false,
+    url_from           String,
+    url_is_dir         Bool DEFAULT false,
+    user_agent         String,
+    user_auth          Bool DEFAULT false,
+    user_id            UInt32,
+    uuid               UUID
+)
+    engine = MergeTree
+        PARTITION BY toMonth(date_hit)
+        ORDER BY date_hit;
+
+
 ------------------ Page ----------------------
 
 create table if not exists page
@@ -876,7 +916,7 @@ create table if not exists searcher
 (
     uuid              UUID,
     date_cleanup      Nullable(DateTime32('Europe/Moscow')),
-    total_hits        UInt32  default '0',
+    total_hits UInt32 default 0,
     save_statistic    BOOLEAN default true,
     active            BOOLEAN default true,
     name              String,
@@ -884,11 +924,18 @@ create table if not exists searcher
     diagram_default   BOOLEAN default false,
     hit_keep_days     UInt32,
     dynamic_keep_days UInt32,
-    phrases           UInt32  default '0',
-    phrases_hits      UInt32  default '0',
     check_activity    BOOLEAN default true
 ) engine = MergeTree
       ORDER BY name;
+
+create table searcher_phrase_stat
+(
+    searcher_uuid UUID,
+    phrases       UInt32 default 0,
+    phrases_hits  UInt32 default 0
+)
+    engine = SummingMergeTree((phrases, phrases_hits))
+        ORDER BY searcher_uuid;
 
 create table if not exists searcher_day_hits
 (
@@ -959,7 +1006,7 @@ create table if not exists session
     uuid           UUID,
     guest_uuid     UUID,
     php_session_id String,
-    date_add    DateTime32('Europe/Moscow')
+    date_add DateTime32('Europe/Moscow')
 ) ENGINE = MergeTree
       PARTITION BY toMonth(date_add)
       ORDER BY (date_add);

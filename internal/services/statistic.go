@@ -8,6 +8,7 @@ import (
 	"github.com/sirupsen/logrus"
 	_ "net/netip"
 	"net/url"
+	"strings"
 	"time"
 )
 
@@ -80,9 +81,12 @@ func (stat *Statistic) Add(statData entityjson.UserData) error {
 	var sessionDb entitydb.Session
 	var guestDb entitydb.Guest
 	isNewGuest := true
+	isAdvBack := false
 	var hitUuid = uuid.New()
 	var sessionUuid = uuid.New()
 	favoriteDbValue := 0
+
+	//TODO определить isAdvBack
 
 	if statData.IsFavorite {
 		favoriteDbValue = 1
@@ -161,46 +165,147 @@ func (stat *Statistic) Add(statData entityjson.UserData) error {
 		}
 
 		//----------------------- ADV stat ----------------------------
+		//TODO учитывать рекламные компании если это новая сессия
+		//TODO доделать adv
 		countNewGuests := 0
 		if isNewGuest {
 			countNewGuests = 1
 		}
-		err = stat.advServices.AddAdvStat(entitydb.AdvStat{
-			AdvUuid:       advReferer.AdvUuid,
-			Guests:        1,
-			NewGuests:     uint32(countNewGuests),
-			Favorites:     uint32(favoriteDbValue),
-			Hosts:         0, // Это уникальный ip //TODO проверить что это уникальный ip
-			Sessions:      1,
-			Hits:          1,
-			GuestsBack:    0,
-			FavoritesBack: 0,
-			HostsBack:     0,
-			SessionsBack:  0,
-			HitsBack:      0,
-		})
-		if err != nil {
-			return err
+
+		if advReferer.AdvUuid != uuid.Nil {
+			if isAdvBack == false {
+				err = stat.advServices.AddAdvStat(entitydb.AdvStat{
+					AdvUuid:   advReferer.AdvUuid,
+					Guests:    1,
+					NewGuests: uint32(countNewGuests),
+					Favorites: uint32(favoriteDbValue),
+					Hosts:     0, // Это уникальный ip //TODO проверить что это уникальный ip
+					Sessions:  1,
+					Hits:      1,
+				})
+
+				if err != nil {
+					return err
+				}
+
+				err := stat.advServices.AddAdvDay(entitydb.AdvDay{
+					Uuid:      uuid.New(),
+					AdvUuid:   "",
+					DateStat:  time.Time{},
+					Guests:    1,
+					GuestsDay: 0,
+					NewGuests: 0,
+					Favorites: uint32(favoriteDbValue),
+					Hosts:     0,
+					HostsDay:  0,
+					Sessions:  1,
+					Hits:      1,
+					//GuestsBack:    1,
+					//GuestsDayBack: 0,
+					//FavoritesBack: uint32(favoriteDbValue),
+					//HostsBack:     0,
+					//HostsDayBack:  0,
+					//SessionsBack:  1,
+					//HitsBack:      1,
+				})
+
+				if err != nil {
+					return err
+				}
+
+			} else {
+				err = stat.advServices.AddAdvStat(entitydb.AdvStat{
+					AdvUuid:       advReferer.AdvUuid,
+					NewGuests:     uint32(countNewGuests),
+					Favorites:     uint32(favoriteDbValue),
+					GuestsBack:    1,
+					FavoritesBack: uint32(favoriteDbValue),
+					HostsBack:     0, // Это уникальный ip //TODO проверить что это уникальный ip
+					SessionsBack:  1,
+					HitsBack:      1,
+				})
+
+				if err != nil {
+					return err
+				}
+
+				err := stat.advServices.AddAdvDay(entitydb.AdvDay{
+					Uuid:     uuid.New(),
+					AdvUuid:  "",
+					DateStat: time.Time{},
+					//Guests:        1,
+					//GuestsDay:     0,
+					//NewGuests:     0,
+					//Favorites:     0,
+					//Hosts:         0,
+					//HostsDay:      0,
+					//Sessions:      0,
+					//Hits:          1,
+					GuestsBack:    1,
+					GuestsDayBack: 0,
+					FavoritesBack: uint32(favoriteDbValue),
+					HostsBack:     0,
+					HostsDayBack:  0,
+					SessionsBack:  1,
+					HitsBack:      1,
+				})
+
+				if err != nil {
+					return err
+				}
+			}
 		}
 
 		//------------------------- Referring -------------------------
 		if stat.optionService.IsSaveReferrers() {
-			parse, err := url.Parse(statData.Referer)
+
+			refererUrlParse, err := url.Parse(statData.Referer)
 			if err != nil {
 				return err
 			}
+
 			if len(statData.Referer) > 0 {
-				idReferer, err := stat.refererService.Add(statData.Referer)
+				idReferer, err := stat.refererService.Add(refererUrlParse.Hostname())
 				if err != nil {
 					return err
 				}
-				_, err = stat.refererService.AddToRefererList(advReferer.AdvUuid, sessionDb.Uuid, idReferer, parse, statData)
+				_, err = stat.refererService.AddToRefererList(advReferer.AdvUuid, sessionDb.Uuid, idReferer, refererUrlParse, statData)
 				if err != nil {
 					return err
 				}
 			}
 
 			// TODO ADD Search phrases
+			searcherParams, err := stat.searcherService.FindSearcherParams(refererUrlParse.Hostname())
+			if err != nil {
+				return err
+			}
+			listQueryParam := strings.Split(searcherParams.Variable, ",")
+			query, err := url.ParseQuery(statData.Referer)
+			if err != nil {
+				return err
+			}
+
+			for _, queryParam := range listQueryParam {
+				if query.Get(queryParam) != "" {
+					err := stat.searcherService.AddPhraseList(entitydb.PhraseList{
+						Uuid:         uuid.New(),
+						DateHit:      time.Now(),
+						SearcherUuid: searcherParams.SearcherUuid,
+						//RefererUuid:  "",
+						Phrase:      "",
+						UrlFrom:     "",
+						UrlTo:       "",
+						UrlTo404:    false,
+						SessionUuid: sessionUuid,
+						SiteId:      statData.SiteId,
+					})
+					if err != nil {
+						return err
+					}
+					break
+				}
+			}
 		}
 
 		//------------------------------ Path data -----------------------------

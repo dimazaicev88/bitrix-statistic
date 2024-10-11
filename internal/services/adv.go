@@ -156,3 +156,7 @@ func (as *AdvServices) IsExistsAdv(advUuid uuid.UUID) (bool, error) {
 func (as *AdvServices) AddAdvStat(advStat entitydb.AdvStat) error {
 	return as.allModels.AdvModel.AddAdvStat(advStat)
 }
+
+func (as *AdvServices) AddAdvDay(day entitydb.AdvDay) error {
+	return as.allModels.AdvModel.AddAdvDay(day)
+}

@@ -1,9 +1,12 @@
 package entitydb
 
-import "time"
+import (
+	"github.com/google/uuid"
+	"time"
+)
 
 type Day struct {
-	uuid             string
+	uuid             uuid.UUID
 	dateStat         time.Time
 	hits             uint32
 	hosts            uint32

@@ -52,9 +52,8 @@ func (gs *GuestService) Add(userData entityjson.UserData) (entitydb.Guest, error
 	}
 
 	guestDb := entitydb.Guest{
-		Uuid:      userData.GuestUuid,
-		DateAdd:   time.Now(),
-		Favorites: userData.IsFavorite,
+		Uuid:    userData.GuestUuid,
+		DateAdd: time.Now(),
 		//TODO добавить repair
 	}
 	if err := gs.allModels.Guest.Add(guestDb); err != nil {

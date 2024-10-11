@@ -1,13 +1,5 @@
 package entityjson
 
-type LimitActivity struct {
-	DefenceDelay        uint64 `json:"defenceDelay"`        //На время
-	DefenceStackTime    uint64 `json:"defenceStackTime"`    //Если в течение
-	DefenceMaxStackHits uint64 `json:"defenceMaxStackHits"` //Сделано более хитов
-	DefenceLog          bool   `json:"defenceLog"`          //Сделать запись в журнал событий
-	DefenceOn           bool   `json:"defenceOn"`           //Блокировать
-}
-
 type AdvCompany struct {
 	AdvNa          bool   `json:"advNa"`          //- Использовать рекламную кампанию c referer1=NA, referer2=NA по умолчанию?
 	AdvAutoCreate  bool   `json:"advAutoCreate"`  //- Автоматически создавать рекламные кампании при наличии параметров referer1, referer2 в URL'е:
@@ -31,7 +23,6 @@ type SettingsData struct {
 }
 
 type Options struct {
-	LimitActivity *LimitActivity `json:"limitActivity"`
-	AdvCompany    *AdvCompany    `json:"advCompany"`
-	SettingsData  *SettingsData  `json:"settingsData"`
+	AdvCompany   *AdvCompany   `json:"advCompany"`
+	SettingsData *SettingsData `json:"settingsData"`
 }

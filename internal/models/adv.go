@@ -160,3 +160,9 @@ func (am Adv) IsExistsAdv(advUuid uuid.UUID) (bool, error) {
 
 	return false, nil
 }
+
+func (am Adv) AddAdvDay(day entitydb.AdvDay) error {
+	return am.chClient.Exec(am.ctx, `INSERT INTO adv_day (adv_uuid, date_stat, guests, guests_day, new_guests, favorites, hosts, hosts_day, sessions, hits, guests_back, guests_day_back, favorites_back, hosts_back, hosts_day_back, sessions_back, hits_back)
+	 		VALUES (?,curdate(),?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)`, day.AdvUuid, day.Guests, day.GuestsDay, day.NewGuests, day.Favorites, day.Hosts, day.HostsDay, day.Sessions, day.Hits,
+		day.Hits, day.GuestsBack, day.GuestsDayBack, day.FavoritesBack, day.HostsBack, day.HostsDayBack, day.SessionsBack, day.Hits)
+}

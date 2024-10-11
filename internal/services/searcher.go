@@ -51,3 +51,15 @@ func (ss *SearcherService) AddHitSearcher(data entityjson.UserData) error {
 
 	return nil
 }
+
+func (ss *SearcherService) FindSearcherParams(host string) (entitydb.SearcherParams, error) {
+	return ss.allModels.Searcher.FindSearcherParamsByHost(host)
+}
+
+func (ss *SearcherService) AddPhraseList(list entitydb.PhraseList) error {
+	return ss.allModels.Searcher.AddPhraseList(list)
+}
+
+func (ss *SearcherService) AddSearcherPhraseStat(searcherPhraseStat entitydb.SearcherPhraseStat) error {
+	return ss.allModels.Searcher.AddSearcherPhraseStat(searcherPhraseStat)
+}

@@ -1,9 +1,12 @@
 package entityjson
 
-import "time"
+import (
+	"github.com/google/uuid"
+	"time"
+)
 
 type GuestJson struct {
-	Id             int       `json:"id,omitempty"`
+	Uuid           uuid.UUID `json:"uuid,omitempty"`
 	CookieToken    string    `json:"cookieToken,omitempty"`
 	TimestampX     time.Time `json:"timestampX"`
 	Favorites      string    `json:"favorites,omitempty"`

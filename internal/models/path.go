@@ -29,7 +29,7 @@ func (p Path) Find(filter filters.Filter) {
 func (p Path) Add(path entitydb.Path) error {
 	return p.chClient.Exec(p.ctx,
 		`INSERT INTO path (uuid, parent_path_id, date_stat, pages, first_page, first_page_site_id, prev_page, prev_page_hash, last_page, last_page_site_id, last_page_hash, sign, version) 
-			   VALUES (generateUUIDv7(),?,?,?,?,?,?,?,?,?,?)`,
+			   VALUES (generateUUIDv7(),?,?,?,?,?,?,?,?,?,?,?,?)`,
 		path.ParentPathId, path.Pages, path.FirstPage, path.FirstPageSiteId, path.PrevPage, path.PrevPageHash, path.LastPage, path.LastPageSiteId,
 		path.LastPageHash, path.Sign*-1, path.Version)
 }
@@ -56,7 +56,7 @@ func (p Path) Update(oldPath entitydb.Path, newPath entitydb.Path) error {
 
 	err = p.chClient.Exec(p.ctx,
 		`INSERT INTO path (uuid, parent_path_id, date_stat, pages, first_page, first_page_site_id, prev_page, prev_page_hash, last_page, last_page_site_id, last_page_hash, sign, version) 
-			   VALUES (generateUUIDv7(),?,?,?,?,?,?,?,?,?,?)`,
+			   VALUES (generateUUIDv7(),?,?,?,?,?,?,?,?,?,?,?,?)`,
 		newPath.ParentPathId, newPath.Pages, newPath.FirstPage, newPath.FirstPageSiteId, newPath.PrevPage, newPath.PrevPageHash, newPath.LastPage, newPath.LastPageSiteId,
 		newPath.LastPageHash, 1, newPath.Version+1)
 

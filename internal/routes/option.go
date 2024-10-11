@@ -42,15 +42,6 @@ func (oh OptionHandlers) set(ctx *fiber.Ctx) error {
 		return ctx.SendStatus(fiber.StatusBadRequest)
 	}
 
-	if serverOptions.LimitActivity != nil {
-		err = oh.allService.Option.SetLimitActivity(serverOptions.LimitActivity)
-		if err != nil {
-			return ctx.JSON(map[string]interface{}{
-				"error": err.Error(),
-			})
-		}
-	}
-
 	if serverOptions.AdvCompany != nil {
 		err = oh.allService.Option.SetAdvCompany(serverOptions.AdvCompany)
 		if err != nil {
