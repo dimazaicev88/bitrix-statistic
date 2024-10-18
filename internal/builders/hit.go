@@ -26,11 +26,6 @@ var hitSelectFields = []string{
 	"cityUuid", "siteId",
 }
 
-var hitFilterFields = []string{
-	"uuid", "guestUuid", "isNewGuest", "sessionUuid", "stopListUuid", "url", "isUrl404", "userId",
-	"isRegistered", "date", "ip", "userAgent", "countryId", "country", "cookie", "isStop", "siteId",
-}
-
 func (hs *HitSqlBuilder) buildSelect() error {
 	countFields := 0
 	for _, field := range hs.filter.Fields {
