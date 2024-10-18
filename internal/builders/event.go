@@ -8,25 +8,49 @@ import (
 	"strings"
 )
 
-type ReferrerSqlBuilder struct {
+var eventSelectFields = []string{
+	"uuid",
+	"uuidEventType",
+	"eventName",
+	"event1",
+	"event2",
+	"event3",
+	"date",
+	"money",
+	"currency",
+	"sessionUuid",
+	"guestUuid",
+	"advUud",
+	"advBack",
+	"hitUuid",
+	"countryId",
+	"country",
+	"refererUrl",
+	"refererSiteUuid",
+	"url",
+	"siteId",
+	"redirectUrl",
+}
+
+type EventSqlBuilder struct {
 	filter     filters.Filter
 	sqlBuilder *SqlBuilder
 }
 
-func NewReferrerSqlBuilder(filter filters.Filter) ReferrerSqlBuilder {
-	return ReferrerSqlBuilder{
+func NewEventSqlBuilder(filter filters.Filter) EventSqlBuilder {
+	return EventSqlBuilder{
 		filter:     filter,
 		sqlBuilder: NewSqlBuilder(),
 	}
 }
 
-func (hs *ReferrerSqlBuilder) buildSelect() error {
+func (hs *EventSqlBuilder) buildSelect() error {
 	countFields := 0
 	for _, field := range hs.filter.Fields {
 		if field == "" {
 			continue
 		}
-		if !slices.Contains(advSelectFields, field) {
+		if !slices.Contains(eventSelectFields, field) {
 			return fmt.Errorf("unknown field: %s", field)
 		}
 		countFields++
@@ -39,7 +63,7 @@ func (hs *ReferrerSqlBuilder) buildSelect() error {
 	return nil
 }
 
-func (hs *ReferrerSqlBuilder) buildWhere() {
+func (hs *EventSqlBuilder) buildWhere() {
 	if len(hs.filter.Operators) != 0 {
 		hs.sqlBuilder.Add("WHERE ")
 		for i := 0; i < len(hs.filter.Operators); i++ {
@@ -69,7 +93,7 @@ func (hs *ReferrerSqlBuilder) buildWhere() {
 	}
 }
 
-func (hs *ReferrerSqlBuilder) buildSkipAndLimit() {
+func (hs *EventSqlBuilder) buildSkipAndLimit() {
 	hs.sqlBuilder.Add(" LIMIT ")
 	if hs.filter.Skip != 0 {
 		hs.sqlBuilder.Add("?, ", hs.filter.Skip)
@@ -84,7 +108,7 @@ func (hs *ReferrerSqlBuilder) buildSkipAndLimit() {
 	}
 }
 
-func (hs *ReferrerSqlBuilder) Build() (string, []interface{}, error) {
+func (hs *EventSqlBuilder) Build() (string, []interface{}, error) {
 	if err := hs.buildSelect(); err != nil {
 		return "", nil, err
 	}

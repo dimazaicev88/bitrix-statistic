@@ -36,18 +36,6 @@ var filterFields = []string{
 	"description",    //описание РК;
 }
 
-type AdvSqlBuilder struct {
-	filter     filters.Filter
-	sqlBuilder *SqlBuilder
-}
-
-func NewAdvSQLBuilder(filter filters.Filter) AdvSqlBuilder {
-	return AdvSqlBuilder{
-		filter:     filter,
-		sqlBuilder: NewSqlBuilder(),
-	}
-}
-
 var advSelectFields = []string{
 	//"uuid", "sessionUuid", "advUuid", "dateHit", "phpSessionId", "guestUuid", "newGuest", "userId",
 	//"userAuth", "url", "url404", "urlFrom", "ip", "method", "cookies", "userAgent", "stopListUuid", "countryId",
@@ -133,6 +121,18 @@ var advSelectFields = []string{
 	"sessions_back_period",        // сессий на возврате за период
 	"hits_period",                 // хитов на прямом заходе за период
 	"hits_back_period",            // хитов на возврате за период
+}
+
+type AdvSqlBuilder struct {
+	filter     filters.Filter
+	sqlBuilder *SqlBuilder
+}
+
+func NewAdvSQLBuilder(filter filters.Filter) AdvSqlBuilder {
+	return AdvSqlBuilder{
+		filter:     filter,
+		sqlBuilder: NewSqlBuilder(),
+	}
 }
 
 func (hs *AdvSqlBuilder) buildSelect() error {
