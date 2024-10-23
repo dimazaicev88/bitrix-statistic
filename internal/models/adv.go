@@ -31,7 +31,7 @@ func (am Adv) FindAdvUuidByByPage(page, direction string) ([]string, error) {
 	resultSql := `
 		SELECT t_adv.uuid
 		FROM adv t_adv
-		INNER JOIN adv_page t_adv_page  ON (t_adv_page.adv_uuid = t_adv.uuid and t_adv_page.type=?)
+		INNER JOIN adv_page t_adv_page  ON (t_adv_page.advUuid = t_adv.uuid and t_adv_page.type=?)
  		WHERE length(t_adv_page.page) > 0 and t_adv_page.page like ?`
 
 	var listAdvUuid []string
@@ -53,9 +53,9 @@ func (am Adv) FindAdvUuidByByPage(page, direction string) ([]string, error) {
 
 func (am Adv) FindByByDomainSearcher(host string) ([]string, error) {
 	//проверяем поисковики
-	resultSql := ` SELECT t_adv_searcher.adv_uuid
+	resultSql := ` SELECT t_adv_searcher.advUuid
 			FROM adv_searcher t_adv_searcher
-					 JOIN searcher_params t_searcher_params ON t_adv_searcher.searcher_uuid = t_searcher_params.searcher_uuid
+					 JOIN searcher_params t_searcher_params ON t_adv_searcher.searcherUuid = t_searcher_params.searcher_uuid
 			WHERE t_searcher_params.domain like ?`
 
 	var listAdvSearcherUuid []string
@@ -96,7 +96,7 @@ func (am Adv) FindByReferer(referer1, referer2 string) ([]string, error) {
 func (am Adv) AddAdv(referer1 string, referer2 string) (entitydb.Adv, error) {
 	uuidAdv := uuid.New()
 	timeAdd := time.Now()
-	err := am.chClient.Exec(am.ctx, `INSERT INTO adv (uuid, referer1, referer2, date_create, cost, events_view, description)
+	err := am.chClient.Exec(am.ctx, `INSERT INTO adv (uuid, referer1, referer2, dateCreate, cost, eventsView, description)
 	 		VALUES (?, ?, ?, ?,0.0,'','')`, uuidAdv, referer1, referer2, timeAdd)
 	if err != nil {
 		return entitydb.Adv{}, err
@@ -110,7 +110,7 @@ func (am Adv) AddAdv(referer1 string, referer2 string) (entitydb.Adv, error) {
 }
 
 func (am Adv) AddAdvStat(advStat entitydb.AdvStat) error {
-	return am.chClient.Exec(am.ctx, `INSERT INTO adv_stat (adv_uuid, guests, new_guests, favorites, hosts, sessions, hits, guests_back, favorites_back, hosts_back, sessions_back, hits_back)
+	return am.chClient.Exec(am.ctx, `INSERT INTO adv_stat (advUuid, guests, newGuests, favorites, hosts, sessions, hits, guestsBack, favoritesBack, hostsBack, sessionsBack, hitsBack)
 	 		VALUES (?,?,?,?,?,?,?,?,?,?,?,?)`, advStat.AdvUuid, advStat.Guests, advStat.NewGuests,
 		advStat.Favorites, advStat.Hosts, advStat.Sessions, advStat.Hits, advStat.GuestsBack,
 		advStat.FavoritesBack, advStat.HostsBack, advStat.SessionsBack, advStat.Hits, advStat.GuestsBack, advStat.HitsBack)
@@ -135,7 +135,7 @@ func (am Adv) DeleteByUuid(advUuid uuid.UUID) error {
 
 func (am Adv) FindRefererByListAdv(listAdv []string) (entitydb.AdvCompany, error) {
 	var adv entitydb.AdvCompany
-	resultSql := `SELECT 	uuid as adv_uuid, referer1,referer2 FROM adv WHERE  uuid IN (?) ORDER BY priority,date_create DESC LIMIT 1`
+	resultSql := `SELECT uuid as adv_uuid, referer1,referer2 FROM adv WHERE  uuid IN (?) ORDER BY dateCreate DESC LIMIT 1`
 	err := am.chClient.QueryRow(am.ctx, resultSql, listAdv).ScanStruct(&adv)
 	if err != nil && errors.Is(err, sql.ErrNoRows) == false {
 		return entitydb.AdvCompany{}, err
@@ -162,7 +162,7 @@ func (am Adv) IsExistsAdv(advUuid uuid.UUID) (bool, error) {
 }
 
 func (am Adv) AddAdvDay(day entitydb.AdvDay) error {
-	return am.chClient.Exec(am.ctx, `INSERT INTO adv_day (adv_uuid, date_stat, guests, guests_day, new_guests, favorites, hosts, hosts_day, sessions, hits, guests_back, guests_day_back, favorites_back, hosts_back, hosts_day_back, sessions_back, hits_back)
+	return am.chClient.Exec(am.ctx, `INSERT INTO adv_day (advUuid, dateStat, guests, guestsDay, newGuests, favorites, hosts, hostsDay, sessions, hits, guestsBack, guestsDayBack, favoritesBack, hostsBack, hostsDayBack, sessionsBack, hitsBack)
 	 		VALUES (?,curdate(),?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)`, day.AdvUuid, day.Guests, day.GuestsDay, day.NewGuests, day.Favorites, day.Hosts, day.HostsDay, day.Sessions, day.Hits,
 		day.Hits, day.GuestsBack, day.GuestsDayBack, day.FavoritesBack, day.HostsBack, day.HostsDayBack, day.SessionsBack, day.Hits)
 }
