@@ -36,7 +36,7 @@ func (ah AdvHandlers) DeleteByUuid(ctx *fiber.Ctx) error {
 	advUuid := ctx.Params("uuid", "")
 	if len(advUuid) > 0 {
 		bytes, err := uuid.FromBytes([]byte(advUuid))
-		if err = ah.allServices.Adv.DeleteByUuid(bytes); err != nil {
+		if err = ah.allServices.Adv.Delete(bytes); err != nil {
 			return err
 		}
 	}
