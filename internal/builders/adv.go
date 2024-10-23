@@ -5,6 +5,7 @@ import (
 	"bitrix-statistic/internal/utils"
 	"fmt"
 	"slices"
+	"strings"
 )
 
 var filterFields = []string{
@@ -123,8 +124,9 @@ var advSelectFields = []string{
 }
 
 type AdvSqlBuilder struct {
-	filter     filters.Filter
-	sqlBuilder *SqlBuilder
+	filter            filters.Filter
+	sqlBuilder        *SqlBuilder
+	groupBySqlBuilder strings.Builder
 }
 
 func NewAdvSQLBuilder(filter filters.Filter) AdvSqlBuilder {
@@ -134,6 +136,7 @@ func NewAdvSQLBuilder(filter filters.Filter) AdvSqlBuilder {
 	}
 }
 
+// TODO добавить сборку когда нету выбираемых полей
 func (hs *AdvSqlBuilder) buildSelect() error {
 	countFields := 0
 	for _, field := range hs.filter.Fields {
@@ -150,31 +153,190 @@ func (hs *AdvSqlBuilder) buildSelect() error {
 		"uuid":          "t1.uuid",
 		"referer1":      "t1.referer1",
 		"referer2":      "t1.referer2",
-		"eventsView":    "t1.events_view as eventsView",
+		"eventsView":    "t1.eventsView",
 		"description":   "t1.description",
 		"guests":        "t2.guests",
-		"newGuests":     "t2.new_guests as newGuests",
+		"newGuests":     "t2.newGuests",
 		"favorites":     "t2.favorites",
 		"hosts":         "t2.hosts",
 		"sessions":      "t2.sessions",
 		"hits":          "t2.hits",
-		"guestsBack":    "t2.guests_back as guestsBack",
-		"favoritesBack": "t2.favorites_back as favoritesBack",
-		"hostsBack":     "t2.hosts_back as hostsBack",
-		"sessionsBack":  "t2.sessions_back as sessionsBack",
-		"hitsBack":      "t2.hits_back as hitsBack",
+		"guestsBack":    "t2.guestsBack",
+		"favoritesBack": "t2.favoritesBack",
+		"hostsBack":     "t2.hostsBack",
+		"sessionsBack":  "t2.sessionsBack",
+		"hitsBack":      "t2.hitsBack",
 	}
 
 	hs.sqlBuilder.Add(`SELECT `)
+	hs.groupBySqlBuilder.WriteString(`GROUP BY `)
+	for _, fieldName := range hs.filter.Fields {
+		if _, ok := simpleFields[fieldName]; !ok {
+			hs.sqlBuilder.Add(fieldName)
+			hs.sqlBuilder.Add(` `)
+		}
+		hs.groupBySqlBuilder.WriteString(fieldName)
+		hs.groupBySqlBuilder.WriteString(` `)
 
-	//if len(hs.filter.Fields) == 0 || countFields == 0 {
-	//	hs.sqlBuilder.Add("SELECT * FROM adv")
-	//} else {
-	//	hs.sqlBuilder.Add(fmt.Sprintf(`SELECT %s from adv t1
-	//      left join adv_stat t2 on t1.uuid = t2.adv_uuid
-	//      left join adv_day t3 on t3.adv_uuid = t2.adv_uuid`, strings.Join(hs.filter.Fields, ", ")))
-	//}
+		switch fieldName {
+		// today
+		case "guestsToday":
+			hs.sqlBuilder.Add(`sumIf(t3.guests_day, toStartOfDay(t3.date_stat) = today()) as guestsToday`)
+			hs.sqlBuilder.Add(` `)
 
+		case "newGuestsToday":
+			hs.sqlBuilder.Add(`sumIf(t3.new_guests, toStartOfDay(t3.date_stat) = today()) as newGuestsToday`)
+			hs.sqlBuilder.Add(` `)
+
+		case "favoritesToday":
+			hs.sqlBuilder.Add(`sumIf(t3.favorites, toStartOfDay(t3.date_stat) = today()) as	favoritesToday`)
+			hs.sqlBuilder.Add(` `)
+
+		case "hostsToday":
+			hs.sqlBuilder.Add(`sumIf(t3.hosts_day, toStartOfDay(t3.date_stat) = today()) as	hostsToday`)
+			hs.sqlBuilder.Add(` `)
+
+		case "sessionsToday":
+			hs.sqlBuilder.Add(`sumIf(t3.sessions, toStartOfDay(t3.date_stat) = today()) as sessionsToday`)
+			hs.sqlBuilder.Add(` `)
+
+		case "hitsToday":
+			hs.sqlBuilder.Add(`sumIf(t2.hits, toStartOfDay(t3.date_stat) = today()) as hitsToday`)
+			hs.sqlBuilder.Add(` `)
+
+		case "guestsBackToday":
+			hs.sqlBuilder.Add(`sumIf(t3.guests_day_back, toStartOfDay(t3.date_stat) = today()) as guestsBackToday`)
+			hs.sqlBuilder.Add(` `)
+
+		case "favoritesBackToday":
+			hs.sqlBuilder.Add(`sumIf(t3.favorites_back, toStartOfDay(t3.date_stat) = today())  as favoritesBackToday`)
+			hs.sqlBuilder.Add(` `)
+
+		case "hostsBackToday":
+			hs.sqlBuilder.Add(`sumIf(t3.hosts_day_back, toStartOfDay(t3.date_stat) = today()) as hostsBackToday`)
+
+		case "sessionsBackToday":
+			hs.sqlBuilder.Add(`sumIf(t3.sessions_back, toStartOfDay(t3.date_stat) = today()) as	sessionsBackToday`)
+			hs.sqlBuilder.Add(` `)
+
+		case "hitsBackToday":
+			hs.sqlBuilder.Add(`sumIf(t3.hits_back, toStartOfDay(t3.date_stat) = today()) as hitsBackToday`)
+			hs.sqlBuilder.Add(` `)
+
+			//yesterday
+
+		case "guestsYesterday":
+			hs.sqlBuilder.Add(`sumIf(t3.guests_day, toStartOfDay(t3.date_stat) = yesterday()) as guestsYesterday`)
+			hs.sqlBuilder.Add(` `)
+
+		case "newGuestsYesterday":
+			hs.sqlBuilder.Add(`sumIf(t3.new_guests, toStartOfDay(t3.date_stat) = yesterday()) as newGuestsYesterday`)
+			hs.sqlBuilder.Add(` `)
+
+		case "favoritesYesterday":
+			hs.sqlBuilder.Add(`sumIf(t3.favorites, toStartOfDay(t3.date_stat) = yesterday()) as favoritesYesterday`)
+			hs.sqlBuilder.Add(` `)
+
+		case "hostsYesterday":
+			hs.sqlBuilder.Add(`sumIf(t3.hosts_day, toStartOfDay(t3.date_stat) = yesterday()) as	hostsYesterday`)
+			hs.sqlBuilder.Add(` `)
+
+		case "sessionsYesterday":
+			hs.sqlBuilder.Add(`sumIf(t3.sessions, toStartOfDay(t3.date_stat) yesterday()) as sessionsYesterday`)
+			hs.sqlBuilder.Add(` `)
+
+		case "hitsYesterday":
+			hs.sqlBuilder.Add(`sumIf(t3.hits, toStartOfDay(t3.date_stat) = yesterday()) as hitsYesterday`)
+			hs.sqlBuilder.Add(` `)
+
+		case "guestsBackYesterday":
+			hs.sqlBuilder.Add(`sumIf(t3.guests_day_back, toStartOfDay(t3.date_stat) = yesterday()) as guestsBackYesterday`)
+			hs.sqlBuilder.Add(` `)
+
+		case "favoritesBackYesterday":
+			hs.sqlBuilder.Add(`sumIf(t3.favorites_back, toStartOfDay(t3.date_stat) = yesterday()) as favoritesBackYesterday`)
+			hs.sqlBuilder.Add(` `)
+
+		case "hostsBackYesterday":
+			hs.sqlBuilder.Add(`sumIf(t3.hosts_day_back, toStartOfDay(t3.date_stat) = yesterday()) as hostsBackYesterday`)
+			hs.sqlBuilder.Add(` `)
+
+		case "sessionsBackYesterday":
+			hs.sqlBuilder.Add(`sumIf(t3.sessions_back, toStartOfDay(t3.date_stat) = yesterday()) as sessionsBackYesterday`)
+			hs.sqlBuilder.Add(` `)
+
+		case "hitsBackYesterday":
+			hs.sqlBuilder.Add(`sumIf(t3.hits_back, toStartOfDay(t3.date_stat) = yesterday()) as hitsBackYesterday`)
+			hs.sqlBuilder.Add(` `)
+
+			// the day before yesterday
+		case "guestsBefYesterday":
+			hs.sqlBuilder.Add(`sumIf(t3.guests_day, toStartOfDay(t3.date_stat) = (yesterday() - interval 1 day)) 
+			as	guestsBefYesterday`)
+			hs.sqlBuilder.Add(` `)
+
+		case "newGuestsBefYesterday":
+			hs.sqlBuilder.Add(`sumIf(t3.new_guests, toStartOfDay(t3.date_stat) =(yesterday() - interval	1 day)) 
+			as newGuestsBefYesterday`)
+			hs.sqlBuilder.Add(` `)
+
+		case "favoritesBefYesterday":
+			hs.sqlBuilder.Add(`sumIf(t3.favorites, toStartOfDay(t3.date_stat) = (yesterday() - interval 1 day)) 
+			as favoritesBefYesterday`)
+			hs.sqlBuilder.Add(` `)
+
+		case "hostsBefYesterday":
+			hs.sqlBuilder.Add(`sumIf(t3.hosts_day, toStartOfDay(t3.date_stat) = (yesterday() - interval	1 day)) 
+			as hostsBefYesterday`)
+			hs.sqlBuilder.Add(` `)
+
+		case "sessionsBefYesterday":
+			hs.sqlBuilder.Add(`sumIf(t3.sessions, toStartOfDay(t3.date_stat) = (yesterday() - interval 1 day)) 
+			as sessionsBefYesterday`)
+			hs.sqlBuilder.Add(` `)
+
+		case "hitsBefYesterday":
+			hs.sqlBuilder.Add(`sumIf(t3.hits, toStartOfDay(t3.date_stat) = (yesterday() - interval 1 day)) 
+			as hitsBefYesterday`)
+			hs.sqlBuilder.Add(` `)
+		case:
+			hs.sqlBuilder.Add(`sumIf(t3.guests_day_back, toStartOfDay(t3.date_stat) = (yesterday() - interval 1 day)) 
+			as guestsBackBefYesterday`)
+			hs.sqlBuilder.Add(` `)
+
+		case "favoritesBefYesterday":
+			hs.sqlBuilder.Add(`sumIf(t3.favorites_back, toStartOfDay(t3.date_stat) =
+		(yesterday() - interval
+	1
+	day))                          as
+	favoritesBackBefYesterday`)
+			hs.sqlBuilder.Add(` `)
+
+		case "favoritesBefYesterday":
+			hs.sqlBuilder.Add(`sumIf(t3.hosts_day_back, toStartOfDay(t3.date_stat) =
+		(yesterday() - interval
+	1
+	day))                          as
+	hostsBackBefYesterday`)
+			hs.sqlBuilder.Add(` `)
+
+		case "favoritesBefYesterday":
+			hs.sqlBuilder.Add(`sumIf(t3.sessions_back, toStartOfDay(t3.date_stat) =
+		(yesterday() - interval
+	1
+	day))                           as
+	sessionsBackBefYesterday`)
+			hs.sqlBuilder.Add(` `)
+
+		case "favoritesBefYesterday":
+			hs.sqlBuilder.Add(`sumIf(t3.hits_back, toStartOfDay(t3.date_stat) =
+		(yesterday() - interval
+	1
+	day))                               as
+	hitsBackBefYesterday`)
+			hs.sqlBuilder.Add(` `)
+		}
+	}
 	hs.sqlBuilder.Add(`from adv t1 
           left join adv_stat t2 on t1.uuid = t2.adv_uuid
           left join adv_day t3 on t3.adv_uuid = t2.adv_uuid`)
