@@ -55,7 +55,7 @@ func (am Adv) FindByByDomainSearcher(host string) ([]string, error) {
 	//проверяем поисковики
 	resultSql := ` SELECT t_adv_searcher.advUuid
 			FROM adv_searcher t_adv_searcher
-					 JOIN searcher_params t_searcher_params ON t_adv_searcher.searcherUuid = t_searcher_params.searcher_uuid
+					 JOIN searcher_params t_searcher_params ON t_adv_searcher.searcherUuid = t_searcher_params.searcherUuid
 			WHERE t_searcher_params.domain like ?`
 
 	var listAdvSearcherUuid []string
@@ -126,10 +126,31 @@ func (am Adv) FindByUuid(uuid uuid.UUID) (entitydb.Adv, error) {
 	return adv, nil
 }
 
-func (am Adv) DeleteByUuid(advUuid uuid.UUID) error {
+func (am Adv) Delete(advUuid uuid.UUID) error {
 	if err := am.chClient.Exec(am.ctx, `DELETE FROM adv WHERE uuid=?`, advUuid); err != nil {
 		return err
 	}
+
+	if err := am.chClient.Exec(am.ctx, `DELETE FROM adv_event WHERE advUuid=?`, advUuid); err != nil {
+		return err
+	}
+
+	if err := am.chClient.Exec(am.ctx, `DELETE FROM adv_searcher WHERE advUuid=?`, advUuid); err != nil {
+		return err
+	}
+
+	if err := am.chClient.Exec(am.ctx, `DELETE FROM adv_day WHERE advUuid=?`, advUuid); err != nil {
+		return err
+	}
+
+	if err := am.chClient.Exec(am.ctx, `DELETE FROM adv_event_day WHERE advUuid=?`, advUuid); err != nil {
+		return err
+	}
+
+	if err := am.chClient.Exec(am.ctx, `DELETE FROM path_adv WHERE advUuid=?`, advUuid); err != nil {
+		return err
+	}
+
 	return nil
 }
 
