@@ -12,8 +12,6 @@ import (
 	"regexp"
 )
 
-//TODO добавить авто создание рекламной компании
-
 type AdvServices struct {
 	allModels     *models.Models
 	ctx           context.Context
@@ -108,9 +106,9 @@ func (as *AdvServices) FindByUuid(advUuid uuid.UUID) (entitydb.Adv, error) {
 	return as.allModels.AdvModel.FindByUuid(advUuid)
 }
 
-// DeleteByUuid Удаление рекламной компании по uuid
-func (as *AdvServices) DeleteByUuid(advUuid uuid.UUID) error {
-	return as.allModels.AdvModel.DeleteByUuid(advUuid)
+// Delete Удаление рекламной компании по uuid
+func (as *AdvServices) Delete(advUuid uuid.UUID) error {
+	return as.allModels.AdvModel.Delete(advUuid)
 }
 
 // AutoCreateAdv Автоматическое создание рекламной компании
@@ -160,6 +158,14 @@ func (as *AdvServices) AddAdvStat(advStat entitydb.AdvStat) error {
 
 func (as *AdvServices) AddAdvDay(day entitydb.AdvDay) error {
 	return as.allModels.AdvModel.AddAdvDay(day)
+}
+
+func (as *AdvServices) GetDynamicList(advUuid uuid.UUID, dateTo, dateFrom string) error {
+	return as.allModels.AdvModel.GetDynamicList(advUuid, dateTo, dateFrom)
+}
+
+func (as *AdvServices) GetEventList() {
+	as.allModels.AdvModel.GetEventList()
 }
 
 func (as *AdvServices) Find(filter filters.Filter) []entitydb.Adv {

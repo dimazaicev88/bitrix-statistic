@@ -20,7 +20,7 @@ func NewPageAdv(ctx context.Context, chClient driver.Conn) *PageAdv {
 
 func (pa PageAdv) Add(pageAdv entitydb.PageAdv) error {
 	err := pa.chClient.Exec(pa.ctx,
-		`INSERT INTO page_adv (date_stat, adv_uuid, counter_back, enter_counter_back, exit_counter_back)
+		`INSERT INTO page_adv (dateStat, advUuid, counterBack, enterCounterBack, exitCounterBack)
 		       VALUES (curdate(),?,?,?,?)`,
 		pageAdv.AdvUuid, pageAdv.CounterBack, pageAdv.EnterCounterBack, pageAdv.ExitCounterBack,
 	)

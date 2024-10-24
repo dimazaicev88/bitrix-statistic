@@ -37,7 +37,7 @@ func (gm Guest) Find(filter filters.Filter) ([]entitydb.Guest, error) {
 
 func (gm Guest) FindByUuid(uuid uuid.UUID) (entitydb.Guest, error) {
 	var hit entitydb.Guest
-	err := gm.chClient.QueryRow(gm.ctx, `select uuid, date_add, repair from guest where uuid=?`,
+	err := gm.chClient.QueryRow(gm.ctx, `select uuid, dateAdd, repair from guest where uuid=?`,
 		uuid).ScanStruct(&hit)
 	if err != nil && errors.Is(err, sql.ErrNoRows) == false {
 		return entitydb.Guest{}, err

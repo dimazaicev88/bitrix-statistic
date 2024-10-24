@@ -24,7 +24,8 @@ func (s Session) Find(filter filters.Filter) (error, []map[string]interface{}) {
 }
 
 func (s Session) Add(session entitydb.Session) error {
-	return s.chClient.Exec(s.ctx, `INSERT INTO session (uuid, guest_uuid, date_add, php_session_id) VALUES (?,?,?,?)`, session.Uuid, session.GuestUuid, session.PhpSessionId)
+	return s.chClient.Exec(s.ctx, `INSERT INTO session (uuid, guestUuid, dateAdd, phpSessionId) VALUES (?,?,?,?)`,
+		session.Uuid, session.GuestUuid, session.PhpSessionId)
 }
 
 func (s Session) GetAttentiveness(dateStat, siteId string) {
@@ -93,7 +94,7 @@ func (s Session) GetAttentiveness(dateStat, siteId string) {
 
 func (s Session) ExistsByPhpSession(session string) (bool, error) {
 	var count uint8
-	row := s.chClient.QueryRow(s.ctx, `select 1 as cnt from session where php_session_id=?`, session)
+	row := s.chClient.QueryRow(s.ctx, `select 1 as cnt from session where phpSessionId=?`, session)
 
 	err := row.Scan(&count)
 	if err != nil && errors.Is(err, sql.ErrNoRows) == false {
@@ -104,7 +105,7 @@ func (s Session) ExistsByPhpSession(session string) (bool, error) {
 
 func (s Session) FindByPHPSessionId(phpSessionId string) (entitydb.Session, error) {
 	var sessionDb entitydb.Session
-	err := s.chClient.QueryRow(s.ctx, `select * from session where php_session_id=?`, phpSessionId).ScanStruct(&sessionDb)
+	err := s.chClient.QueryRow(s.ctx, `select * from session where phpSessionId=?`, phpSessionId).ScanStruct(&sessionDb)
 	if err != nil && errors.Is(err, sql.ErrNoRows) == false {
 		return entitydb.Session{}, err
 	}

@@ -34,7 +34,7 @@ func (p *Page) FindByPageAndDir(dir string, page string, stat string) ([]entityd
 	rows, err := p.chClient.Query(p.ctx,
 		`SELECT *
 			   FROM page
-			   WHERE date_stat = ?	and (url = ? and dir = 'Y') or (url = ? and dir ='N')`,
+			   WHERE dateStat = ?	and (url = ? and dir = 'Y') or (url = ? and dir ='N')`,
 		dir, page, stat)
 	defer rows.Close()
 	if err != nil && errors.Is(err, sql.ErrNoRows) == false {
@@ -62,7 +62,7 @@ func (p *Page) FindByUuid(uuid uuid.UUID) (entitydb.Page, error) {
 
 func (p *Page) Update(oldValue entitydb.Page, newValue entitydb.Page) error {
 	err := p.chClient.Exec(p.ctx,
-		`INSERT INTO page (uuid, date_stat, dir, url, url_404, url_hash, site_id, counter, enter_counter, exit_counter,sign,version) 
+		`INSERT INTO page (uuid, dateStat, dir, url, url404, urlHash, siteId, counter, enterCounter, exitCounter,sign,version) 
 			   VALUES (generateUUIDv7(),curdate(),?,?,?,?,?,?,?,?,?,?)`,
 		oldValue.Dir, oldValue.UrlHash, oldValue.Url404, oldValue.UrlHash, oldValue.SiteId, oldValue.Counter, oldValue.EnterCounter, oldValue.ExitCounter, oldValue.Sign*-1, oldValue.Version,
 	)
@@ -72,7 +72,7 @@ func (p *Page) Update(oldValue entitydb.Page, newValue entitydb.Page) error {
 	}
 
 	return p.chClient.Exec(p.ctx,
-		`INSERT INTO page (uuid, date_stat, dir, url, url_404, url_hash, site_id, counter, enter_counter, exit_counter,sign,version) 
+		`INSERT INTO page (uuid, dateStat, dir, url, url404, urlHash, siteId, counter, enterCounter, exitCounter,sign,version) 
 			   VALUES (generateUUIDv7(),curdate(),?,?,?,?,?,?,?,?,?,?)`,
 		newValue.Dir, newValue.UrlHash, newValue.Url404, newValue.UrlHash, newValue.SiteId, newValue.Counter, newValue.EnterCounter, newValue.ExitCounter, newValue.Sign, newValue.Version+1,
 	)
@@ -80,7 +80,7 @@ func (p *Page) Update(oldValue entitydb.Page, newValue entitydb.Page) error {
 
 func (p *Page) Add(page entitydb.Page) error {
 	return p.chClient.Exec(p.ctx,
-		`INSERT INTO page (uuid, date_stat, dir, url, url_404, url_hash, site_id, counter, enter_counter, exit_counter,sign,version) 
+		`INSERT INTO page (uuid, dateStat, dir, url, url404, urlHash, siteId, counter, enterCounter, exitCounter,sign,version) 
 			   VALUES (generateUUIDv7(),curdate(),?,?,?,?,?,?,?,?,?,?)`,
 		page.Dir, page.UrlHash, page.Url404, page.UrlHash, page.SiteId, page.Counter, page.EnterCounter, page.ExitCounter, page.Sign, page.Version,
 	)

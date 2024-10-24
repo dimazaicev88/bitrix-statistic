@@ -27,12 +27,13 @@ func (m Referer) Find(filter filters.Filter) ([]entitydb.Referer, error) {
 
 func (m Referer) Add(referer string) (uuid.UUID, error) {
 	refererUuid := uuid.New()
-	return refererUuid, m.chClient.Exec(m.ctx, `INSERT INTO referer (uuid, site_name, sessions, hits) VALUES (?, ?, 1, 1);`, refererUuid, referer)
+	return refererUuid, m.chClient.Exec(m.ctx, `INSERT INTO referer (uuid, siteName, sessions, hits) VALUES (?, ?, 1, 1);`, refererUuid, referer)
 }
 
 func (m Referer) AddToRefererList(refererList entitydb.RefererList) error {
 	return m.chClient.Exec(m.ctx,
-		`INSERT INTO referer_list (uuid, referer_uuid, date_hit, protocol, site_name, url_from, url_to, session_uuid, adv_uuid, site_id)
+		`INSERT INTO referer_list (uuid, refererUuid, dateHit, protocol, siteName, urlFrom, urlTo, sessionUuid, 
+                          advUuid, siteId)
                VALUES (generateUUIDv7(),?,now(),?,?,?,?,?,?,?)`,
 		refererList.RefererUuid, refererList.Protocol, refererList.SiteName, refererList.UrlTo, refererList.SessionUuid, refererList.SiteId)
 }
