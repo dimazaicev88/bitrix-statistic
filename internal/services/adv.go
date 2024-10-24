@@ -168,6 +168,6 @@ func (as *AdvServices) GetEventList() {
 	as.allModels.AdvModel.GetEventList()
 }
 
-func (as *AdvServices) Find(filter filters.Filter) []entitydb.Adv {
+func (as *AdvServices) Find(filter filters.Filter) ([]entitydb.Adv, error) {
 	return as.allModels.AdvModel.Find(filter)
 }

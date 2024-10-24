@@ -8,41 +8,9 @@ import (
 	"strings"
 )
 
-var filterFields = []string{
-	"uuid",           //uuid РК;
-	"period",         //период за который необходимо получить данные;
-	"dateAdv",        //Время действия РК;
-	"referer1",       //идентификатор referer1 РК;
-	"referer2",       //идентификатор referer2 РК;
-	"priority",       //приоритет РК;
-	"newGuests",      //Новых посетителей
-	"guestsBack",     //Посетителей на возврате
-	"guests",         //Посетителей на прямом заходе
-	"favoritesBack",  //Посетителей, добавившие сайт в "Избранное" на возврате
-	"favorites",      //Посетителей, добавивших сайт в "Избранное" на прямом заходе
-	"hostsBack",      //Хостов на возврате
-	"hosts",          //Хостов на прямом заходе
-	"sessionsBack",   //Сессий на возврате
-	"sessions",       //Сессий на прямом заходе
-	"hitsBack",       //Хитов на возврате
-	"hits",           // Хитов на прямом заходе
-	"cost",           //затраты на РК;
-	"revenue",        //доходы с РК;
-	"benefit",        //прибыль с РК;
-	"roi",            //рентабельность РК;
-	"attent",         //коэффициент внимательности посетителей РК;
-	"visitorsPerDay", //среднее кол-во посетителей в день;
-	"duration",       //длительность РК;
-	"description",    //описание РК;
-}
-
 var advSelectFields = []string{
-	//"uuid", "sessionUuid", "advUuid", "dateHit", "phpSessionId", "guestUuid", "newGuest", "userId",
-	//"userAuth", "url", "url404", "urlFrom", "ip", "method", "cookies", "userAgent", "stopListUuid", "countryId",
-	//"cityUuid", "siteId",
-
-	"uuid",        // ID
-	"PRIORITY",    // приоритет
+	"uuid", // ID
+	//"PRIORITY",    // приоритет //TODO добавить
 	"referer1",    // идентификатор referer1
 	"referer2",    // идентификатор referer2
 	"description", // описание
@@ -51,15 +19,15 @@ var advSelectFields = []string{
 	//	list - списком
 	//	event1 - сгруппированными по event1
 	//	event2 - сгруппированными по event2
-	"dateFirst",                 // дата первого прямого захода
-	"dateLast",                  // дата последнего прямого захода или возврата
-	"advTime",                   // длительность РК в секундах
-	"attent",                    // внимательность на прямом заходе
-	"attentBack",                // внимательность на возврате
-	"newVisitors",               // процент новых посетителей
-	"returnedVisitors",          // процент вернувшихся на сайт посетителей после прямого захода
-	"visitorsPerDay",            // среднее кол-во посетителей в день
-	"currency",                  // валюта в которой заданы финансовые показатели
+	//"dateFirst",                 // дата первого прямого захода //TODO добавить
+	//"dateLast",                  // дата последнего прямого захода или возврата //TODO добавить
+	//"advTime",                   // длительность РК в секундах //TODO добавить
+	"attent",     // внимательность на прямом заходе
+	"attentBack", // внимательность на возврате
+	//"newVisitors", // процент новых посетителей //TODO добавить
+	//"returnedVisitors", // процент вернувшихся на сайт посетителей после прямого захода //TODO добавить
+	//"visitorsPerDay",            // среднее кол-во посетителей в день //TODO добавить
+	//"currency",                  // валюта в которой заданы финансовые показатели //TODO добавить
 	"cost",                      // затраты
 	"revenue",                   // доход
 	"benefit",                   // прибыль
@@ -82,7 +50,7 @@ var advSelectFields = []string{
 	"newGuestsToday",            // новых посетителей на возврате за сегодня
 	"favoritesToday",            // посетителей, добавившие сайт в "Избранное" на прямом заходе за сегодня
 	"favoritesBackToday",        // посетителей, добавившие сайт в "Избранное" на возврате за сегодня
-	"HostsToday",                // хостов на прямом заходе за сегодня
+	"hostsToday",                // хостов на прямом заходе за сегодня
 	"hostsBackToday",            // хостов на возврате за сегодня
 	"sessionsToday",             // сессий на прямом заходе за сегодня
 	"sessionsBackToday",         // сессий на возврате за сегодня
@@ -110,23 +78,23 @@ var advSelectFields = []string{
 	"sessionsBackBefYesterday",  // сессий на возврате за позавчера
 	"hitsBefYesterday",          // хитов на прямом заходе за позавчера
 	"hitsBackBefYesterday",      // хитов на возврате за позавчера
-	"guestsPeriod",              // посетителей на прямом заходе за период
-	"guestsBackPeriod",          // посетителей на возврате за период
-	"newGuestsPeriod",           // новых посетителей на возврате за период
-	"favoritesPeriod",           // посетителей, добавившие сайт в "Избранное" на прямом заходе за период
-	"favoritesBackPeriod",       // посетителей, добавившие сайт в "Избранное" на возврате за период
-	"hostsPeriod",               // хостов на прямом заходе за период
-	"hostsBackPeriod",           // хостов на возврате за период
-	"sessionsPeriod",            // сессий на прямом заходе за период
-	"sessionsBackPeriod",        // сессий на возврате за период
-	"hitsPeriod",                // хитов на прямом заходе за период
-	"hitsBackPeriod",            // хитов на возврате за период
+	//"guestsPeriod",              // посетителей на прямом заходе за период  //TODO добавить
+	//"guestsBackPeriod",          // посетителей на возврате за период //TODO добавить
+	//"newGuestsPeriod",           // новых посетителей на возврате за период //TODO добавить
+	//"favoritesPeriod",           // посетителей, добавившие сайт в "Избранное" на прямом заходе за период //TODO добавить
+	//"favoritesBackPeriod",       // посетителей, добавившие сайт в "Избранное" на возврате за период //TODO добавить
+	//"hostsPeriod",               // хостов на прямом заходе за период //TODO добавить
+	//"hostsBackPeriod",           // хостов на возврате за период //TODO добавить
+	//"sessionsPeriod",            // сессий на прямом заходе за период //TODO добавить
+	//"sessionsBackPeriod",        // сессий на возврате за период //TODO добавить
+	//"hitsPeriod",     // хитов на прямом заходе за период //TODO добавить
+	//"hitsBackPeriod", // хитов на возврате за период //TODO добавить
 }
 
 type AdvSqlBuilder struct {
-	filter            filters.Filter
-	sqlBuilder        *SqlBuilder
-	groupBySqlBuilder strings.Builder
+	filter        filters.Filter
+	sqlBuilder    *SqlBuilder
+	groupByFields []string
 }
 
 func NewAdvSQLBuilder(filter filters.Filter) AdvSqlBuilder {
@@ -138,17 +106,6 @@ func NewAdvSQLBuilder(filter filters.Filter) AdvSqlBuilder {
 
 // TODO добавить сборку когда нету выбираемых полей
 func (hs *AdvSqlBuilder) buildSelect() error {
-	countFields := 0
-	for _, field := range hs.filter.Fields {
-		if field == "" {
-			continue
-		}
-		if !slices.Contains(advSelectFields, field) {
-			return fmt.Errorf("unknown field: %s", field)
-		}
-		countFields++
-	}
-
 	simpleFields := map[string]string{
 		"uuid":          "t1.uuid",
 		"referer1":      "t1.referer1",
@@ -169,165 +126,170 @@ func (hs *AdvSqlBuilder) buildSelect() error {
 	}
 
 	hs.sqlBuilder.Add(`SELECT `)
-	hs.groupBySqlBuilder.WriteString(`GROUP BY `)
+	tmpListFields := make([]string, 0, len(hs.filter.Fields))
 	for _, fieldName := range hs.filter.Fields {
-		if _, ok := simpleFields[fieldName]; !ok {
-			hs.sqlBuilder.Add(fieldName)
-			hs.sqlBuilder.Add(` `)
+		if fieldName == "" {
+			continue
 		}
-		hs.groupBySqlBuilder.WriteString(fieldName)
-		hs.groupBySqlBuilder.WriteString(` `)
+		if !slices.Contains(advSelectFields, fieldName) {
+			return fmt.Errorf("unknown field: %s", fieldName)
+		}
+
+		if _, ok := simpleFields[fieldName]; ok {
+			tmpListFields = append(tmpListFields, fieldName)
+			hs.groupByFields = append(hs.groupByFields, fieldName)
+			continue
+		}
 
 		switch fieldName {
 		// today
 		case "guestsToday":
-			hs.sqlBuilder.Add(`sumIf(t3.guests_day, toStartOfDay(t3.date_stat) = today()) as guestsToday`)
-			hs.sqlBuilder.Add(` `)
+			tmpListFields = append(tmpListFields, `sumIf(t3.guestsDay, toStartOfDay(t3.dateStat) = today()) 
+                                                           as guestsToday`)
 
 		case "newGuestsToday":
-			hs.sqlBuilder.Add(`sumIf(t3.new_guests, toStartOfDay(t3.date_stat) = today()) as newGuestsToday`)
-			hs.sqlBuilder.Add(` `)
+			tmpListFields = append(tmpListFields, `sumIf(t3.newGuests, toStartOfDay(t3.dateStat) = today()) as newGuestsToday`)
 
 		case "favoritesToday":
-			hs.sqlBuilder.Add(`sumIf(t3.favorites, toStartOfDay(t3.date_stat) = today()) as	favoritesToday`)
-			hs.sqlBuilder.Add(` `)
+			tmpListFields = append(tmpListFields, `sumIf(t3.favorites, toStartOfDay(t3.dateStat) = today()) as favoritesToday`)
 
 		case "hostsToday":
-			hs.sqlBuilder.Add(`sumIf(t3.hosts_day, toStartOfDay(t3.date_stat) = today()) as	hostsToday`)
-			hs.sqlBuilder.Add(` `)
+			tmpListFields = append(tmpListFields, `sumIf(t3.hostsDay, toStartOfDay(t3.dateStat) = today()) as hostsToday`)
 
 		case "sessionsToday":
-			hs.sqlBuilder.Add(`sumIf(t3.sessions, toStartOfDay(t3.date_stat) = today()) as sessionsToday`)
-			hs.sqlBuilder.Add(` `)
+			tmpListFields = append(tmpListFields, `sumIf(t3.sessions, toStartOfDay(t3.dateStat) = today()) as sessionsToday`)
 
 		case "hitsToday":
-			hs.sqlBuilder.Add(`sumIf(t2.hits, toStartOfDay(t3.date_stat) = today()) as hitsToday`)
-			hs.sqlBuilder.Add(` `)
+			tmpListFields = append(tmpListFields, `sumIf(t2.hits, toStartOfDay(t3.dateStat) = today()) as hitsToday`)
 
 		case "guestsBackToday":
-			hs.sqlBuilder.Add(`sumIf(t3.guests_day_back, toStartOfDay(t3.date_stat) = today()) as guestsBackToday`)
-			hs.sqlBuilder.Add(` `)
+			tmpListFields = append(tmpListFields, `sumIf(t3.guestsDayBack, toStartOfDay(t3.dateStat) = today()) as guestsBackToday`)
 
 		case "favoritesBackToday":
-			hs.sqlBuilder.Add(`sumIf(t3.favorites_back, toStartOfDay(t3.date_stat) = today())  as favoritesBackToday`)
-			hs.sqlBuilder.Add(` `)
+			tmpListFields = append(tmpListFields, `sumIf(t3.favoritesBack, toStartOfDay(t3.dateStat) = today())  as favoritesBackToday`)
 
 		case "hostsBackToday":
-			hs.sqlBuilder.Add(`sumIf(t3.hosts_day_back, toStartOfDay(t3.date_stat) = today()) as hostsBackToday`)
+			tmpListFields = append(tmpListFields, `sumIf(t3.hostsDayBack, toStartOfDay(t3.dateStat) = today()) as hostsBackToday`)
 
 		case "sessionsBackToday":
-			hs.sqlBuilder.Add(`sumIf(t3.sessions_back, toStartOfDay(t3.date_stat) = today()) as	sessionsBackToday`)
-			hs.sqlBuilder.Add(` `)
+			tmpListFields = append(tmpListFields, `sumIf(t3.sessionsBack, toStartOfDay(t3.dateStat) = today()) as	sessionsBackToday`)
 
 		case "hitsBackToday":
-			hs.sqlBuilder.Add(`sumIf(t3.hits_back, toStartOfDay(t3.date_stat) = today()) as hitsBackToday`)
-			hs.sqlBuilder.Add(` `)
+			tmpListFields = append(tmpListFields, `sumIf(t3.hitsBack, toStartOfDay(t3.dateStat) = today()) as hitsBackToday`)
 
 			//yesterday
-
 		case "guestsYesterday":
-			hs.sqlBuilder.Add(`sumIf(t3.guests_day, toStartOfDay(t3.date_stat) = yesterday()) as guestsYesterday`)
-			hs.sqlBuilder.Add(` `)
+			tmpListFields = append(tmpListFields, `sumIf(t3.guestsDay, toStartOfDay(t3.dateStat) = yesterday()) as guestsYesterday`)
 
 		case "newGuestsYesterday":
-			hs.sqlBuilder.Add(`sumIf(t3.new_guests, toStartOfDay(t3.date_stat) = yesterday()) as newGuestsYesterday`)
-			hs.sqlBuilder.Add(` `)
+			tmpListFields = append(tmpListFields, `sumIf(t3.newGuests, toStartOfDay(t3.dateStat) = yesterday()) as newGuestsYesterday`)
 
 		case "favoritesYesterday":
-			hs.sqlBuilder.Add(`sumIf(t3.favorites, toStartOfDay(t3.date_stat) = yesterday()) as favoritesYesterday`)
-			hs.sqlBuilder.Add(` `)
+			tmpListFields = append(tmpListFields, `sumIf(t3.favorites, toStartOfDay(t3.dateStat) = yesterday()) as favoritesYesterday`)
 
 		case "hostsYesterday":
-			hs.sqlBuilder.Add(`sumIf(t3.hosts_day, toStartOfDay(t3.date_stat) = yesterday()) as	hostsYesterday`)
-			hs.sqlBuilder.Add(` `)
+			tmpListFields = append(tmpListFields, `sumIf(t3.hostsDay, toStartOfDay(t3.dateStat) = yesterday()) as	hostsYesterday`)
 
 		case "sessionsYesterday":
-			hs.sqlBuilder.Add(`sumIf(t3.sessions, toStartOfDay(t3.date_stat) yesterday()) as sessionsYesterday`)
-			hs.sqlBuilder.Add(` `)
+			tmpListFields = append(tmpListFields, `sumIf(t3.sessions, toStartOfDay(t3.dateStat) yesterday()) as sessionsYesterday`)
 
 		case "hitsYesterday":
-			hs.sqlBuilder.Add(`sumIf(t3.hits, toStartOfDay(t3.date_stat) = yesterday()) as hitsYesterday`)
-			hs.sqlBuilder.Add(` `)
+			tmpListFields = append(tmpListFields, `sumIf(t3.hits, toStartOfDay(t3.dateStat) = yesterday()) as hitsYesterday`)
 
 		case "guestsBackYesterday":
-			hs.sqlBuilder.Add(`sumIf(t3.guests_day_back, toStartOfDay(t3.date_stat) = yesterday()) as guestsBackYesterday`)
-			hs.sqlBuilder.Add(` `)
+			tmpListFields = append(tmpListFields, `sumIf(t3.guestsDayBack, toStartOfDay(t3.dateStat) = yesterday()) as guestsBackYesterday`)
 
 		case "favoritesBackYesterday":
-			hs.sqlBuilder.Add(`sumIf(t3.favorites_back, toStartOfDay(t3.date_stat) = yesterday()) as favoritesBackYesterday`)
-			hs.sqlBuilder.Add(` `)
+			tmpListFields = append(tmpListFields, `sumIf(t3.favoritesBack, toStartOfDay(t3.dateStat) = yesterday()) as favoritesBackYesterday`)
 
 		case "hostsBackYesterday":
-			hs.sqlBuilder.Add(`sumIf(t3.hosts_day_back, toStartOfDay(t3.date_stat) = yesterday()) as hostsBackYesterday`)
-			hs.sqlBuilder.Add(` `)
+			tmpListFields = append(tmpListFields, `sumIf(t3.hostsDayBack, toStartOfDay(t3.dateStat) = yesterday()) as hostsBackYesterday`)
 
 		case "sessionsBackYesterday":
-			hs.sqlBuilder.Add(`sumIf(t3.sessions_back, toStartOfDay(t3.date_stat) = yesterday()) as sessionsBackYesterday`)
-			hs.sqlBuilder.Add(` `)
+			tmpListFields = append(tmpListFields, `sumIf(t3.sessionsBack, toStartOfDay(t3.dateStat) = yesterday()) as sessionsBackYesterday`)
 
 		case "hitsBackYesterday":
-			hs.sqlBuilder.Add(`sumIf(t3.hits_back, toStartOfDay(t3.date_stat) = yesterday()) as hitsBackYesterday`)
-			hs.sqlBuilder.Add(` `)
+			tmpListFields = append(tmpListFields, `sumIf(t3.hitsBack, toStartOfDay(t3.dateStat) = yesterday()) as hitsBackYesterday`)
 
 			// the day before yesterday
 		case "guestsBefYesterday":
-			hs.sqlBuilder.Add(`sumIf(t3.guests_day, toStartOfDay(t3.date_stat) = (yesterday() - interval 1 day)) 
+			tmpListFields = append(tmpListFields, `sumIf(t3.guestsDay, toStartOfDay(t3.dateStat) = (yesterday() - interval 1 day)) 
 			as	guestsBefYesterday`)
-			hs.sqlBuilder.Add(` `)
 
 		case "newGuestsBefYesterday":
-			hs.sqlBuilder.Add(`sumIf(t3.new_guests, toStartOfDay(t3.date_stat) =(yesterday() - interval	1 day)) 
+			tmpListFields = append(tmpListFields, `sumIf(t3.newGuests, toStartOfDay(t3.dateStat) =(yesterday() - interval	1 day)) 
 			as newGuestsBefYesterday`)
-			hs.sqlBuilder.Add(` `)
 
 		case "favoritesBefYesterday":
-			hs.sqlBuilder.Add(`sumIf(t3.favorites, toStartOfDay(t3.date_stat) = (yesterday() - interval 1 day)) 
+			tmpListFields = append(tmpListFields, `sumIf(t3.favorites, toStartOfDay(t3.dateStat) = (yesterday() - interval 1 day)) 
 			as favoritesBefYesterday`)
-			hs.sqlBuilder.Add(` `)
 
 		case "hostsBefYesterday":
-			hs.sqlBuilder.Add(`sumIf(t3.hosts_day, toStartOfDay(t3.date_stat) = (yesterday() - interval	1 day)) 
+			tmpListFields = append(tmpListFields, `sumIf(t3.hostsDay, toStartOfDay(t3.dateStat) = (yesterday() - interval	1 day)) 
 			as hostsBefYesterday`)
-			hs.sqlBuilder.Add(` `)
 
 		case "sessionsBefYesterday":
-			hs.sqlBuilder.Add(`sumIf(t3.sessions, toStartOfDay(t3.date_stat) = (yesterday() - interval 1 day)) 
+			tmpListFields = append(tmpListFields, `sumIf(t3.sessions, toStartOfDay(t3.dateStat) = (yesterday() - interval 1 day)) 
 			as sessionsBefYesterday`)
-			hs.sqlBuilder.Add(` `)
 
 		case "hitsBefYesterday":
-			hs.sqlBuilder.Add(`sumIf(t3.hits, toStartOfDay(t3.date_stat) = (yesterday() - interval 1 day)) 
+			tmpListFields = append(tmpListFields, `sumIf(t3.hits, toStartOfDay(t3.dateStat) = (yesterday() - interval 1 day)) 
 			as hitsBefYesterday`)
-			hs.sqlBuilder.Add(` `)
 		case "guestsBackBefYesterday":
-			hs.sqlBuilder.Add(`sumIf(t3.guests_day_back, toStartOfDay(t3.date_stat) = (yesterday() - interval 1 day)) 
+			tmpListFields = append(tmpListFields, `sumIf(t3.guestsDayBack, toStartOfDay(t3.dateStat) = (yesterday() - interval 1 day)) 
 			as guestsBackBefYesterday`)
-			hs.sqlBuilder.Add(` `)
 
 		case "favoritesBackBefYesterday":
-			hs.sqlBuilder.Add(`sumIf(t3.favorites_back, toStartOfDay(t3.date_stat) = (yesterday() - interval
+			tmpListFields = append(tmpListFields, `sumIf(t3.favoritesBack, toStartOfDay(t3.dateStat) = (yesterday() - interval
 			1 day)) as favoritesBackBefYesterday`)
-			hs.sqlBuilder.Add(` `)
 
 		case "hostsBackBefYesterday":
-			hs.sqlBuilder.Add(`sumIf(t3.hosts_day_back, toStartOfDay(t3.date_stat) = (yesterday() - interval 1 day)) 
+			tmpListFields = append(tmpListFields, `sumIf(t3.hostsDayBack, toStartOfDay(t3.dateStat) = (yesterday() - interval 1 day)) 
 			as	hostsBackBefYesterday`)
-			hs.sqlBuilder.Add(` `)
 
 		case "sessionsBackBefYesterday":
-			hs.sqlBuilder.Add(`sumIf(t3.sessions_back, toStartOfDay(t3.date_stat) = (yesterday() - interval 1 day)) 
+			tmpListFields = append(tmpListFields, `sumIf(t3.sessionsBack, toStartOfDay(t3.dateStat) = (yesterday() - interval 1 day)) 
 			as sessionsBackBefYesterday`)
-			hs.sqlBuilder.Add(` `)
 
 		case "hitsBackBefYesterday":
-			hs.sqlBuilder.Add(`sumIf(t3.hits_back, toStartOfDay(t3.date_stat) = (yesterday() - interval 1 day)) 
+			tmpListFields = append(tmpListFields, `sumIf(t3.hitsBack, toStartOfDay(t3.dateStat) = (yesterday() - interval 1 day)) 
 			as hitsBackBefYesterday`)
-			hs.sqlBuilder.Add(` `)
+
+		//audience
+		case "attent":
+			tmpListFields = append(tmpListFields, `if(t2.sessions > 0, round(t2.hits / t2.sessions, 2), -1) as attent`)
+
+		case "attentBack":
+			tmpListFields = append(tmpListFields, `if(t2.sessionsBack > 0, round(t2.hitsBack / t2.sessionsBack, 2), -1) as attentBack`)
+
+		//finances
+		case "cost":
+			tmpListFields = append(tmpListFields, `round(t1.cost * 1.00, 2) as cost`)
+
+		case "revenue":
+			tmpListFields = append(tmpListFields, `round(t2.revenue * 1.00, 2) as revenue`)
+
+		case "benefit":
+			tmpListFields = append(tmpListFields, `round((t2.revenue - t1.cost) * 1.00, 2) as benefit`)
+
+		case "sessionCost":
+			tmpListFields = append(tmpListFields, `round((if(t2.sessions > 0, t1.cost / t2.sessions, null)) * 1.00, 2) as sessionCost`)
+
+		case "visitorCost":
+			tmpListFields = append(tmpListFields, `round((if(t2.guests > 0, t1.cost / t2.guests, null)) * 1.00, 2) as visitorCost`)
+
+		case "roi":
+			tmpListFields = append(tmpListFields, `if(t1.cost > 0, round(((t2.revenue - t1.cost) / t1.cost) * 100, 2), -1) as roi`)
+
+		default:
+			fmt.Println(fieldName)
 		}
 	}
-	hs.sqlBuilder.Add(`from adv t1 
-          left join adv_stat t2 on t1.uuid = t2.adv_uuid
-          left join adv_day t3 on t3.adv_uuid = t2.adv_uuid`)
+
+	hs.sqlBuilder.Add(strings.Join(tmpListFields, ","))
+	hs.sqlBuilder.Add(` from adv t1 
+          left join adv_stat t2 on t1.uuid = t2.advUuid
+          left join adv_day t3 on t3.advUuid = t2.advUuid`)
 
 	return nil
 }
@@ -383,6 +345,11 @@ func (hs *AdvSqlBuilder) Build() (string, []any, error) {
 	}
 
 	hs.buildWhere()
+	if len(hs.groupByFields) > 0 {
+		hs.sqlBuilder.Add(" GROUP BY ")
+		hs.sqlBuilder.Add(strings.Join(hs.groupByFields, ","))
+		hs.sqlBuilder.Add(" ")
+	}
 	hs.buildSkipAndLimit()
 
 	resultSql, args := hs.sqlBuilder.Build()

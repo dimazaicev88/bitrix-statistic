@@ -19,17 +19,18 @@ create table if not exists adv
 create table if not exists adv_stat
 (
     advUuid       UUID,
-    guests        UInt32 default 0,
-    newGuests     UInt32 default 0,
-    favorites     UInt32 default 0,
-    hosts         UInt32 default 0,
-    sessions      UInt32 default 0,
-    hits          UInt32 default 0,
-    guestsBack    UInt32 default 0,
-    favoritesBack UInt32 default 0,
-    hostsBack     UInt32 default 0,
-    sessionsBack  UInt32 default 0,
-    hitsBack      UInt32 default 0
+    revenue       Float64 default 0.0,
+    guests        UInt32  default 0,
+    newGuests     UInt32  default 0,
+    favorites     UInt32  default 0,
+    hosts         UInt32  default 0,
+    sessions      UInt32  default 0,
+    hits          UInt32  default 0,
+    guestsBack    UInt32  default 0,
+    favoritesBack UInt32  default 0,
+    hostsBack     UInt32  default 0,
+    sessionsBack  UInt32  default 0,
+    hitsBack      UInt32  default 0
 ) engine = SummingMergeTree((
                              guests,
                              newGuests,
@@ -625,52 +626,52 @@ create table if not exists day
 
 create table if not exists event
 (
-    uuid              UUID,
-    event1            String,
-    event2            String,
-    money             decimal(18, 4) default 0.0000,
+    uuid           UUID,
+    event1         String,
+    event2         String,
+    money          decimal(18, 4) default 0.0000,
     dateEnter       DateTime32('Europe/Moscow'),
     dateCleanup     DateTime32('Europe/Moscow'),
-    sort              UInt32         default 100,
-    counter           UInt32         default 0,
-    advVisible      BOOLEAN default true,
-    name              String,
-    description       String,
+    sort           UInt32         default 100,
+    counter        UInt32         default 0,
+    advVisible     BOOLEAN        default true,
+    name           String,
+    description    String,
     keepDays        UInt32,
     dynamicKeepDays UInt32,
-    diagramDefault  BOOLEAN default true
+    diagramDefault BOOLEAN        default true
 ) engine = MergeTree
       ORDER BY (event1, event2, keepDays);
 
 create table if not exists event_day
 (
-    uuid       UUID,
+    uuid      UUID,
     dateStat  DateTime32('Europe/Moscow'),
-    eventUuid UInt32 default 0,
-    money      decimal(18, 4) default 0.0000,
-    counter    UInt32         default 0
+    eventUuid UInt32         default 0,
+    money     decimal(18, 4) default 0.0000,
+    counter   UInt32         default 0
 ) engine = MergeTree
       PARTITION BY toMonth(dateStat)
       ORDER BY (eventUuid, dateStat);
 
 create table if not exists event_list
 (
-    uuid            UUID,
+    uuid       UUID,
     eventUuid     UUID,
-    event3          String,
-    money           decimal(18, 4) default 0.0000,
+    event3     String,
+    money      decimal(18, 4) default 0.0000,
     dateEnter     DateTime32('Europe/Moscow'),
     refererUrl    String,
-    url             String,
+    url        String,
     redirectUrl   String,
     sessionUuid   UUID,
     guestUuid     UUID,
     guestAdvUuid  UUID,
-    advBack       BOOLEAN default false,
+    advBack    BOOLEAN        default false,
     hitUuid       UUID,
     countryId     FixedString(2),
     keepDays      UInt32,
-    chargeback      bool           default false,
+    chargeback bool           default false,
     siteId        FixedString(2),
     refererSiteId FixedString(2)
 ) engine = MergeTree
@@ -684,9 +685,9 @@ create table if not exists event_list
 
 create table if not exists guest
 (
-    uuid     UUID,
+    uuid   UUID,
     dateAdd DateTime32('Europe/Moscow'),
-    repair   boolean default false
+    repair boolean default false
 )
     engine = MergeTree()
         PARTITION BY toMonth(dateAdd)
@@ -696,28 +697,28 @@ create table if not exists guest
 ----------------------- Hit ---------------------------
 create table if not exists hit
 (
-    uuid           UUID,
+    uuid      UUID,
     sessionUuid  UUID,
     advUuid      UUID,
     dateHit      DateTime32('Europe/Moscow'),
     phpSessionId String,
     guestUuid    UUID,
-    language       String,
+    language  String,
     isNewGuest   BOOLEAN default false,
     userId       UInt32,
     userAuth     BOOLEAN default false,
-    url            String,
+    url       String,
     url404       BOOLEAN default false,
     urlFrom      String,
-    ip             IPv4,
-    method         String,
-    cookies        String,
+    ip        IPv4,
+    method    String,
+    cookies   String,
     userAgent    String,
     stopListUuid UUID,
     countryId    FixedString(2),
     cityUuid     UUID,
     siteId       FixedString(2),
-    favorites      boolean default false
+    favorites boolean default false
 )
     engine = MergeTree
         PARTITION BY toMonth(dateHit)
@@ -731,16 +732,16 @@ create table hit_full
     advReferer3      String,
     advUuid          UUID,
     dateHit          DateTime('Europe/Moscow'),
-    cookies            String,
+    cookies String,
     countryId        FixedString(2),
-    city               String,
-    event1             String,
-    event2             String,
+    city    String,
+    event1  String,
+    event2  String,
     eventTypeUuid    String,
     guestUuid        UUID,
     isNewGuest       Bool DEFAULT false,
-    ip                 IPv4,
-    method             String,
+    ip      IPv4,
+    method  String,
     phpSessionId     String,
     referrerSiteName String,
     referrerUrlFrom  String,
@@ -749,14 +750,14 @@ create table hit_full
     searcherUuid     String,
     sessionUuid      UUID,
     siteId           FixedString(2),
-    url                String,
+    url     String,
     url404           Bool DEFAULT false,
     urlFrom          String,
     urlIsDir         Bool DEFAULT false,
     userAgent        String,
     userAuth         Bool DEFAULT false,
     userId           UInt32,
-    uuid               UUID
+    uuid    UUID
 )
     engine = MergeTree
         PARTITION BY toMonth(dateHit)
@@ -767,18 +768,18 @@ create table hit_full
 
 create table if not exists page
 (
-    uuid          UUID,
+    uuid    UUID,
     dateStat     DateTime32('Europe/Moscow'),
-    dir           BOOLEAN default false,
-    url           String,
+    dir     BOOLEAN default false,
+    url     String,
     url404       BOOLEAN default false,
     urlHash      UInt32,
     siteId       FixedString(2),
-    counter       UInt32  default 0,
+    counter UInt32  default 0,
     enterCounter UInt32  default 0,
     exitCounter  UInt32  default 0,
-    sign          Int8,
-    version       UInt32
+    sign    Int8,
+    version UInt32
 ) engine = VersionedCollapsingMergeTree(sign, version)
       PARTITION BY toMonth(dateStat)
       ORDER BY dateStat;
@@ -802,14 +803,14 @@ create table if not exists page_adv
 
 create table if not exists path
 (
-    uuid               UUID,
+    uuid    UUID,
     pathId          Int32   default 0,
     parentPathId    UInt32,
     dateStat        DATE,
-    counter            UInt32  default 0,
+    counter UInt32 default 0,
     counterAbnormal UInt32  default 0,
     counterFullPath UInt32  default 0,
-    pages              String,
+    pages   String,
     firstPage       String,
     firstPage404    BOOLEAN default false,
     firstPageSiteId FixedString(2),
@@ -819,9 +820,9 @@ create table if not exists path
     lastPage404     bool    default false,
     lastPageSiteId  FixedString(2),
     lastPageHash    UInt32,
-    steps              UInt32  default 1,
-    sign               Int8,
-    version            UInt32
+    steps   UInt32 default 1,
+    sign    Int8,
+    version UInt32
 ) engine = VersionedCollapsingMergeTree(sign, version)
       PARTITION BY toMonth(dateStat)
       ORDER BY dateStat;
@@ -831,13 +832,13 @@ create table if not exists path_adv
     advUuid             UUID,
     pathId              Int32,
     dateStat            DATE,
-    counter                UInt32 default 0,
+    counter UInt32 default 0,
     counterBack         UInt32 default 0,
     counterFullPath     UInt32 default 0,
     counterFullPathBack UInt32 default 0,
-    steps                  UInt32 default 0,
-    sign                   Int8,
-    version                UInt32
+    steps   UInt32 default 0,
+    sign    Int8,
+    version UInt32
 ) engine = VersionedCollapsingMergeTree(sign, version)
       PARTITION BY toMonth(dateStat)
       ORDER BY dateStat;
@@ -845,7 +846,7 @@ create table if not exists path_adv
 
 create table if not exists path_cache
 (
-    uuid                    UUID,
+    uuid    UUID,
     sessionUuid         UUID,
     dateHit             DateTime32('Europe/Moscow'),
     pathId              Int32,
@@ -858,8 +859,8 @@ create table if not exists path_cache
     pathPageSiteId      FixedString(2),
     pathSteps           UInt32  default 1,
     isLastPage          BOOLEAN default true,
-    sign                    Int8,
-    version                 UInt32
+    sign    Int8,
+    version UInt32
 ) engine = VersionedCollapsingMergeTree(sign, version)
       PARTITION BY toMonth(dateHit)
       ORDER BY dateHit;
@@ -869,11 +870,11 @@ create table if not exists path_cache
 
 create table if not exists phrase_list
 (
-    uuid          UUID,
+    uuid   UUID,
     dateHit      DateTime32('Europe/Moscow'),
     searcherUuid UUID,
     refererUuid  UUID,
-    phrase        String,
+    phrase String,
     urlFrom      String,
     urlTo        String,
     urlTo404     bool default false,
@@ -887,19 +888,19 @@ create table if not exists phrase_list
 
 create table if not exists referer
 (
-    uuid      UUID,
+    uuid     UUID,
     siteName String,
-    sessions  UInt32 default 0,
-    hits      UInt32 default 0
+    sessions UInt32 default 0,
+    hits     UInt32 default 0
 ) engine = SummingMergeTree((sessions, hits))
       ORDER BY siteName;
 
 create table if not exists referer_list
 (
-    uuid         UUID,
+    uuid     UUID,
     refererUuid UUID,
     dateHit     DateTime32('Europe/Moscow'),
-    protocol     String,
+    protocol String,
     siteName    String,
     urlFrom     String,
     urlTo       String,
@@ -914,12 +915,12 @@ create table if not exists referer_list
 --------------------- Searcher -------------------------
 create table if not exists searcher
 (
-    uuid              UUID,
-    date_cleanup      Nullable(DateTime32('Europe/Moscow')),
+    uuid         UUID,
+    date_cleanup Nullable(DateTime32('Europe/Moscow')),
     totalHits       UInt32  default 0,
     saveStatistic   BOOLEAN default true,
-    active            BOOLEAN default true,
-    name              String,
+    active       BOOLEAN default true,
+    name         String,
     userAgent       String,
     diagramDefault  BOOLEAN default false,
     hitKeepDays     UInt32,
@@ -931,7 +932,7 @@ create table if not exists searcher
 create table searcher_phrase_stat
 (
     searcherUuid UUID,
-    phrases       UInt32 default 0,
+    phrases UInt32 default 0,
     phrasesHits  UInt32 default 0
 )
     engine = SummingMergeTree((phrases, phrasesHits))
@@ -947,12 +948,12 @@ create table if not exists searcher_day_hits
 
 create table if not exists searcher_hit
 (
-    uuid          UUID,
+    uuid UUID,
     dateHit      DateTime32('Europe/Moscow'),
     searcherUuid UUID,
-    url           String,
+    url  String,
     url404       BOOLEAN default false,
-    ip            IPv4,
+    ip   IPv4,
     userAgent    String,
     siteId       FixedString(2)
 ) engine = MergeTree
@@ -961,10 +962,10 @@ create table if not exists searcher_hit
 
 create table if not exists searcher_params
 (
-    uuid          UUID,
+    uuid     UUID,
     searcherUuid UUID,
-    domain        String,
-    variable      String,
+    domain   String,
+    variable String,
     charSet      String
 ) engine = MergeTree
       ORDER BY (domain);
@@ -1003,7 +1004,7 @@ create table if not exists searcher_params
 
 create table if not exists session
 (
-    uuid           UUID,
+    uuid UUID,
     guestUuid    UUID,
     phpSessionId String,
     dateAdd      DateTime32('Europe/Moscow')
@@ -1023,19 +1024,19 @@ create table if not exists options
 
 create table if not exists raw_request
 (
-    date                 DateTime32('Europe/Moscow'),
+    date    DateTime32('Europe/Moscow'),
     phpSessionId      String,
-    url                  String,
-    referer              String,
-    ip                   IPv4,
+    url     String,
+    referer String,
+    ip      IPv4,
     userAgent         String,
-    userid               UInt32,
+    userid  UInt32,
     userLogin         String,
     httpXForwardedFor String,
     isError404        bool,
     siteId            String,
-    event1               String,
-    event2               String,
+    event1  String,
+    event2  String,
     isUserAuth        bool
 ) ENGINE = MergeTree
       PARTITION BY toMonth(date)
