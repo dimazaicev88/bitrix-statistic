@@ -49,7 +49,8 @@ func main() {
 		logrus.Fatal(err)
 	}
 	// Prepare for batch insert
-	batch, err := chClient.PrepareBatch(context.Background(), "INSERT INTO hit (uuid, session_uuid, adv_uuid, date_hit, php_session_id, guest_uuid, language, is_new_guest, user_id, user_auth, url, url_404, url_from, ip, method, cookies, user_agent, stop_list_uuid, country_id, city_uuid, site_id, favorites) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)")
+	batch, err := chClient.PrepareBatch(context.Background(), `INSERT INTO hit (uuid, session_uuid, adv_uuid, date_hit, php_session_id, guest_uuid, language, is_new_guest, user_id, user_auth, url,
+		url_404, url_from, ip, method, cookies, user_agent, stop_list_uuid, country_id, city_uuid, site_id, favorites) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`)
 
 	if err != nil {
 		log.Fatalf("Failed to prepare batch insert: %v", err)

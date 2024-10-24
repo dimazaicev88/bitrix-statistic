@@ -3,6 +3,7 @@ package services
 import (
 	"bitrix-statistic/internal/entitydb"
 	"bitrix-statistic/internal/entityjson"
+	"bitrix-statistic/internal/filters"
 	"bitrix-statistic/internal/models"
 	"bitrix-statistic/internal/utils"
 	"context"
@@ -159,4 +160,8 @@ func (as *AdvServices) AddAdvStat(advStat entitydb.AdvStat) error {
 
 func (as *AdvServices) AddAdvDay(day entitydb.AdvDay) error {
 	return as.allModels.AdvModel.AddAdvDay(day)
+}
+
+func (as *AdvServices) Find(filter filters.Filter) []entitydb.Adv {
+	return as.allModels.AdvModel.Find(filter)
 }
