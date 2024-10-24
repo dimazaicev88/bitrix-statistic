@@ -158,3 +158,11 @@ func (as *AdvServices) AddAdvStat(advStat entitydb.AdvStat) error {
 func (as *AdvServices) AddAdvDay(day entitydb.AdvDay) error {
 	return as.allModels.AdvModel.AddAdvDay(day)
 }
+
+func (as *AdvServices) GetDynamicList(advUuid uuid.UUID, dateTo, dateFrom string) error {
+	return as.allModels.AdvModel.GetDynamicList(advUuid, dateTo, dateFrom)
+}
+
+func (as *AdvServices) GetEventList() {
+	as.allModels.AdvModel.GetEventList()
+}

@@ -187,3 +187,11 @@ func (am Adv) AddAdvDay(day entitydb.AdvDay) error {
 	 		VALUES (?,curdate(),?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)`, day.AdvUuid, day.Guests, day.GuestsDay, day.NewGuests, day.Favorites, day.Hosts, day.HostsDay, day.Sessions, day.Hits,
 		day.Hits, day.GuestsBack, day.GuestsDayBack, day.FavoritesBack, day.HostsBack, day.HostsDayBack, day.SessionsBack, day.Hits)
 }
+
+func (am Adv) GetDynamicList(advUuid uuid.UUID, to string, from string) error {
+	return nil
+}
+
+func (am Adv) GetEventList() {
+
+}

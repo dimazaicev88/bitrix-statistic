@@ -299,41 +299,29 @@ func (hs *AdvSqlBuilder) buildSelect() error {
 			hs.sqlBuilder.Add(`sumIf(t3.hits, toStartOfDay(t3.date_stat) = (yesterday() - interval 1 day)) 
 			as hitsBefYesterday`)
 			hs.sqlBuilder.Add(` `)
-		case:
+		case "guestsBackBefYesterday":
 			hs.sqlBuilder.Add(`sumIf(t3.guests_day_back, toStartOfDay(t3.date_stat) = (yesterday() - interval 1 day)) 
 			as guestsBackBefYesterday`)
 			hs.sqlBuilder.Add(` `)
 
-		case "favoritesBefYesterday":
-			hs.sqlBuilder.Add(`sumIf(t3.favorites_back, toStartOfDay(t3.date_stat) =
-		(yesterday() - interval
-	1
-	day))                          as
-	favoritesBackBefYesterday`)
+		case "favoritesBackBefYesterday":
+			hs.sqlBuilder.Add(`sumIf(t3.favorites_back, toStartOfDay(t3.date_stat) = (yesterday() - interval
+			1 day)) as favoritesBackBefYesterday`)
 			hs.sqlBuilder.Add(` `)
 
-		case "favoritesBefYesterday":
-			hs.sqlBuilder.Add(`sumIf(t3.hosts_day_back, toStartOfDay(t3.date_stat) =
-		(yesterday() - interval
-	1
-	day))                          as
-	hostsBackBefYesterday`)
+		case "hostsBackBefYesterday":
+			hs.sqlBuilder.Add(`sumIf(t3.hosts_day_back, toStartOfDay(t3.date_stat) = (yesterday() - interval 1 day)) 
+			as	hostsBackBefYesterday`)
 			hs.sqlBuilder.Add(` `)
 
-		case "favoritesBefYesterday":
-			hs.sqlBuilder.Add(`sumIf(t3.sessions_back, toStartOfDay(t3.date_stat) =
-		(yesterday() - interval
-	1
-	day))                           as
-	sessionsBackBefYesterday`)
+		case "sessionsBackBefYesterday":
+			hs.sqlBuilder.Add(`sumIf(t3.sessions_back, toStartOfDay(t3.date_stat) = (yesterday() - interval 1 day)) 
+			as sessionsBackBefYesterday`)
 			hs.sqlBuilder.Add(` `)
 
-		case "favoritesBefYesterday":
-			hs.sqlBuilder.Add(`sumIf(t3.hits_back, toStartOfDay(t3.date_stat) =
-		(yesterday() - interval
-	1
-	day))                               as
-	hitsBackBefYesterday`)
+		case "hitsBackBefYesterday":
+			hs.sqlBuilder.Add(`sumIf(t3.hits_back, toStartOfDay(t3.date_stat) = (yesterday() - interval 1 day)) 
+			as hitsBackBefYesterday`)
 			hs.sqlBuilder.Add(` `)
 		}
 	}
@@ -389,7 +377,7 @@ func (hs *AdvSqlBuilder) buildSkipAndLimit() {
 	}
 }
 
-func (hs *AdvSqlBuilder) Build() (string, []interface{}, error) {
+func (hs *AdvSqlBuilder) Build() (string, []any, error) {
 	if err := hs.buildSelect(); err != nil {
 		return "", nil, err
 	}
