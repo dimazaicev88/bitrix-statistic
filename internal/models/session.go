@@ -18,7 +18,7 @@ func NewSession(ctx context.Context, chClient driver.Conn) *Session {
 	return &Session{ctx: ctx, chClient: chClient}
 }
 
-func (s Session) Find(filter filters.Filter) (error, []map[string]interface{}) {
+func (s Session) Find(filter filters.Filter) (error, []map[string]any) {
 
 	return nil, nil
 }

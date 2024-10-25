@@ -78,7 +78,7 @@ var selectFields = map[string]string{
 type GuestSQLBuilder struct {
 	filter        filters.Filter
 	selectBuilder *sqlbuilder.SelectBuilder
-	argsSql       []interface{}
+	argsSql       []any
 	selectBuffer  []string
 	joinBuffer    []string
 }
@@ -92,7 +92,7 @@ func NewGuestBuilder(filter filters.Filter) GuestSQLBuilder {
 }
 
 func (g *GuestSQLBuilder) build() (string, error) {
-	var values []interface{}
+	var values []any
 	var whereCondition []string
 	needJoinSession := false
 	needJoinCountry := false

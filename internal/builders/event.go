@@ -108,7 +108,7 @@ func (hs *EventSqlBuilder) buildSkipAndLimit() {
 	}
 }
 
-func (hs *EventSqlBuilder) Build() (string, []interface{}, error) {
+func (hs *EventSqlBuilder) Build() (string, []any, error) {
 	if err := hs.buildSelect(); err != nil {
 		return "", nil, err
 	}

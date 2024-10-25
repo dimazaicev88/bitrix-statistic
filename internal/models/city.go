@@ -15,7 +15,7 @@ func NewCity(ctx context.Context, chClient driver.Conn) *City {
 	return &City{ctx: ctx, chClient: chClient}
 }
 
-func (cm City) Find(filter filters.Filter) (error, []map[string]interface{}) {
+func (cm City) Find(filter filters.Filter) (error, []map[string]any) {
 	return nil, nil
 }
 

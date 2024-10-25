@@ -10,7 +10,7 @@ func StringConcat(values ...string) string {
 	return builder.String()
 }
 
-func IsInt(value interface{}) bool {
+func IsInt(value any) bool {
 	_, ok := value.(int)
 	return ok
 }

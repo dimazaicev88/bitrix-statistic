@@ -84,7 +84,7 @@ func (hs *ReferrerSqlBuilder) buildSkipAndLimit() {
 	}
 }
 
-func (hs *ReferrerSqlBuilder) Build() (string, []interface{}, error) {
+func (hs *ReferrerSqlBuilder) Build() (string, []any, error) {
 	if err := hs.buildSelect(); err != nil {
 		return "", nil, err
 	}

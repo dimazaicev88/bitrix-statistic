@@ -57,13 +57,13 @@ func (hh HitHandlers) findById(ctx *fiber.Ctx) error {
 func (hh HitHandlers) findAll(ctx *fiber.Ctx) error {
 	skip, err := strconv.Atoi(ctx.Params("skip", "0"))
 	if err != nil {
-		return ctx.JSON(map[string]interface{}{
+		return ctx.JSON(map[string]any{
 			"error": err.Error(),
 		})
 	}
 	limit, err := strconv.Atoi(ctx.Params("limit", "0"))
 	if err != nil {
-		return ctx.JSON(map[string]interface{}{
+		return ctx.JSON(map[string]any{
 			"error": err.Error(),
 		})
 	}

@@ -45,13 +45,13 @@ func (oh OptionHandlers) set(ctx *fiber.Ctx) error {
 	if serverOptions.AdvCompany != nil {
 		err = oh.allService.Option.SetAdvCompany(serverOptions.AdvCompany)
 		if err != nil {
-			return ctx.JSON(map[string]interface{}{
+			return ctx.JSON(map[string]any{
 				"error": err.Error(),
 			})
 		}
 	}
 
-	return ctx.JSON(map[string]interface{}{
+	return ctx.JSON(map[string]any{
 		"error": "",
 	})
 }

@@ -90,7 +90,7 @@ func (hs *HitSqlBuilder) buildSkipAndLimit() {
 	}
 }
 
-func (hs *HitSqlBuilder) Build() (string, []interface{}, error) {
+func (hs *HitSqlBuilder) Build() (string, []any, error) {
 	if err := hs.buildSelect(); err != nil {
 		return "", nil, err
 	}

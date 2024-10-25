@@ -5,6 +5,7 @@ go 1.22
 require (
 	github.com/ClickHouse/clickhouse-go/v2 v2.26.0
 	github.com/caarlos0/env/v6 v6.10.1
+	github.com/deckarep/golang-set/v2 v2.6.0
 	github.com/go-sql-driver/mysql v1.8.1
 	github.com/goccy/go-json v0.10.3
 	github.com/gofiber/fiber/v2 v2.52.5

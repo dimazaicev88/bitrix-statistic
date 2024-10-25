@@ -1,7 +1,7 @@
 package entityjson
 
 type Response struct {
-	Result interface{}
+	Result any
 	Error  string
 	Total  int
 }

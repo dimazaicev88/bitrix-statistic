@@ -23,7 +23,7 @@ func TestGuestSQLBuilder_ToString(t *testing.T) {
 }
 
 func BenchmarkInt(b *testing.B) {
-	var tf interface{}
+	var tf any
 	tf = 10
 	for i := 0; i < b.N; i++ {
 		_ = tf.(int)

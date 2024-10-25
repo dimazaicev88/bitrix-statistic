@@ -115,7 +115,7 @@ func (hs *SessionSqlBuilder) buildSkipAndLimit() {
 	}
 }
 
-func (hs *SessionSqlBuilder) Build() (string, []interface{}, error) {
+func (hs *SessionSqlBuilder) Build() (string, []any, error) {
 	if err := hs.buildSelect(); err != nil {
 		return "", nil, err
 	}

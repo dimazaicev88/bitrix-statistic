@@ -4,6 +4,7 @@ import (
 	"bitrix-statistic/internal/filters"
 	"bitrix-statistic/internal/utils"
 	"fmt"
+	mapset "github.com/deckarep/golang-set/v2"
 	"slices"
 	"strings"
 )
@@ -94,13 +95,14 @@ var advSelectFields = []string{
 type AdvSqlBuilder struct {
 	filter        filters.Filter
 	sqlBuilder    *SqlBuilder
-	groupByFields []string
+	groupByFields mapset.Set[string]
 }
 
 func NewAdvSQLBuilder(filter filters.Filter) AdvSqlBuilder {
 	return AdvSqlBuilder{
-		filter:     filter,
-		sqlBuilder: NewSqlBuilder(),
+		filter:        filter,
+		sqlBuilder:    NewSqlBuilder(),
+		groupByFields: mapset.NewSet[string](),
 	}
 }
 
@@ -135,9 +137,9 @@ func (hs *AdvSqlBuilder) buildSelect() error {
 			return fmt.Errorf("unknown field: %s", fieldName)
 		}
 
-		if _, ok := simpleFields[fieldName]; ok {
-			tmpListFields = append(tmpListFields, fieldName)
-			hs.groupByFields = append(hs.groupByFields, fieldName)
+		if val, ok := simpleFields[fieldName]; ok {
+			tmpListFields = append(tmpListFields, val)
+			hs.groupByFields.Add(val)
 			continue
 		}
 
@@ -161,6 +163,7 @@ func (hs *AdvSqlBuilder) buildSelect() error {
 
 		case "hitsToday":
 			tmpListFields = append(tmpListFields, `sumIf(t2.hits, toStartOfDay(t3.dateStat) = today()) as hitsToday`)
+			hs.groupByFields.Add("t2.hits")
 
 		case "guestsBackToday":
 			tmpListFields = append(tmpListFields, `sumIf(t3.guestsDayBack, toStartOfDay(t3.dateStat) = today()) as guestsBackToday`)
@@ -191,7 +194,7 @@ func (hs *AdvSqlBuilder) buildSelect() error {
 			tmpListFields = append(tmpListFields, `sumIf(t3.hostsDay, toStartOfDay(t3.dateStat) = yesterday()) as	hostsYesterday`)
 
 		case "sessionsYesterday":
-			tmpListFields = append(tmpListFields, `sumIf(t3.sessions, toStartOfDay(t3.dateStat) yesterday()) as sessionsYesterday`)
+			tmpListFields = append(tmpListFields, `sumIf(t3.sessions, toStartOfDay(t3.dateStat) = yesterday()) as sessionsYesterday`)
 
 		case "hitsYesterday":
 			tmpListFields = append(tmpListFields, `sumIf(t3.hits, toStartOfDay(t3.dateStat) = yesterday()) as hitsYesterday`)
@@ -217,7 +220,7 @@ func (hs *AdvSqlBuilder) buildSelect() error {
 			as	guestsBefYesterday`)
 
 		case "newGuestsBefYesterday":
-			tmpListFields = append(tmpListFields, `sumIf(t3.newGuests, toStartOfDay(t3.dateStat) =(yesterday() - interval	1 day)) 
+			tmpListFields = append(tmpListFields, `sumIf(t3.newGuests, toStartOfDay(t3.dateStat) = (yesterday() - interval	1 day)) 
 			as newGuestsBefYesterday`)
 
 		case "favoritesBefYesterday":
@@ -258,28 +261,37 @@ func (hs *AdvSqlBuilder) buildSelect() error {
 		//audience
 		case "attent":
 			tmpListFields = append(tmpListFields, `if(t2.sessions > 0, round(t2.hits / t2.sessions, 2), -1) as attent`)
+			hs.groupByFields.Add("t2.sessions")
 
 		case "attentBack":
 			tmpListFields = append(tmpListFields, `if(t2.sessionsBack > 0, round(t2.hitsBack / t2.sessionsBack, 2), -1) as attentBack`)
+			hs.groupByFields.Add("t2.sessionsBack")
+			hs.groupByFields.Add("t2.hitsBack")
 
 		//finances
 		case "cost":
 			tmpListFields = append(tmpListFields, `round(t1.cost * 1.00, 2) as cost`)
+			hs.groupByFields.Add("t1.cost")
 
 		case "revenue":
 			tmpListFields = append(tmpListFields, `round(t2.revenue * 1.00, 2) as revenue`)
+			hs.groupByFields.Add("t2.revenue")
 
 		case "benefit":
 			tmpListFields = append(tmpListFields, `round((t2.revenue - t1.cost) * 1.00, 2) as benefit`)
+			hs.groupByFields.Add("t2.revenue")
 
 		case "sessionCost":
 			tmpListFields = append(tmpListFields, `round((if(t2.sessions > 0, t1.cost / t2.sessions, null)) * 1.00, 2) as sessionCost`)
+			hs.groupByFields.Add("t2.sessions")
 
 		case "visitorCost":
 			tmpListFields = append(tmpListFields, `round((if(t2.guests > 0, t1.cost / t2.guests, null)) * 1.00, 2) as visitorCost`)
+			hs.groupByFields.Add("t2.guests")
 
 		case "roi":
 			tmpListFields = append(tmpListFields, `if(t1.cost > 0, round(((t2.revenue - t1.cost) / t1.cost) * 100, 2), -1) as roi`)
+			hs.groupByFields.Add("t1.cost")
 
 		default:
 			fmt.Println(fieldName)
@@ -324,6 +336,20 @@ func (hs *AdvSqlBuilder) buildWhere() {
 	}
 }
 
+func (hs *AdvSqlBuilder) buildOrder() {
+	if len(hs.filter.Order) > 0 {
+		hs.sqlBuilder.Add(" ORDER BY ")
+		hs.sqlBuilder.Add(strings.Join(hs.filter.Order, ","))
+
+		if hs.filter.OrderBy != "" {
+			hs.sqlBuilder.Add(" ")
+			hs.sqlBuilder.Add(hs.filter.OrderBy)
+		} else {
+			hs.sqlBuilder.Add(" DESC ")
+		}
+	}
+}
+
 func (hs *AdvSqlBuilder) buildSkipAndLimit() {
 	hs.sqlBuilder.Add(" LIMIT ")
 	if hs.filter.Skip != 0 {
@@ -333,7 +359,7 @@ func (hs *AdvSqlBuilder) buildSkipAndLimit() {
 	}
 
 	if hs.filter.Limit != 0 {
-		hs.sqlBuilder.Add("?", 0)
+		hs.sqlBuilder.Add("?", hs.filter.Limit)
 	} else if hs.filter.Limit > 1000 || hs.filter.Limit < 0 || hs.filter.Limit == 0 {
 		hs.sqlBuilder.Add("?", 1000)
 	}
@@ -345,11 +371,15 @@ func (hs *AdvSqlBuilder) Build() (string, []any, error) {
 	}
 
 	hs.buildWhere()
-	if len(hs.groupByFields) > 0 {
+	if hs.groupByFields.IsEmpty() == false {
 		hs.sqlBuilder.Add(" GROUP BY ")
-		hs.sqlBuilder.Add(strings.Join(hs.groupByFields, ","))
+		listGroupByFields := hs.groupByFields.ToSlice()
+		slices.Sort(listGroupByFields)
+		hs.sqlBuilder.Add(strings.Join(listGroupByFields, ","))
 		hs.sqlBuilder.Add(" ")
 	}
+
+	hs.buildOrder()
 	hs.buildSkipAndLimit()
 
 	resultSql, args := hs.sqlBuilder.Build()
