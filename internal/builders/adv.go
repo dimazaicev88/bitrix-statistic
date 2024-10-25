@@ -9,6 +9,25 @@ import (
 	"strings"
 )
 
+var simpleFields = map[string]string{
+	"uuid":          "t1.uuid",
+	"referer1":      "t1.referer1",
+	"referer2":      "t1.referer2",
+	"eventsView":    "t1.eventsView",
+	"description":   "t1.description",
+	"guests":        "t2.guests",
+	"newGuests":     "t2.newGuests",
+	"favorites":     "t2.favorites",
+	"hosts":         "t2.hosts",
+	"sessions":      "t2.sessions",
+	"hits":          "t2.hits",
+	"guestsBack":    "t2.guestsBack",
+	"favoritesBack": "t2.favoritesBack",
+	"hostsBack":     "t2.hostsBack",
+	"sessionsBack":  "t2.sessionsBack",
+	"hitsBack":      "t2.hitsBack",
+}
+
 var advSelectFields = []string{
 	"uuid", // ID
 	//"PRIORITY",    // приоритет //TODO добавить
@@ -108,24 +127,6 @@ func NewAdvSQLBuilder(filter filters.Filter) AdvSqlBuilder {
 
 // TODO добавить сборку когда нету выбираемых полей
 func (hs *AdvSqlBuilder) buildSelect() error {
-	simpleFields := map[string]string{
-		"uuid":          "t1.uuid",
-		"referer1":      "t1.referer1",
-		"referer2":      "t1.referer2",
-		"eventsView":    "t1.eventsView",
-		"description":   "t1.description",
-		"guests":        "t2.guests",
-		"newGuests":     "t2.newGuests",
-		"favorites":     "t2.favorites",
-		"hosts":         "t2.hosts",
-		"sessions":      "t2.sessions",
-		"hits":          "t2.hits",
-		"guestsBack":    "t2.guestsBack",
-		"favoritesBack": "t2.favoritesBack",
-		"hostsBack":     "t2.hostsBack",
-		"sessionsBack":  "t2.sessionsBack",
-		"hitsBack":      "t2.hitsBack",
-	}
 
 	hs.sqlBuilder.Add(`SELECT `)
 	tmpListFields := make([]string, 0, len(hs.filter.Fields))
@@ -308,7 +309,7 @@ func (hs *AdvSqlBuilder) buildSelect() error {
 
 func (hs *AdvSqlBuilder) buildWhere() {
 	if len(hs.filter.Operators) != 0 {
-		hs.sqlBuilder.Add("WHERE ")
+		hs.sqlBuilder.Add(" WHERE ")
 		for i := 0; i < len(hs.filter.Operators); i++ {
 			op := hs.filter.Operators[i]
 			if op.Field == "isRegistered" {
@@ -336,10 +337,23 @@ func (hs *AdvSqlBuilder) buildWhere() {
 	}
 }
 
-func (hs *AdvSqlBuilder) buildOrder() {
+func (hs *AdvSqlBuilder) buildOrder() error {
 	if len(hs.filter.Order) > 0 {
 		hs.sqlBuilder.Add(" ORDER BY ")
-		hs.sqlBuilder.Add(strings.Join(hs.filter.Order, ","))
+		fieldsOrder := make([]string, 0, len(hs.filter.Order))
+		for _, fieldName := range hs.filter.Order {
+			if slices.Contains(advSelectFields, fieldName) == false {
+				return fmt.Errorf("unknown field: %s", fieldName)
+			}
+			if val, ok := simpleFields[fieldName]; ok {
+				fieldsOrder = append(fieldsOrder, val)
+				continue
+			} else {
+				fieldsOrder = append(fieldsOrder, fieldName)
+			}
+		}
+
+		hs.sqlBuilder.Add(strings.Join(fieldsOrder, ","))
 
 		if hs.filter.OrderBy != "" {
 			hs.sqlBuilder.Add(" ")
@@ -348,6 +362,7 @@ func (hs *AdvSqlBuilder) buildOrder() {
 			hs.sqlBuilder.Add(" DESC ")
 		}
 	}
+	return nil
 }
 
 func (hs *AdvSqlBuilder) buildSkipAndLimit() {
@@ -385,3 +400,92 @@ func (hs *AdvSqlBuilder) Build() (string, []any, error) {
 	resultSql, args := hs.sqlBuilder.Build()
 	return resultSql, args, nil
 }
+
+
+`
+select *
+from (
+         SELECT t1.uuid,
+                t1.referer1,
+                t1.referer2,
+                t1.description,
+                if(t2.sessions > 0, round(t2.hits / t2.sessions, 2), -1)                as attent,
+                if(t2.sessionsBack > 0, round(t2.hitsBack / t2.sessionsBack, 2), -1)    as attentBack,
+                round(t1.cost * 1.00, 2)                                                as cost,
+                round(t2.revenue * 1.00, 2)                                             as revenue,
+                round((t2.revenue - t1.cost) * 1.00, 2)                                 as benefit,
+                round((if(t2.sessions > 0, t1.cost / t2.sessions, null)) * 1.00, 2)     as sessionCost,
+                round((if(t2.guests > 0, t1.cost / t2.guests, null)) * 1.00, 2)         as visitorCost,
+                if(t1.cost > 0, round(((t2.revenue - t1.cost) / t1.cost) * 100, 2), -1) as roi,
+                t2.guests,
+                t2.newGuests,
+                t2.favorites,
+                t2.hosts,
+                t2.sessions,
+                t2.hits,
+                t2.guestsBack,
+                t2.favoritesBack,
+                t2.hostsBack,
+                t2.sessionsBack,
+                t2.hitsBack,
+                sumIf(t3.guestsDay, toStartOfDay(t3.dateStat) = today())
+                                                                                        as guestsToday,
+                sumIf(t3.guestsDayBack, toStartOfDay(t3.dateStat) = today())            as guestsBackToday,
+                sumIf(t3.newGuests, toStartOfDay(t3.dateStat) = today())                as newGuestsToday,
+                sumIf(t3.favorites, toStartOfDay(t3.dateStat) = today())                as favoritesToday,
+                sumIf(t3.favoritesBack, toStartOfDay(t3.dateStat) = today())            as favoritesBackToday,
+                sumIf(t3.hostsDay, toStartOfDay(t3.dateStat) = today())                 as hostsToday,
+                sumIf(t3.hostsDayBack, toStartOfDay(t3.dateStat) = today())             as hostsBackToday,
+                sumIf(t3.sessions, toStartOfDay(t3.dateStat) = today())                 as sessionsToday,
+                sumIf(t3.sessionsBack, toStartOfDay(t3.dateStat) = today())             as sessionsBackToday,
+                sumIf(t2.hits, toStartOfDay(t3.dateStat) = today())                     as hitsToday,
+                sumIf(t3.hitsBack, toStartOfDay(t3.dateStat) = today())                 as hitsBackToday,
+                sumIf(t3.guestsDay, toStartOfDay(t3.dateStat) = yesterday())            as guestsYesterday,
+                sumIf(t3.guestsDayBack, toStartOfDay(t3.dateStat) = yesterday())        as guestsBackYesterday,
+                sumIf(t3.newGuests, toStartOfDay(t3.dateStat) = yesterday())            as newGuestsYesterday,
+                sumIf(t3.favorites, toStartOfDay(t3.dateStat) = yesterday())            as favoritesYesterday,
+                sumIf(t3.favoritesBack, toStartOfDay(t3.dateStat) = yesterday())        as favoritesBackYesterday,
+                sumIf(t3.hostsDay, toStartOfDay(t3.dateStat) = yesterday())             as hostsYesterday,
+                sumIf(t3.hostsDayBack, toStartOfDay(t3.dateStat) = yesterday())         as hostsBackYesterday,
+                sumIf(t3.sessions, toStartOfDay(t3.dateStat) = yesterday())             as sessionsYesterday,
+                sumIf(t3.sessionsBack, toStartOfDay(t3.dateStat) = yesterday())         as sessionsBackYesterday,
+                sumIf(t3.hits, toStartOfDay(t3.dateStat) = yesterday())                 as hitsYesterday,
+                sumIf(t3.hitsBack, toStartOfDay(t3.dateStat) = yesterday())             as hitsBackYesterday,
+                sumIf(t3.guestsDay, toStartOfDay(t3.dateStat) = (yesterday() - interval 1 day))
+                                                                                        as guestsBefYesterday,
+                sumIf(t3.guestsDayBack, toStartOfDay(t3.dateStat) = (yesterday() - interval 1 day))
+                                                                                        as guestsBackBefYesterday,
+                sumIf(t3.newGuests, toStartOfDay(t3.dateStat) = (yesterday() - interval 1 day))
+                                                                                        as newGuestsBefYesterday,
+                sumIf(t3.favorites, toStartOfDay(t3.dateStat) = (yesterday() - interval 1 day))
+                                                                                        as favoritesBefYesterday,
+                sumIf(t3.favoritesBack, toStartOfDay(t3.dateStat) = (yesterday() - interval
+                    1 day))                                                             as favoritesBackBefYesterday,
+                sumIf(t3.hostsDay, toStartOfDay(t3.dateStat) = (yesterday() - interval 1 day))
+                                                                                        as hostsBefYesterday,
+                sumIf(t3.hostsDayBack, toStartOfDay(t3.dateStat) = (yesterday() - interval 1 day))
+                                                                                        as hostsBackBefYesterday,
+                sumIf(t3.sessions, toStartOfDay(t3.dateStat) = (yesterday() - interval 1 day))
+                                                                                        as sessionsBefYesterday,
+                sumIf(t3.sessionsBack, toStartOfDay(t3.dateStat) = (yesterday() - interval 1 day))
+                                                                                        as sessionsBackBefYesterday,
+                sumIf(t3.hits, toStartOfDay(t3.dateStat) = (yesterday() - interval 1 day))
+                                                                                        as hitsBefYesterday,
+                sumIf(t3.hitsBack, toStartOfDay(t3.dateStat) = (yesterday() - interval 1 day))
+                                                                                        as hitsBackBefYesterday
+         from adv t1
+                  left join adv_stat t2 on t1.uuid = t2.advUuid
+                  left join adv_day t3 on t3.advUuid = t2.advUuid
+         WHERE referer1 = '?'
+            OR referer2 = '?'
+--       hostsToday>20
+         GROUP BY t1.cost, t1.description, t1.referer1, t1.referer2, t1.uuid, t2.favorites, t2.favoritesBack, t2.guests,
+                  t2.guestsBack, t2.hits, t2.hitsBack, t2.hosts, t2.hostsBack, t2.newGuests, t2.revenue, t2.sessions,
+                  t2.sessionsBack
+--          ,hostsToday
+         ORDER BY t1.uuid, t1.referer1, benefit desc
+         ) as t
+where t.hitsBefYesterday > 10
+LIMIT ?, ?;
+
+select version()`
