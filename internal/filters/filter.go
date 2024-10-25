@@ -10,7 +10,8 @@ type Filter struct {
 }
 
 type Operators struct {
-	Operator string `json:"operator"`
-	Value    any    `json:"value"`
-	Field    string `json:"field"`
+	Operator     string `json:"operator"`
+	Value        any    `json:"value"`
+	Field        string `json:"field"`
+	TextOperator string `json:"textOperator"`
 }

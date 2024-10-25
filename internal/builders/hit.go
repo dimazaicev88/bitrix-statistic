@@ -38,37 +38,37 @@ func (hs *HitSqlBuilder) buildSelect() error {
 		countFields++
 	}
 	if len(hs.filter.Fields) == 0 || countFields == 0 {
-		hs.sqlBuilder.Add("SELECT * FROM hit ")
+		hs.sqlBuilder.AddSql("SELECT * FROM hit ")
 	} else {
-		hs.sqlBuilder.Add(fmt.Sprintf("SELECT %s FROM hit ", strings.Join(hs.filter.Fields, ", ")))
+		hs.sqlBuilder.AddSql(fmt.Sprintf("SELECT %s FROM hit ", strings.Join(hs.filter.Fields, ", ")))
 	}
 	return nil
 }
 
 func (hs *HitSqlBuilder) buildWhere() {
 	if len(hs.filter.Operators) != 0 {
-		hs.sqlBuilder.Add("WHERE ")
+		hs.sqlBuilder.AddSql("WHERE ")
 		for i := 0; i < len(hs.filter.Operators); i++ {
 			op := hs.filter.Operators[i]
 			if op.Field == "isRegistered" {
 				if op.Value == true {
-					hs.sqlBuilder.Add("userId>0 ")
+					hs.sqlBuilder.AddSql("userId>0 ")
 				} else {
-					hs.sqlBuilder.Add(" userId=0 ")
+					hs.sqlBuilder.AddSql(" userId=0 ")
 				}
 				continue
 			}
 
 			if op.Operator == "or" {
-				hs.sqlBuilder.Add(" OR ")
+				hs.sqlBuilder.AddSql(" OR ")
 			} else {
 				val := utils.StringConcat(op.Field, op.Operator, "?")
-				hs.sqlBuilder.Add(val, op.Value)
+				hs.sqlBuilder.AddSql(val).AddArgs(op.Value)
 			}
 
 			if i+1 < len(hs.filter.Operators)-1 {
 				if hs.filter.Operators[i+1].Operator != "or" || (i-1 > 0 && hs.filter.Operators[i-1].Operator != "or") {
-					hs.sqlBuilder.Add(" AND ")
+					hs.sqlBuilder.AddSql("AND")
 				}
 			}
 		}
@@ -76,17 +76,17 @@ func (hs *HitSqlBuilder) buildWhere() {
 }
 
 func (hs *HitSqlBuilder) buildSkipAndLimit() {
-	hs.sqlBuilder.Add(" LIMIT ")
+	hs.sqlBuilder.AddSql("LIMIT")
 	if hs.filter.Skip != 0 {
-		hs.sqlBuilder.Add("?, ", hs.filter.Skip)
+		hs.sqlBuilder.AddSql("?,").AddArgs(hs.filter.Skip)
 	} else {
-		hs.sqlBuilder.Add("?, ", 0)
+		hs.sqlBuilder.AddSql("?,").AddArgs(hs.filter.Skip)
 	}
 
 	if hs.filter.Limit != 0 {
-		hs.sqlBuilder.Add("?", 0)
+		hs.sqlBuilder.AddSql("?").AddArgs(hs.filter.Limit)
 	} else if hs.filter.Limit > 1000 || hs.filter.Limit < 0 || hs.filter.Limit == 0 {
-		hs.sqlBuilder.Add("?", 1000)
+		hs.sqlBuilder.AddSql("?").AddArgs(hs.filter.Limit)
 	}
 }
 

@@ -3,23 +3,27 @@ package builders
 import "strings"
 
 type SqlBuilder struct {
-	resultSql strings.Builder
+	resultSql []string
 	args      []any
 }
 
 func NewSqlBuilder() *SqlBuilder {
 	return &SqlBuilder{
-		resultSql: strings.Builder{},
+		resultSql: make([]string, 0, 10),
 		args:      []any{},
 	}
 }
 
-func (sb *SqlBuilder) Add(str string, args ...any) *SqlBuilder {
-	sb.resultSql.WriteString(str)
+func (sb *SqlBuilder) AddSql(sql string) *SqlBuilder {
+	sb.resultSql = append(sb.resultSql, sql)
+	return sb
+}
+
+func (sb *SqlBuilder) AddArgs(args ...any) *SqlBuilder {
 	sb.args = append(sb.args, args...)
 	return sb
 }
 
 func (sb *SqlBuilder) Build() (string, []any) {
-	return sb.resultSql.String(), sb.args
+	return strings.Join(sb.resultSql, " "), sb.args
 }

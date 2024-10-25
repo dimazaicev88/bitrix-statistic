@@ -18,7 +18,7 @@ var cityFields = map[string]string{
 //	return CountrySQLBuilder{NewSQLBuilder(filter)}
 //}
 
-//func (cb CountrySQLBuilder) buildSelect() (WhereBuilder, error) {
+//func (cb CountrySQLBuilder) buildSelectAndGroupBy() (WhereBuilder, error) {
 //return NewSelectBuild(cb.sqlData).build(func(sqlData SQLDataForBuild) (WhereBuilder, error) {
 //	var selectBuffer []string
 //	cb.sqlData.selectBuilder.WriteString("SELECT ")
@@ -51,5 +51,5 @@ var cityFields = map[string]string{
 //}
 
 //func (cb CountrySQLBuilder) BuildSQL() (SQL, error) {
-//	return NewSQLBuild(cb.sqlData).DefaultBuild(cb.buildSelect)
+//	return NewSQLBuild(cb.sqlData).DefaultBuild(cb.buildSelectAndGroupBy)
 //}
