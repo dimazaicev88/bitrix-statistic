@@ -1,4 +1,4 @@
-package entityjson
+package dto
 
 import "time"
 

@@ -4,6 +4,6 @@ package converters
 //	SQLDataForBuild
 //}
 
-//func NewCityBuilder(filter filters.Filter) CitySQLBuilder {
+//func NewCityBuilder(filter filters.filter) CitySQLBuilder {
 //	return CitySQLBuilder{NewSQLBuilder(filter)}
 //}

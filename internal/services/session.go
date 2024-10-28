@@ -1,8 +1,8 @@
 package services
 
 import (
+	"bitrix-statistic/internal/dto"
 	"bitrix-statistic/internal/entitydb"
-	"bitrix-statistic/internal/entityjson"
 	"bitrix-statistic/internal/filters"
 	"bitrix-statistic/internal/models"
 	"context"
@@ -64,8 +64,8 @@ func (ss SessionService) FindAll(skip uint32, limit uint32) ([]entitydb.Session,
 	return ss.allModels.Session.FindAll(skip, limit)
 }
 
-func (ss SessionService) ConvertToJSONSession(dbSession entitydb.Session) entityjson.Session {
-	return entityjson.Session{
+func (ss SessionService) ConvertToJSONSession(dbSession entitydb.Session) dto.Session {
+	return dto.Session{
 		Uuid:      dbSession.Uuid,
 		GuestUuid: dbSession.GuestUuid,
 		//NewGuest:     dbSession.IsNewGuest,
@@ -101,8 +101,8 @@ func (ss SessionService) ConvertToJSONSession(dbSession entitydb.Session) entity
 	}
 }
 
-func (ss SessionService) ConvertToJSONListSession(dbSessions []entitydb.Session) []entityjson.Session {
-	var sessions []entityjson.Session
+func (ss SessionService) ConvertToJSONListSession(dbSessions []entitydb.Session) []dto.Session {
+	var sessions []dto.Session
 
 	for _, dbHit := range dbSessions {
 		sessions = append(sessions, ss.ConvertToJSONSession(dbHit))

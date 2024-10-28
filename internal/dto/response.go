@@ -1,4 +1,4 @@
-package entityjson
+package dto
 
 type Response struct {
 	Result any

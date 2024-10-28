@@ -1,4 +1,4 @@
-package entityjson
+package dto
 
 type Country struct {
 	Id            string `json:"id"`                      //Двух символьный идентификатор страны

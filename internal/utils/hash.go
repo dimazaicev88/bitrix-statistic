@@ -1,14 +1,14 @@
 package utils
 
 import (
-	"bitrix-statistic/internal/entityjson"
+	"bitrix-statistic/internal/dto"
 	"crypto/md5"
 	"encoding/hex"
 	"hash/crc32"
 	"strings"
 )
 
-func GetGuestMd5(statData entityjson.UserData) string {
+func GetGuestMd5(statData dto.UserData) string {
 	var strBuilder strings.Builder
 	strBuilder.WriteString(statData.UserAgent)
 	strBuilder.WriteString(statData.Ip)

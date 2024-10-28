@@ -2,8 +2,8 @@ package services
 
 import (
 	"bitrix-statistic/internal/config"
+	"bitrix-statistic/internal/dto"
 	"bitrix-statistic/internal/entitydb"
-	"bitrix-statistic/internal/entityjson"
 	"bitrix-statistic/internal/models"
 	"bitrix-statistic/internal/storage"
 	"bitrix-statistic/internal/utils"
@@ -42,7 +42,7 @@ func TestAdvServices_GetAdv(t *testing.T) {
 		row.Scan(&advUuid)
 		chClient.Exec(context.Background(), "insert into adv_page(uuid, adv_uuid, page)\nVALUES (generateUUIDv7(),?,'localhost/catalog')", advUuid)
 
-		referer, err := advServices.GetAdv(entityjson.UserData{
+		referer, err := advServices.GetAdv(dto.UserData{
 			PHPSessionId:      "",
 			GuestUuid:         uuid.UUID{},
 			Url:               "http://localhost/catalog",
@@ -68,7 +68,7 @@ func TestAdvServices_GetAdv(t *testing.T) {
 
 	t.Run("GetAdv. Find adv", func(t *testing.T) {
 		utils.TruncateTable("searcher_hit", chClient)
-		advReferer, err := advServices.GetAdv(entityjson.UserData{
+		advReferer, err := advServices.GetAdv(dto.UserData{
 			PHPSessionId: "dqweqasdadasd",
 			GuestUuid:    uuid.New(),
 		},

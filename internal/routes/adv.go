@@ -1,8 +1,10 @@
 package routes
 
 import (
+	"bitrix-statistic/internal/filters"
 	"bitrix-statistic/internal/services"
 	"context"
+	"github.com/goccy/go-json"
 	"github.com/gofiber/fiber/v2"
 	"github.com/google/uuid"
 )
@@ -22,17 +24,19 @@ func NewAdv(ctx context.Context, fbApp *fiber.App, allServices *services.AllServ
 }
 
 func (ah AdvHandlers) AddHandlers() {
-	ah.fbApp.Post("/api/v1/adv/filter", ah.Filter)
-	ah.fbApp.Get("/api/v1/adv/:uuid/", ah.FindByUuid)
-	ah.fbApp.Post("/api/v1/adv/event/filter", ah.FilterEvent)
-	ah.fbApp.Delete("/api/v1/adv/delete/:uuid/", ah.DeleteByUuid)
+	ah.fbApp.Post("/api/v1/adv/filter", ah.filter)
+	ah.fbApp.Post("/api/v1/adv/dynamic/filter", ah.filterDynamic)
+
+	ah.fbApp.Get("/api/v1/adv/:uuid/", ah.findByUuid)
+	ah.fbApp.Post("/api/v1/adv/event/filter", ah.filterEvent)
+	ah.fbApp.Delete("/api/v1/adv/delete/:uuid/", ah.deleteByUuid)
 }
 
-func (ah AdvHandlers) Filter(ctx *fiber.Ctx) error {
+func (ah AdvHandlers) filter(ctx *fiber.Ctx) error {
 	return nil
 }
 
-func (ah AdvHandlers) DeleteByUuid(ctx *fiber.Ctx) error {
+func (ah AdvHandlers) deleteByUuid(ctx *fiber.Ctx) error {
 	advUuid := ctx.Params("uuid", "")
 	if len(advUuid) > 0 {
 		bytes, err := uuid.FromBytes([]byte(advUuid))
@@ -43,11 +47,26 @@ func (ah AdvHandlers) DeleteByUuid(ctx *fiber.Ctx) error {
 	return nil
 }
 
-func (ah AdvHandlers) FilterEvent(ctx *fiber.Ctx) error {
-	return nil
+func (ah AdvHandlers) filterEvent(ctx *fiber.Ctx) error {
+	var filter filters.Filter
+	body := ctx.Body()
+	err := json.Unmarshal(body, &filter)
+	if err != nil {
+		return ctx.SendStatus(fiber.StatusBadRequest)
+	}
+	result, err := ah.allServices.Adv.GetEventList(filter)
+	if err != nil {
+		return ctx.SendStatus(fiber.StatusBadRequest)
+	}
+
+	resultJson, err := json.Marshal(result)
+	if err != nil {
+		return ctx.SendStatus(fiber.StatusBadRequest)
+	}
+	return ctx.SendString(string(resultJson))
 }
 
-func (ah AdvHandlers) FindByUuid(ctx *fiber.Ctx) error {
+func (ah AdvHandlers) findByUuid(ctx *fiber.Ctx) error {
 	advUuid := ctx.Params("uuid", "")
 	if len(advUuid) > 0 {
 		bytes, err := uuid.FromBytes([]byte(advUuid))
@@ -62,4 +81,23 @@ func (ah AdvHandlers) FindByUuid(ctx *fiber.Ctx) error {
 		return ctx.JSON(adv)
 	}
 	return nil
+}
+
+func (ah AdvHandlers) filterDynamic(ctx *fiber.Ctx) error {
+	var filter filters.Filter
+	body := ctx.Body()
+	err := json.Unmarshal(body, &filter)
+	if err != nil {
+		return ctx.SendStatus(fiber.StatusBadRequest)
+	}
+	result, err := ah.allServices.Adv.GetDynamicList(filter)
+	if err != nil {
+		return ctx.SendStatus(fiber.StatusBadRequest)
+	}
+
+	resultJson, err := json.Marshal(result)
+	if err != nil {
+		return ctx.SendStatus(fiber.StatusBadRequest)
+	}
+	return ctx.SendString(string(resultJson))
 }

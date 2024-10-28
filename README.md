@@ -1,9 +1,20 @@
 Рекламная компания:
 
-- [ ] rest api
-- [ ] добавление при анализе хитов
-- [ ] тесты
-- [ ] ui
+- [ ] Rest api:
+    - [ ] Find
+    - [ ] GetDynamic
+    - [ ] EventList
+    - [ ] SimpleList
+- [ ] Добавление при анализе хитов
+- [ ] Тесты
+    - [ ] Find
+    - [ ] GetDynamic
+    - [ ] EventList
+    - [ ] SimpleList
+- [ ] UI
+- [ ] Filter converter
+    - [x] Find
+    - [ ] GetDynamic
 
 AutoDetect:
 

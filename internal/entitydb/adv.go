@@ -32,6 +32,41 @@ type (
 		HitsBack      uint32    `ch:"hits_back"`
 	}
 
+	AdvDynamicResult struct {
+		AdvDynamic []AdvDynamic
+		AdvMaxMin  *AdvMaxMin
+	}
+
+	AdvDynamic struct {
+		DateStat      time.Time `ch:"dateStat,omitempty"`      //Дата
+		MonthDay      uint8     `ch:"day"`                     //День (1-31)
+		Month         uint8     `ch:"month,omitempty"`         //Месяц (1-12)
+		Year          uint16    `ch:"year,omitempty"`          //Год
+		Guests        uint32    `ch:"guests,omitempty"`        //Посетителей на прямом заходе
+		NewGuests     uint32    `ch:"newGuests,omitempty"`     //Новых посетителей на прямом заходе
+		Favorites     uint32    `ch:"favorites,omitempty"`     //Посетителей, добавивших сайт в "избранное" на прямом заходе
+		Hosts         uint32    `ch:"hosts,omitempty"`         //Хостов на прямом заходе
+		Sessions      uint32    `ch:"sessions,omitempty"`      //Сессий на прямом заходе
+		Hits          uint32    `ch:"hits,omitempty"`          //Хитов на прямом заходе
+		GuestsBack    uint32    `ch:"guestsBack,omitempty"`    //Посетителей на возврате
+		FavoritesBack uint32    `ch:"favoritesBack,omitempty"` //Посетителей, добавивших сайт в "избранное" на возврате
+		HostsBack     uint32    `ch:"hostsBack,omitempty"`     //Хостов на возврате
+		SessionsBack  uint32    `ch:"sessionsBack,omitempty"`  //Сессий на возврате
+		HitsBack      uint32    `ch:"hitsBack,omitempty"`      //Хитов на возврате
+
+	}
+
+	AdvMaxMin struct {
+		DateFirst time.Time `ch:"dateFirst"`          //Минимальная дата
+		MinDay    uint8     `ch:"minDay,omitempty"`   //День минимальной даты (1-31)
+		MinMonth  uint8     `ch:"minMonth,omitempty"` //Месяц минимальной даты (1-12)
+		MinYear   uint16    `ch:"minYear,omitempty"`  //Год минимальной даты
+		DateLast  time.Time `ch:"dateLast"`           //Максимальная дата
+		MaxDay    uint8     `ch:"maxDay,omitempty"`   //День максимальной даты (1-31)
+		MaxMonth  uint8     `ch:"maxMonth,omitempty"` //Месяц максимальной даты (1-12)
+		MaxYear   uint16    `ch:"maxYear,omitempty"`  //Год максимальной даты
+	}
+
 	AdvDay struct {
 		Uuid          uuid.UUID `ch:"uuid"`
 		AdvUuid       string    `ch:"adv_uuid"`

@@ -1,8 +1,8 @@
 package services
 
 import (
+	"bitrix-statistic/internal/dto"
 	"bitrix-statistic/internal/entitydb"
-	"bitrix-statistic/internal/entityjson"
 	"github.com/google/uuid"
 	"github.com/maypok86/otter"
 	"github.com/sirupsen/logrus"
@@ -76,7 +76,7 @@ func (stat *Statistic) SetRefererService(refererService *RefererService) {
 	stat.refererService = refererService
 }
 
-func (stat *Statistic) Add(statData entityjson.UserData) error {
+func (stat *Statistic) Add(statData dto.UserData) error {
 	var advReferer entitydb.AdvCompany
 	var sessionDb entitydb.Session
 	var guestDb entitydb.Guest

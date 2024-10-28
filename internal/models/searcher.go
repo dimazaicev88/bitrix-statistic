@@ -1,8 +1,8 @@
 package models
 
 import (
+	"bitrix-statistic/internal/dto"
 	"bitrix-statistic/internal/entitydb"
-	"bitrix-statistic/internal/entityjson"
 	"bitrix-statistic/internal/utils"
 	"context"
 	"database/sql"
@@ -52,7 +52,7 @@ func (s Searcher) ExistByIdAndCurrentDate(id int) ([]entitydb.SearcherDayHits, e
 	return rows, nil
 }
 
-func (s Searcher) AddHitSearcher(searcherUuid uuid.UUID, statData entityjson.UserData) error {
+func (s Searcher) AddHitSearcher(searcherUuid uuid.UUID, statData dto.UserData) error {
 	return s.chClient.Exec(s.ctx,
 		`INSERT INTO searcher_hit (uuid,dateHit,searcherUuid,url,url404,ip,userAgent,siteId)
 			   VALUES(generateUUIDv7(),NOW(),?,?,?,?,?,?)`, searcherUuid, statData.Url, statData.IsError404, statData.Ip,

@@ -1,8 +1,8 @@
 package services
 
 import (
+	"bitrix-statistic/internal/dto"
 	"bitrix-statistic/internal/entitydb"
-	"bitrix-statistic/internal/entityjson"
 	"bitrix-statistic/internal/models"
 	"context"
 )
@@ -31,7 +31,7 @@ func (ss *SearcherService) IsSearcher(userAgent string) (bool, error) {
 	return searcher != entitydb.Searcher{}, nil
 }
 
-func (ss *SearcherService) AddHitSearcher(data entityjson.UserData) error {
+func (ss *SearcherService) AddHitSearcher(data dto.UserData) error {
 	searcher, err := ss.allModels.Searcher.FindSearcherByUserAgent(data.UserAgent)
 	if err != nil {
 		return err

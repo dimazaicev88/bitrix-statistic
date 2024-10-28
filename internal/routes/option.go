@@ -1,7 +1,7 @@
 package routes
 
 import (
-	"bitrix-statistic/internal/entityjson"
+	"bitrix-statistic/internal/dto"
 	"bitrix-statistic/internal/services"
 	"context"
 	"github.com/goccy/go-json"
@@ -35,7 +35,7 @@ func (oh OptionHandlers) deleteByUuid(ctx *fiber.Ctx) error {
 }
 
 func (oh OptionHandlers) set(ctx *fiber.Ctx) error {
-	var serverOptions entityjson.Options
+	var serverOptions dto.Options
 	err := json.Unmarshal(ctx.Body(), &serverOptions)
 	if err != nil {
 		logrus.Println(err)

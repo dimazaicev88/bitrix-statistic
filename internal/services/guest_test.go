@@ -2,8 +2,8 @@ package services
 
 import (
 	"bitrix-statistic/internal/config"
+	"bitrix-statistic/internal/dto"
 	"bitrix-statistic/internal/entitydb"
-	"bitrix-statistic/internal/entityjson"
 	"bitrix-statistic/internal/models"
 	"bitrix-statistic/internal/storage"
 	"bitrix-statistic/internal/utils"
@@ -29,7 +29,7 @@ func TestGuestService_Add_EmptyUserData(t *testing.T) {
 	guestService.SetAdvService(NewAdv(context.Background(), allModels))
 	utils.TruncateTable("guest", chClient)
 
-	guest, err := guestService.Add(entityjson.UserData{})
+	guest, err := guestService.Add(dto.UserData{})
 	req.NotNil(err)
 	req.Equal("user data is empty", err.Error())
 	req.Equal(guest, entitydb.Guest{})
@@ -52,7 +52,7 @@ func TestGuestService_Add(t *testing.T) {
 
 	guestUuid := uuid.New()
 	advUuid := uuid.New()
-	userData := entityjson.UserData{
+	userData := dto.UserData{
 		PHPSessionId:      "php-session-id-v1",
 		GuestUuid:         guestUuid,
 		Url:               "http://localhost",
@@ -139,7 +139,7 @@ func TestGuestService_FindByUuid(t *testing.T) {
 	utils.TruncateTable("guest", chClient)
 
 	guestUuid := uuid.New()
-	userData := entityjson.UserData{
+	userData := dto.UserData{
 		PHPSessionId:      "php-session-id-v1",
 		GuestUuid:         guestUuid,
 		Url:               "http://localhost",
@@ -180,7 +180,7 @@ func TestGuestService_Update(t *testing.T) {
 	utils.TruncateTable("guest", chClient)
 
 	guestUuid := uuid.New()
-	userData := entityjson.UserData{
+	userData := dto.UserData{
 		PHPSessionId:      "php-session-id-v1",
 		GuestUuid:         guestUuid,
 		Url:               "http://localhost",

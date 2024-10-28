@@ -1,8 +1,8 @@
 package services
 
 import (
+	"bitrix-statistic/internal/dto"
 	"bitrix-statistic/internal/entitydb"
-	"bitrix-statistic/internal/entityjson"
 	"bitrix-statistic/internal/models"
 	"context"
 	"github.com/maypok86/otter"
@@ -396,9 +396,9 @@ func (o *OptionService) get(name, defValue string) (string, error) {
 	return val, nil
 }
 
-func (o *OptionService) GetOptions() entityjson.Options {
-	return entityjson.Options{
-		AdvCompany: &entityjson.AdvCompany{
+func (o *OptionService) GetOptions() dto.Options {
+	return dto.Options{
+		AdvCompany: &dto.AdvCompany{
 			AdvNa:          o.IsAdvNa(),
 			AdvAutoCreate:  o.IsAdvAutoCreate(),
 			RefererCheck:   o.IsRefererCheck(),
@@ -410,7 +410,7 @@ func (o *OptionService) GetOptions() entityjson.Options {
 	}
 }
 
-func (o *OptionService) SetAdvCompany(company *entityjson.AdvCompany) error {
+func (o *OptionService) SetAdvCompany(company *dto.AdvCompany) error {
 	if err := o.SetAdvNa(strconv.FormatBool(company.AdvNa)); err != nil {
 		return err
 	}

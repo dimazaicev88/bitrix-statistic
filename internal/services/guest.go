@@ -1,8 +1,8 @@
 package services
 
 import (
+	"bitrix-statistic/internal/dto"
 	"bitrix-statistic/internal/entitydb"
-	"bitrix-statistic/internal/entityjson"
 	"bitrix-statistic/internal/filters"
 	"bitrix-statistic/internal/models"
 	"context"
@@ -45,9 +45,9 @@ func (gs *GuestService) SetAdvService(advServices *AdvServices) {
 	gs.advServices = advServices
 }
 
-func (gs *GuestService) Add(userData entityjson.UserData) (entitydb.Guest, error) {
+func (gs *GuestService) Add(userData dto.UserData) (entitydb.Guest, error) {
 
-	if userData == (entityjson.UserData{}) {
+	if userData == (dto.UserData{}) {
 		return entitydb.Guest{}, errors.New("user data is empty")
 	}
 

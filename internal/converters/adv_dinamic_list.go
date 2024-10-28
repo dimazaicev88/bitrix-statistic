@@ -33,7 +33,7 @@ type AdvDynamicListConverter struct {
 	groupByFields mapset.Set[string]
 }
 
-func NewAdvDynamicListConverter(filter filters.Filter) AdvDynamicListConverter {
+func NewAdvDynamicListConverter(filter filters.Filter, maxMin bool) AdvDynamicListConverter {
 	return AdvDynamicListConverter{
 		filter:        filter,
 		sqlBuilder:    NewSqlSQLConverter(),
@@ -66,7 +66,7 @@ func (hs *AdvDynamicListConverter) buildSelectAndGroupBy() error {
 	return nil
 }
 
-func (hs *AdvDynamicListConverter) buildWhere() {
+func (hs *AdvDynamicListConverter) BuildWhere() {
 	if len(hs.filter.Operators) != 0 {
 		hs.sqlBuilder.AddSql(`WHERE`)
 		itemsAnd := make([]string, 0, len(hs.filter.Operators))
@@ -135,12 +135,12 @@ func (hs *AdvDynamicListConverter) buildSkipAndLimit() {
 	}
 }
 
-func (hs *AdvDynamicListConverter) Convert() (string, []any, error) {
+func (hs *AdvDynamicListConverter) Convert() (string, string, []any, error) {
 	if err := hs.buildSelectAndGroupBy(); err != nil {
-		return "", nil, err
+		return "", "", nil, err
 	}
 
-	hs.buildWhere()
+	hs.BuildWhere()
 	if hs.groupByFields.IsEmpty() == false {
 		hs.sqlBuilder.AddSql("GROUP BY")
 		listGroupByFields := hs.groupByFields.ToSlice()
@@ -149,11 +149,26 @@ func (hs *AdvDynamicListConverter) Convert() (string, []any, error) {
 	}
 
 	if err := hs.buildOrder(); err != nil {
-		return "", nil, err
+		return "", "", nil, err
 	}
 
 	hs.buildSkipAndLimit()
 
 	resultSql, args := hs.sqlBuilder.Convert()
-	return resultSql, args, nil
+	return resultSql, "", args, nil
 }
+
+//TODO добавить
+//sqlMaxMin := `
+//				SELECT
+//					max(dateStat) AS dateLast,
+//					min(dateStat) AS dateFirst,
+//					dayOfMonth(max(dateStat)) AS maxDay,
+//					month(max(dateStat)) AS maxMonth,
+//					year(max(dateStat)) AS maxYear,
+//					dayOfMonth(min(dateStat)) AS minDay,
+//					month(min(dateStat)) AS minMonth,
+//					year(min(dateStat)) AS minYear
+//				FROM
+//					adv_day
+//			`

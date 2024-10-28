@@ -14,7 +14,7 @@ var cityFields = map[string]string{
 //	sqlData SQLDataForBuild
 //}
 
-//func NewCountrySQLBuilder(filter filters.Filter) CountrySQLBuilder {
+//func NewCountrySQLBuilder(filter filters.filter) CountrySQLBuilder {
 //	return CountrySQLBuilder{NewSQLBuilder(filter)}
 //}
 

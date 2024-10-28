@@ -2,8 +2,8 @@ package services
 
 import (
 	"bitrix-statistic/internal/config"
+	"bitrix-statistic/internal/dto"
 	"bitrix-statistic/internal/entitydb"
-	"bitrix-statistic/internal/entityjson"
 	"bitrix-statistic/internal/models"
 	"bitrix-statistic/internal/storage"
 	"bitrix-statistic/internal/utils"
@@ -77,7 +77,7 @@ func TestHitService_Add(t *testing.T) {
 		LastAdvBack: false,
 	}
 
-	statData := entityjson.UserData{
+	statData := dto.UserData{
 		PHPSessionId:      "b59c67bf196a4758191e42f76670ceba",
 		GuestUuid:         guestUuid,
 		Url:               "ttp://localhost/",
@@ -142,7 +142,7 @@ func TestHitService_Add_EmptySessRefererAndStatData(t *testing.T) {
 	hitService := NewHit(context.Background(), allModels)
 	utils.TruncateTable("hit", chClient)
 
-	hit, err := hitService.Add(true, entitydb.Session{}, entitydb.AdvCompany{}, entityjson.UserData{})
+	hit, err := hitService.Add(true, entitydb.Session{}, entitydb.AdvCompany{}, dto.UserData{})
 	req.NotNil(err)
 	req.Equal("session is empty", err.Error())
 	req.Equal(hit, entitydb.Hit{})
@@ -164,7 +164,7 @@ func TestHitService_Add_EmptyStatData(t *testing.T) {
 		GuestUuid: uuid.New(),
 	}
 
-	hit, err := hitService.Add(true, sessionDb, entitydb.AdvCompany{}, entityjson.UserData{})
+	hit, err := hitService.Add(true, sessionDb, entitydb.AdvCompany{}, dto.UserData{})
 	req.NotNil(err)
 	req.Equal("stat data is empty", err.Error())
 	req.Equal(hit, entitydb.Hit{})

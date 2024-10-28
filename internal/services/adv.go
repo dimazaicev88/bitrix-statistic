@@ -1,8 +1,8 @@
 package services
 
 import (
+	"bitrix-statistic/internal/dto"
 	"bitrix-statistic/internal/entitydb"
-	"bitrix-statistic/internal/entityjson"
 	"bitrix-statistic/internal/filters"
 	"bitrix-statistic/internal/models"
 	"bitrix-statistic/internal/utils"
@@ -35,7 +35,7 @@ func (as *AdvServices) SetOptionService(optionService *OptionService) {
 }
 
 // GetAdv Получить рекламную компанию
-func (as *AdvServices) GetAdv(statData entityjson.UserData) (entitydb.AdvCompany, error) {
+func (as *AdvServices) GetAdv(statData dto.UserData) (entitydb.AdvCompany, error) {
 	var totalListUuidAdv []string
 
 	previewHit, err := as.hitService.FindLastHitWithoutSession(statData.GuestUuid, statData.PHPSessionId)
@@ -160,12 +160,12 @@ func (as *AdvServices) AddAdvDay(day entitydb.AdvDay) error {
 	return as.allModels.AdvModel.AddAdvDay(day)
 }
 
-func (as *AdvServices) GetDynamicList(advUuid uuid.UUID, dateTo, dateFrom string) error {
-	return as.allModels.AdvModel.GetDynamicList(advUuid, dateTo, dateFrom)
+func (as *AdvServices) GetDynamicList(filter filters.Filter, getMaxMin bool) (entitydb.AdvDynamicResult, error) {
+	return as.allModels.AdvModel.GetDynamicList(filter, getMaxMin)
 }
 
-func (as *AdvServices) GetEventList() {
-	as.allModels.AdvModel.GetEventList()
+func (as *AdvServices) GetEventList(filter filters.Filter) {
+	return as.allModels.AdvModel.GetEventList(filter)
 }
 
 func (as *AdvServices) Find(filter filters.Filter) ([]entitydb.Adv, error) {

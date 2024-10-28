@@ -190,9 +190,43 @@ func (ad Adv) AddAdvDay(day entitydb.AdvDay) error {
 		day.Hits, day.GuestsBack, day.GuestsDayBack, day.FavoritesBack, day.HostsBack, day.HostsDayBack, day.SessionsBack, day.Hits)
 }
 
-func (ad Adv) GetDynamicList(filter filters.Filter, findMaxMin bool) (entitydb.AdvDynamicList, error) {
-	builder := converters.NewAdvDynamicListConverter(filter)
+func (ad Adv) GetDynamicList(filter filters.Filter, findMaxMin bool) (entitydb.AdvDynamicResult, error) {
+	builder := converters.NewAdvDynamicListConverter(filter, findMaxMin)
+	sqlDynamicList, sqlMaxMin, args, err := builder.Convert() //TODO вернуть структуру с sql для  sqlDynamicList,sqlMaxMin и параметрами
+
+	var allDbAdvDynamic = make([]entitydb.AdvDynamic, 0)
+	rows, err := ad.chClient.Query(ad.ctx, sqlDynamicList, args...)
+
+	if err != nil {
+		return entitydb.AdvDynamicResult{}, err
+	}
+
+	for rows.Next() {
+		var adv entitydb.AdvDynamic
+		err = rows.ScanStruct(&adv)
+		allDbAdvDynamic = append(allDbAdvDynamic, adv)
+	}
+
+	var dbAdvMaxMin entitydb.AdvMaxMin
+
+	if findMaxMin {
+		if err = ad.chClient.QueryRow(ad.ctx, sqlMaxMin, args...).ScanStruct(&dbAdvMaxMin); err != nil {
+			return entitydb.AdvDynamicResult{}, err
+		}
+	}
+
+	return entitydb.AdvDynamicResult{
+		AdvDynamic: allDbAdvDynamic,
+		AdvMaxMin:  &dbAdvMaxMin,
+	}, nil
+}
+
+func (ad Adv) GetEventList(filter filters.Filter) ([]entitydb.Event, error) {
+	builder := converters.NewAdvEventConverter(filter)
 	resultSql, args, err := builder.Convert()
+	if err != nil {
+		return nil, err
+	}
 
 	rows, err := ad.chClient.Query(ad.ctx, resultSql, args...)
 
@@ -200,18 +234,14 @@ func (ad Adv) GetDynamicList(filter filters.Filter, findMaxMin bool) (entitydb.A
 		return nil, err
 	}
 
-	var allDbAdv = make([]entitydb.Adv, 0)
+	var allDbAdv = make([]entitydb.Event, 0)
 	for rows.Next() {
-		var adv entitydb.Adv
-		err = rows.ScanStruct(&adv)
-		allDbAdv = append(allDbAdv, adv)
+		var advEvent entitydb.Event
+		err = rows.ScanStruct(&advEvent)
+		allDbAdv = append(allDbAdv, advEvent)
 	}
 
-	return nil
-}
-
-func (ad Adv) GetEventList() {
-
+	return allDbAdv, nil
 }
 
 func (ad Adv) Find(filter filters.Filter) ([]entitydb.Adv, error) {

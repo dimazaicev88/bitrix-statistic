@@ -1,8 +1,8 @@
 package services
 
 import (
+	"bitrix-statistic/internal/dto"
 	"bitrix-statistic/internal/entitydb"
-	"bitrix-statistic/internal/entityjson"
 	"bitrix-statistic/internal/filters"
 	"bitrix-statistic/internal/models"
 	"context"
@@ -34,7 +34,7 @@ func (rs *RefererService) Add(referer string) (uuid.UUID, error) {
 	return rs.allModels.Referer.Add(referer)
 }
 
-func (rs *RefererService) AddToRefererList(advUuid, sessionUuid uuid.UUID, uuidReferer uuid.UUID, parsedUrl *url.URL, statData entityjson.UserData) (entitydb.RefererList, error) {
+func (rs *RefererService) AddToRefererList(advUuid, sessionUuid uuid.UUID, uuidReferer uuid.UUID, parsedUrl *url.URL, statData dto.UserData) (entitydb.RefererList, error) {
 	refererList := entitydb.RefererList{
 		Uuid:        uuid.New(),
 		RefererUuid: uuidReferer,

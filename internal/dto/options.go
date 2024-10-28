@@ -1,4 +1,4 @@
-package entityjson
+package dto
 
 type AdvCompany struct {
 	AdvNa          bool   `json:"advNa"`          //- Использовать рекламную кампанию c referer1=NA, referer2=NA по умолчанию?

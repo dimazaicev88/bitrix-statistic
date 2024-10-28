@@ -1,8 +1,8 @@
 package services
 
 import (
+	"bitrix-statistic/internal/dto"
 	"bitrix-statistic/internal/entitydb"
-	"bitrix-statistic/internal/entityjson"
 	"bitrix-statistic/internal/filters"
 	"bitrix-statistic/internal/models"
 	"context"
@@ -36,14 +36,14 @@ func (hs HitService) Add(
 	isNewGuest bool,
 	sessionUuid uuid.UUID,
 	advReferer entitydb.AdvCompany,
-	statData entityjson.UserData,
+	statData dto.UserData,
 ) (entitydb.Hit, error) {
 
 	if sessionUuid == uuid.Nil {
 		return entitydb.Hit{}, errors.New("sessionUuid is empty")
 	}
 
-	if statData == (entityjson.UserData{}) {
+	if statData == (dto.UserData{}) {
 		return entitydb.Hit{}, errors.New("stat data is empty")
 	}
 
@@ -84,9 +84,9 @@ func (hs HitService) FindAll(skip, limit uint32) ([]entitydb.Hit, error) {
 	return hs.allModels.Hit.FindAll(skip, limit)
 }
 
-// ConvertToJSONHit converts an entitydb.Hit to entityjson.Hit
-func (hs HitService) ConvertToJSONHit(dbHit entitydb.Hit) entityjson.Hit {
-	return entityjson.Hit{
+// ConvertToJSONHit converts an entitydb.Hit to dto.Hit
+func (hs HitService) ConvertToJSONHit(dbHit entitydb.Hit) dto.Hit {
+	return dto.Hit{
 		Uuid:         dbHit.Uuid,
 		SessionUuid:  dbHit.SessionUuid,
 		DateHit:      dbHit.DateHit.Format(time.RFC3339), // Format time as needed
@@ -108,8 +108,8 @@ func (hs HitService) ConvertToJSONHit(dbHit entitydb.Hit) entityjson.Hit {
 	}
 }
 
-func (hs HitService) ConvertToJSONListHits(dbHits []entitydb.Hit) []entityjson.Hit {
-	var hits []entityjson.Hit
+func (hs HitService) ConvertToJSONListHits(dbHits []entitydb.Hit) []dto.Hit {
+	var hits []dto.Hit
 
 	for _, dbHit := range dbHits {
 		hits = append(hits, hs.ConvertToJSONHit(dbHit))

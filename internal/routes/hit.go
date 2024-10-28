@@ -1,7 +1,7 @@
 package routes
 
 import (
-	"bitrix-statistic/internal/entityjson"
+	"bitrix-statistic/internal/dto"
 	"bitrix-statistic/internal/filters"
 	"bitrix-statistic/internal/services"
 	"context"
@@ -70,13 +70,13 @@ func (hh HitHandlers) findAll(ctx *fiber.Ctx) error {
 
 	allHits, err := hh.allService.Hit.FindAll(uint32(skip), uint32(limit))
 	if err != nil {
-		return ctx.JSON(entityjson.Response{
+		return ctx.JSON(dto.Response{
 			Result: nil,
 			Error:  err.Error(),
 			Total:  0,
 		})
 	}
-	return ctx.JSON(entityjson.Response{
+	return ctx.JSON(dto.Response{
 		Result: hh.allService.Hit.ConvertToJSONListHits(allHits),
 		Total:  1,
 	})

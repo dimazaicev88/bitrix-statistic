@@ -1,7 +1,7 @@
 package routes
 
 import (
-	"bitrix-statistic/internal/entityjson"
+	"bitrix-statistic/internal/dto"
 	"bitrix-statistic/internal/services"
 	"bitrix-statistic/internal/tasks"
 	"context"
@@ -36,7 +36,7 @@ func (sh *Statistic) AddHandlers() {
 
 // Add TODO добавить отправку json с текстом ошибки.
 func (sh *Statistic) Add(ctx *fiber.Ctx) error {
-	var userData entityjson.UserData
+	var userData dto.UserData
 	err := json.Unmarshal(ctx.Body(), &userData)
 	if err != nil {
 		log.Println(err)
