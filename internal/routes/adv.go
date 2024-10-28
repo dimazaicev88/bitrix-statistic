@@ -90,7 +90,7 @@ func (ah AdvHandlers) filterDynamic(ctx *fiber.Ctx) error {
 	if err != nil {
 		return ctx.SendStatus(fiber.StatusBadRequest)
 	}
-	result, err := ah.allServices.Adv.GetDynamicList(filter)
+	result, err := ah.allServices.Adv.GetDynamicList(filter, true) //TODO добавить парсинг
 	if err != nil {
 		return ctx.SendStatus(fiber.StatusBadRequest)
 	}

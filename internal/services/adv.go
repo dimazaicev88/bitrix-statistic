@@ -164,7 +164,7 @@ func (as *AdvServices) GetDynamicList(filter filters.Filter, getMaxMin bool) (en
 	return as.allModels.AdvModel.GetDynamicList(filter, getMaxMin)
 }
 
-func (as *AdvServices) GetEventList(filter filters.Filter) {
+func (as *AdvServices) GetEventList(filter filters.Filter) ([]entitydb.Event, error) {
 	return as.allModels.AdvModel.GetEventList(filter)
 }
 
