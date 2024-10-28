@@ -1,6 +1,7 @@
 package converters
 
 import (
+	"bitrix-statistic/internal/converters/adv"
 	"bitrix-statistic/internal/filters"
 	"bitrix-statistic/internal/utils"
 	"fmt"
@@ -26,7 +27,7 @@ func (hs *ReferrerSqlBuilder) buildSelect() error {
 		if field == "" {
 			continue
 		}
-		if !slices.Contains(advSelectFields, field) {
+		if !slices.Contains(adv.advSelectFields, field) {
 			return fmt.Errorf("unknown field: %s", field)
 		}
 		countFields++

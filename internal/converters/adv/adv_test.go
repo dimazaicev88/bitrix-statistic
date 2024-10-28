@@ -1,4 +1,4 @@
-package converters
+package adv
 
 import (
 	"bitrix-statistic/internal/filters"

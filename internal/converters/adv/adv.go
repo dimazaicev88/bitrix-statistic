@@ -1,6 +1,7 @@
-package converters
+package adv
 
 import (
+	"bitrix-statistic/internal/converters"
 	"bitrix-statistic/internal/filters"
 	"bitrix-statistic/internal/utils"
 	"fmt"
@@ -111,22 +112,22 @@ var advSelectFields = []string{
 	//"hitsBackPeriod", // хитов на возврате за период //TODO добавить
 }
 
-type AdvConverter struct {
+type Converter struct {
 	filter        filters.Filter
-	sqlBuilder    *FilterToSqlConverter
+	sqlBuilder    *converters.FilterToSqlConverter
 	groupByFields mapset.Set[string]
 }
 
-func NewAdvConverter(filter filters.Filter) AdvConverter {
-	return AdvConverter{
+func NewAdvConverter(filter filters.Filter) Converter {
+	return Converter{
 		filter:        filter,
-		sqlBuilder:    NewSqlSQLConverter(),
+		sqlBuilder:    converters.NewSqlSQLConverter(),
 		groupByFields: mapset.NewSet[string](),
 	}
 }
 
 // TODO добавить сборку когда нету выбираемых полей
-func (hs *AdvConverter) buildSelectAndGroupBy() error {
+func (hs *Converter) buildSelectAndGroupBy() error {
 
 	hs.sqlBuilder.AddSql(`SELECT`)
 	tmpListFields := make([]string, 0, len(hs.filter.Fields))
@@ -307,7 +308,7 @@ func (hs *AdvConverter) buildSelectAndGroupBy() error {
 	return nil
 }
 
-func (hs *AdvConverter) buildWhere() {
+func (hs *Converter) buildWhere() {
 	if len(hs.filter.Operators) != 0 {
 		hs.sqlBuilder.AddSql(`WHERE`)
 		itemsAnd := make([]string, 0, len(hs.filter.Operators))
@@ -327,7 +328,7 @@ func (hs *AdvConverter) buildWhere() {
 	}
 }
 
-func (hs *AdvConverter) appendSqlWhere(field, operator string, value any, listSql []string) []string {
+func (hs *Converter) appendSqlWhere(field, operator string, value any, listSql []string) []string {
 	if value != nil {
 		if fieldName, ok := advSimpleFields[field]; ok {
 			val := utils.StringConcat(fieldName, operator, "?")
@@ -343,7 +344,7 @@ func (hs *AdvConverter) appendSqlWhere(field, operator string, value any, listSq
 	return listSql
 }
 
-func (hs *AdvConverter) buildOrder() error {
+func (hs *Converter) buildOrder() error {
 	if len(hs.filter.Order) > 0 {
 		hs.sqlBuilder.AddSql("ORDER BY")
 		fieldsOrder := make([]string, 0, len(hs.filter.Order))
@@ -370,7 +371,7 @@ func (hs *AdvConverter) buildOrder() error {
 	return nil
 }
 
-func (hs *AdvConverter) buildSkipAndLimit() {
+func (hs *Converter) buildSkipAndLimit() {
 	hs.sqlBuilder.AddSql("LIMIT")
 	if hs.filter.Skip != 0 {
 		hs.sqlBuilder.AddSql("?,").AddArgs(hs.filter.Skip)
@@ -385,7 +386,7 @@ func (hs *AdvConverter) buildSkipAndLimit() {
 	}
 }
 
-func (hs *AdvConverter) Convert() (string, []any, error) {
+func (hs *Converter) Convert() (string, []any, error) {
 	if err := hs.buildSelectAndGroupBy(); err != nil {
 		return "", nil, err
 	}

@@ -1,6 +1,7 @@
-package converters
+package adv
 
 import (
+	"bitrix-statistic/internal/converters"
 	"bitrix-statistic/internal/filters"
 	"bitrix-statistic/internal/utils"
 	"fmt"
@@ -8,25 +9,25 @@ import (
 	"strings"
 )
 
-type AdvAdvEventConverter struct {
+type EventConverter struct {
 	filter     filters.Filter
-	sqlBuilder *FilterToSqlConverter
+	sqlBuilder *converters.FilterToSqlConverter
 }
 
-func NewAdvEventConverter(filter filters.Filter) AdvAdvEventConverter {
-	return AdvAdvEventConverter{
+func NewEventConverter(filter filters.Filter) EventConverter {
+	return EventConverter{
 		filter:     filter,
-		sqlBuilder: NewSqlSQLConverter(),
+		sqlBuilder: converters.NewSqlSQLConverter(),
 	}
 }
 
-func (hs *AdvAdvEventConverter) buildSelect() error {
+func (hs *EventConverter) buildSelect() error {
 	hs.sqlBuilder.AddSql(`SELECT`)
 
 	return nil
 }
 
-func (hs *AdvAdvEventConverter) buildWhere() {
+func (hs *EventConverter) buildWhere() {
 	if len(hs.filter.Operators) != 0 {
 		hs.sqlBuilder.AddSql(`WHERE`)
 		itemsAnd := make([]string, 0, len(hs.filter.Operators))
@@ -46,7 +47,7 @@ func (hs *AdvAdvEventConverter) buildWhere() {
 	}
 }
 
-func (hs *AdvAdvEventConverter) appendSqlWhere(field, operator string, value any, listSql []string) []string {
+func (hs *EventConverter) appendSqlWhere(field, operator string, value any, listSql []string) []string {
 	if value != nil {
 		if fieldName, ok := advSimpleFields[field]; ok {
 			val := utils.StringConcat(fieldName, operator, "?")
@@ -62,7 +63,7 @@ func (hs *AdvAdvEventConverter) appendSqlWhere(field, operator string, value any
 	return listSql
 }
 
-func (hs *AdvAdvEventConverter) buildOrder() error {
+func (hs *EventConverter) buildOrder() error {
 	if len(hs.filter.Order) > 0 {
 		hs.sqlBuilder.AddSql("ORDER BY")
 		fieldsOrder := make([]string, 0, len(hs.filter.Order))
@@ -89,7 +90,7 @@ func (hs *AdvAdvEventConverter) buildOrder() error {
 	return nil
 }
 
-func (hs *AdvAdvEventConverter) buildSkipAndLimit() {
+func (hs *EventConverter) buildSkipAndLimit() {
 	hs.sqlBuilder.AddSql("LIMIT")
 	if hs.filter.Skip != 0 {
 		hs.sqlBuilder.AddSql("?,").AddArgs(hs.filter.Skip)
@@ -104,7 +105,7 @@ func (hs *AdvAdvEventConverter) buildSkipAndLimit() {
 	}
 }
 
-func (hs *AdvAdvEventConverter) Convert() (string, []any, error) {
+func (hs *EventConverter) Convert() (string, []any, error) {
 	if err := hs.buildSelect(); err != nil {
 		return "", nil, err
 	}

@@ -171,3 +171,11 @@ func (as *AdvServices) GetEventList(filter filters.Filter) ([]entitydb.Event, er
 func (as *AdvServices) Find(filter filters.Filter) ([]entitydb.Adv, error) {
 	return as.allModels.AdvModel.Find(filter)
 }
+
+func (as *AdvServices) FindAll(u uint32, u2 uint32) ([]entitydb.Adv, error) {
+	return nil, nil
+}
+
+func (as *AdvServices) ConvertToJSONListAdv(adv []entitydb.Adv) any {
+	return nil
+}

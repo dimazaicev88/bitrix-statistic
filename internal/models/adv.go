@@ -1,7 +1,7 @@
 package models
 
 import (
-	"bitrix-statistic/internal/converters"
+	advConverter "bitrix-statistic/internal/converters/adv"
 	"bitrix-statistic/internal/entitydb"
 	"bitrix-statistic/internal/filters"
 	"bitrix-statistic/internal/utils"
@@ -191,7 +191,7 @@ func (ad Adv) AddAdvDay(day entitydb.AdvDay) error {
 }
 
 func (ad Adv) GetDynamicList(filter filters.Filter, findMaxMin bool) (entitydb.AdvDynamicResult, error) {
-	builder := converters.NewAdvDynamicListConverter(filter, findMaxMin)
+	builder := advConverter.NewDynamicListConverter(filter, findMaxMin)
 	sqlDynamicList, sqlMaxMin, args, err := builder.Convert() //TODO вернуть структуру с sql для  sqlDynamicList,sqlMaxMin и параметрами
 
 	var allDbAdvDynamic = make([]entitydb.AdvDynamic, 0)
@@ -222,7 +222,7 @@ func (ad Adv) GetDynamicList(filter filters.Filter, findMaxMin bool) (entitydb.A
 }
 
 func (ad Adv) GetEventList(filter filters.Filter) ([]entitydb.Event, error) {
-	builder := converters.NewAdvEventConverter(filter)
+	builder := advConverter.NewEventConverter(filter)
 	resultSql, args, err := builder.Convert()
 	if err != nil {
 		return nil, err
@@ -245,7 +245,7 @@ func (ad Adv) GetEventList(filter filters.Filter) ([]entitydb.Event, error) {
 }
 
 func (ad Adv) Find(filter filters.Filter) ([]entitydb.Adv, error) {
-	builder := converters.NewAdvConverter(filter)
+	builder := advConverter.NewAdvConverter(filter)
 	resultSql, args, err := builder.Convert()
 	if err != nil {
 		return nil, err

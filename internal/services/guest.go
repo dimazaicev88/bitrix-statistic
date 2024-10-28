@@ -75,3 +75,11 @@ func (gs *GuestService) FindByUuid(uuid uuid.UUID) (entitydb.Guest, error) {
 func (gs *GuestService) ClearCache() {
 	gs.cacheGuest.Close()
 }
+
+func (gs *GuestService) FindAll(skip uint32, limit uint32) ([]entitydb.Guest, error) {
+	return nil, nil
+}
+
+func (gs *GuestService) ConvertToJSONListGuest(guests []entitydb.Guest) ([]entitydb.Guest, error) {
+	return nil, nil
+}
