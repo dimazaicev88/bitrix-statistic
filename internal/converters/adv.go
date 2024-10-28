@@ -1,4 +1,4 @@
-package builders
+package converters
 
 import (
 	"bitrix-statistic/internal/filters"
@@ -9,7 +9,7 @@ import (
 	"strings"
 )
 
-var simpleFields = map[string]string{
+var advSimpleFields = map[string]string{
 	"uuid":          "t1.uuid",
 	"referer1":      "t1.referer1",
 	"referer2":      "t1.referer2",
@@ -111,22 +111,22 @@ var advSelectFields = []string{
 	//"hitsBackPeriod", // хитов на возврате за период //TODO добавить
 }
 
-type AdvSqlBuilder struct {
+type AdvConverter struct {
 	filter        filters.Filter
-	sqlBuilder    *SqlBuilder
+	sqlBuilder    *FilterToSqlConverter
 	groupByFields mapset.Set[string]
 }
 
-func NewAdvSQLBuilder(filter filters.Filter) AdvSqlBuilder {
-	return AdvSqlBuilder{
+func NewAdvConverter(filter filters.Filter) AdvConverter {
+	return AdvConverter{
 		filter:        filter,
-		sqlBuilder:    NewSqlBuilder(),
+		sqlBuilder:    NewSqlSQLConverter(),
 		groupByFields: mapset.NewSet[string](),
 	}
 }
 
 // TODO добавить сборку когда нету выбираемых полей
-func (hs *AdvSqlBuilder) buildSelectAndGroupBy() error {
+func (hs *AdvConverter) buildSelectAndGroupBy() error {
 
 	hs.sqlBuilder.AddSql(`SELECT`)
 	tmpListFields := make([]string, 0, len(hs.filter.Fields))
@@ -138,7 +138,7 @@ func (hs *AdvSqlBuilder) buildSelectAndGroupBy() error {
 			return fmt.Errorf("unknown field: %s", fieldName)
 		}
 
-		if val, ok := simpleFields[fieldName]; ok {
+		if val, ok := advSimpleFields[fieldName]; ok {
 			tmpListFields = append(tmpListFields, val)
 			hs.groupByFields.Add(val)
 			continue
@@ -307,7 +307,7 @@ func (hs *AdvSqlBuilder) buildSelectAndGroupBy() error {
 	return nil
 }
 
-func (hs *AdvSqlBuilder) buildWhere() {
+func (hs *AdvConverter) buildWhere() {
 	if len(hs.filter.Operators) != 0 {
 		hs.sqlBuilder.AddSql(`WHERE`)
 		itemsAnd := make([]string, 0, len(hs.filter.Operators))
@@ -327,9 +327,9 @@ func (hs *AdvSqlBuilder) buildWhere() {
 	}
 }
 
-func (hs *AdvSqlBuilder) appendSqlWhere(field, operator string, value any, listSql []string) []string {
+func (hs *AdvConverter) appendSqlWhere(field, operator string, value any, listSql []string) []string {
 	if value != nil {
-		if fieldName, ok := simpleFields[field]; ok {
+		if fieldName, ok := advSimpleFields[field]; ok {
 			val := utils.StringConcat(fieldName, operator, "?")
 			listSql = append(listSql, val)
 			hs.sqlBuilder.AddArgs(value)
@@ -343,7 +343,7 @@ func (hs *AdvSqlBuilder) appendSqlWhere(field, operator string, value any, listS
 	return listSql
 }
 
-func (hs *AdvSqlBuilder) buildOrder() error {
+func (hs *AdvConverter) buildOrder() error {
 	if len(hs.filter.Order) > 0 {
 		hs.sqlBuilder.AddSql("ORDER BY")
 		fieldsOrder := make([]string, 0, len(hs.filter.Order))
@@ -351,7 +351,7 @@ func (hs *AdvSqlBuilder) buildOrder() error {
 			if slices.Contains(advSelectFields, fieldName) == false {
 				return fmt.Errorf("unknown field: %s", fieldName)
 			}
-			if val, ok := simpleFields[fieldName]; ok {
+			if val, ok := advSimpleFields[fieldName]; ok {
 				fieldsOrder = append(fieldsOrder, val)
 				continue
 			} else {
@@ -370,7 +370,7 @@ func (hs *AdvSqlBuilder) buildOrder() error {
 	return nil
 }
 
-func (hs *AdvSqlBuilder) buildSkipAndLimit() {
+func (hs *AdvConverter) buildSkipAndLimit() {
 	hs.sqlBuilder.AddSql("LIMIT")
 	if hs.filter.Skip != 0 {
 		hs.sqlBuilder.AddSql("?,").AddArgs(hs.filter.Skip)
@@ -385,7 +385,7 @@ func (hs *AdvSqlBuilder) buildSkipAndLimit() {
 	}
 }
 
-func (hs *AdvSqlBuilder) Build() (string, []any, error) {
+func (hs *AdvConverter) Convert() (string, []any, error) {
 	if err := hs.buildSelectAndGroupBy(); err != nil {
 		return "", nil, err
 	}
@@ -404,7 +404,7 @@ func (hs *AdvSqlBuilder) Build() (string, []any, error) {
 
 	hs.buildSkipAndLimit()
 
-	resultSql, args := hs.sqlBuilder.Build()
+	resultSql, args := hs.sqlBuilder.Convert()
 	return resultSql, args, nil
 }
 

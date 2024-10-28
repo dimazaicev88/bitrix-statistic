@@ -1,4 +1,4 @@
-package builders
+package converters
 
 import (
 	"bitrix-statistic/internal/filters"
@@ -34,13 +34,13 @@ var eventSelectFields = []string{
 
 type EventSqlBuilder struct {
 	filter     filters.Filter
-	sqlBuilder *SqlBuilder
+	sqlBuilder *FilterToSqlConverter
 }
 
 func NewEventSqlBuilder(filter filters.Filter) EventSqlBuilder {
 	return EventSqlBuilder{
 		filter:     filter,
-		sqlBuilder: NewSqlBuilder(),
+		sqlBuilder: NewSqlSQLConverter(),
 	}
 }
 
@@ -116,6 +116,6 @@ func (hs *EventSqlBuilder) Build() (string, []any, error) {
 	hs.buildWhere()
 	hs.buildSkipAndLimit()
 
-	resultSql, args := hs.sqlBuilder.Build()
+	resultSql, args := hs.sqlBuilder.Convert()
 	return resultSql, args, nil
 }

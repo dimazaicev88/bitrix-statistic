@@ -1,4 +1,4 @@
-package builders
+package converters
 
 import (
 	"testing"

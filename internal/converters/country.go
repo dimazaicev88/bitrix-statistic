@@ -1,4 +1,4 @@
-package builders
+package converters
 
 var cityFields = map[string]string{
 	"ID":         "t1.ID",

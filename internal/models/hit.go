@@ -1,7 +1,7 @@
 package models
 
 import (
-	"bitrix-statistic/internal/builders"
+	"bitrix-statistic/internal/converters"
 	"bitrix-statistic/internal/entitydb"
 	"bitrix-statistic/internal/filters"
 	"context"
@@ -21,7 +21,7 @@ func NewHit(ctx context.Context, chClient driver.Conn) *Hit {
 }
 
 func (hm Hit) Find(filter filters.Filter) ([]entitydb.Hit, error) {
-	builder := builders.NewHitSQLBuilder(filter)
+	builder := converters.NewHitSQLBuilder(filter)
 	resultSql, args, err := builder.Build()
 	if err != nil {
 		return nil, err

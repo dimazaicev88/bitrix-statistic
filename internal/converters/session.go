@@ -1,4 +1,4 @@
-package builders
+package converters
 
 import (
 	"bitrix-statistic/internal/filters"
@@ -8,25 +8,56 @@ import (
 	"strings"
 )
 
-type ReferrerSqlBuilder struct {
-	filter     filters.Filter
-	sqlBuilder *SqlBuilder
+var sessionSelectFields = []string{
+	"uuid",
+	"guestUuid",
+	"isNewGuest",
+	"userId",
+	"isUserAuth",
+	"isRegistered",
+	"isFavorites",
+	"events",
+	"hits",
+	"isAdv",
+	"advUuid",
+	"isAdvBack",
+	"referer1",
+	"referer2",
+	"referer3",
+	"stop",
+	"stopListId",
+	"countryId",
+	"country",
+	"ip",
+	"userAgent",
+	"date",
+	"urlTo",
+	"isUrlTo404",
+	"firstSiteId",
+	"urlLast",
+	"isUrlLast404",
+	"lastSiteId",
 }
 
-func NewReferrerSqlBuilder(filter filters.Filter) ReferrerSqlBuilder {
-	return ReferrerSqlBuilder{
+type SessionSqlBuilder struct {
+	filter     filters.Filter
+	sqlBuilder *FilterToSqlConverter
+}
+
+func NewSessionSqlBuilder(filter filters.Filter) SessionSqlBuilder {
+	return SessionSqlBuilder{
 		filter:     filter,
-		sqlBuilder: NewSqlBuilder(),
+		sqlBuilder: NewSqlSQLConverter(),
 	}
 }
 
-func (hs *ReferrerSqlBuilder) buildSelect() error {
+func (hs *SessionSqlBuilder) buildSelect() error {
 	countFields := 0
 	for _, field := range hs.filter.Fields {
 		if field == "" {
 			continue
 		}
-		if !slices.Contains(advSelectFields, field) {
+		if !slices.Contains(sessionSelectFields, field) {
 			return fmt.Errorf("unknown field: %s", field)
 		}
 		countFields++
@@ -39,7 +70,7 @@ func (hs *ReferrerSqlBuilder) buildSelect() error {
 	return nil
 }
 
-func (hs *ReferrerSqlBuilder) buildWhere() {
+func (hs *SessionSqlBuilder) buildWhere() {
 	if len(hs.filter.Operators) != 0 {
 		hs.sqlBuilder.AddSql("WHERE ")
 		for i := 0; i < len(hs.filter.Operators); i++ {
@@ -69,12 +100,12 @@ func (hs *ReferrerSqlBuilder) buildWhere() {
 	}
 }
 
-func (hs *ReferrerSqlBuilder) buildSkipAndLimit() {
+func (hs *SessionSqlBuilder) buildSkipAndLimit() {
 	hs.sqlBuilder.AddSql(" LIMIT ")
 	if hs.filter.Skip != 0 {
-		hs.sqlBuilder.AddSql("?, ").AddArgs(hs.filter.Skip)
+		hs.sqlBuilder.AddSql("?,").AddArgs(hs.filter.Skip)
 	} else {
-		hs.sqlBuilder.AddSql("?, ").AddArgs(0)
+		hs.sqlBuilder.AddSql("?,").AddArgs(0)
 	}
 
 	if hs.filter.Limit != 0 {
@@ -84,7 +115,7 @@ func (hs *ReferrerSqlBuilder) buildSkipAndLimit() {
 	}
 }
 
-func (hs *ReferrerSqlBuilder) Build() (string, []any, error) {
+func (hs *SessionSqlBuilder) Build() (string, []any, error) {
 	if err := hs.buildSelect(); err != nil {
 		return "", nil, err
 	}
@@ -92,6 +123,6 @@ func (hs *ReferrerSqlBuilder) Build() (string, []any, error) {
 	hs.buildWhere()
 	hs.buildSkipAndLimit()
 
-	resultSql, args := hs.sqlBuilder.Build()
+	resultSql, args := hs.sqlBuilder.Convert()
 	return resultSql, args, nil
 }

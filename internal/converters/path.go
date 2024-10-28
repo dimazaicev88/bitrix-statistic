@@ -1,4 +1,4 @@
-package builders
+package converters
 
 var pathFields = map[string]string{
 	"PATH_ID":            " t1.PATH_ID",             // ID отрезка пути
