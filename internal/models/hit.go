@@ -3,10 +3,7 @@ package models
 import (
 	"bitrix-statistic/internal/entitydb"
 	"context"
-	"database/sql"
-	"errors"
 	"github.com/ClickHouse/clickhouse-go/v2/lib/driver"
-	"github.com/google/uuid"
 )
 
 type Hit struct {
@@ -18,29 +15,11 @@ func NewHit(ctx context.Context, chClient driver.Conn) *Hit {
 	return &Hit{ctx: ctx, chClient: chClient}
 }
 
-func (hm Hit) FindByUuid(uuid uuid.UUID) (entitydb.Hit, error) {
-	var hit entitydb.Hit
-	err := hm.chClient.QueryRow(hm.ctx, `select * from hit where uuid=?`, uuid).ScanStruct(&hit)
-	if err != nil && errors.Is(err, sql.ErrNoRows) == false {
-		return hit, err
-	}
-	return hit, nil
-}
-
 func (hm Hit) AddHit(hit entitydb.Hit) error {
-	return hm.chClient.Exec(hm.ctx,
-		`INSERT INTO hit (uuid, sessionUuid, advUuid, dateHit, phpSessionId, guestUuid, isNewGuest, userId, userAuth, url, url404, urlFrom,
-	            ip, method, cookies, userAgent, stopListUuid, countryId, cityUuid, siteId)
+	return hm.chClient.AsyncInsert(hm.ctx,
+		`INSERT INTO hit (uuid, sessionUuid, advUuid, dateHit, phpSessionId, guestUuid, 
+                 language, isNewGuest, userId, userAuth, url, url404, urlFrom, ip, method, cookies, userAgent, stopListUuid, countryId, cityUuid, siteId, favorites)
 		       VALUES (?,  ?, ?, now(), ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?,?,?,?,?,?)`,
 		hit.Uuid, hit.SessionUuid, hit.AdvUuid, hit.PhpSessionId, hit.GuestUuid, hit.IsNewGuest, hit.UserId, hit.IsUserAuth, hit.Url, hit.Url404, hit.UrlFrom, hit.Ip,
 		hit.Method, hit.Cookies, hit.UserAgent, hit.StopListUuid, hit.CountryId, hit.CityUuid, hit.SiteId)
-}
-
-func (hm Hit) FindLastHitWithoutSession(guestUuid uuid.UUID, sessionId string) (entitydb.Hit, error) {
-	var hit entitydb.Hit
-	err := hm.chClient.QueryRow(hm.ctx, `select * from hit where guestUuid=? and phpSessionId!=? order by dateHit desc limit 1`, guestUuid, sessionId).ScanStruct(&hit)
-	if err != nil && errors.Is(err, sql.ErrNoRows) == false {
-		return hit, err
-	}
-	return hit, nil
 }

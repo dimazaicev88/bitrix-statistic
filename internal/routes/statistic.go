@@ -2,7 +2,6 @@ package routes
 
 import (
 	"bitrix-statistic/internal/dto"
-	"bitrix-statistic/internal/services"
 	"bitrix-statistic/internal/tasks"
 	"context"
 	"github.com/goccy/go-json"
@@ -13,20 +12,18 @@ import (
 )
 
 type Statistic struct {
-	fbApp      *fiber.App
-	ctx        context.Context
-	allService *services.AllServices
+	fbApp *fiber.App
+	ctx   context.Context
 }
 
 type Answer struct {
 	Msg string `json:"msg"`
 }
 
-func NewStatistic(ctx context.Context, fbApp *fiber.App, allService *services.AllServices) *Statistic {
+func NewStatistic(ctx context.Context, fbApp *fiber.App) *Statistic {
 	return &Statistic{
-		fbApp:      fbApp,
-		ctx:        ctx,
-		allService: allService,
+		fbApp: fbApp,
+		ctx:   ctx,
 	}
 }
 

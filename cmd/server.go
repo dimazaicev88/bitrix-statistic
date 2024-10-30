@@ -45,11 +45,8 @@ func main() {
 		logrus.Fatal(err)
 	}
 
-	allModels := models.NewModels(ctx, chClient)
-	allService := services.NewAllServices(ctx, allModels)
-
 	serverTask := tasks.NewTaskServer(
-		allService.Statistic,
+		services.NewStatistic(ctx, models.NewHit(ctx, chClient)),
 		cfg.RedisHost,
 		asynq.Config{
 			Concurrency: 1,
