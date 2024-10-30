@@ -171,3 +171,7 @@ func (as *AdvServices) GetEventList(filter filters.Filter) ([]entitydb.Event, er
 func (as *AdvServices) Find(filter filters.Filter) ([]entitydb.Adv, error) {
 	return as.allModels.AdvModel.Find(filter)
 }
+
+func (as *AdvServices) GetSimpleList(filter filters.Filter) ([]entitydb.AdvSimple, error) {
+	return as.allModels.AdvModel.GetSimpleList(filter)
+}

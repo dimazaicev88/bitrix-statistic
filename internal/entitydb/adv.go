@@ -56,6 +56,13 @@ type (
 
 	}
 
+	AdvSimple struct {
+		Uuid        uuid.UUID `ch:"uuid"`
+		referer1    string    `ch:"referer1"`
+		referer2    string    `ch:"referer2"`
+		description string    `ch:"description"`
+	}
+
 	AdvMaxMin struct {
 		DateFirst time.Time `ch:"dateFirst"`          //Минимальная дата
 		MinDay    uint8     `ch:"minDay,omitempty"`   //День минимальной даты (1-31)

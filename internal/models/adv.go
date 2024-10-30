@@ -266,3 +266,7 @@ func (ad Adv) Find(filter filters.Filter) ([]entitydb.Adv, error) {
 
 	return allDbAdv, nil
 }
+
+func (ad Adv) GetSimpleList(filter filters.Filter) ([]entitydb.AdvSimple, error) {
+	return nil, nil
+}

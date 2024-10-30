@@ -26,6 +26,7 @@ func NewAdv(ctx context.Context, fbApp *fiber.App, allServices *services.AllServ
 func (ah AdvHandlers) AddHandlers() {
 	ah.fbApp.Post("/api/v1/adv/filter", ah.filter)
 	ah.fbApp.Post("/api/v1/adv/dynamic/filter", ah.filterDynamic)
+	ah.fbApp.Post("/api/v1/adv/simple/filter", ah.filterSimple)
 
 	ah.fbApp.Get("/api/v1/adv/:uuid/", ah.findByUuid)
 	ah.fbApp.Post("/api/v1/adv/event/filter", ah.filterEvent)
@@ -91,6 +92,25 @@ func (ah AdvHandlers) filterDynamic(ctx *fiber.Ctx) error {
 		return ctx.SendStatus(fiber.StatusBadRequest)
 	}
 	result, err := ah.allServices.Adv.GetDynamicList(filter, true) //TODO добавить парсинг
+	if err != nil {
+		return ctx.SendStatus(fiber.StatusBadRequest)
+	}
+
+	resultJson, err := json.Marshal(result)
+	if err != nil {
+		return ctx.SendStatus(fiber.StatusBadRequest)
+	}
+	return ctx.SendString(string(resultJson))
+}
+
+func (ah AdvHandlers) filterSimple(ctx *fiber.Ctx) error {
+	var filter filters.Filter
+	body := ctx.Body()
+	err := json.Unmarshal(body, &filter)
+	if err != nil {
+		return ctx.SendStatus(fiber.StatusBadRequest)
+	}
+	result, err := ah.allServices.Adv.GetSimpleList(filter) //TODO добавить парсинг
 	if err != nil {
 		return ctx.SendStatus(fiber.StatusBadRequest)
 	}

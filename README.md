@@ -89,9 +89,18 @@ Session:
 - [ ] тесты
 - [ ] ui
 
-StatEvent:
+Event:
 
 - [ ] rest api
+  - [ ] Add
+  - [ ] AddByEvents
+  - [ ] AddCurrent
+  - [ ] DecodeGid
+  - [ ] Delete
+  - [ ] GetGID
+  - [ ] GetHandlerList
+  - [ ] Find
+  - [ ] FindByGuest
 - [ ] добавление при анализе хитов
 - [ ] тесты
 - [ ] ui
