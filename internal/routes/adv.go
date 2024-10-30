@@ -1,12 +1,14 @@
 package routes
 
 import (
+	"bitrix-statistic/internal/dto"
 	"bitrix-statistic/internal/filters"
 	"bitrix-statistic/internal/services"
 	"context"
 	"github.com/goccy/go-json"
 	"github.com/gofiber/fiber/v2"
 	"github.com/google/uuid"
+	"strconv"
 )
 
 type AdvHandlers struct {
@@ -101,6 +103,34 @@ func (ah AdvHandlers) filterDynamic(ctx *fiber.Ctx) error {
 		return ctx.SendStatus(fiber.StatusBadRequest)
 	}
 	return ctx.SendString(string(resultJson))
+}
+
+func (ah AdvHandlers) findAll(ctx *fiber.Ctx) error {
+	skip, err := strconv.Atoi(ctx.Params("skip", "0"))
+	if err != nil {
+		return ctx.JSON(map[string]any{
+			"error": err.Error(),
+		})
+	}
+	limit, err := strconv.Atoi(ctx.Params("limit", "0"))
+	if err != nil {
+		return ctx.JSON(map[string]any{
+			"error": err.Error(),
+		})
+	}
+
+	allHits, err := ah.allServices.Adv.FindAll(uint32(skip), uint32(limit))
+	if err != nil {
+		return ctx.JSON(dto.Response{
+			Result: nil,
+			Error:  err.Error(),
+			Total:  0,
+		})
+	}
+	return ctx.JSON(dto.Response{
+		Result: ah.allServices.Adv.ConvertToJSONListAdv(allHits),
+		Total:  1,
+	})
 }
 
 func (ah AdvHandlers) filterSimple(ctx *fiber.Ctx) error {

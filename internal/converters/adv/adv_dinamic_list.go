@@ -1,6 +1,7 @@
-package converters
+package adv
 
 import (
+	"bitrix-statistic/internal/converters"
 	"bitrix-statistic/internal/filters"
 	"bitrix-statistic/internal/utils"
 	"fmt"
@@ -27,22 +28,22 @@ var advDynamicListSelectFields = []string{
 	"hitsBack",      // хитов на возврате
 }
 
-type AdvDynamicListConverter struct {
+type DynamicListConverter struct {
 	filter        filters.Filter
-	sqlBuilder    *FilterToSqlConverter
+	sqlBuilder    *converters.FilterToSqlConverter
 	groupByFields mapset.Set[string]
 }
 
-func NewAdvDynamicListConverter(filter filters.Filter, maxMin bool) AdvDynamicListConverter {
-	return AdvDynamicListConverter{
+func NewDynamicListConverter(filter filters.Filter, maxMin bool) DynamicListConverter {
+	return DynamicListConverter{
 		filter:        filter,
-		sqlBuilder:    NewSqlSQLConverter(),
+		sqlBuilder:    converters.NewSqlSQLConverter(),
 		groupByFields: mapset.NewSet[string](),
 	}
 }
 
 // TODO добавить сборку когда нету выбираемых полей
-func (hs *AdvDynamicListConverter) buildSelectAndGroupBy() error {
+func (hs *DynamicListConverter) buildSelectAndGroupBy() error {
 
 	hs.sqlBuilder.AddSql(`SELECT`)
 	tmpListFields := make([]string, 0, len(hs.filter.Fields))
@@ -66,7 +67,7 @@ func (hs *AdvDynamicListConverter) buildSelectAndGroupBy() error {
 	return nil
 }
 
-func (hs *AdvDynamicListConverter) BuildWhere() {
+func (hs *DynamicListConverter) BuildWhere() {
 	if len(hs.filter.Operators) != 0 {
 		hs.sqlBuilder.AddSql(`WHERE`)
 		itemsAnd := make([]string, 0, len(hs.filter.Operators))
@@ -86,7 +87,7 @@ func (hs *AdvDynamicListConverter) BuildWhere() {
 	}
 }
 
-func (hs *AdvDynamicListConverter) appendSqlWhere(field, operator string, value any, listSql []string) []string {
+func (hs *DynamicListConverter) appendSqlWhere(field, operator string, value any, listSql []string) []string {
 	if value != nil {
 		//if !slices.Contains(advSelectFields, field) { //TODO заменить проверкой на фильтруемые поля
 		val := utils.StringConcat(field, operator, "?")
@@ -98,7 +99,7 @@ func (hs *AdvDynamicListConverter) appendSqlWhere(field, operator string, value 
 	return listSql
 }
 
-func (hs *AdvDynamicListConverter) buildOrder() error {
+func (hs *DynamicListConverter) buildOrder() error {
 	if len(hs.filter.Order) > 0 {
 		hs.sqlBuilder.AddSql("ORDER BY")
 		fieldsOrder := make([]string, 0, len(hs.filter.Order))
@@ -120,7 +121,7 @@ func (hs *AdvDynamicListConverter) buildOrder() error {
 	return nil
 }
 
-func (hs *AdvDynamicListConverter) buildSkipAndLimit() {
+func (hs *DynamicListConverter) buildSkipAndLimit() {
 	hs.sqlBuilder.AddSql("LIMIT")
 	if hs.filter.Skip != 0 {
 		hs.sqlBuilder.AddSql("?,").AddArgs(hs.filter.Skip)
@@ -135,7 +136,7 @@ func (hs *AdvDynamicListConverter) buildSkipAndLimit() {
 	}
 }
 
-func (hs *AdvDynamicListConverter) Convert() (string, string, []any, error) {
+func (hs *DynamicListConverter) Convert() (string, string, []any, error) {
 	if err := hs.buildSelectAndGroupBy(); err != nil {
 		return "", "", nil, err
 	}

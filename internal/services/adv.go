@@ -172,6 +172,14 @@ func (as *AdvServices) Find(filter filters.Filter) ([]entitydb.Adv, error) {
 	return as.allModels.AdvModel.Find(filter)
 }
 
+func (as *AdvServices) FindAll(u uint32, u2 uint32) ([]entitydb.Adv, error) {
+	return nil, nil
+}
+
+func (as *AdvServices) ConvertToJSONListAdv(adv []entitydb.Adv) any {
+	return nil
+}
+
 func (as *AdvServices) GetSimpleList(filter filters.Filter) ([]entitydb.AdvSimple, error) {
 	return as.allModels.AdvModel.GetSimpleList(filter)
 }
