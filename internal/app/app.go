@@ -39,22 +39,9 @@ func (app *App) Start() {
 	errStartServer := make(chan error)
 
 	routes.NewMain(app.fb).AddHandlers()
-	routes.NewAdv(app.ctx, app.fb, app.AllServices).AddHandlers()
-	routes.NewCountry(app.ctx, app.fb, app.AllServices).AddHandlers()
-	routes.NewGuest(app.ctx, app.fb, app.AllServices).AddHandlers()
-	routes.NewHit(app.ctx, app.fb, app.AllServices).AddHandlers()
-	routes.NewPage(app.ctx, app.fb, app.AllServices).AddHandlers()
-	routes.NewPath(app.ctx, app.fb, app.AllServices).AddHandlers()
-	routes.NewReferer(app.ctx, app.fb, app.AllServices).AddHandlers()
-	routes.NewSearcher(app.ctx, app.fb, app.AllServices).AddHandlers()
-	routes.NewSearcherHit(app.ctx, app.fb, app.AllServices).AddHandlers()
-	routes.NewSession(app.ctx, app.fb, app.AllServices).AddHandlers()
 	routes.NewStatEvent(app.ctx, app.fb, app.AllServices).AddHandlers()
 	routes.NewStatistic(app.ctx, app.fb, app.AllServices).AddHandlers()
 	routes.NewStopList(app.ctx, app.fb, app.AllServices).AddHandlers()
-	routes.NewTraffic(app.ctx, app.fb, app.AllServices).AddHandlers()
-	routes.NewUserOnline(app.ctx, app.fb, app.AllServices).AddHandlers()
-	routes.NewOption(app.ctx, app.fb, app.AllServices).AddHandlers()
 
 	//start fiber
 	go func() {

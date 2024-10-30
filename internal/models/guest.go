@@ -2,7 +2,6 @@ package models
 
 import (
 	"bitrix-statistic/internal/entitydb"
-	"bitrix-statistic/internal/filters"
 	"context"
 	"database/sql"
 	"errors"
@@ -29,10 +28,6 @@ func (gm Guest) Add(guest entitydb.Guest) error {
 		`INSERT INTO guest (uuid, date_add, repair) VALUES (?,?,?)`,
 		guest.Uuid, guest.DateAdd, guest.Repair,
 	)
-}
-
-func (gm Guest) Find(filter filters.Filter) ([]entitydb.Guest, error) {
-	return []entitydb.Guest{}, nil
 }
 
 func (gm Guest) FindByUuid(uuid uuid.UUID) (entitydb.Guest, error) {

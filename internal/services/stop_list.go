@@ -16,7 +16,3 @@ func NewStopList(ctx context.Context, allModels *models.Models) *StopListService
 		allModels: allModels,
 	}
 }
-
-func (sl StopListService) FindAll(skip uint32, limit uint32) ([]models.StopList, error) {
-	return sl.allModels.StopList.FindAll(skip, limit)
-}

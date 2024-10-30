@@ -6,23 +6,10 @@ import (
 )
 
 type Models struct {
-	AdvModel   *Adv
 	Browser    *Browser
-	City       *City
-	Country    *Country
-	Day        *Day
 	Event      *Event
 	Guest      *Guest
 	Hit        *Hit
-	Option     *Option
-	Page       *Page
-	PageAdv    *PageAdv
-	Path       *Path
-	PathAdv    *PathAdv
-	PathCache  *PathCache
-	Phrase     *Phrase
-	Referer    *Referer
-	Searcher   *Searcher
 	Session    *Session
 	StopList   *StopList
 	Traffic    *Traffic
@@ -31,23 +18,10 @@ type Models struct {
 
 func NewModels(ctx context.Context, chClient driver.Conn) *Models {
 	return &Models{
-		AdvModel:   NewAdv(ctx, chClient),
 		Browser:    NewBrowser(ctx, chClient),
-		City:       NewCity(ctx, chClient),
-		Country:    NewCountry(ctx, chClient),
-		Day:        NewDay(ctx, chClient),
 		Event:      NewEvent(ctx, chClient),
 		Guest:      NewGuest(ctx, chClient),
 		Hit:        NewHit(ctx, chClient),
-		Option:     NewOption(ctx, chClient),
-		Page:       NewPage(ctx, chClient),
-		PageAdv:    NewPageAdv(ctx, chClient),
-		Path:       NewPath(ctx, chClient),
-		PathAdv:    NewPathAdv(ctx, chClient),
-		PathCache:  NewPathCache(ctx, chClient),
-		Phrase:     NewPhrase(ctx, chClient),
-		Referer:    NewReferer(ctx, chClient),
-		Searcher:   NewSearcher(ctx, chClient),
 		Session:    NewSession(ctx, chClient),
 		StopList:   NewStopList(ctx, chClient),
 		Traffic:    NewTraffic(ctx, chClient),

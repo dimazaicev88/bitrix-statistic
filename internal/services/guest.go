@@ -3,7 +3,6 @@ package services
 import (
 	"bitrix-statistic/internal/dto"
 	"bitrix-statistic/internal/entitydb"
-	"bitrix-statistic/internal/filters"
 	"bitrix-statistic/internal/models"
 	"context"
 	"errors"
@@ -14,11 +13,10 @@ import (
 )
 
 type GuestService struct {
-	allModels   *models.Models
-	ctx         context.Context
-	cacheGuest  otter.Cache[string, entitydb.Guest]
-	hitService  *HitService
-	advServices *AdvServices
+	allModels  *models.Models
+	ctx        context.Context
+	cacheGuest otter.Cache[string, entitydb.Guest]
+	hitService *HitService
 }
 
 func NewGuest(ctx context.Context, allModels *models.Models) *GuestService {
@@ -41,10 +39,6 @@ func (gs *GuestService) SetHitService(hitService *HitService) {
 	gs.hitService = hitService
 }
 
-func (gs *GuestService) SetAdvService(advServices *AdvServices) {
-	gs.advServices = advServices
-}
-
 func (gs *GuestService) Add(userData dto.UserData) (entitydb.Guest, error) {
 
 	if userData == (dto.UserData{}) {
@@ -64,22 +58,10 @@ func (gs *GuestService) Add(userData dto.UserData) (entitydb.Guest, error) {
 	return guestDb, nil
 }
 
-func (gs *GuestService) Find(filter filters.Filter) ([]entitydb.Guest, error) {
-	return gs.allModels.Guest.Find(filter)
-}
-
 func (gs *GuestService) FindByUuid(uuid uuid.UUID) (entitydb.Guest, error) {
 	return gs.allModels.Guest.FindByUuid(uuid)
 }
 
 func (gs *GuestService) ClearCache() {
 	gs.cacheGuest.Close()
-}
-
-func (gs *GuestService) FindAll(skip uint32, limit uint32) ([]entitydb.Guest, error) {
-	return nil, nil
-}
-
-func (gs *GuestService) ConvertToJSONListGuest(guests []entitydb.Guest) ([]entitydb.Guest, error) {
-	return nil, nil
 }

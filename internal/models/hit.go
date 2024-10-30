@@ -1,9 +1,7 @@
 package models
 
 import (
-	"bitrix-statistic/internal/converters"
 	"bitrix-statistic/internal/entitydb"
-	"bitrix-statistic/internal/filters"
 	"context"
 	"database/sql"
 	"errors"
@@ -18,29 +16,6 @@ type Hit struct {
 
 func NewHit(ctx context.Context, chClient driver.Conn) *Hit {
 	return &Hit{ctx: ctx, chClient: chClient}
-}
-
-func (hm Hit) Find(filter filters.Filter) ([]entitydb.Hit, error) {
-	builder := converters.NewHitSQLBuilder(filter)
-	resultSql, args, err := builder.Build()
-	if err != nil {
-		return nil, err
-	}
-
-	rows, err := hm.chClient.Query(hm.ctx, resultSql, args...)
-
-	if err != nil {
-		return nil, err
-	}
-
-	var allDbHits = make([]entitydb.Hit, 0)
-	for rows.Next() {
-		var hit entitydb.Hit
-		err = rows.ScanStruct(&hit)
-		allDbHits = append(allDbHits, hit)
-	}
-
-	return allDbHits, nil
 }
 
 func (hm Hit) FindByUuid(uuid uuid.UUID) (entitydb.Hit, error) {
@@ -68,25 +43,4 @@ func (hm Hit) FindLastHitWithoutSession(guestUuid uuid.UUID, sessionId string) (
 		return hit, err
 	}
 	return hit, nil
-}
-
-func (hm Hit) FindAll(skip uint32, limit uint32) ([]entitydb.Hit, error) {
-	if limit > 1000 || limit < 1 {
-		limit = 1000
-	}
-	resultSql := `select * from hit limit ?, ?`
-	rows, err := hm.chClient.Query(hm.ctx, resultSql, skip, limit)
-
-	if err != nil {
-		return nil, err
-	}
-
-	var allDbHits []entitydb.Hit
-	for rows.Next() {
-		var hit entitydb.Hit
-		err = rows.ScanStruct(&hit)
-		allDbHits = append(allDbHits, hit)
-	}
-
-	return allDbHits, nil
 }

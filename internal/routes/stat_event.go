@@ -22,44 +22,14 @@ func NewStatEvent(ctx context.Context, fbApp *fiber.App, allService *services.Al
 }
 
 func (p StatEvent) AddHandlers() {
-	p.fbApp.Post("/api/v1/statEvent/filter", p.filter)
-	p.fbApp.Post("/api/v1/statEvent/filterByGuest", p.findByGuest)
 	p.fbApp.Post("/api/v1/statEvent/set", p.add)
-	p.fbApp.Post("/api/v1/statEvent/addByEvents", p.addByEvents)
-	p.fbApp.Post("/api/v1/statEvent/addCurrent", p.addCurrent)
-	p.fbApp.Post("/api/v1/statEvent/decodeGid/:gid", p.decodeGid)
 	p.fbApp.Delete("/api/v1/statEvent/:uuid", p.delete)
-	p.fbApp.Get("/api/v1/statEvent/gid/:gid", p.findGid)
-}
-
-func (p StatEvent) filter(ctx *fiber.Ctx) error {
-	return nil
 }
 
 func (p StatEvent) add(ctx *fiber.Ctx) error {
 	return nil
 }
 
-func (p StatEvent) addByEvents(ctx *fiber.Ctx) error {
-	return nil
-}
-
-func (p StatEvent) addCurrent(ctx *fiber.Ctx) error {
-	return nil
-}
-
-func (p StatEvent) decodeGid(ctx *fiber.Ctx) error {
-	return nil
-}
-
 func (p StatEvent) delete(ctx *fiber.Ctx) error {
-	return nil
-}
-
-func (p StatEvent) findGid(ctx *fiber.Ctx) error {
-	return nil
-}
-
-func (p StatEvent) findByGuest(ctx *fiber.Ctx) error {
 	return nil
 }
