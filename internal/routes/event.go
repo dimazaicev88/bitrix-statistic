@@ -4,8 +4,6 @@ import (
 	"bitrix-statistic/internal/dto"
 	"bitrix-statistic/internal/filters"
 	"bitrix-statistic/internal/services"
-	"bitrix-statistic/internal/filters"
-	"bitrix-statistic/internal/services"
 	"context"
 	"github.com/goccy/go-json"
 	"github.com/gofiber/fiber/v2"
@@ -60,6 +58,8 @@ func (e Event) Filter(ctx *fiber.Ctx) error {
 		return ctx.SendStatus(fiber.StatusBadRequest)
 	}
 	return ctx.SendString(string(resultJson))
+}
+
 func (e Event) filterEvent(ctx *fiber.Ctx) error {
 	var filter filters.Filter
 	body := ctx.Body()
