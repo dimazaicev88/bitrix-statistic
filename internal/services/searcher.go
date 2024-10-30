@@ -3,6 +3,7 @@ package services
 import (
 	"bitrix-statistic/internal/dto"
 	"bitrix-statistic/internal/entitydb"
+	"bitrix-statistic/internal/filters"
 	"bitrix-statistic/internal/models"
 	"context"
 )
@@ -62,4 +63,16 @@ func (ss *SearcherService) AddPhraseList(list entitydb.PhraseList) error {
 
 func (ss *SearcherService) AddSearcherPhraseStat(searcherPhraseStat entitydb.SearcherPhraseStat) error {
 	return ss.allModels.Searcher.AddSearcherPhraseStat(searcherPhraseStat)
+}
+
+func (ss *SearcherService) Find(filter filters.Filter) (any, error) {
+	return ss.allModels.Searcher.Find(filter)
+}
+
+func (ss *SearcherService) FindDomainList(filter filters.Filter) (any, error) {
+	return nil, nil
+}
+
+func (ss *SearcherService) FindDynamicList(filter filters.Filter) (any, error) {
+	return nil, nil
 }

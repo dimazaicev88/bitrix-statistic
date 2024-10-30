@@ -24,7 +24,7 @@ func NewUserOnline(ctx context.Context, fbApp *fiber.App, allService *services.A
 
 func (uo UserOnline) AddHandlers() {
 	uo.fbApp.Get("/api/v1/userOnline/filter", uo.filter)
-	uo.fbApp.Get("/api/v1/userOnline/guestCount", uo.guestCount)
+	uo.fbApp.Get("/api/v1/userOnline/count", uo.guestCount)
 }
 
 func (uo UserOnline) guestCount(ctx *fiber.Ctx) error {

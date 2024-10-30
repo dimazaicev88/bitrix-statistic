@@ -36,7 +36,22 @@ func (ah AdvHandlers) AddHandlers() {
 }
 
 func (ah AdvHandlers) filter(ctx *fiber.Ctx) error {
-	return nil
+	var filter filters.Filter
+	body := ctx.Body()
+	err := json.Unmarshal(body, &filter)
+	if err != nil {
+		return ctx.SendStatus(fiber.StatusBadRequest)
+	}
+	result, err := ah.allServices.Adv.Find(filter)
+	if err != nil {
+		return ctx.SendStatus(fiber.StatusBadRequest)
+	}
+
+	resultJson, err := json.Marshal(result)
+	if err != nil {
+		return ctx.SendStatus(fiber.StatusBadRequest)
+	}
+	return ctx.SendString(string(resultJson))
 }
 
 func (ah AdvHandlers) deleteByUuid(ctx *fiber.Ctx) error {
@@ -93,7 +108,7 @@ func (ah AdvHandlers) filterDynamic(ctx *fiber.Ctx) error {
 	if err != nil {
 		return ctx.SendStatus(fiber.StatusBadRequest)
 	}
-	result, err := ah.allServices.Adv.GetDynamicList(filter, true) //TODO добавить парсинг
+	result, err := ah.allServices.Adv.GetDynamicList(filter, true)
 	if err != nil {
 		return ctx.SendStatus(fiber.StatusBadRequest)
 	}

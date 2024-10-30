@@ -3,6 +3,7 @@ package models
 import (
 	"bitrix-statistic/internal/dto"
 	"bitrix-statistic/internal/entitydb"
+	"bitrix-statistic/internal/filters"
 	"bitrix-statistic/internal/utils"
 	"context"
 	"database/sql"
@@ -97,4 +98,8 @@ func (s Searcher) AddSearcherPhraseStat(searcherPhraseStat entitydb.SearcherPhra
 	return s.chClient.Exec(s.ctx,
 		`INSERT INTO searcher_phrase_stat (searcherUuid, phrases, phrasesHits)
 			   VALUES(?,?,?)`, searcherPhraseStat.SearcherUuid, searcherPhraseStat.Phrases, searcherPhraseStat.PhrasesHits)
+}
+
+func (s Searcher) Find(filter filters.Filter) (any, error) {
+	return nil, nil
 }

@@ -2,6 +2,7 @@ package services
 
 import (
 	"bitrix-statistic/internal/entitydb"
+	"bitrix-statistic/internal/filters"
 	"bitrix-statistic/internal/models"
 	"bitrix-statistic/internal/utils"
 	"context"
@@ -471,4 +472,8 @@ func (ps *PathService) SaveVisits(
 
 	}
 	return nil
+}
+
+func (ps *PathService) Find(filter filters.Filter) (any, error) {
+	return nil, nil
 }

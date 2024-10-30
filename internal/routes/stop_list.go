@@ -22,8 +22,9 @@ func NewStopList(ctx context.Context, app *fiber.App, allService *services.AllSe
 }
 
 func (sl StopList) AddHandlers() {
-	sl.fbApp.Post("/api/v1/stopList/filter", sl.filter)
-	sl.fbApp.Get("/api/v1/stopList/:uuid", sl.findByUuid)
+	sl.fbApp.Post("/api/v1/stop/filter", sl.filter)
+	sl.fbApp.Get("/api/v1/stop/:uuid", sl.findByUuid)
+	sl.fbApp.Get("/api/v1/stop/check/:uuid", sl.check)
 }
 
 func (sl StopList) filter(ctx *fiber.Ctx) error {
@@ -31,5 +32,9 @@ func (sl StopList) filter(ctx *fiber.Ctx) error {
 }
 
 func (sl StopList) findByUuid(ctx *fiber.Ctx) error {
+	return nil
+}
+
+func (sl StopList) check(ctx *fiber.Ctx) error {
 	return nil
 }
