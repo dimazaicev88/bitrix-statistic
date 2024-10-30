@@ -27,7 +27,7 @@ func NewEvent(ctx context.Context, app *fiber.App, allServices *services.AllServ
 
 func (e Event) AddHandlers() {
 	e.fbApp.Post("/api/v1/event/filter", e.filterEvent)
-	e.fbApp.Delete("/api/v1/event/:uuid/", e.Delete)
+	e.fbApp.Delete("/api/v1/event/:uuid/", e.delete)
 	e.fbApp.Get("/api/v1/event/gid/", e.getGid)
 	e.fbApp.Post("/api/v1/event/gid/decode", e.getDecodeGid)
 	e.fbApp.Post("/api/v1/event/add/", e.Add)
@@ -79,7 +79,11 @@ func (e Event) filterEvent(ctx *fiber.Ctx) error {
 	return ctx.SendString(string(resultJson))
 }
 
-func (e Event) Delete(ctx *fiber.Ctx) error {
+func (e Event) delete(ctx *fiber.Ctx) error {
+	err := e.allServices.Event.Delete(ctx.Params("uuid"))
+	if err != nil {
+		return err
+	}
 	return nil
 }
 

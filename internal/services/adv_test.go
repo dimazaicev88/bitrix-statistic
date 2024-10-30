@@ -34,6 +34,7 @@ func TestAdvServices_GetAdv(t *testing.T) {
 	advServices.SetHitService(NewHit(context.Background(), allModels))
 	advServices.SetOptionService(NewOption(context.Background(), allModels))
 
+	//TODO добавить проверку метода Find
 	t.Run("Указано 'Куда пришли'", func(t *testing.T) {
 		utils.TruncateAllTables(chClient)
 		var advUuid string

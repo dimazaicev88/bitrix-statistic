@@ -88,32 +88,32 @@ type (
 	}
 
 	AdvEvent struct {
-		EventTypeUuid           uuid.UUID //Uuid типа события
-		event1                  string    //идентификатор event1
-		event2                  string    //идентификатор event2
-		name                    string    //название
-		event                   string    //название либо id] event1 / event2
-		description             string    //описание
-		counter                 uint64    //Суммарное кол-во событий данного типа на прямом заходе по рк
-		counterBack             uint64    //Суммарное кол-во событий данного типа на возврате по рк
-		counterToday            uint64    //Кол-во событий данного типа на прямом заходе по рк за сегодня
-		counterYesterday        uint64    //Кол-во событий данного типа на прямом заходе по рк за вчера
-		counterBefYesterday     uint64    //Кол-во событий данного типа на прямом заходе по рк за позавчера
-		counterPeriod           uint64    //Кол-во событий данного типа на прямом заходе по рк за период
-		counterBackToday        uint64    //Кол-во событий данного типа на возврате по рк за сегодня
-		counterBackYesterday    uint64    //Кол-во событий данного типа на возврате по рк за вчера
-		counterBackBefYesterday uint64    //Кол-во событий данного типа на возврате по рк за позавчера
-		counterBackPeriod       uint64    //Кол-во событий данного типа на возврате по рк за период
-		money                   float64   //Итоговая денежная сумма событий данного типа на прямом заходе по рк
-		moneyToday              float64   //Денежная сумма событий данного типа на прямом заходе по рк за сегодня
-		moneyYesterday          float64   //Денежная сумма событий данного типа на прямом заходе по рк за вчера
-		moneyBefYesterday       float64   //Денежная сумма событий данного типа на прямом заходе по рк за позавчера
-		moneyPeriod             float64   //Денежная сумма событий данного типа на прямом заходе по рк за период
-		moneyBack               float64   //Итоговая денежная сумма событий данного на возврате по рк
-		moneyBackToday          float64   //Денежная сумма событий данного типа на возврате по рк за сегодня
-		moneyBackYesterday      float64   //Денежная сумма событий данного типа на возврате по рк за вчера
-		moneyBackBefYesterday   float64   //Денежная сумма событий данного типа на возврате по рк за позавчера
-		moneyBackPeriod         float64   //Денежная сумма событий данного типа на возврате по рк за период
+		EventTypeUuid           uuid.UUID `json:"eventTypeUuid,omitempty"`           //Uuid типа события
+		Event1                  string    `json:"event1,omitempty"`                  //идентификатор Event1
+		Event2                  string    `json:"event2,omitempty"`                  //идентификатор event2
+		Name                    string    `json:"name,omitempty"`                    //название
+		Event                   string    `json:"event,omitempty"`                   //название либо id] Event1 / event2
+		Description             string    `json:"description,omitempty"`             //описание
+		Counter                 uint64    `json:"counter,omitempty"`                 //Суммарное кол-во событий данного типа на прямом заходе по рк
+		CounterBack             uint64    `json:"counterBack,omitempty"`             //Суммарное кол-во событий данного типа на возврате по рк
+		CounterToday            uint64    `json:"counterToday,omitempty"`            //Кол-во событий данного типа на прямом заходе по рк за сегодня
+		CounterYesterday        uint64    `json:"counterYesterday,omitempty"`        //Кол-во событий данного типа на прямом заходе по рк за вчера
+		CounterBefYesterday     uint64    `json:"counterBefYesterday,omitempty"`     //Кол-во событий данного типа на прямом заходе по рк за позавчера
+		CounterPeriod           uint64    `json:"counterPeriod,omitempty"`           //Кол-во событий данного типа на прямом заходе по рк за период
+		CounterBackToday        uint64    `json:"counterBackToday,omitempty"`        //Кол-во событий данного типа на возврате по рк за сегодня
+		CounterBackYesterday    uint64    `json:"counterBackYesterday,omitempty"`    //Кол-во событий данного типа на возврате по рк за вчера
+		CounterBackBefYesterday uint64    `json:"counterBackBefYesterday,omitempty"` //Кол-во событий данного типа на возврате по рк за позавчера
+		CounterBackPeriod       uint64    `json:"counterBackPeriod,omitempty"`       //Кол-во событий данного типа на возврате по рк за период
+		Money                   float64   `json:"money,omitempty"`                   //Итоговая денежная сумма событий данного типа на прямом заходе по рк
+		MoneyToday              float64   `json:"moneyToday,omitempty"`              //Денежная сумма событий данного типа на прямом заходе по рк за сегодня
+		MoneyYesterday          float64   `json:"moneyYesterday,omitempty"`          //Денежная сумма событий данного типа на прямом заходе по рк за вчера
+		MoneyBefYesterday       float64   `json:"moneyBefYesterday,omitempty"`       //Денежная сумма событий данного типа на прямом заходе по рк за позавчера
+		MoneyPeriod             float64   `json:"moneyPeriod,omitempty"`             //Денежная сумма событий данного типа на прямом заходе по рк за период
+		MoneyBack               float64   `json:"moneyBack,omitempty"`               //Итоговая денежная сумма событий данного на возврате по рк
+		MoneyBackToday          float64   `json:"moneyBackToday,omitempty"`          //Денежная сумма событий данного типа на возврате по рк за сегодня
+		MoneyBackYesterday      float64   `json:"moneyBackYesterday,omitempty"`      //Денежная сумма событий данного типа на возврате по рк за вчера
+		MoneyBackBefYesterday   float64   `json:"moneyBackBefYesterday,omitempty"`   //Денежная сумма событий данного типа на возврате по рк за позавчера
+		MoneyBackPeriod         float64   `json:"moneyBackPeriod,omitempty"`         //Денежная сумма событий данного типа на возврате по рк за период
 	}
 
 	Simple struct {
