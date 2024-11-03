@@ -12,12 +12,12 @@ import (
 const TaskStatisticAdd = "statistic:add"
 
 type TaskServer struct {
-	statisticService *services.Statistic
-	AsynqServer      *asynq.Server
-	AsynqServeMux    *asynq.ServeMux
+	serviceStatisticS *services.Statistic
+	AsynqServer       *asynq.Server
+	AsynqServeMux     *asynq.ServeMux
 }
 
-func NewTaskServer(statisticService *services.Statistic, redisAddr string, cfg asynq.Config) *TaskServer {
+func NewTaskServer(serviceStatisticS *services.Statistic, redisAddr string, cfg asynq.Config) *TaskServer {
 	logrus.Infoln("init tasks server.")
 	srv := asynq.NewServer(
 		asynq.RedisClientOpt{Addr: redisAddr},
@@ -25,9 +25,9 @@ func NewTaskServer(statisticService *services.Statistic, redisAddr string, cfg a
 	)
 	mux := asynq.NewServeMux()
 	ts := &TaskServer{
-		statisticService: statisticService,
-		AsynqServer:      srv,
-		AsynqServeMux:    mux,
+		serviceStatisticS: serviceStatisticS,
+		AsynqServer:       srv,
+		AsynqServeMux:     mux,
 	}
 	mux.HandleFunc(TaskStatisticAdd, ts.HandleTask)
 	return ts
@@ -40,7 +40,7 @@ func (ts TaskServer) HandleTask(ctx context.Context, t *asynq.Task) error {
 		return err
 	}
 
-	if err := ts.statisticService.Add(userData); err != nil {
+	if err := ts.serviceStatisticS.Add(ctx, userData); err != nil {
 		return err
 	}
 	return nil

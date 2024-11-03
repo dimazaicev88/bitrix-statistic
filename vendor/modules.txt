@@ -30,18 +30,9 @@ github.com/cespare/xxhash/v2
 # github.com/davecgh/go-spew v1.1.1
 ## explicit
 github.com/davecgh/go-spew/spew
-# github.com/deckarep/golang-set/v2 v2.6.0
-## explicit; go 1.18
-github.com/deckarep/golang-set/v2
 # github.com/dgryski/go-rendezvous v0.0.0-20200823014737-9f7001d12a5f
 ## explicit
 github.com/dgryski/go-rendezvous
-# github.com/dolthub/maphash v0.1.0
-## explicit; go 1.18
-github.com/dolthub/maphash
-# github.com/gammazero/deque v0.2.1
-## explicit; go 1.18
-github.com/gammazero/deque
 # github.com/go-faster/city v1.0.1
 ## explicit; go 1.17
 github.com/go-faster/city
@@ -69,10 +60,6 @@ github.com/gofiber/fiber/v2/internal/schema
 github.com/gofiber/fiber/v2/log
 github.com/gofiber/fiber/v2/middleware/cors
 github.com/gofiber/fiber/v2/utils
-# github.com/gofiber/template v1.6.30
-## explicit; go 1.16
-github.com/gofiber/template/html
-github.com/gofiber/template/utils
 # github.com/golang/protobuf v1.5.3
 ## explicit; go 1.9
 github.com/golang/protobuf/proto
@@ -93,12 +80,6 @@ github.com/hibiken/asynq/internal/log
 github.com/hibiken/asynq/internal/proto
 github.com/hibiken/asynq/internal/rdb
 github.com/hibiken/asynq/internal/timeutil
-# github.com/huandu/go-sqlbuilder v1.27.3
-## explicit; go 1.13
-github.com/huandu/go-sqlbuilder
-# github.com/huandu/xstrings v1.4.0
-## explicit; go 1.12
-github.com/huandu/xstrings
 # github.com/joho/godotenv v1.5.1
 ## explicit; go 1.12
 github.com/joho/godotenv
@@ -114,6 +95,8 @@ github.com/klauspost/compress/internal/snapref
 github.com/klauspost/compress/zlib
 github.com/klauspost/compress/zstd
 github.com/klauspost/compress/zstd/internal/xxhash
+# github.com/kr/text v0.2.0
+## explicit
 # github.com/mattn/go-colorable v0.1.13
 ## explicit; go 1.15
 github.com/mattn/go-colorable
@@ -123,20 +106,6 @@ github.com/mattn/go-isatty
 # github.com/mattn/go-runewidth v0.0.16
 ## explicit; go 1.9
 github.com/mattn/go-runewidth
-# github.com/maypok86/otter v1.2.2
-## explicit; go 1.19
-github.com/maypok86/otter
-github.com/maypok86/otter/internal/core
-github.com/maypok86/otter/internal/expiry
-github.com/maypok86/otter/internal/generated/node
-github.com/maypok86/otter/internal/hashtable
-github.com/maypok86/otter/internal/lossy
-github.com/maypok86/otter/internal/queue
-github.com/maypok86/otter/internal/s3fifo
-github.com/maypok86/otter/internal/stats
-github.com/maypok86/otter/internal/unixtime
-github.com/maypok86/otter/internal/xmath
-github.com/maypok86/otter/internal/xruntime
 # github.com/paulmach/orb v0.11.1
 ## explicit; go 1.15
 github.com/paulmach/orb

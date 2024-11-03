@@ -1,7 +1,6 @@
 package dto
 
 type Response struct {
-	Result any
-	Error  string
-	Total  int
+	Result string `json:"result"`
+	Error  string `json:"error"`
 }

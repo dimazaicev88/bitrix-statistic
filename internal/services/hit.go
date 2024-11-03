@@ -10,45 +10,27 @@ import (
 )
 
 type HitService struct {
-	allModels *models.Models
-	ctx       context.Context
+	hitModel *models.Hit
 }
 
-func NewHit(ctx context.Context, allModels *models.Models) *HitService {
+func NewHit(hitModel *models.Hit) *HitService {
 	return &HitService{
-		ctx:       ctx,
-		allModels: allModels,
+		hitModel: hitModel,
 	}
 }
 
-func (hs HitService) FindByUuid(uuid uuid.UUID) (entitydb.Hit, error) {
-	return hs.allModels.Hit.FindByUuid(uuid)
-}
-
-func (hs HitService) Add(
-	hitUuid uuid.UUID,
-	isNewGuest bool,
-	sessionUuid uuid.UUID,
-	statData dto.UserData,
-) (entitydb.Hit, error) {
-
-	if sessionUuid == uuid.Nil {
-		return entitydb.Hit{}, errors.New("sessionUuid is empty")
-	}
-
+func (hs HitService) Add(ctx context.Context, statData dto.UserData, isNewGuest bool) (entitydb.Hit, error) {
 	if statData == (dto.UserData{}) {
 		return entitydb.Hit{}, errors.New("stat data is empty")
 	}
 
 	hit := entitydb.Hit{
-		Uuid:         hitUuid,
+		Uuid:         uuid.New(),
 		Favorites:    statData.IsFavorite,
 		PhpSessionId: statData.PHPSessionId,
-		SessionUuid:  sessionUuid,
-		GuestUuid:    statData.GuestUuid,
+		GuestHash:    statData.GuestHash,
 		IsNewGuest:   isNewGuest,
 		UserId:       statData.UserId,
-		IsUserAuth:   statData.UserId > 0,
 		Url:          statData.Url,
 		Url404:       statData.IsError404,
 		UrlFrom:      statData.Referer,
@@ -56,18 +38,12 @@ func (hs HitService) Add(
 		Method:       statData.Method,
 		Cookies:      statData.Cookies,
 		UserAgent:    statData.UserAgent,
-		StopListUuid: uuid.New(),
 		CountryId:    "",
-		CityUuid:     uuid.New(),
+		CityId:       "",
 		SiteId:       statData.SiteId,
 	}
-	if err := hs.allModels.Hit.AddHit(hit); err != nil {
+	if err := hs.hitModel.AddHit(ctx, hit); err != nil {
 		return entitydb.Hit{}, err
 	}
 	return hit, nil
-}
-
-// FindLastHitWithoutSession Найти хит, не включая указанную сессию
-func (hs HitService) FindLastHitWithoutSession(guestUuid uuid.UUID, withoutPhpSessionId string) (entitydb.Hit, error) {
-	return hs.allModels.Hit.FindLastHitWithoutSession(guestUuid, withoutPhpSessionId)
 }

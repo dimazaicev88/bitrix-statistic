@@ -3,7 +3,6 @@ package app
 import (
 	"bitrix-statistic/internal/config"
 	"bitrix-statistic/internal/routes"
-	"bitrix-statistic/internal/services"
 	"bitrix-statistic/internal/tasks"
 	"context"
 	"github.com/gofiber/fiber/v2"
@@ -12,36 +11,28 @@ import (
 )
 
 type App struct {
-	ctx         context.Context
-	AllServices *services.AllServices
-	fb          *fiber.App
-	taskServer  *tasks.TaskServer
-	cfg         config.ServerEnvConfig
+	fb         *fiber.App
+	taskServer *tasks.TaskServer
+	cfg        config.ServerEnvConfig
 }
 
 func New(
-	ctx context.Context,
 	cfg config.ServerEnvConfig,
 	taskServer *tasks.TaskServer,
 	fb *fiber.App,
-	allServices *services.AllServices,
 ) *App {
 	return &App{
-		ctx:         ctx,
-		fb:          fb,
-		cfg:         cfg,
-		taskServer:  taskServer,
-		AllServices: allServices,
+		fb:         fb,
+		cfg:        cfg,
+		taskServer: taskServer,
 	}
 }
 
-func (app *App) Start() {
+func (app *App) Start(ctx context.Context) {
 	errStartServer := make(chan error)
 
 	routes.NewMain(app.fb).AddHandlers()
-	routes.NewStatEvent(app.ctx, app.fb, app.AllServices).AddHandlers()
-	routes.NewStatistic(app.ctx, app.fb, app.AllServices).AddHandlers()
-	routes.NewStopList(app.ctx, app.fb, app.AllServices).AddHandlers()
+	routes.NewStatistic(app.fb, ctx).AddHandlers()
 
 	//start fiber
 	go func() {
@@ -56,10 +47,9 @@ func (app *App) Start() {
 	}()
 
 	select {
-	case <-app.ctx.Done():
-		app.AllServices.Guest.ClearCache()
-		app.AllServices.Statistic.ClearCache()
+	case <-ctx.Done():
 		app.taskServer.AsynqServer.Shutdown()
+		tasks.Close()
 		return
 	case err := <-errStartServer:
 		log.Fatal(err)

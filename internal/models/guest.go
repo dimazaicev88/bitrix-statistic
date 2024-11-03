@@ -6,36 +6,33 @@ import (
 	"database/sql"
 	"errors"
 	"github.com/ClickHouse/clickhouse-go/v2/lib/driver"
-	"github.com/google/uuid"
 )
 
 type Guest struct {
-	ctx          context.Context
-	chClient     driver.Conn
-	sessionModel *Session
+	chClient driver.Conn
 }
 
-func NewGuest(ctx context.Context, chClient driver.Conn) *Guest {
+func NewGuest(chClient driver.Conn) *Guest {
 	return &Guest{
-		ctx:          ctx,
-		chClient:     chClient,
-		sessionModel: NewSession(ctx, chClient),
+		chClient: chClient,
 	}
 }
 
-func (gm Guest) Add(guest entitydb.Guest) error {
-	return gm.chClient.Exec(gm.ctx,
-		`INSERT INTO guest (uuid, date_add, repair) VALUES (?,?,?)`,
-		guest.Uuid, guest.DateAdd, guest.Repair,
+func (gm Guest) Add(ctx context.Context, guest entitydb.Guest) error {
+	return gm.chClient.Exec(
+		ctx,
+		`INSERT INTO guest(guestHash, dateAdd) VALUES (?,?)`,
+		guest.GuestHash, guest.DateAdd,
 	)
 }
 
-func (gm Guest) FindByUuid(uuid uuid.UUID) (entitydb.Guest, error) {
-	var hit entitydb.Guest
-	err := gm.chClient.QueryRow(gm.ctx, `select uuid, dateAdd, repair from guest where uuid=?`,
-		uuid).ScanStruct(&hit)
-	if err != nil && errors.Is(err, sql.ErrNoRows) == false {
+func (gm Guest) FindByHash(ctx context.Context, hash string) (entitydb.Guest, error) {
+	var guest entitydb.Guest
+	err := gm.chClient.QueryRow(
+		ctx, `select guestHash, dateAdd from guest where guestHash=?`,
+		hash).ScanStruct(&guest)
+	if !errors.Is(err, sql.ErrNoRows) {
 		return entitydb.Guest{}, err
 	}
-	return hit, nil
+	return guest, nil
 }

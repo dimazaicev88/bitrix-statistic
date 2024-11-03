@@ -18,9 +18,9 @@ func TestHitService_Add(t *testing.T) {
 	//defer chClient.Close()
 	//
 	//req := require.New(t)
-	//allModels := models.NewModels(context.Background(), chClient)
-	//hitService := NewHit(context.Background(), allModels)
-	//utils.TruncateTable("hit", chClient)
+	//hitModel := models.NewModels(context.Background(), chClient)
+	//hitService := NewHit(context.Background(), hitModel)
+	//utils.TruncateTable("hitModel", chClient)
 	//guestUuid := uuid.New()
 	//sessionDb := entitydb.Session{
 	//	Uuid:      uuid.New(),
@@ -86,11 +86,11 @@ func TestHitService_Add(t *testing.T) {
 	//	Cookies:           "_ga=GA1.2.131634531.1723559453; _gid=GA1.2.1901415454.1723559453; _ga_PWTK27XVWP=GS1.1.1723559453.1.1.1723559817.0.0.0",
 	//	IsFavorite:        false,
 	//}
-	////hit, err := hitService.Add(true, sessionDb, advReferer, statData)
+	////hitModel, err := hitService.Add(true, sessionDb, advReferer, statData)
 	////req.Nil(err)
 	//
 	//var allDbHits []entitydb.Hit
-	//rows, _ := chClient.Query(context.Background(), "SELECT * from hit")
+	//rows, _ := chClient.Query(context.Background(), "SELECT * from hitModel")
 	//
 	//for rows.Next() {
 	//	var dbHit entitydb.Hit
@@ -99,24 +99,24 @@ func TestHitService_Add(t *testing.T) {
 	//}
 	//req.Equal(1, len(allDbHits))
 
-	//req.Equal(hit.Uuid.String(), allDbHits[0].Uuid.String())
-	//req.Equal(hit.SessionUuid.String(), allDbHits[0].SessionUuid.String())
-	//req.Equal(hit.AdvUuid.String(), allDbHits[0].AdvUuid.String())
-	//req.Equal(hit.GuestUuid.String(), allDbHits[0].GuestUuid.String())
-	//req.Equal(hit.IsNewGuest, allDbHits[0].IsNewGuest)
-	//req.Equal(hit.PhpSessionId, allDbHits[0].PhpSessionId)
-	//req.Equal(hit.UserId, allDbHits[0].UserId)
-	//req.Equal(hit.IsUserAuth, allDbHits[0].IsUserAuth)
-	//req.Equal(hit.Url, allDbHits[0].Url)
-	//req.Equal(hit.Url404, allDbHits[0].Url404)
-	//req.Equal(hit.UrlFrom, allDbHits[0].UrlFrom)
-	//req.Equal(hit.Method, allDbHits[0].Method)
-	//req.Equal(hit.Cookies, allDbHits[0].Cookies)
-	//req.Equal(hit.UserAgent, allDbHits[0].UserAgent)
-	//req.Equal(hit.StopListUuid, allDbHits[0].StopListUuid)
-	//req.Equal(strings.Trim(" ", hit.CountryId), strings.Trim(" ", allDbHits[0].CountryId))
-	//req.Equal(hit.CityUuid.String(), allDbHits[0].CityUuid.String())
-	//req.Equal(hit.SiteId, allDbHits[0].SiteId)
+	//req.Equal(hitModel.Uuid.String(), allDbHits[0].Uuid.String())
+	//req.Equal(hitModel.SessionUuid.String(), allDbHits[0].SessionUuid.String())
+	//req.Equal(hitModel.AdvUuid.String(), allDbHits[0].AdvUuid.String())
+	//req.Equal(hitModel.GuestUuid.String(), allDbHits[0].GuestUuid.String())
+	//req.Equal(hitModel.IsNewGuest, allDbHits[0].IsNewGuest)
+	//req.Equal(hitModel.PhpSessionId, allDbHits[0].PhpSessionId)
+	//req.Equal(hitModel.UserId, allDbHits[0].UserId)
+	//req.Equal(hitModel.IsUserAuth, allDbHits[0].IsUserAuth)
+	//req.Equal(hitModel.Url, allDbHits[0].Url)
+	//req.Equal(hitModel.Url404, allDbHits[0].Url404)
+	//req.Equal(hitModel.UrlFrom, allDbHits[0].UrlFrom)
+	//req.Equal(hitModel.Method, allDbHits[0].Method)
+	//req.Equal(hitModel.Cookies, allDbHits[0].Cookies)
+	//req.Equal(hitModel.UserAgent, allDbHits[0].UserAgent)
+	//req.Equal(hitModel.StopListUuid, allDbHits[0].StopListUuid)
+	//req.Equal(strings.Trim(" ", hitModel.CountryId), strings.Trim(" ", allDbHits[0].CountryId))
+	//req.Equal(hitModel.CityUuid.String(), allDbHits[0].CityUuid.String())
+	//req.Equal(hitModel.SiteId, allDbHits[0].SiteId)
 }
 
 // Добавление хита, но данные с сессией переданы пустые
@@ -128,14 +128,14 @@ func TestHitService_Add_EmptySessRefererAndStatData(t *testing.T) {
 	//defer chClient.Close()
 	//
 	//req := require.New(t)
-	//allModels := models.NewModels(context.Background(), chClient)
-	//hitService := NewHit(context.Background(), allModels)
-	//utils.TruncateTable("hit", chClient)
+	//hitModel := models.NewModels(context.Background(), chClient)
+	//hitService := NewHit(context.Background(), hitModel)
+	//utils.TruncateTable("hitModel", chClient)
 	//
-	//hit, err := hitService.Add(true, entitydb.Session{}, entitydb.AdvCompany{}, dto.UserData{})
+	//hitModel, err := hitService.Add(true, entitydb.Session{}, entitydb.AdvCompany{}, dto.UserData{})
 	//req.NotNil(err)
 	//req.Equal("session is empty", err.Error())
-	//req.Equal(hit, entitydb.Hit{})
+	//req.Equal(hitModel, entitydb.Hit{})
 }
 
 // Добавление хита, но данные с данными о госте переданы пустые
@@ -147,92 +147,15 @@ func TestHitService_Add_EmptyStatData(t *testing.T) {
 	chClient, _ := storage.NewClickHouseClient(config.GetServerConfig())
 	defer chClient.Close()
 	//req := require.New(t)
-	//allModels := models.NewModels(context.Background(), chClient)
-	//hitService := NewHit(context.Background(), allModels)
-	//utils.TruncateTable("hit", chClient)
+	//hitModel := models.NewModels(context.Background(), chClient)
+	//hitService := NewHit(context.Background(), hitModel)
+	//utils.TruncateTable("hitModel", chClient)
 	//sessionDb := entitydb.Session{Uuid: uuid.New(),
 	//	GuestUuid: uuid.New(),
 	//}
 
-	//hit, err := hitService.Add(true, sessionDb, entitydb.AdvCompany{}, dto.UserData{})
+	//hitModel, err := hitService.Add(true, sessionDb, entitydb.AdvCompany{}, dto.UserData{})
 	//req.NotNil(err)
 	//req.Equal("stat data is empty", err.Error())
-	//req.Equal(hit, entitydb.Hit{})
-}
-
-func TestHitService_FindLastHitWithoutSession(t *testing.T) {
-	//if err := godotenv.Load(pathToEnvFile); err != nil {
-	//	logrus.Fatal("Error loading .env file")
-	//}
-	//
-	//chClient, _ := storage.NewClickHouseClient(config.GetServerConfig())
-	//defer chClient.Close()
-	//req := require.New(t)
-	//allModels := models.NewModels(context.Background(), chClient)
-	//hitService := NewHit(context.Background(), allModels)
-	//utils.TruncateTable("hit", chClient)
-	//
-	//guestUuid := uuid.New()
-	//
-	//err := chClient.Exec(context.Background(),
-	//	`INSERT INTO hit (uuid, session_uuid, adv_uuid, date_hit, php_session_id, guest_uuid, new_guest, user_id, user_auth, url,
-	//													  url_404, url_from, ip, method, cookies, user_agent, stop_list_uuid, country_id, city_uuid, site_id)
-	//		   VALUES ('0191509a-eca7-760b-b46f-664cbfb5fb03', generateUUIDv7(), generateUUIDv7(), now(), 'ses1', @guestUuid, true, 1, true,
-	//													'localhost', false, '', '10.136.254.100', 'get', 'cookie', 'user_ag', generateUUIDv7(), 'ru', generateUUIDv7(),	's1')`, clickhouse.Named("guestUuid", guestUuid))
-	//
-	//req.Nil(err)
-	//err = chClient.Exec(context.Background(), `INSERT INTO hit (uuid, session_uuid, adv_uuid, date_hit, php_session_id, guest_uuid, new_guest, user_id, user_auth, url,
-	//													  url_404, url_from, ip, method, cookies, user_agent, stop_list_uuid, country_id, city_uuid, site_id)
-	//		   VALUES ('0191508b-3d75-7048-8733-bb3a24cd6ed1', generateUUIDv7(), generateUUIDv7(), now(), 'ses1', @guestUuid, true, 1, true,
-	//													'localhost', false, '', '10.136.254.100', 'get', 'cookie', 'user_ag', generateUUIDv7(), 'ru', generateUUIDv7(), 's1')`, clickhouse.Named("guestUuid", guestUuid))
-	//
-	//req.Nil(err)
-	//err = chClient.Exec(context.Background(), `INSERT INTO hit (uuid, session_uuid, adv_uuid, date_hit, php_session_id, guest_uuid, new_guest, user_id, user_auth, url,
-	//													  url_404, url_from, ip, method, cookies, user_agent, stop_list_uuid, country_id, city_uuid, site_id)
-	//		   VALUES ('0191508d-ec3b-7277-a776-69b528e8c327', generateUUIDv7(), generateUUIDv7(), now(), 'ses1', @guestUuid, true, 1, true,
-	//													'localhost', false, '', '10.136.254.100', 'get', 'cookie', 'user_ag', generateUUIDv7(), 'ru', generateUUIDv7(), 's1')`, clickhouse.Named("guestUuid", guestUuid))
-	//
-	//req.Nil(err)
-	//err = chClient.Exec(context.Background(), `INSERT INTO hit (uuid, session_uuid, adv_uuid, date_hit, php_session_id, guest_uuid, new_guest, user_id, user_auth, url,
-	//													  url_404, url_from, ip, method, cookies, user_agent, stop_list_uuid, country_id, city_uuid, site_id)
-	//		   VALUES ('0191508f-ef1c-7b30-9009-4241f1e272a8', generateUUIDv7(), generateUUIDv7(), now(), 'ses1', @guestUuid, true, 1, true,
-	//													'localhost', false, '', '10.136.254.100', 'get', 'cookie', 'user_ag', generateUUIDv7(), 'ru', generateUUIDv7(),	's1')`, clickhouse.Named("guestUuid", guestUuid))
-	//
-	//req.Nil(err)
-	//err = chClient.Exec(context.Background(), `INSERT INTO hit (uuid, session_uuid, adv_uuid, date_hit, php_session_id, guest_uuid, new_guest, user_id, user_auth, url,
-	//													  url_404, url_from, ip, method, cookies, user_agent, stop_list_uuid, country_id, city_uuid, site_id)
-	//		   VALUES ('0191508e-d648-7369-946e-3248ccddeab9', generateUUIDv7(), generateUUIDv7(), now(), 'ses2', @guestUuid, true, 1, true,
-	//													'localhost', false, '', '10.136.254.100', 'get', 'cookie', 'user_ag', generateUUIDv7(), 'ru', generateUUIDv7(),'s1')`, clickhouse.Named("guestUuid", guestUuid))
-	//req.Nil(err)
-	//
-	//hit, err := hitService.FindLastHitWithoutSession(guestUuid, "ses2")
-	//req.Nil(err)
-	//req.Equal("0191508f-ef1c-7b30-9009-4241f1e272a8", hit.Uuid.String())
-
-}
-
-func TestHitService_FindByUuid(t *testing.T) {
-	//if err := godotenv.Load(pathToEnvFile); err != nil {
-	//	logrus.Fatal("Error loading .env file")
-	//}
-	//
-	//chClient, _ := storage.NewClickHouseClient(config.GetServerConfig())
-	//defer chClient.Close()
-	//req := require.New(t)
-	//allModels := models.NewModels(context.Background(), chClient)
-	//hitService := NewHit(context.Background(), allModels)
-	//utils.TruncateTable("hit", chClient)
-	//
-	//hitUuid := uuid.New()
-	//
-	//err := chClient.Exec(context.Background(),
-	//	`INSERT INTO hit (uuid, session_uuid, adv_uuid, date_hit, php_session_id, guest_uuid, new_guest, user_id, user_auth, url,
-	//													  url_404, url_from, ip, method, cookies, user_agent, stop_list_uuid, country_id, city_uuid, site_id)
-	//		   VALUES (@uuid, generateUUIDv7(), generateUUIDv7(), now(), 'ses1', generateUUIDv7(), true, 1, true,
-	//													'localhost', false, '', '10.136.254.100', 'get', 'cookie', 'user_ag', generateUUIDv7(), 'ru', generateUUIDv7(),	's1');`, clickhouse.Named("uuid", hitUuid))
-	//req.Nil(err)
-	//
-	//hit, err := hitService.FindByUuid(hitUuid)
-	//req.Nil(err)
-	//req.Equal(hitUuid, hit.Uuid)
+	//req.Equal(hitModel, entitydb.Hit{})
 }

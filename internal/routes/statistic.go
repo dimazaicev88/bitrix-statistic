@@ -2,31 +2,26 @@ package routes
 
 import (
 	"bitrix-statistic/internal/dto"
-	"bitrix-statistic/internal/services"
 	"bitrix-statistic/internal/tasks"
 	"context"
 	"github.com/goccy/go-json"
 	"github.com/gofiber/fiber/v2"
-	"github.com/google/uuid"
 	"github.com/hibiken/asynq"
-	"log"
 )
 
 type Statistic struct {
-	fbApp      *fiber.App
-	ctx        context.Context
-	allService *services.AllServices
+	ctx   context.Context
+	fbApp *fiber.App
 }
 
 type Answer struct {
 	Msg string `json:"msg"`
 }
 
-func NewStatistic(ctx context.Context, fbApp *fiber.App, allService *services.AllServices) *Statistic {
+func NewStatistic(fbApp *fiber.App, ctx context.Context) *Statistic {
 	return &Statistic{
-		fbApp:      fbApp,
-		ctx:        ctx,
-		allService: allService,
+		ctx:   ctx,
+		fbApp: fbApp,
 	}
 }
 
@@ -39,12 +34,7 @@ func (sh *Statistic) Add(ctx *fiber.Ctx) error {
 	var userData dto.UserData
 	err := json.Unmarshal(ctx.Body(), &userData)
 	if err != nil {
-		log.Println(err)
 		return ctx.SendStatus(fiber.StatusBadRequest)
-	}
-
-	if userData.GuestUuid == uuid.Nil {
-		userData.GuestUuid = uuid.New()
 	}
 
 	resultJson, _ := json.Marshal(userData)
@@ -55,13 +45,8 @@ func (sh *Statistic) Add(ctx *fiber.Ctx) error {
 		return ctx.SendStatus(fiber.StatusInternalServerError)
 	}
 
-	answer, err := json.Marshal(map[string]string{
-		"guestUuid": userData.GuestUuid.String(),
+	return ctx.JSON(dto.Response{
+		Result: "",
+		Error:  "",
 	})
-
-	if err != nil {
-		return ctx.SendStatus(fiber.StatusInternalServerError)
-	}
-
-	return ctx.Send(answer)
 }

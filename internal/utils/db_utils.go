@@ -7,10 +7,7 @@ import (
 )
 
 var listTables = []string{
-	"adv", "adv_day", "adv_event", "adv_event_day", "adv_guest", "adv_page", "adv_searcher",
-	"city", "city_day", "city_ip", "country", "country_day", "day", "event", "event_day", "event_list",
-	"guest", "hit", "options", "page", "path", "path_adv", "path_cache", "phrase_list", "searcher_hit",
-	"searcher_params", "session",
+	"guest", "hit", "session",
 }
 
 func TruncateAllTables(chClient driver.Conn) {
