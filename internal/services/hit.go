@@ -26,7 +26,6 @@ func (hs HitService) Add(ctx context.Context, statData dto.UserData, isNewGuest 
 
 	hit := entitydb.Hit{
 		Uuid:         uuid.New(),
-		Favorites:    statData.IsFavorite,
 		PhpSessionId: statData.PHPSessionId,
 		GuestHash:    statData.GuestHash,
 		IsNewGuest:   isNewGuest,
