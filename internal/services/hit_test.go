@@ -18,11 +18,11 @@ func TestHitService_Add(t *testing.T) {
 	//defer chClient.Close()
 	//
 	//req := require.New(t)
-	//hitModel := models.NewModels(context.Background(), chClient)
+	//hitModel := repository.NewModels(context.Background(), chClient)
 	//hitService := NewHit(context.Background(), hitModel)
 	//utils.TruncateTable("hitModel", chClient)
 	//guestUuid := uuid.New()
-	//sessionDb := entitydb.Session{
+	//sessionDb := models.Session{
 	//	Uuid:      uuid.New(),
 	//	GuestUuid: guestUuid,
 	//	//IsNewGuest:   true,
@@ -59,7 +59,7 @@ func TestHitService_Add(t *testing.T) {
 	//	//Version:      1,
 	//}
 	//
-	////advReferer := entitydb.AdvCompany{
+	////advReferer := models.AdvCompany{
 	////	AdvUuid:     uuid.New(),
 	////	Referer1:    "ref1",
 	////	Referer2:    "ref2",
@@ -89,11 +89,11 @@ func TestHitService_Add(t *testing.T) {
 	////hitModel, err := hitService.Add(true, sessionDb, advReferer, statData)
 	////req.Nil(err)
 	//
-	//var allDbHits []entitydb.Hit
+	//var allDbHits []models.Hit
 	//rows, _ := chClient.Query(context.Background(), "SELECT * from hitModel")
 	//
 	//for rows.Next() {
-	//	var dbHit entitydb.Hit
+	//	var dbHit models.Hit
 	//	rows.ScanStruct(&dbHit)
 	//	allDbHits = append(allDbHits, dbHit)
 	//}
@@ -128,14 +128,14 @@ func TestHitService_Add_EmptySessRefererAndStatData(t *testing.T) {
 	//defer chClient.Close()
 	//
 	//req := require.New(t)
-	//hitModel := models.NewModels(context.Background(), chClient)
+	//hitModel := repository.NewModels(context.Background(), chClient)
 	//hitService := NewHit(context.Background(), hitModel)
 	//utils.TruncateTable("hitModel", chClient)
 	//
-	//hitModel, err := hitService.Add(true, entitydb.Session{}, entitydb.AdvCompany{}, dto.UserData{})
+	//hitModel, err := hitService.Add(true, models.Session{}, models.AdvCompany{}, dto.UserData{})
 	//req.NotNil(err)
 	//req.Equal("session is empty", err.Error())
-	//req.Equal(hitModel, entitydb.Hit{})
+	//req.Equal(hitModel, models.Hit{})
 }
 
 // Добавление хита, но данные с данными о госте переданы пустые
@@ -147,15 +147,15 @@ func TestHitService_Add_EmptyStatData(t *testing.T) {
 	chClient, _ := storage.NewClickHouseClient(config.GetServerConfig())
 	defer chClient.Close()
 	//req := require.New(t)
-	//hitModel := models.NewModels(context.Background(), chClient)
+	//hitModel := repository.NewModels(context.Background(), chClient)
 	//hitService := NewHit(context.Background(), hitModel)
 	//utils.TruncateTable("hitModel", chClient)
-	//sessionDb := entitydb.Session{Uuid: uuid.New(),
+	//sessionDb := models.Session{Uuid: uuid.New(),
 	//	GuestUuid: uuid.New(),
 	//}
 
-	//hitModel, err := hitService.Add(true, sessionDb, entitydb.AdvCompany{}, dto.UserData{})
+	//hitModel, err := hitService.Add(true, sessionDb, models.AdvCompany{}, dto.UserData{})
 	//req.NotNil(err)
 	//req.Equal("stat data is empty", err.Error())
-	//req.Equal(hitModel, entitydb.Hit{})
+	//req.Equal(hitModel, models.Hit{})
 }

@@ -2,7 +2,7 @@ package services
 
 import (
 	"bitrix-statistic/internal/dto"
-	"bitrix-statistic/internal/entitydb"
+	"bitrix-statistic/internal/models"
 	"context"
 	_ "net/netip"
 )
@@ -25,7 +25,7 @@ func (stat *Statistic) Add(ctx context.Context, statData dto.UserData) error {
 		return err
 	}
 
-	isNewGuest := hash == entitydb.Guest{}
+	isNewGuest := hash == models.Guest{}
 	if _, err := stat.hitService.Add(ctx, statData, isNewGuest); err != nil {
 		return err
 	}

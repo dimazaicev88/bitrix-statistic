@@ -3,7 +3,7 @@ package main
 import (
 	"bitrix-statistic/internal/app"
 	"bitrix-statistic/internal/config"
-	"bitrix-statistic/internal/models"
+	"bitrix-statistic/internal/repository"
 	"bitrix-statistic/internal/services"
 	"bitrix-statistic/internal/storage"
 	"bitrix-statistic/internal/tasks"
@@ -41,8 +41,8 @@ func main() {
 		logrus.Fatal(err)
 	}
 
-	guestModel := models.NewGuest(chClient)
-	hitModel := models.NewHit(chClient)
+	guestModel := repository.NewGuest(chClient)
+	hitModel := repository.NewHit(chClient)
 	serverTask := tasks.NewTaskServer(
 		services.NewStatistic(services.NewGuest(guestModel), services.NewHit(hitModel)),
 		cfg.RedisHost,

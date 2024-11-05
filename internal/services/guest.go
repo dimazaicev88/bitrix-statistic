@@ -1,25 +1,25 @@
 package services
 
 import (
-	"bitrix-statistic/internal/entitydb"
 	"bitrix-statistic/internal/models"
+	"bitrix-statistic/internal/repository"
 	"context"
 	"errors"
 )
 
 type GuestService struct {
-	guestModel *models.Guest
+	guestModel *repository.Guest
 }
 
-func NewGuest(guestModel *models.Guest) *GuestService {
+func NewGuest(guestModel *repository.Guest) *GuestService {
 	return &GuestService{
 		guestModel: guestModel,
 	}
 }
 
-func (gs *GuestService) Add(ctx context.Context, guest entitydb.Guest) error {
+func (gs *GuestService) Add(ctx context.Context, guest models.Guest) error {
 
-	if guest == (entitydb.Guest{}) {
+	if guest == (models.Guest{}) {
 		return errors.New("guest is empty")
 	}
 
@@ -29,6 +29,6 @@ func (gs *GuestService) Add(ctx context.Context, guest entitydb.Guest) error {
 	return nil
 }
 
-func (gs *GuestService) FindByHash(ctx context.Context, hash string) (entitydb.Guest, error) {
+func (gs *GuestService) FindByHash(ctx context.Context, hash string) (models.Guest, error) {
 	return gs.guestModel.FindByHash(ctx, hash)
 }

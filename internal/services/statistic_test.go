@@ -14,7 +14,7 @@ func TestGuestModel_Searcher(t *testing.T) {
 	////utils.TruncateAllTables(chClient)
 	//defer chClient.Close()
 	//req := require.New(t)
-	//err := NewStatistic(context.Background(), models.NewModels(context.Background(), chClient)).Add(dto.StatData{
+	//err := NewStatistic(context.Background(), repository.NewModels(context.Background(), chClient)).Add(dto.StatData{
 	//	PHPSessionId:      "te2ctj3n1nt6c2ci5l0era5di2",
 	//	GuestUuid:         "44c2870053b0a6378f5db40c96406f00",
 	//	Url:               "http://localhost/catalog/dresses/dress-fashionista-on-a-walk/",

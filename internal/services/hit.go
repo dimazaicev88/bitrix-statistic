@@ -2,29 +2,29 @@ package services
 
 import (
 	"bitrix-statistic/internal/dto"
-	"bitrix-statistic/internal/entitydb"
 	"bitrix-statistic/internal/models"
+	"bitrix-statistic/internal/repository"
 	"context"
 	"errors"
 	"github.com/google/uuid"
 )
 
 type HitService struct {
-	hitModel *models.Hit
+	hitModel *repository.Hit
 }
 
-func NewHit(hitModel *models.Hit) *HitService {
+func NewHit(hitModel *repository.Hit) *HitService {
 	return &HitService{
 		hitModel: hitModel,
 	}
 }
 
-func (hs HitService) Add(ctx context.Context, statData dto.UserData, isNewGuest bool) (entitydb.Hit, error) {
+func (hs HitService) Add(ctx context.Context, statData dto.UserData, isNewGuest bool) (models.Hit, error) {
 	if statData == (dto.UserData{}) {
-		return entitydb.Hit{}, errors.New("stat data is empty")
+		return models.Hit{}, errors.New("stat data is empty")
 	}
 
-	hit := entitydb.Hit{
+	hit := models.Hit{
 		Uuid:         uuid.New(),
 		PhpSessionId: statData.PHPSessionId,
 		GuestHash:    statData.GuestHash,
@@ -42,7 +42,7 @@ func (hs HitService) Add(ctx context.Context, statData dto.UserData, isNewGuest 
 		SiteId:       statData.SiteId,
 	}
 	if err := hs.hitModel.AddHit(ctx, hit); err != nil {
-		return entitydb.Hit{}, err
+		return models.Hit{}, err
 	}
 	return hit, nil
 }

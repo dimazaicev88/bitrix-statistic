@@ -3,8 +3,8 @@ package services
 import (
 	"bitrix-statistic/internal/config"
 	"bitrix-statistic/internal/dto"
-	"bitrix-statistic/internal/entitydb"
 	"bitrix-statistic/internal/models"
+	"bitrix-statistic/internal/repository"
 	"bitrix-statistic/internal/storage"
 	"bitrix-statistic/internal/utils"
 	"context"
@@ -23,11 +23,11 @@ func TestGuestService_Add_EmptyUserData(t *testing.T) {
 	chClient, _ := storage.NewClickHouseClient(config.GetServerConfig())
 	defer chClient.Close()
 
-	allModels := models.NewGuest(chClient)
+	allModels := repository.NewGuest(chClient)
 	guestService := NewGuest(allModels)
 	utils.TruncateTable("guest", chClient)
 
-	err := guestService.Add(context.Background(), entitydb.Guest{
+	err := guestService.Add(context.Background(), models.Guest{
 		GuestHash: utils.GetGuestMd5(dto.UserData{
 			UserAgent:         "",
 			HttpXForwardedFor: "",

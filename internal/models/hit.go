@@ -1,27 +1,29 @@
 package models
 
 import (
-	"bitrix-statistic/internal/entitydb"
-	"context"
-	"github.com/ClickHouse/clickhouse-go/v2/lib/driver"
+	"github.com/google/uuid"
+	"time"
 )
 
 type Hit struct {
-	chClient driver.Conn
-}
-
-func NewHit(chClient driver.Conn) *Hit {
-	return &Hit{chClient: chClient}
-}
-
-func (hm Hit) AddHit(ctx context.Context, hit entitydb.Hit) error {
-	return hm.chClient.AsyncInsert(
-		ctx,
-		`INSERT INTO hit (uuid, dateHit, cookies, countryId, city, event1, event2, guestHash, ip, method, phpSessionId, 
-                 referrer, siteId, url, urlFrom, userAgent, userId)
-		       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?,?,?)`,
-		false,
-		hit.Uuid, hit.DateHit, hit.Cookies, hit.CountryId, hit.CityId, hit.Event1, hit.Event2, hit.GuestHash, hit.Ip, hit.PhpSessionId,
-		hit.Referer, hit.SiteId, hit.Url, hit.UrlFrom, hit.UserAgent, hit.UserId,
-	)
+	Uuid         uuid.UUID `ch:"uuid"`
+	PhpSessionId string    `ch:"phpSessionId"`
+	Event1       string    `ch:"event1"`
+	Event2       string    `ch:"event2"`
+	DateHit      time.Time `ch:"dateHit"`
+	GuestHash    string    `ch:"guestHash"`
+	IsNewGuest   bool      `ch:"isNewGuest"`
+	UserId       uint32    `ch:"userId"`
+	Url          string    `ch:"url"`
+	Referer      string    `ch:"referer"`
+	Url404       bool      `ch:"url404"`
+	UrlFrom      string    `ch:"urlFrom"`
+	Ip           string    `ch:"ip"`
+	Method       string    `ch:"method"`
+	Cookies      string    `ch:"cookies"`
+	UserAgent    string    `ch:"userAgent"`
+	Favorites    bool      `ch:"favorites"`
+	CountryId    string    `ch:"countryId"`
+	CityId       string    `ch:"cityId"`
+	SiteId       string    `ch:"siteId"`
 }
