@@ -22,7 +22,7 @@ func TestGuest(t *testing.T) {
 	}
 
 	req := require.New(t)
-	chClient := storage.NewClickHouseClient(config.GetServerConfig())
+	chClient, _ := storage.NewClickHouseClient(config.GetServerConfig())
 	defer chClient.Close()
 
 	guestRepo := NewGuest(chClient)

@@ -36,7 +36,7 @@ func main() {
 		AllowHeaders: "Origin, Content-Type, Accept, Authorization", // Allowed headers
 	}))
 
-	chClient := storage.NewClickHouseClient(config.GetServerConfig())
+	chClient, err := storage.NewClickHouseClient(config.GetServerConfig())
 	if err != nil {
 		logrus.Fatal(err)
 	}
