@@ -7,6 +7,7 @@ import (
 	"context"
 	"errors"
 	"github.com/google/uuid"
+	"time"
 )
 
 type HitService struct {
@@ -27,6 +28,7 @@ func (hs HitService) Add(ctx context.Context, statData dto.UserData, isNewGuest 
 	hit := models.Hit{
 		Uuid:         uuid.New(),
 		PhpSessionId: statData.PHPSessionId,
+		DateHit:      time.Now(),
 		GuestHash:    statData.GuestHash,
 		IsNewGuest:   isNewGuest,
 		UserId:       statData.UserId,

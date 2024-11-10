@@ -52,7 +52,7 @@ func (app *App) Start(ctx context.Context) {
 	}()
 
 	h := asynqmon.New(asynqmon.Options{
-		RootPath:     "/monitoring",
+		RootPath:     "/",
 		RedisConnOpt: asynq.RedisClientOpt{Addr: app.cfg.RedisHost},
 	})
 

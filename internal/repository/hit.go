@@ -21,11 +21,11 @@ func NewHit(chClient driver.Conn) *Hit {
 func (hm Hit) AddHit(ctx context.Context, hit models.Hit, wait bool) error {
 	return hm.chClient.AsyncInsert(
 		ctx,
-		`INSERT INTO hits (uuid, dateHit, cookies, event1, event2, guestHash,isNewGuest, ip, method, phpSessionId, 
+		`INSERT INTO hits (uuid, dateHit, cookies, event1, event2,event3, guestHash,isNewGuest, ip, method, phpSessionId, 
                  referrer, siteId, url,url404, userAgent, userId)
-		       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+		       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
 		wait,
-		hit.Uuid, hit.DateHit, hit.Cookies, hit.Event1, hit.Event2, hit.GuestHash, hit.IsNewGuest, hit.Ip, hit.Method, hit.PhpSessionId,
+		hit.Uuid, hit.DateHit, hit.Cookies, hit.Event1, hit.Event2, hit.Event3, hit.GuestHash, hit.IsNewGuest, hit.Ip, hit.Method, hit.PhpSessionId,
 		hit.Referer, hit.SiteId, hit.Url, hit.Url404, hit.UserAgent, hit.UserId,
 	)
 }

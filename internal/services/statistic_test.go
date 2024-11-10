@@ -38,7 +38,7 @@ func TestStatistic(t *testing.T) {
 			Referer:           "test_Referer",
 			Ip:                "127.0.0.1",
 			UserAgent:         "test_UserAgent",
-			UserId:            0,
+			UserId:            10,
 			HttpXForwardedFor: "127.0.0.10",
 			IsError404:        true,
 			SiteId:            "om",
@@ -79,5 +79,6 @@ func TestStatistic(t *testing.T) {
 		req.Equal(userData.Cookies, singleHit.Cookies)
 		req.Equal(userData.UserAgent, singleHit.UserAgent)
 		req.Equal(userData.SiteId, singleHit.SiteId)
+		req.Equal(userData.Event3, singleHit.Event3)
 	})
 }
