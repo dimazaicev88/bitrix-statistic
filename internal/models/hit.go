@@ -18,15 +18,12 @@ type Hit struct {
 	IsNewGuest   bool      `ch:"isNewGuest"`
 	UserId       uint32    `ch:"userId"`
 	Url          string    `ch:"url"`
-	Referer      string    `ch:"referer"`
+	Referer      string    `ch:"referrer"`
 	Url404       bool      `ch:"url404"`
 	UrlFrom      string    `ch:"urlFrom"`
 	Ip           string    `ch:"ip"`
 	Method       string    `ch:"method"`
 	Cookies      string    `ch:"cookies"`
 	UserAgent    string    `ch:"userAgent"`
-	Favorites    bool      `ch:"favorites"`
-	CountryId    string    `ch:"countryId"`
-	CityId       string    `ch:"cityId"`
 	SiteId       string    `ch:"siteId"`
 }
