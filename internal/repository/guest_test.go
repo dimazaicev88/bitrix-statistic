@@ -32,9 +32,18 @@ func TestGuest(t *testing.T) {
 		guestHash := uuid.New().String()
 		err = guestRepo.Add(ctx, models.Guest{GuestHash: guestHash, DateInsert: time.Now()})
 		req.NoError(err)
-		var guestDb models.Guest
-		chClient.NewSelect().Model(&guestDb).Scan(ctx)
-		req.Equal(guestHash, guestDb.GuestHash)
+
+		var allDbGuests []models.Guest
+		rows, _ := chClient.Query(context.Background(), "SELECT * from guests")
+
+		for rows.Next() {
+			var dbGuest models.Guest
+			err = rows.ScanStruct(&dbGuest)
+			req.Nil(err)
+			allDbGuests = append(allDbGuests, dbGuest)
+		}
+		req.Equal(1, len(allDbGuests))
+		req.Equal(guestHash, allDbGuests[0].GuestHash)
 	})
 
 	t.Run("Add", func(t *testing.T) {
@@ -42,7 +51,8 @@ func TestGuest(t *testing.T) {
 		utils.TruncateTable(ctx, "guests", chClient)
 		guestHash := uuid.New().String()
 
-		chClient.NewInsert().Model(&models.Guest{GuestHash: guestHash, DateInsert: time.Now()}).Exec(ctx)
+		chClient.Exec(ctx,
+			`INSERT INTO guests (guestHash, dateInsert) VALUES (?,?)`, guestHash, time.Now())
 		guestDb, err := guestRepo.FindByHash(ctx, guestHash)
 		req.NoError(err)
 		req.Equal(guestHash, guestDb.GuestHash)

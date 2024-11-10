@@ -8,27 +8,26 @@ import (
 )
 
 type GuestService struct {
-	guestModel *repository.Guest
+	guestRepository *repository.Guest
 }
 
-func NewGuest(guestModel *repository.Guest) *GuestService {
+func NewGuest(guestRepository *repository.Guest) *GuestService {
 	return &GuestService{
-		guestModel: guestModel,
+		guestRepository: guestRepository,
 	}
 }
 
 func (gs *GuestService) Add(ctx context.Context, guest models.Guest) error {
-
 	if guest == (models.Guest{}) {
 		return errors.New("guest is empty")
 	}
 
-	if err := gs.guestModel.Add(ctx, guest); err != nil {
+	if err := gs.guestRepository.Add(ctx, guest); err != nil {
 		return err
 	}
 	return nil
 }
 
 func (gs *GuestService) FindByHash(ctx context.Context, hash string) (models.Guest, error) {
-	return gs.guestModel.FindByHash(ctx, hash)
+	return gs.guestRepository.FindByHash(ctx, hash)
 }

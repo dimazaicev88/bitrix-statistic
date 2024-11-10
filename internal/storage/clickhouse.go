@@ -2,6 +2,7 @@ package storage
 
 import (
 	"bitrix-statistic/internal/config"
+	"github.com/ClickHouse/clickhouse-go/v2"
 	"github.com/ClickHouse/clickhouse-go/v2/lib/driver"
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/sirupsen/logrus"

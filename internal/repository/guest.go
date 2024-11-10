@@ -20,12 +20,12 @@ func NewGuest(chClient driver.Conn) *Guest {
 
 func (gm Guest) Add(ctx context.Context, guest models.Guest) error {
 	return gm.chClient.Exec(ctx,
-		`INSERT INTO guest (guestHash, dateInsert) VALUES (?,?)`, guest.GuestHash, guest.DateInsert)
+		`INSERT INTO guests (guestHash, dateInsert) VALUES (?,?)`, guest.GuestHash, guest.DateInsert)
 }
 
 func (gm Guest) FindByHash(ctx context.Context, hash string) (models.Guest, error) {
 	var hit models.Guest
-	err := gm.chClient.QueryRow(ctx, `select guestHash, dateInsert from guest where guestHash=?`,
+	err := gm.chClient.QueryRow(ctx, `select guestHash, dateInsert from guests where guestHash=?`,
 		hash).ScanStruct(&hit)
 	if err != nil && errors.Is(err, sql.ErrNoRows) == false {
 		return models.Guest{}, err

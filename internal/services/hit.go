@@ -10,16 +10,16 @@ import (
 )
 
 type HitService struct {
-	hitModel *repository.Hit
+	hitRepository repository.IHitRepository
 }
 
-func NewHit(hitModel *repository.Hit) *HitService {
+func NewHit(hitRepository repository.IHitRepository) *HitService {
 	return &HitService{
-		hitModel: hitModel,
+		hitRepository: hitRepository,
 	}
 }
 
-func (hs HitService) Add(ctx context.Context, statData dto.UserData, isNewGuest bool) error {
+func (hs HitService) Add(ctx context.Context, statData dto.UserData, isNewGuest bool, waitAdd bool) error {
 	if statData == (dto.UserData{}) {
 		return errors.New("stat data is empty")
 	}
@@ -37,9 +37,8 @@ func (hs HitService) Add(ctx context.Context, statData dto.UserData, isNewGuest 
 		Method:       statData.Method,
 		Cookies:      statData.Cookies,
 		UserAgent:    statData.UserAgent,
-		CountryId:    "",
-		CityId:       "",
 		SiteId:       statData.SiteId,
 	}
-	return hs.hitModel.AddHit(ctx, hit)
+
+	return hs.hitRepository.AddHit(ctx, hit, waitAdd)
 }

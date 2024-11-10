@@ -19,12 +19,12 @@ func NewStatistic(guestService *GuestService, hitService *HitService) *Statistic
 	}
 }
 
-func (stat *Statistic) Add(ctx context.Context, statData dto.UserData) error {
+func (stat *Statistic) Add(ctx context.Context, statData dto.UserData, waitAdd bool) error {
 	hash, err := stat.guestService.FindByHash(ctx, statData.GuestHash)
 	if err != nil {
 		return err
 	}
 
 	isNewGuest := hash == models.Guest{}
-	return stat.hitService.Add(ctx, statData, isNewGuest)
+	return stat.hitService.Add(ctx, statData, isNewGuest, waitAdd)
 }

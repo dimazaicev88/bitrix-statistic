@@ -40,7 +40,7 @@ func (ts TaskServer) HandleTask(ctx context.Context, t *asynq.Task) error {
 		return err
 	}
 
-	if err := ts.serviceStatisticS.Add(ctx, userData); err != nil {
+	if err := ts.serviceStatisticS.Add(ctx, userData, false); err != nil {
 		return err
 	}
 	return nil
