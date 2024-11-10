@@ -3,47 +3,16 @@ DROP DATABASE if exists statistic;
 create database statistic;
 USE statistic;
 
-create table if not exists guest
+create table if not exists guests
 (
     guestHash String(32),
-    dateAdd   DateTime32('Europe/Moscow')
+    dateInsert   DateTime32('Europe/Moscow')
 )
     engine = MergeTree()
-        PARTITION BY toMonth(dateAdd)
-        ORDER BY dateAdd;
+        PARTITION BY toMonth(dateInsert)
+        ORDER BY dateInsert;
 
-
------------------------ Hit ---------------------------
--- create table if not exists hit
--- (
---     uuid         UUID,
---     sessionUuid  UUID,
---     advUuid      UUID,
---     dateHit      DateTime32('Europe/Moscow'),
---     phpSessionId String,
---     guestUuid    UUID,
---     language     String,
---     isNewGuest   BOOLEAN default false,
---     userId       UInt32,
---     userAuth     BOOLEAN default false,
---     url          String,
---     url404       BOOLEAN default false,
---     urlFrom      String,
---     ip           IPv4,
---     method       String,
---     cookies      String,
---     userAgent    String,
---     stopListUuid UUID,
---     countryId    FixedString(2),
---     cityUuid     UUID,
---     siteId       FixedString(2),
---     favorites    boolean default false
--- )
---     engine = MergeTree
---         PARTITION BY toMonth(dateHit)
---         ORDER BY dateHit;
-
-create table hit
+create table hits
 (
     uuid         UUID,
     dateHit      DateTime('Europe/Moscow'),

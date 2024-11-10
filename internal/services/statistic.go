@@ -26,8 +26,5 @@ func (stat *Statistic) Add(ctx context.Context, statData dto.UserData) error {
 	}
 
 	isNewGuest := hash == models.Guest{}
-	if _, err := stat.hitService.Add(ctx, statData, isNewGuest); err != nil {
-		return err
-	}
-	return nil
+	return stat.hitService.Add(ctx, statData, isNewGuest)
 }

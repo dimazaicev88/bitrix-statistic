@@ -6,7 +6,7 @@ import (
 )
 
 type Guest struct {
-	ch.CHModel `ch:"partition:toYYYYMM(time)"`
+	ch.CHModel `ch:"partition:toYYYYMM(dateInsert)"`
 
 	GuestHash  string    `ch:"guestHash"`
 	DateInsert time.Time `ch:"dateInsert,pk"`

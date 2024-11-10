@@ -19,9 +19,9 @@ func NewHit(hitModel *repository.Hit) *HitService {
 	}
 }
 
-func (hs HitService) Add(ctx context.Context, statData dto.UserData, isNewGuest bool) (models.Hit, error) {
+func (hs HitService) Add(ctx context.Context, statData dto.UserData, isNewGuest bool) error {
 	if statData == (dto.UserData{}) {
-		return models.Hit{}, errors.New("stat data is empty")
+		return errors.New("stat data is empty")
 	}
 
 	hit := models.Hit{
@@ -41,8 +41,5 @@ func (hs HitService) Add(ctx context.Context, statData dto.UserData, isNewGuest 
 		CityId:       "",
 		SiteId:       statData.SiteId,
 	}
-	if err := hs.hitModel.AddHit(ctx, hit); err != nil {
-		return models.Hit{}, err
-	}
-	return hit, nil
+	return hs.hitModel.AddHit(ctx, hit)
 }

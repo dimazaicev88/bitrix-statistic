@@ -144,7 +144,7 @@ func TestHitService_Add_EmptyStatData(t *testing.T) {
 		logrus.Fatal("Error loading .env file")
 	}
 
-	_ := storage.NewClickHouseClient(config.GetServerConfig())
+	chClient := storage.NewClickHouseClient(config.GetServerConfig())
 	defer chClient.Close()
 	//req := require.New(t)
 	//hitModel := repository.NewModels(context.Background(), chClient)

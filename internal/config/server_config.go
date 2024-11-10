@@ -12,7 +12,6 @@ type ServerEnvConfig struct {
 	ClickHouseDbName   string `env:"CLICKHOUSE_DB_NAME,notEmpty"`
 	RedisHost          string `env:"REDIS_HOST,notEmpty"`
 	ServerPort         int    `env:"SERVER_PORT,notEmpty"`
-	CacheTime          int    `env:"CACHE_TIME,notEmpty"`
 }
 
 func GetServerConfig() ServerEnvConfig {

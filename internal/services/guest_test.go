@@ -20,7 +20,7 @@ func TestGuestService_Add_EmptyUserData(t *testing.T) {
 	if err := godotenv.Load(pathToEnvFile); err != nil {
 		req.Fail("Error loading .env file")
 	}
-	_ := storage.NewClickHouseClient(config.GetServerConfig())
+	chClient := storage.NewClickHouseClient(config.GetServerConfig())
 	defer chClient.Close()
 
 	allModels := repository.NewGuest(chClient)

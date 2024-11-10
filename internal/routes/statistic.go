@@ -29,24 +29,21 @@ func (sh *Statistic) AddHandlers() {
 	sh.fbApp.Post("/api/v1/statistic/add", sh.Add)
 }
 
-// Add TODO добавить отправку json с текстом ошибки.
+// Add Добавить задачу в очередь
 func (sh *Statistic) Add(ctx *fiber.Ctx) error {
 	var userData dto.UserData
-	err := json.Unmarshal(ctx.Body(), &userData)
-	if err != nil {
-		return ctx.SendStatus(fiber.StatusBadRequest)
+	if err := json.Unmarshal(ctx.Body(), &userData); err != nil {
+		return ctx.JSON(dto.Response{
+			Error: err.Error(),
+		})
 	}
 
-	resultJson, _ := json.Marshal(userData)
-
-	task := asynq.NewTask(tasks.TaskStatisticAdd, resultJson, asynq.MaxRetry(0))
-	_, err = tasks.GetClient().EnqueueContext(sh.ctx, task)
-	if err != nil {
-		return ctx.SendStatus(fiber.StatusInternalServerError)
+	task := asynq.NewTask(tasks.TaskStatisticAdd, ctx.Body(), asynq.MaxRetry(0))
+	if _, err := tasks.GetClient().EnqueueContext(sh.ctx, task); err != nil {
+		return ctx.JSON(dto.Response{
+			Error: err.Error(),
+		})
 	}
 
-	return ctx.JSON(dto.Response{
-		Result: "",
-		Error:  "",
-	})
+	return nil
 }

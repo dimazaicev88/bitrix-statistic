@@ -7,7 +7,7 @@ import (
 )
 
 type Hit struct {
-	ch.CHModel `ch:"partition:toYYYYMM(time)"`
+	ch.CHModel `ch:"partition:toYYYYMM(dateHit)"`
 
 	Uuid         uuid.UUID `ch:"uuid"`
 	PhpSessionId string    `ch:"phpSessionId"`
