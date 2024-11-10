@@ -5,6 +5,7 @@ import (
 	"bitrix-statistic/internal/models"
 	"context"
 	_ "net/netip"
+	"time"
 )
 
 type Statistic struct {
@@ -26,5 +27,11 @@ func (stat *Statistic) Add(ctx context.Context, statData dto.UserData, waitAdd b
 	}
 
 	isNewGuest := hash == models.Guest{}
+
+	if isNewGuest {
+		if err = stat.guestService.Add(ctx, models.Guest{GuestHash: statData.GuestHash, DateInsert: time.Now()}); err != nil {
+			return err
+		}
+	}
 	return stat.hitService.Add(ctx, statData, isNewGuest, waitAdd)
 }
