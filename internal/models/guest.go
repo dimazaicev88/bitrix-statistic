@@ -1,10 +1,13 @@
 package models
 
 import (
+	"github.com/uptrace/go-clickhouse/ch"
 	"time"
 )
 
 type Guest struct {
-	GuestHash string    `ch:"guestHash"`
-	DateAdd   time.Time `ch:"dateAdd"`
+	ch.CHModel `ch:"partition:toYYYYMM(time)"`
+
+	GuestHash  string    `ch:"guestHash"`
+	DateInsert time.Time `ch:"dateInsert,pk"`
 }

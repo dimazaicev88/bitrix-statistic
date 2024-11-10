@@ -3,36 +3,26 @@ package repository
 import (
 	"bitrix-statistic/internal/models"
 	"context"
-	"database/sql"
-	"errors"
-	"github.com/ClickHouse/clickhouse-go/v2/lib/driver"
+	"github.com/uptrace/go-clickhouse/ch"
 )
 
 type Guest struct {
-	chClient driver.Conn
+	chClient *ch.DB
 }
 
-func NewGuest(chClient driver.Conn) *Guest {
+func NewGuest(chClient *ch.DB) *Guest {
 	return &Guest{
 		chClient: chClient,
 	}
 }
 
 func (gm Guest) Add(ctx context.Context, guest models.Guest) error {
-	return gm.chClient.Exec(
-		ctx,
-		`INSERT INTO guest(guestHash, dateAdd) VALUES (?,?)`,
-		guest.GuestHash, guest.DateAdd,
-	)
+	_, err := gm.chClient.NewInsert().Model(&guest).Exec(ctx)
+	return err
 }
 
 func (gm Guest) FindByHash(ctx context.Context, hash string) (models.Guest, error) {
-	var guest models.Guest
-	err := gm.chClient.QueryRow(
-		ctx, `select guestHash, dateAdd from guest where guestHash=?`,
-		hash).ScanStruct(&guest)
-	if !errors.Is(err, sql.ErrNoRows) {
-		return models.Guest{}, err
-	}
-	return guest, nil
+	var guestDb models.Guest
+	err := gm.chClient.NewSelect().Model(&guestDb).Where("guestHash = ?", hash).Scan(ctx)
+	return guestDb, err
 }

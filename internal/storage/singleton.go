@@ -13,7 +13,7 @@ var once sync.Once
 func CHClient() driver.Conn {
 	once.Do(func() {
 		var err error
-		chClient, err = NewClickHouseClient(config.GetServerConfig())
+		_ = NewClickHouseClient(config.GetServerConfig())
 		if err != nil {
 			logrus.Fatal(err)
 		}

@@ -3,14 +3,14 @@ package repository
 import (
 	"bitrix-statistic/internal/models"
 	"context"
-	"github.com/ClickHouse/clickhouse-go/v2/lib/driver"
+	"github.com/uptrace/go-clickhouse/ch"
 )
 
 type Hit struct {
-	chClient driver.Conn
+	chClient *ch.DB
 }
 
-func NewHit(chClient driver.Conn) *Hit {
+func NewHit(chClient *ch.DB) *Hit {
 	return &Hit{chClient: chClient}
 }
 
