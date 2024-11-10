@@ -47,7 +47,7 @@ func main() {
 		services.NewStatistic(services.NewGuest(guestModel), services.NewHit(hitModel)),
 		cfg.RedisHost,
 		asynq.Config{
-			Concurrency: 1,
+			Concurrency: 10,
 		},
 	)
 	tasks.NewClient(cfg.RedisHost)
