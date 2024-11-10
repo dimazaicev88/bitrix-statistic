@@ -32,12 +32,15 @@ func (hs HitService) Add(ctx context.Context, statData dto.UserData, isNewGuest 
 		UserId:       statData.UserId,
 		Url:          statData.Url,
 		Url404:       statData.IsError404,
-		UrlFrom:      statData.Referer,
+		Referer:      statData.Referer,
 		Ip:           statData.Ip,
 		Method:       statData.Method,
 		Cookies:      statData.Cookies,
 		UserAgent:    statData.UserAgent,
 		SiteId:       statData.SiteId,
+		Event1:       statData.Event1,
+		Event2:       statData.Event2,
+		Event3:       statData.Event3,
 	}
 
 	return hs.hitRepository.AddHit(ctx, hit, waitAdd)

@@ -10,6 +10,7 @@ type Hit struct {
 	PhpSessionId string    `ch:"phpSessionId"`
 	Event1       string    `ch:"event1"`
 	Event2       string    `ch:"event2"`
+	Event3       string    `ch:"event3"`
 	DateHit      time.Time `ch:"dateHit"`
 	GuestHash    string    `ch:"guestHash"`
 	IsNewGuest   bool      `ch:"isNewGuest"`
@@ -17,7 +18,6 @@ type Hit struct {
 	Url          string    `ch:"url"`
 	Referer      string    `ch:"referrer"`
 	Url404       bool      `ch:"url404"`
-	UrlFrom      string    `ch:"urlFrom"`
 	Ip           string    `ch:"ip"`
 	Method       string    `ch:"method"`
 	Cookies      string    `ch:"cookies"`

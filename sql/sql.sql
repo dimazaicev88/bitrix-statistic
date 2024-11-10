@@ -19,6 +19,7 @@ create table hits
     cookies      String,
     event1       String,
     event2       String,
+    event3 String,
     guestHash    FixedString(32),
     isNewGuest   Bool DEFAULT false,
     ip           IPv4,
@@ -28,7 +29,6 @@ create table hits
     siteId       FixedString(2),
     url          String,
     url404       Bool DEFAULT false,
-    urlFrom      String,
     userAgent    String,
     userId       UInt32
 )

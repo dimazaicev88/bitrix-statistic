@@ -6,7 +6,12 @@ import (
 	"bitrix-statistic/internal/tasks"
 	"context"
 	"github.com/gofiber/fiber/v2"
+	"github.com/gorilla/mux"
+	"github.com/hibiken/asynq"
+	"github.com/hibiken/asynqmon"
+	"github.com/sirupsen/logrus"
 	"log"
+	"net/http"
 	"strconv"
 )
 
@@ -44,6 +49,24 @@ func (app *App) Start(ctx context.Context) {
 	go func() {
 		log.Println("starting task server")
 		errStartServer <- app.taskServer.AsynqServer.Run(app.taskServer.AsynqServeMux)
+	}()
+
+	h := asynqmon.New(asynqmon.Options{
+		RootPath:     "/monitoring",
+		RedisConnOpt: asynq.RedisClientOpt{Addr: app.cfg.RedisHost},
+	})
+
+	r := mux.NewRouter()
+	r.PathPrefix(h.RootPath()).Handler(h)
+
+	srv := &http.Server{
+		Handler: r,
+		Addr:    ":" + strconv.Itoa(app.cfg.TaskMonitorPort),
+	}
+
+	go func() {
+		logrus.Println("starting monitoring  server on port:", app.cfg.TaskMonitorPort)
+		errStartServer <- srv.ListenAndServe()
 	}()
 
 	select {
